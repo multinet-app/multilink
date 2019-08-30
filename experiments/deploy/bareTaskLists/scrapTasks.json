@@ -1,0 +1,122 @@
+    "S-task6": {
+        "prompt": "Does Alex have retweet interactions with American or European accounts more?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "AGT"
+        }
+    },
+    "S-task7": {
+        "prompt": "Among all people who have interacted with both Jeffrey and Robert, who has the most followers?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task8": {
+        "prompt": "What is the most common form of interaction between Evis19 and Jon? How often has this interaction happened?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "AGT"
+        }
+    },
+    "S-task9": {
+        "prompt": "Select all of Noeska’s neighbors that are people and have more friends than followers",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task10": {
+        "prompt": "Who has the highest number  of  followers among the people in the cluster containing Alex?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "clusters",
+            "type": "TGA"
+        }
+    },
+    "S-task11": {
+        "prompt": "What is the average number of likes among the peoplein the cluster containing Alex?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "clusters",
+            "type": "AGT"
+        }
+    },
+    "S-task12": {
+        "prompt": "Select all the Europeans on the shortest path between Noeska and Lane.",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "paths",
+            "type": "TGA"
+        }
+    },
+    "S-task13": {
+        "prompt": "How many europeans are within two interactions of Sereno?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "subnetwork",
+            "type": "TGA"
+        }
+    }

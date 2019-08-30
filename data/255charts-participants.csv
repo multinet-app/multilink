@@ -1,0 +1,160 @@
+postId,condition,used_search,time_diff_exploration,strategy_locate,strategy_active_search_array,strategy_active_search_num
+j0b7556z,control,non-search,118473,no,[],0
+j0b79k2i,control,non-search,158017,no,[],0
+j0bfaiio,foresight,search,1126308,yes,"[""power generation and distribution"",""software publishers"",""physical, engineering, life sciences research"",""commercial banking"",""supermarkets and other grocery stores""]",5
+j0bgpu7u,foresight,search,170456,yes,"[""real estate property managers"",""spectator sports"",""bookstores and news dealers"",""electronic shopping and auctions"",""nail salons"",""for-sale home builders""]",6
+j0b7itzc,foresight,non-search,138021,no,[],0
+j0b7pcyf,control,non-search,13630,yes,"[""electronic shopping and auctions""]",1
+j0bef7jf,foresight,search,120640,no,[],0
+j0b7wsck,control,non-search,51606,not sure,[],0
+j0bf26sy,foresight,non-search,43990,yes,"[""electronic shopping and auctions""]",1
+j0beh4st,foresight,non-search,142071,yes,"[""services for the elderly and disabled"",""support for oil and gas operations"",""oil and gas extraction"",""offices of physicians"",""natural gas distribution"",""land subdivision"",""residential remodelers"",""computer systems design and programming"",""software publishers"",""physical, engineering, life sciences research""]",10
+j0b7dlgn,foresight,search,161491,yes,"[""computer systems design and programming""]",1
+j0bejx9j,foresight,search,193507,yes,"[""metal ore mining"",""highway, street, and bridge construction"",""biotechnology research"",""physical, engineering, life sciences research""]",4
+j0b7wdi3,control,non-search,231201,no,[],0
+j0bh4o5r,foresight,non-search,82706,yes,[],0
+j0bej6wp,foresight,search,320967,yes,"[""sporting goods, hobby, toy and music stores"",""commercial banking"",""processing of financial transactions"",""consumer lending"",""musical, theater, dance, other performance companies""]",5
+j0bf9w7j,foresight,non-search,191999,no,[],0
+j0b7jcy9,foresight,non-search,99776,yes,"[""services for the elderly and disabled"",""private schools, colleges, universities and training"",""business support services"",""telecommunications resellers, satellite and voip"",""newspaper publishers""]",5
+j0bek973,foresight,search,101148,yes,"[""limited-service restaurants"",""cafeterias, grill buffets and buffets""]",2
+j0b79eq6,control,non-search,92999,yes,"[""industrial building"",""business, environmental and other consulting"",""internet publishing, broadcasting, search"",""electronic shopping and auctions"",""general contractors for new homes""]",5
+j0bf0v3u,foresight,search,263492,yes,"[""couriers and messengers""]",1
+j0b7hstx,control,non-search,494925,yes,[],0
+j0b7m2ot,control,non-search,24560,no,[],0
+j0b764xv,foresight,search,139494,no,[],0
+j0b8fzhq,control,non-search,213570,yes,"[""bookstores and news dealers"",""florists"",""wireless telecommunications carriers"",""mining and quarrying of nonmetals"",""electronic shopping and auctions"",""nail salons"",""internet publishing, broadcasting, search"",""electronics stores"",""community care facilities for the elderly"",""home health care services""]",10
+j0b75cjn,control,non-search,765245,yes,"[""offices of real estate agents and brokers"",""direct title insurance and other carriers"",""landscape architectural services"",""general contractors for new homes"",""home health care services"",""computer systems design and programming"",""investments, funds and trusts"",""private schools, colleges, universities and training""]",8
+j0b7mc84,foresight,non-search,74999,no,[],0
+j0b7naqg,control,non-search,116433,no,[],0
+j0b98v8h,control,non-search,155875,no,[],0
+j0ba8nky,foresight,search,62937,yes,"[""services for the elderly and disabled"",""gift, novelty and souvenir stores""]",2
+j0bhgnlt,foresight,search,12426,yes,"[""computer systems design and programming""]",1
+j0bf63g8,foresight,search,108814,yes,"[""telecommunications resellers, satellite and voip"",""electronic shopping and auctions"",""internet publishing, broadcasting, search"",""computer systems design and programming"",""biotechnology research""]",5
+j0b7ovuy,foresight,search,71099,no,[],0
+j0b75cq7,foresight,non-search,377905,yes,"[""electronic shopping and auctions"",""computer systems design and programming"",""data processing, web hosting and related services""]",3
+j0bfarsj,foresight,non-search,26550,no,[],0
+j0bep76i,control,non-search,72708,yes,"[""insurance agencies, brokerages, related services"",""managing offices"",""computer systems design and programming"",""internet publishing, broadcasting, search"",""support for oil and gas operations"",""oil and gas extraction"",""software publishers""]",7
+j0bewsfp,control,non-search,175771,no,"[""bookstores and news dealers""]",1
+j0b7yfxw,foresight,non-search,71976,not sure,[],0
+j0b8tulw,foresight,search,120017,yes,"[""independent artists, writers and performers""]",1
+j0b84ydf,control,non-search,85205,not sure,[],0
+j0b9oikx,foresight,search,72124,yes,"[""electronic shopping and auctions"",""electronic instrument manufacturing"",""internet publishing, broadcasting, search"",""newspaper publishers""]",4
+j0b7kki2,control,non-search,44757,yes,"[""cosmetic and beauty supply stores"",""florists""]",2
+j0begp33,foresight,search,128700,yes,"[""software publishers"",""oil and gas extraction""]",2
+j0b75sqy,foresight,non-search,184339,no,[],0
+j0b8962i,foresight,search,80299,yes,"[""pharmacies and drug stores"",""medical laboratories"",""psychiatric and substance abuse hospitals"",""outpatient mental health centers""]",4
+j0b7q097,control,non-search,154997,no,[],0
+j0b7l4we,control,non-search,54755,no,[],0
+j0bet4ow,foresight,non-search,29784,no,[],0
+j0bedqzp,foresight,search,314007,yes,"[""logging"",""supermarkets and other grocery stores"",""golf courses and country clubs"",""support for oil and gas operations"",""general contractors for new homes""]",5
+j0b7sau1,foresight,non-search,95051,no,[],0
+j0b7s113,control,non-search,66147,no,[],0
+j0b8diin,foresight,non-search,99624,no,[],0
+j0b7idu3,control,non-search,225226,no,[],0
+j0b7pm6v,control,non-search,194709,no,[],0
+j0b8li72,foresight,search,73507,yes,"[""electronic shopping and auctions"",""legal services"",""mortgage and nonmortgage loan brokers"",""direct title insurance and other carriers""]",4
+j0b7teap,control,non-search,120623,no,[],0
+j0b7xwqv,foresight,search,283677,yes,"[""miscellaneous retailers (pet stores, art dealers)""]",1
+j0b75q57,foresight,search,517404,yes,"[""real estate escrow, listing, fiduciary, other services""]",1
+j0b8924b,foresight,search,185049,yes,"[""commercial banking""]",1
+j0b9d8ef,foresight,search,191590,yes,"[""new car dealers"",""electronic equipment repair and maintenance"",""parking lots and garages"",""vending machine operators""]",4
+j0ber7ea,foresight,search,124149,yes,"[""biotechnology research"",""general medical and surgical hospitals""]",2
+j0b7tqxl,control,non-search,87265,no,[],0
+j0baekop,foresight,search,259133,yes,"[""graphic design services"",""social science and humanities research"",""commercial banking"",""offices of health practitioners (chiropractors)"",""for-sale home builders"",""architectural services""]",6
+j0bfczwf,foresight,search,129118,yes,"[""offices of health practitioners (chiropractors)"",""services for the elderly and disabled""]",2
+j0b8ma4t,foresight,non-search,61275,not sure,[],0
+j0b8y4aq,control,non-search,130262,yes,"[""graphic design services"",""for-sale home builders"",""electronic trade markets and brokers"",""electronic shopping and auctions"",""supermarkets and other grocery stores"",""telecommunications resellers, satellite and voip"",""securities and commodity contracts"",""physical, engineering, life sciences research"",""software publishers""]",9
+j0b7z2fk,control,non-search,233371,no,[],0
+j0b7j50o,control,non-search,227851,no,[],0
+j0b90ci9,control,non-search,408456,no,[],0
+j0b903kc,foresight,search,133801,yes,"[""automotive repair and maintenance"",""television and catalog mail-order sales"",""sales financing""]",3
+j0b7ejyf,foresight,search,34478,no,[],0
+j0bfj68d,foresight,search,141608,yes,"[""for-sale home builders"",""travel arrangement and reservation services""]",2
+j0bhcwej,foresight,search,196908,yes,"[""electronic shopping and auctions"",""internet publishing, broadcasting, search"",""bookstores and news dealers"",""computer systems design and programming""]",4
+j0b7i82p,control,non-search,193150,no,[],0
+j0b75mdb,control,non-search,218420,no,[],0
+j0b882e0,control,non-search,253653,no,[],0
+j0b8th3s,control,non-search,72353,no,[],0
+j0bg6ytz,foresight,search,253956,yes,"[""pharmacies and drug stores"",""amusement parks and arcades""]",2
+j0b7gjk1,control,non-search,187195,no,[],0
+j0b7jjw2,control,non-search,171701,yes,"[""internet publishing, broadcasting, search"",""software publishers""]",2
+j0b7b7nn,control,non-search,47461,yes,"[""wholesale electric goods"",""real estate property managers""]",2
+j0b7hrlb,foresight,non-search,29672,yes,"[""electronic shopping and auctions"",""internet publishing, broadcasting, search"",""computer systems design and programming"",""semiconductor, electronic component manufacturing""]",4
+j0b7nqcb,foresight,search,797778,yes,"[""insurance agencies, brokerages, related services"",""miscellaneous retailers (pet stores, art dealers)"",""landscaping services"",""other professional services (translation, interpretation)"",""internet publishing, broadcasting, search"",""investments, funds and trusts"",""offices of physicians"",""advertising and public relations"",""software publishers"",""book publishers (and those that also publish e-books)"",""periodical publishers"",""newspaper publishers"",""other health and personal care stores"",""offices of health practitioners (chiropractors)"",""outpatient care centers, except mental health"",""home health care services"",""offices of real estate agents and brokers"",""building equipment contractors (like plumbers)"",""mortgage and nonmortgage loan brokers"",""bookstores and news dealers"",""support for oil and gas operations"",""lawn and garden equipment and supply stores"",""architectural services"",""musical, theater, dance, other performance companies""]",24
+j0b84h7h,control,non-search,262565,no,[],0
+j0beg5pi,foresight,search,191736,yes,"[""mortgage and nonmortgage loan brokers"",""used car dealers"",""computer systems design and programming""]",3
+j0behia0,foresight,search,184674,yes,"[""casinos, except casino hotels"",""hotels and other traveler accomodation""]",2
+j0beh853,control,non-search,89200,yes,"[""electronic shopping and auctions"",""periodical publishers""]",2
+j0b773h7,foresight,search,205685,yes,"[""home furnishing stores"",""lawn and garden equipment and supply stores""]",2
+j0bkbg0i,foresight,search,169664,yes,"[""business support services"",""museums"",""oil and gas pipeline construction"",""oil and gas extraction"",""independent artists, writers and performers"",""spectator sports"",""biotechnology research""]",7
+j0ben7o1,foresight,search,248590,yes,"[""engineering and drafting services""]",1
+j0b7ats4,control,non-search,112089,yes,"[""electronic shopping and auctions"",""wholesale  alcoholic beverages""]",2
+j0bgmgwf,foresight,search,49700,yes,[],0
+j0bghiwv,control,non-search,208028,no,[],0
+j0b80awc,control,non-search,150059,no,[],0
+j0b8gcl5,control,non-search,156848,no,[],0
+j0bfubh0,foresight,search,272832,yes,"[""support for oil and gas operations"",""oil and gas extraction""]",2
+j0bewb9o,foresight,non-search,43320,yes,"[""agents, managers, arts and sports promoters"",""funeral homes and funeral services"",""internet publishing, broadcasting, search""]",3
+j0bf99ck,foresight,search,272085,yes,"[""electronic shopping and auctions"",""oil and gas extraction"",""computer systems design and programming"",""cemeteries and crematories"",""telecommunications resellers, satellite and voip"",""motion picture and sound recording industries"",""oil and gas pipeline construction"",""land subdivision"",""ambulance services"",""logging""]",10
+j0b8oqqt,control,non-search,286568,yes,"[""insurance agencies, brokerages, related services"",""bookstores and news dealers"",""food manufacturing"",""commercial banking"",""pipeline transportation"",""oil and gas pipeline construction"",""internet publishing, broadcasting, search"",""oil and gas extraction"",""computer systems design and programming"",""full-service restaurants""]",10
+j0bg1kg2,foresight,search,162376,yes,"[""building finishing contractors (drywall, painting)"",""florists"",""nail salons""]",3
+j0b7xz29,control,non-search,86169,no,[],0
+j0begb9a,foresight,non-search,77999,yes,"[""home health care services"",""real estate credit"",""offices of real estate agents and brokers"",""blood and organ banks, health screenings/programs"",""mortgage and nonmortgage loan brokers""]",5
+j0b7unvs,control,non-search,187750,yes,"[""internet publishing, broadcasting, search"",""computer systems design and programming"",""electronic instrument manufacturing"",""psychiatric and substance abuse hospitals"",""software publishers"",""computer and peripheral equipment manufacturing""]",6
+j0bf18gx,foresight,search,235808,no,[],0
+j0befe3y,foresight,non-search,367482,yes,[],0
+j0b7716e,control,non-search,23296,not sure,[],0
+j0b76632,control,non-search,93629,yes,"[""wholesale electric goods"",""newspaper publishers"",""internet publishing, broadcasting, search"",""oil and gas pipeline construction"",""wired telecommunications carriers"",""oil and gas extraction"",""computer systems design and programming""]",7
+j0b97lvi,foresight,search,662864,no,[],0
+j0bek8eg,foresight,search,213083,yes,"[""musical, theater, dance, other performance companies""]",1
+j0b9kxwb,foresight,search,263480,yes,"[""bookstores and news dealers"",""casinos, except casino hotels"",""full-service restaurants"",""limited-service restaurants"",""legal services""]",5
+j0b75nvz,foresight,search,101333,yes,[],0
+j0bejxtu,foresight,search,194890,yes,[],0
+j0bgjk4e,foresight,search,83987,yes,"[""general contractors for new homes"",""sales financing""]",2
+j0b79pqo,foresight,search,66752,yes,"[""community care facilities for the elderly"",""outpatient mental health centers"",""ambulance services"",""miniwarehouse and self-storage unit operators""]",4
+j0besntr,foresight,search,157559,yes,"[""miscellaneous retailers (pet stores, art dealers)"",""primary metal manufacturing (iron, steel, aluminum)"",""pet boarding, grooming and training"",""services for the elderly and disabled"",""internet publishing, broadcasting, search"",""psychiatric and substance abuse hospitals"",""bookstores and news dealers"",""apparel manufacturing"",""agricultural, construction, mining manufacturing"",""other health and personal care stores""]",10
+j0b7tit5,foresight,search,108984,yes,"[""miscellaneous retailers (pet stores, art dealers)""]",1
+j0bgi6kk,foresight,search,35304,yes,"[""outpatient care centers, except mental health""]",1
+j0b89vjb,foresight,search,105990,yes,"[""water and sewer system construction"",""oil and gas pipeline construction"",""electronics stores"",""miscellaneous retailers (pet stores, art dealers)"",""engineering and drafting services"",""physical, engineering, life sciences research"",""social science and humanities research""]",7
+j0betlmk,control,non-search,354147,no,[],0
+j0bph09z,foresight,non-search,85397,no,"[""electronic shopping and auctions"",""nail salons""]",2
+j0b76kha,control,non-search,524991,no,[],0
+j0bg3j93,foresight,search,164129,yes,"[""electronic shopping and auctions"",""pet boarding, grooming and training"",""nail salons"",""internet publishing, broadcasting, search"",""computer systems design and programming"",""musical, theater, dance, other performance companies"",""radio, television, cable and other broadcasting"",""spectator sports""]",8
+j0bfa7dg,control,non-search,81179,yes,"[""electronic shopping and auctions"",""support for oil and gas operations"",""bookstores and news dealers""]",3
+j0bhc5rd,foresight,search,480329,yes,"[""computer and peripheral equipment manufacturing"",""nail salons"",""telecommunications resellers, satellite and voip"",""natural gas distribution""]",4
+j0b7khmy,control,non-search,88591,yes,[],0
+j0b7mue1,control,non-search,89455,yes,"[""florists""]",1
+j0b82ttu,foresight,search,145207,no,[],0
+j0b8o3bh,control,non-search,99960,yes,"[""wood product manufacturing"",""managing offices"",""metal ore mining"",""computer systems design and programming"",""internet publishing, broadcasting, search"",""engineering and drafting services"",""electronic shopping and auctions""]",7
+j0bel6hk,foresight,non-search,1667,yes,[],0
+j0b8f22k,foresight,non-search,179968,yes,"[""computer systems design and programming"",""internet publishing, broadcasting, search"",""physical, engineering, life sciences research"",""biotechnology research""]",4
+j0bgdxj9,foresight,search,141794,yes,"[""nursing care facilities""]",1
+j0bf4wbp,foresight,search,308945,yes,"[""agricultural, construction, mining manufacturing"",""mortgage and nonmortgage loan brokers"",""electronic shopping and auctions""]",3
+j0bf05pb,foresight,search,88106,yes,[],0
+j0beigvf,foresight,non-search,140682,yes,"[""residential mental and substance abuse care"",""wood product manufacturing""]",2
+j0b869de,control,non-search,151373,no,[],0
+j0b839ev,control,non-search,43213,no,[],0
+j0bbt4pn,foresight,search,276526,yes,"[""computer systems design and programming"",""graphic design services"",""data processing, web hosting and related services"",""bars and nightclubs""]",4
+j0b8h9nb,foresight,non-search,47833,no,[],0
+j0b7u320,foresight,search,195542,yes,"[""agricultural, construction, mining manufacturing""]",1
+j0bg7hki,foresight,search,245718,yes,"[""bookstores and news dealers""]",1
+j0bejvum,foresight,search,418480,yes,"[""primary metal manufacturing (iron, steel, aluminum)""]",1
+j0b81ijt,control,non-search,138010,no,[],0
+j0b89y7y,foresight,search,127820,yes,"[""electronics stores"",""residential remodelers"",""book publishers (and those that also publish e-books)"",""general medical and surgical hospitals""]",4
+j0bf37ij,foresight,search,209808,yes,"[""computer systems design and programming"",""miscellaneous retailers (pet stores, art dealers)""]",2
+j0bej4bf,foresight,non-search,228323,no,[],0
+j0bf3a4l,foresight,non-search,422798,not sure,[],0
+j0b89720,foresight,search,95346,yes,"[""automotive repair and maintenance""]",1
+j0b757ew,foresight,search,126934,no,[],0
+j0beg11u,control,non-search,182667,no,[],0
+j0b8fo9c,foresight,non-search,155753,no,[],0
+j0b7aph3,foresight,search,335390,yes,"[""managing offices"",""electronic shopping and auctions"",""real estate property managers"",""office supply and stationery stores"",""coal mining"",""electronics stores""]",6
+j0b7mzdn,foresight,search,345172,yes,"[""internet publishing, broadcasting, search""]",1
+j0b7ju8e,foresight,search,322119,yes,"[""telecommunications resellers, satellite and voip"",""radio, television, cable and other broadcasting""]",2
+j0b7m6ls,foresight,search,171934,no,[],0
+j0b7ys6i,foresight,non-search,80440,no,[],0
+j0b8d46m,foresight,non-search,87149,no,[],0
+j0b78rln,foresight,non-search,98770,no,[],0
+j0bf70gj,foresight,search,138476,yes,[],0
+j0bem81k,control,non-search,137181,no,[],0
+j0b873lo,control,non-search,58041,no,[],0

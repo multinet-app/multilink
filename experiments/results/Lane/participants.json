@@ -1,0 +1,30 @@
+[{
+    "worker": "TestUser",
+    "data": {
+        "completionCode": "qyZTjl",
+        "demographics": {
+            "age": "25-39",
+            "degree": "PhD",
+            "sex": "Male",
+            "vis_experience": "7"
+        },
+        "endTime": "Tue Aug 13 2019 13:10:30 GMT-0400 (Eastern Daylight Time)",
+        "feedback": {
+            "overall": "I feel like \"interaction is the key\"",
+            "training": {
+                "explanation": "Given the important text at the bottom, I'd almost like a voiceover so I can pay attention to the visuals. Some visuals at the beginning may be too fast. Need a second to process what I'm seeing.",
+                "helpful": "5"
+            }
+        },
+        "minutesToComplete": 19.083333333333332,
+        "screenSize": {
+            "availHeight": 1577,
+            "availWidth": 2560,
+            "colorDepth": 24,
+            "height": 1600,
+            "pixelDepth": 24,
+            "width": 2560
+        },
+        "startTime": "Tue Aug 13 2019 10:51:25 GMT-0600 (Mountain Daylight Time)"
+    }
+}]

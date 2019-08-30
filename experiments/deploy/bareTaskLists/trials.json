@@ -1,0 +1,26 @@
+{
+    "T-task1": {
+        "answerKey": {
+          "nodes": [],
+          "value": "866"
+      },
+        "prompt": "How many followers does Nick have?",
+        "replyType": [
+            "value"
+        ]
+    },
+    "T-task2": {
+        "answerKey": {
+            "nodes": ["2873695769","2527017636","136400506"],
+            "value": ""
+        },
+        "prompt": "Select all of Judge's neighbors that are *people* and have more friends than followers.",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        }
+    }
+}

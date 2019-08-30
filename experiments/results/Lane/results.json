@@ -1,0 +1,525 @@
+[{
+    "worker": "TestUser",
+    "data": {
+        "S-task1": {
+            "answer": {
+                "nodes": [{
+                    "id": 84043985,
+                    "name": "Micah"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:56:45 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "2",
+                "explanation": "\"find big circle\" + verify with tooltips"
+            },
+            "hypothesis": "Distractor Effect Hypothesis, Attribute Sorting Hypothesis",
+            "minutesToComplete": 0.5666666666666667,
+            "order": 7,
+            "prompt": "Find the North American with the most Tweets",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:56:11 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task1",
+            "taxonomy": {
+                "target": "single node",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task10": {
+            "answer": {
+                "nodes": [{
+                    "id": 84043985,
+                    "name": "Micah"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:51:27 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "2",
+                "explanation": "tiny bit of wiggling + looking for large circles; verification via tooltips"
+            },
+            "hypothesis": "Cluster Hypothesis",
+            "minutesToComplete": 1.15,
+            "order": 4,
+            "prompt": "Who has the highest number  of  followers among the people in the cluster containing Alex?",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:50:18 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task10",
+            "taxonomy": {
+                "target": "clusters",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task11": {
+            "answer": {
+                "nodes": [],
+                "value": "2000"
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:34:28 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "2",
+                "difficulty": "6",
+                "explanation": "lane here-- very hard! used dragging to identify linked folks"
+            },
+            "hypothesis": "Cluster Hypothesis",
+            "minutesToComplete": 1.8166666666666667,
+            "order": 0,
+            "prompt": "What is the average number of likes among the people in the cluster containing Alex?",
+            "replyType": ["value"],
+            "startTime": "Tue Aug 13 2019 12:32:39 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task11",
+            "taxonomy": {
+                "target": "clusters",
+                "type": "AGT"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task12": {
+            "answer": {
+                "nodes": [{
+                    "id": 1085199426837188600,
+                    "name": "EVis19"
+                }, {
+                    "id": 78865306,
+                    "name": "Chris"
+                }, {
+                    "id": 19299318,
+                    "name": "Jason"
+                }, {
+                    "id": 395853499,
+                    "name": "Marc"
+                }, {
+                    "id": 2527017636,
+                    "name": "Thomas"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:46:42 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "3",
+                "difficulty": "6",
+                "explanation": "got tired after 5 selections. heavy use of \"wiggling\" to identify connected nodes"
+            },
+            "hypothesis": "Path Hypothesis",
+            "minutesToComplete": 3.0166666666666666,
+            "order": 2,
+            "prompt": "Select all the Europeans on the shortest path between Noeska and Lane.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:43:41 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task12",
+            "taxonomy": {
+                "target": "paths",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task13": {
+            "answer": {
+                "nodes": [{
+                    "id": 78865306,
+                    "name": "Chris"
+                }],
+                "value": "4"
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:53:21 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "2",
+                "explanation": "Search highlighting Sereno then Chris made it pretty easy"
+            },
+            "hypothesis": "Topology plus Simple Attribute Hypothesis",
+            "minutesToComplete": 1.35,
+            "order": 5,
+            "prompt": "How many europeans are within two interactions of Sereno?",
+            "replyType": ["value"],
+            "startTime": "Tue Aug 13 2019 12:52:00 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task13",
+            "taxonomy": {
+                "target": "subnetwork",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task1A": {
+            "answer": {
+                "nodes": [{
+                    "id": 909697437694087200,
+                    "name": "EVis2018"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:43:16 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "6",
+                "explanation": "(writing notes by hand now)"
+            },
+            "hypothesis": "Distractor Effect Hypothesis, Attribute Sorting Hypothesis",
+            "minutesToComplete": 8.2,
+            "order": 1,
+            "prompt": "Find the European with the least likes",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:35:04 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task1A",
+            "taxonomy": {
+                "target": "single node",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task2": {
+            "answer": {
+                "nodes": [],
+                "value": "1048"
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:58:22 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "7",
+                "difficulty": "1",
+                "explanation": ""
+            },
+            "hypothesis": "NA",
+            "minutesToComplete": 1.2666666666666666,
+            "order": 8,
+            "prompt": "How many followers does Alex have?",
+            "replyType": ["value"],
+            "startTime": "Tue Aug 13 2019 12:57:06 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task2",
+            "taxonomy": {
+                "target": "single node",
+                "type": "AGT"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task3": {
+            "answer": {
+                "nodes": [{
+                    "id": 208312922,
+                    "name": "Rob"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 13:07:02 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "3",
+                "difficulty": "6",
+                "explanation": "Hard question! Experiencing a little fatigue / rush at this point (for a meeting :), but this could totally happen to a Turker if they don't have a good time estimate for all tasks). Not sure on answer, may have satisficed. Difficult query to make."
+            },
+            "hypothesis": "Scalable Attributes Hypothesis",
+            "minutesToComplete": 0.26666666666666666,
+            "order": 12,
+            "prompt": "Which person is frequently retweeted in this network despite having few tweets and likes in general?",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 13:06:46 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task3",
+            "taxonomy": {
+                "target": "single node",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task4": {
+            "answer": {
+                "nodes": [{
+                    "id": 191257554,
+                    "name": "AA"
+                }, {
+                    "id": 36853217,
+                    "name": "Till"
+                }, {
+                    "id": 15208867,
+                    "name": "Jo"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:55:55 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "7",
+                "difficulty": "1",
+                "explanation": "Search highlighting makes this trivial"
+            },
+            "hypothesis": "Distractor Effects Hypothesis",
+            "minutesToComplete": 2.216666666666667,
+            "order": 6,
+            "prompt": "Find all of Lane's European Neighbors",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:53:42 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task4",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task4A": {
+            "answer": {
+                "nodes": [{
+                    "id": 16112517,
+                    "name": "Robert"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 13:02:07 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "7",
+                "difficulty": "1",
+                "explanation": "search plus lookup"
+            },
+            "hypothesis": "Distractor Effects Hypothesis",
+            "minutesToComplete": 2.7333333333333334,
+            "order": 10,
+            "prompt": "Find all of giCentre's North American Neighbors",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 12:59:23 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task4A",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task5": {
+            "answer": {
+                "nodes": [{
+                    "id": 16112517,
+                    "name": "Robert"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 13:10:08 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "2",
+                "explanation": "largest line. looked for both types of line, but hard to parse out visually"
+            },
+            "hypothesis": "Edge Attribute Hypothesis",
+            "minutesToComplete": 0.6166666666666667,
+            "order": 14,
+            "prompt": "Who had the most mentions interactions with Jeffrey?",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 13:09:31 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task5",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task6": {
+            "answer": {
+                "nodes": [],
+                "value": "European"
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:50:02 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "4",
+                "difficulty": "4",
+                "explanation": "more wiggling and line tracing"
+            },
+            "hypothesis": "Topology plus Simple Attributes Hypothesis",
+            "minutesToComplete": 2.2666666666666666,
+            "order": 3,
+            "prompt": "Does Alex have retweet interactions with American or European accounts more?",
+            "replyType": ["value"],
+            "startTime": "Tue Aug 13 2019 12:47:46 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task6",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "AGT"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task7": {
+            "answer": {
+                "nodes": [{
+                    "id": 78865306,
+                    "name": "Chris"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 13:03:30 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "2",
+                "explanation": "dual search highlighting helped a lot"
+            },
+            "hypothesis": "Topology plus Simple Attributes Hypothesis, Common Neighbor Hypothesis",
+            "minutesToComplete": 0.9833333333333333,
+            "order": 11,
+            "prompt": "Among all people who have interacted with both Jeffrey and Robert, who has the most followers?",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 13:02:31 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task7",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task8": {
+            "answer": {
+                "nodes": [],
+                "value": "mentions"
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 12:59:10 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "7",
+                "difficulty": "1",
+                "explanation": "ez"
+            },
+            "hypothesis": "Edge Attribute Hypothesis",
+            "minutesToComplete": 0.6166666666666667,
+            "order": 9,
+            "prompt": "What is the most common form of interaction between Evis19 and Jon? How often has this interaction happened?",
+            "replyType": ["value"],
+            "startTime": "Tue Aug 13 2019 12:58:33 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task8",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "AGT"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        },
+        "S-task9": {
+            "answer": {
+                "nodes": [{
+                    "id": 16112517,
+                    "name": "Robert"
+                }, {
+                    "id": 270431596,
+                    "name": "Klaus"
+                }, {
+                    "id": 2924711485,
+                    "name": "Lonni"
+                }, {
+                    "id": 2527017636,
+                    "name": "Thomas"
+                }, {
+                    "id": 446672281,
+                    "name": "Anna"
+                }],
+                "value": ""
+            },
+            "answerKey": {
+                "nodes": [],
+                "value": ""
+            },
+            "endTime": "Tue Aug 13 2019 13:09:01 GMT-0400 (Eastern Daylight Time)",
+            "feedback": {
+                "confidence": "6",
+                "difficulty": "1",
+                "explanation": "direction of bar comparison (angle up! or down...) after clicking noeska to highlight"
+            },
+            "hypothesis": "Within Node Comparison Hypothesis",
+            "minutesToComplete": 0.5833333333333334,
+            "order": 13,
+            "prompt": "Select all of Noeska’s neighbors that are people and have more friends than followers",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": "Tue Aug 13 2019 13:08:26 GMT-0400 (Eastern Daylight Time)",
+            "taskID": "S-task9",
+            "taxonomy": {
+                "target": "neighbors",
+                "type": "TGA"
+            },
+            "visType": "nodeLink",
+            "workerID": "TestUser"
+        }
+    }
+}]

@@ -1,0 +1,162 @@
+postId,condition,time_diff_exploration,strategy_locate,strategy_active_search_array,used_search,strategy_active_search_num
+j6zw8rpo,foresight,473686,yes,"[""johns hopkins university"",""harvard university"",""massachusetts institute of technology"",""pepperdine university""]",search,4
+j6zv4qrp,control,94172,yes,"[""stanford university"",""harvard university"",""yale university"",""liberty university"",""cornell university""]",non-search,5
+j6zh07ej,control,64990,yes,"[""dartmouth college"",""princeton university""]",non-search,2
+j6ztny0l,foresight,328820,yes,"[""the juilliard school"",""york college pennsylvania"",""university of pennsylvania"",""princeton university"",""yale university"",""york college"",""university of california-berkeley"",""new york school of interior design"",""pennsylvania college of art and design"",""delaware state university""]",search,10
+j6zhblmm,foresight,1795,no,[],non-search,0
+j6zue63k,control,215265,yes,"[""yale university"",""princeton university"",""harvard university"",""duke university"",""cornell university"",""brown university"",""columbia university in the city of new york"",""university of pennsylvania""]",non-search,8
+j6zgzxw7,foresight,69034,not sure,"[""stanford university""]",search,1
+j6zvsq1t,foresight,92179,no,[],search,0
+j6zeq1fd,control,107177,no,[],non-search,0
+j6ztwie8,foresight,279238,yes,"[""university of michigan-ann arbor"",""boston college""]",search,2
+j6zudq60,control,90060,no,[],non-search,0
+j6zh6pxe,control,122073,yes,"[""university of north carolina at chapel hill""]",non-search,1
+j6zilc3d,foresight,47645,no,[],search,0
+j6zh9c1l,control,122762,no,[],non-search,0
+j6zgzvxh,foresight,32823,yes,"[""yale university""]",search,1
+j6zvetr4,foresight,208744,yes,"[""duke university""]",search,1
+j6ztgdk0,control,297316,yes,"[""university of michigan-ann arbor"",""reed college""]",non-search,2
+j6zuve88,control,117167,yes,"[""university of pennsylvania"",""california institute of technology"",""massachusetts institute of technology"",""harvard university"",""stanford university"",""yale university"",""princeton university"",""stony brook university"",""american university""]",non-search,9
+j6zh1dec,control,105501,no,[],non-search,0
+j6zv2aid,control,49038,no,[],non-search,0
+j6zhdte5,control,9905,yes,"[""harvard university""]",non-search,1
+j6zi0uos,control,53345,no,[],non-search,0
+j6zitqot,foresight,77614,yes,"[""harvard university"",""columbia university in the city of new york"",""johns hopkins university"",""northwestern university"",""massachusetts institute of technology"",""stanford university"",""princeton university"",""cornell university"",""duke university"",""dartmouth college""]",search,10
+j6zvbc8m,control,227662,yes,[],non-search,0
+j6zhypti,foresight,135530,yes,"[""texas a & m international university"",""the university of texas at austin"",""harvard university""]",search,3
+j6zhf39n,foresight,29526,yes,[],non-search,0
+j6ztfjq4,control,91965,not sure,[],non-search,0
+j6ztg2qq,control,114779,no,[],non-search,0
+j6zh03gh,foresight,199940,yes,"[""yale university""]",search,1
+j6zjy07m,foresight,78944,no,[],non-search,0
+j6zi1njf,foresight,70465,yes,[],search,0
+j6ztw3jo,foresight,290651,yes,"[""duke university"",""bates college"",""university of north carolina at chapel hill"",""north carolina central university""]",search,4
+j6zh1q4v,control,155653,yes,"[""harvard university"",""columbia university in the city of new york"",""massachusetts institute of technology"",""yale university"",""princeton university""]",non-search,5
+j6zh9zow,foresight,108129,yes,"[""connecticut college"",""harvard university""]",search,2
+j6zh8e3a,foresight,168227,no,[],non-search,0
+j6zh268k,control,349878,no,[],non-search,0
+j6zh17hg,foresight,92447,yes,[],search,0
+j6zi8s6p,foresight,48603,yes,"[""stanford university"",""the juilliard school"",""brevard college""]",search,3
+j6ztoosk,foresight,66769,yes,"[""cleveland institute of music""]",search,1
+j6zw1pjs,control,278836,no,[],non-search,0
+j6ztfsd6,foresight,95357,no,[],non-search,0
+j6zhk41k,foresight,90523,yes,"[""san diego state university""]",search,1
+j6zgzvph,foresight,107228,yes,"[""lehigh university""]",search,1
+j6zhfcet,foresight,60565,yes,[],search,0
+j6zjegev,foresight,107191,not sure,[],search,0
+j6ztogra,control,98861,yes,"[""stanford university"",""harvey mudd college""]",non-search,2
+j6zj6ot5,foresight,44028,no,[],search,0
+j6zthueh,control,237457,no,[],non-search,0
+j6zi2ewx,control,47161,yes,"[""brown university"",""stanford university""]",non-search,2
+j6zh0fxy,foresight,172586,yes,"[""harvard university"",""stanford university""]",search,2
+j6ztftnx,foresight,27925,no,[],non-search,0
+j6zhlkhi,control,28485,yes,"[""stanford university"",""harvard university"",""yale university""]",non-search,3
+j6zh7k9d,control,83925,yes,"[""haverford college"",""georgetown university"",""yale university""]",non-search,3
+j6zhuszy,control,31704,no,[],non-search,0
+j6zjntpp,control,1194,no,[],non-search,0
+j6zh4o6j,foresight,14472,no,[],non-search,0
+j6ztftqr,control,92585,yes,[],non-search,0
+j6zvfs9f,control,135358,no,[],non-search,0
+j6zh2ax5,foresight,61875,no,[],non-search,0
+j6zgzvp6,foresight,69115,yes,"[""stanford university"",""princeton university"",""cornell university""]",search,3
+j6zh6bz8,foresight,50654,no,[],search,0
+j6zh64s7,foresight,95523,yes,"[""vassar college"",""harvard university""]",search,2
+j6zh00kj,control,136543,no,[],non-search,0
+j6zk4xot,foresight,131409,yes,"[""texas a & m university-commerce""]",search,1
+j6zhiywb,foresight,114515,no,[],search,0
+j6zirl83,control,105852,yes,"[""stanford university"",""harvard university"",""yale university"",""princeton university""]",non-search,4
+j6zv4bq5,foresight,54827,yes,"[""university of florida""]",search,1
+j6zv1171,control,55207,no,[],non-search,0
+j6zv7dci,foresight,250374,yes,"[""bryn mawr college""]",search,1
+j6zhf3e8,foresight,103959,yes,"[""university of rochester"",""harvard university"",""yale university"",""colgate university""]",search,4
+j6zie04g,control,242113,yes,"[""northwestern university"",""massachusetts institute of technology"",""harvard university"",""stanford university"",""brown university"",""university of pennsylvania"",""wake forest university""]",non-search,7
+j6zipb9v,foresight,185416,yes,"[""princeton university"",""university of chicago""]",non-search,2
+j6zh0awd,foresight,61991,yes,"[""harvard university""]",search,1
+j6zgzzf4,foresight,84267,yes,"[""cuny bernard m baruch college"",""cuny brooklyn college""]",non-search,2
+j6zi4mfo,foresight,123005,yes,"[""berklee college of music""]",search,1
+j6zgzs0d,foresight,140337,yes,"[""bentley university"",""university of richmond"",""inter american university of puerto rico-barranquitas"",""mount mary university"",""harvard university""]",search,5
+j6zhmih3,foresight,155251,yes,"[""new york university"",""stanford university"",""columbia university in the city of new york"",""brown university"",""princeton university"",""yale university"",""dartmouth college"",""massachusetts institute of technology"",""harvard university"",""duke university"",""university of california-los angeles""]",search,11
+j6zh1zl2,foresight,235003,yes,"[""harvard university"",""brigham young university-provo""]",search,2
+j6zhe6he,foresight,86835,yes,"[""princeton university"",""harvard university""]",search,2
+j6zhqa8a,control,175054,no,[],non-search,0
+j6zgzvgg,foresight,129618,yes,"[""the university of texas at austin"",""harvard university""]",search,2
+j6zj0ldt,foresight,27308,yes,[],search,0
+j6zubt54,control,126663,no,[],non-search,0
+j6ztfzrs,control,276193,no,[],non-search,0
+j6zvio57,control,122647,not sure,[],non-search,0
+j6zh07n3,foresight,136738,no,[],non-search,0
+j6zidhxd,foresight,67423,yes,"[""university of san diego"",""union college"",""san diego state university"",""college of the holy cross""]",search,4
+j6zhcm3i,control,98241,yes,"[""harvard university""]",non-search,1
+j6zk8tum,foresight,173891,no,[],non-search,0
+j6zinokg,foresight,266525,yes,"[""harvard university"",""brown university"",""stanford university"",""university of california-los angeles""]",search,4
+j6zirzwe,foresight,86139,no,[],non-search,0
+j6zu49b1,control,143783,no,[],non-search,0
+j6zjymae,foresight,47494,yes,"[""claremont mckenna college"",""harvard university""]",search,2
+j6zto16f,foresight,32235,yes,"[""university of california-los angeles""]",search,1
+j6zjasp0,control,307854,yes,"[""vanderbilt university"",""columbia university in the city of new york"",""stanford university"",""princeton university"",""duke university"",""northwestern university"",""yale university"",""harvard university""]",non-search,8
+j6znf70v,foresight,54082,not sure,[],search,0
+j6zibh2n,foresight,60443,not sure,[],search,0
+j6zhh6iw,foresight,935860,yes,"[""suny college at plattsburgh"",""trinity college""]",search,2
+j6zji68m,foresight,92732,no,[],non-search,0
+j6zu39h4,control,521718,yes,"[""chicago state university"",""harvard university"",""columbia university in the city of new york"",""flagler college-st augustine"",""university of southern california""]",non-search,5
+j6zv3f9d,control,77541,yes,"[""pepperdine university"",""california institute of the arts"",""university of maryland-college park"",""iowa wesleyan university"",""northwestern university"",""massachusetts institute of technology"",""yale university"",""york college"",""lafayette college""]",non-search,9
+j6zkazf5,control,79691,yes,"[""bryn mawr college"",""johns hopkins university""]",non-search,2
+j6zthuf5,foresight,119498,yes,"[""boston college"",""oakwood university"",""mount mary university""]",search,3
+j6zifdt6,foresight,57813,yes,"[""stanford university"",""dartmouth college""]",search,2
+j6zu8ayx,control,81604,no,[],non-search,0
+j6zikyod,control,24816,no,[],non-search,0
+j6zkb5r9,control,84716,no,[],non-search,0
+j6zwurv3,foresight,302297,yes,"[""duke university""]",search,1
+j6zgzxfj,foresight,357233,yes,"[""california institute of technology"",""california polytechnic state university-san luis obispo"",""university of southern california"",""university of california-berkeley"",""university of california-los angeles""]",search,5
+j6zi9x84,foresight,178810,yes,"[""harvard university"",""massachusetts institute of technology"",""st lawrence university""]",search,3
+j6zk1d7f,foresight,168039,no,[],non-search,0
+j6zhdfyn,foresight,81827,no,[],search,0
+j6zteopr,control,81712,no,[],non-search,0
+j6zv1c9x,foresight,59211,no,[],non-search,0
+j6zv8sq3,control,180189,no,[],non-search,0
+j6zi2fq5,foresight,37326,no,[],search,0
+j6zi3bf7,foresight,247340,not sure,[],search,0
+j6zha6jd,foresight,118552,yes,"[""university of virginia-main campus""]",search,1
+j6ztqskj,foresight,151386,yes,"[""stanford university"",""university of michigan-ann arbor"",""johns hopkins university""]",search,3
+j6zhewp6,control,72002,no,[],non-search,0
+j6zv3443,foresight,109300,yes,[],search,0
+j6zhdpmp,foresight,226112,yes,"[""vassar college""]",search,1
+j6zhg9r7,foresight,196711,yes,"[""harvard university"",""lehigh university""]",search,2
+j6zhcpcz,control,47949,no,[],non-search,0
+j6zhsiet,foresight,513959,yes,"[""berklee college of music"",""university of california-los angeles"",""the juilliard school"",""johns hopkins university"",""stony brook university"",""university of california-berkeley"",""pitzer college"",""carnegie mellon university"",""georgetown university"",""virginia military institute"",""university of california-irvine"",""university of rochester"",""smith college"",""university of southern california""]",search,14
+j6ztxy67,control,64513,not sure,[],non-search,0
+j6zhw4lt,foresight,174013,no,[],non-search,0
+j6ztfmyt,foresight,189285,no,[],search,0
+j6ztfzyt,foresight,134179,yes,"[""columbia international university"",""university of maryland-college park"",""columbia university in the city of new york""]",search,3
+j6ztm7kc,control,164201,yes,"[""university of pennsylvania""]",non-search,1
+j6ztg91q,control,108956,no,[],non-search,0
+j6zhwxdz,foresight,78246,yes,"[""harvard university""]",search,1
+j6zvij4z,control,253602,no,[],non-search,0
+j6zh0qpv,foresight,183232,yes,"[""california institute of technology"",""massachusetts institute of technology""]",search,2
+j6ztfuet,control,363559,no,[],non-search,0
+j6zudyr9,control,67195,no,[],non-search,0
+j6ztshfk,foresight,183098,yes,"[""stanford university"",""yale university"",""cornell university"",""harvard university""]",search,4
+j6zi7od6,foresight,70801,yes,[],search,0
+j6zh9d9x,control,68227,no,[],non-search,0
+j6zh5oe7,control,200804,yes,"[""princeton university"",""stanford university"",""cornell university"",""georgia institute of technology-main campus""]",non-search,4
+j6zi3s2d,control,73847,yes,"[""california institute of technology"",""harvard university"",""yale university"",""cornell university""]",non-search,4
+j6ztid9m,control,66373,no,[],non-search,0
+j6zitl91,foresight,76694,yes,"[""stony brook university"",""cuny hunter college""]",search,2
+j6zviyzh,control,161818,yes,"[""harvard university"",""yale university"",""university of pennsylvania""]",non-search,3
+j6zu4b5v,foresight,91836,yes,"[""stanford university"",""duke university"",""washington university in st louis""]",search,3
+j6ziyd12,foresight,208227,yes,"[""tufts university"",""colorado college""]",search,2
+j6ztgkps,control,1359316,no,[],non-search,0
+j6zky22f,foresight,137601,yes,"[""harvard university"",""yale university""]",search,2
+j6ziepw9,foresight,6931,not sure,[],non-search,0
+j6ztg33x,control,329068,no,[],non-search,0
+j6zjdjvd,control,482967,no,[],non-search,0
+j6zio71i,foresight,246191,yes,"[""case western reserve university""]",search,1
+j6ztla5l,control,143630,yes,[],non-search,0
+j6ztpfa0,foresight,161226,yes,"[""university of chicago""]",search,1
+j6zudql5,control,278127,yes,"[""lafayette college"",""yale university"",""princeton university"",""cornell university"",""university of miami"",""university of california-berkeley"",""georgia institute of technology-main campus""]",non-search,7
+j6zhusbf,control,481800,yes,"[""harvard university"",""stanford university"",""yale university"",""duke university"",""dartmouth college"",""massachusetts institute of technology"",""university of notre dame"",""university of california-berkeley"",""rice university"",""vanderbilt university"",""tufts university"",""johns hopkins university"",""georgetown university"",""wellesley college"",""boston university"",""pepperdine university"",""cornell university""]",non-search,17
+j6ztm5g3,control,408058,yes,"[""boston college"",""harvard university"",""yale university"",""princeton university"",""stanford university"",""tufts university""]",non-search,6
+j6zu6i5q,foresight,120891,yes,"[""california state university-fullerton""]",search,1
+j6zha9vw,control,100527,yes,"[""brown university"",""university of chicago"",""harvard university""]",non-search,3
+j6zhvvjo,foresight,116716,yes,[],search,0
+j6ztzmvk,foresight,163597,yes,"[""university of florida"",""harvard university""]",search,2

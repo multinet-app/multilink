@@ -1,0 +1,252 @@
+{
+    "S-task1": {
+        "hypothesis":"Distractor Effect Hypothesis, Attribute Sorting Hypothesis",
+        "prompt": "Find the North American with the most Tweets",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "single node",
+            "type": "TGA"
+        }
+    },
+    "S-task1A": {
+        "hypothesis":"Distractor Effect Hypothesis, Attribute Sorting Hypothesis",
+        "prompt": "Find the European with the least likes",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "single node",
+            "type": "TGA"
+        }
+    },
+    "S-task2": {
+        "hypothesis":"NA",
+        "prompt": "How many followers does Alex have?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "single node",
+            "type": "AGT"
+        }
+    },
+    "S-task3": {
+        "hypothesis":"Scalable Attributes Hypothesis",
+        "prompt": "Which person is frequently retweeted in this network despite having few tweets and likes in general?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "single node",
+            "type": "TGA"
+        }
+    },
+    "S-task4": {
+        "hypothesis":"Distractor Effects Hypothesis",
+        "prompt": "Find all of Lane's European Neighbors",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task4A": {
+        "hypothesis":"Distractor Effects Hypothesis",
+        "prompt": "Find all of giCentre's North American Neighbors",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task5": {
+        "hypothesis":"Edge Attribute Hypothesis",
+        "prompt": "Who had the most mentions interactions with Jeffrey?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task6": {
+        "hypothesis":"Topology plus Simple Attributes Hypothesis",
+        "prompt": "Does Alex have retweet interactions with North American or European accounts more?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "AGT"
+        }
+    },
+    "S-task7": {
+        "hypothesis":"Topology plus Simple Attributes Hypothesis, Common Neighbor Hypothesis",
+        "prompt": "Among all people who have interacted with both Jeffrey and Robert, who has the most followers?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task8": {
+        "hypothesis":"Edge Attribute Hypothesis",
+        "prompt": "What is the most common form of interaction between Evis19 and Jon? How often has this interaction happened?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "AGT"
+        }
+    },
+    "S-task9": {
+        "hypothesis":"Within Node Comparison Hypothesis",
+        "prompt": "Select all of Noeska’s neighbors that are people and have more friends than followers",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "neighbors",
+            "type": "TGA"
+        }
+    },
+    "S-task10": {
+        "hypothesis":"Cluster Hypothesis",
+        "prompt": "Who has the highest number  of  followers among the people in the cluster containing Alex?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount": 1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "clusters",
+            "type": "TGA"
+        }
+    },
+    "S-task11": {
+        "hypothesis":"Cluster Hypothesis",
+        "prompt": "What is the average number of likes among the people in the cluster containing Alex?",
+        "replyType": [
+            "value"
+        ],
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "clusters",
+            "type": "AGT"
+        }
+    },
+    "S-task12": {
+        "hypothesis":"Path Hypothesis",
+        "prompt": "Select all the Europeans on the shortest path between Noeska and Lane.",
+        "replyType": [
+            "multipleNodeSelection"
+        ],
+        "replyCount": {
+            "type": "at least",
+            "value": 1
+        },
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "paths",
+            "type": "TGA"
+        }
+    },
+    "S-task13": {
+        "hypothesis":"Topology plus Simple Attribute Hypothesis",
+        "prompt": "Of the North Americans who are within two interactions of Sereno, who has been on twitter the longest?",
+        "replyType": [
+            "singleNodeSelection"
+        ],
+        "replyCount":1,
+        "answerKey": {
+            "nodes": [],
+            "value": ""
+        },
+        "taxonomy": {
+            "target": "subnetwork",
+            "type": "TGA"
+        }
+    }
+
+}
+

@@ -1,0 +1,157 @@
+postId,condition,time_diff_exploration,strategy_locate,strategy_active_search_array,used_search,strategy_active_search_num
+j79s3bev,foresight,68012,not sure,[],non-search,0
+j79dd5t9,foresight,461469,no,[],search,0
+j79el9gp,foresight,125481,no,[],search,0
+j79s3jx3,control,39265,no,[],non-search,0
+j79ew7xk,foresight,33604,no,[],non-search,0
+j79cxlsc,foresight,134239,no,[],search,0
+j79d6cg1,foresight,64710,no,[],search,0
+j79d9037,foresight,44906,yes,[],search,0
+j79s18dj,foresight,151243,no,[],search,0
+j79dxam6,foresight,75934,not sure,[],search,0
+j79s2flw,foresight,81306,no,[],search,0
+j79qjl6p,control,156610,not sure,[],non-search,0
+j79cvowe,control,51026,no,[],non-search,0
+j79s0jen,foresight,89257,no,[],search,0
+j79s4fi1,foresight,136474,no,[],search,0
+j79d4oxk,control,344227,no,[],non-search,0
+j79cvji3,foresight,100590,yes,"[""gliese 876 b"",""corot-2 b"",""corot-11 b""]",search,3
+j79cvp8z,foresight,548983,no,[],search,0
+j79s40ra,foresight,58888,yes,"[""corot-14 b""]",search,1
+j79sewhd,foresight,20305,no,[],search,0
+j79s120x,control,61550,no,[],non-search,0
+j79g39oa,control,178565,not sure,[],non-search,0
+j79dy6m6,control,135433,no,[],non-search,0
+j79voxls,control,79259,no,[],non-search,0
+j79ekcs9,control,51990,yes,"[""gliese 876 c"",""gliese 876 d""]",non-search,2
+j79s0fw5,foresight,206645,yes,"[""hd 125595 b""]",search,1
+j79f9d0b,control,59244,yes,[],non-search,0
+j79s2a5z,foresight,67563,no,[],non-search,0
+j79s9639,foresight,73984,no,[],non-search,0
+j79de3zr,control,33842,no,[],non-search,0
+j79eputv,control,50152,no,[],non-search,0
+j79sbr6u,foresight,138779,no,[],non-search,0
+j79uqd4n,foresight,195412,not sure,[],search,0
+j79d8knn,control,171711,no,[],non-search,0
+j79e61w3,control,186272,not sure,[],non-search,0
+j79daeny,foresight,248520,yes,"[""fomalhaut b""]",search,1
+j79duqyp,foresight,279146,yes,"[""ct cha b"",""alf cen b b""]",search,2
+j79dtghx,foresight,222971,yes,"[""51 peg b""]",search,1
+j79d8gjx,control,49707,no,[],non-search,0
+j79ef0xh,control,145362,no,[],non-search,0
+j79s2nv9,control,30099,no,[],non-search,0
+j79dvbyd,foresight,107199,no,[],search,0
+j79s5fhv,control,197991,no,[],non-search,0
+j79dx38a,control,55234,no,[],non-search,0
+j79t3xcw,foresight,776334,no,[],non-search,0
+j79stl9v,control,64577,no,[],non-search,0
+j79s66zl,foresight,99282,no,[],non-search,0
+j79e9me9,control,59651,no,[],non-search,0
+j79dlpx7,foresight,221939,yes,"[""gq lup b""]",search,1
+j79d3bv4,control,32846,yes,"[""corot-14 b""]",non-search,1
+j79gry5z,control,68797,no,[],non-search,0
+j79e3pnz,foresight,65885,no,[],non-search,0
+j79dalug,control,90839,no,[],non-search,0
+j79espmw,foresight,183707,no,[],non-search,0
+j79dv4gg,foresight,80039,yes,[],search,0
+j79ub173,foresight,149123,no,[],search,0
+j79s39or,control,161997,no,[],non-search,0
+j79e143t,foresight,48466,no,[],non-search,0
+j79cvvln,foresight,66033,no,[],non-search,0
+j79fibg6,foresight,45772,yes,"[""hat-p-29 b"",""hat-p-24 b""]",search,2
+j79czdm6,foresight,50947,no,[],search,0
+j79rzx1n,control,336594,no,[],non-search,0
+j79s4hrs,foresight,98544,yes,[],search,0
+j79d1nd8,foresight,295220,yes,[],search,0
+j79s1jhj,control,170660,no,[],non-search,0
+j79s38ro,foresight,80606,not sure,[],search,0
+j79ebm61,foresight,64894,no,[],search,0
+j79s9t6v,control,371564,yes,"[""gliese 876 b""]",non-search,1
+j79ib8aw,control,106393,no,[],non-search,0
+j79zujz3,control,61991,no,[],non-search,0
+j79ga96w,foresight,118490,yes,[],search,0
+j79s5y84,foresight,316824,yes,"[""81 cet b""]",search,1
+j79db217,foresight,216851,yes,"[""gliese 876 b"",""gliese 876 e""]",search,2
+j79d08wa,foresight,75421,no,"[""11 umi b""]",search,1
+j79dtodx,control,29284,no,[],non-search,0
+j79s8s6z,foresight,77636,no,[],non-search,0
+j79eyd0p,foresight,10329,yes,"[""hd 167042 b"",""hd 117207 b"",""hat-p-17 b""]",non-search,3
+j79e6htf,control,202195,no,[],non-search,0
+j79cvqxv,control,211236,no,[],non-search,0
+j79ejh8t,foresight,77774,no,[],non-search,0
+j79s8tk3,foresight,50402,yes,"[""corot-11 b""]",search,1
+j79sajwo,foresight,241341,no,[],non-search,0
+j79e1sn9,foresight,40207,yes,"[""hat-p-7 b""]",search,1
+j79s223p,foresight,67048,no,[],non-search,0
+j79s6q0x,foresight,265179,yes,[],search,0
+j79d7ktn,foresight,111008,no,[],search,0
+j79t66a0,foresight,93813,no,[],non-search,0
+j79s1qqu,foresight,168176,no,[],search,0
+j79skia5,control,131055,not sure,[],non-search,0
+j79dipgb,control,102545,not sure,[],non-search,0
+j79ejpbn,control,16183,no,[],non-search,0
+j79tqwtn,control,280578,no,[],non-search,0
+j79s4q72,foresight,301551,no,[],search,0
+j79elqoj,control,69527,no,[],non-search,0
+j79s47hm,control,129553,not sure,[],non-search,0
+j79uxlxe,foresight,221346,no,[],search,0
+j79f0ncz,control,68298,no,[],non-search,0
+j79e1sz0,control,119616,no,[],non-search,0
+j79vmhrq,foresight,110416,no,[],non-search,0
+j79d40wm,control,228689,no,[],non-search,0
+j79eoy15,control,129090,no,[],non-search,0
+j79cwgtl,foresight,106333,no,[],search,0
+j79s05y2,foresight,114351,no,[],search,0
+j79cvvwb,foresight,45951,no,[],non-search,0
+j79tsg01,foresight,126325,yes,"[""hat-p-25 b"",""hd 158038 b"",""hat-p-31 b"",""corot-2 b""]",search,4
+j79ejp2d,control,81572,no,[],non-search,0
+j79cvev8,control,19431,not sure,[],non-search,0
+j79d3fu7,foresight,137128,yes,"[""hat-p-9 b"",""hd 173416 b"",""gl 163 b"",""gl 581 d""]",search,4
+j79sh31g,foresight,82652,yes,"[""hat-p-40 b""]",search,1
+j79d67bw,foresight,17464,no,[],search,0
+j79dwfqh,control,47810,yes,"[""hat-p-7 b""]",non-search,1
+j79stmdv,control,243970,no,"[""alf ari b""]",non-search,1
+j79s2um6,foresight,178793,not sure,[],search,0
+j79dpg4l,foresight,257504,no,[],search,0
+j79s5fu4,foresight,137086,yes,"[""corot-2 b""]",search,1
+j79duump,foresight,96437,yes,"[""hat-p-15 b""]",search,1
+j79eiu76,control,65690,no,[],non-search,0
+j79st9o4,foresight,154359,no,[],search,0
+j79dapjo,foresight,22905,no,[],non-search,0
+j79eywaj,foresight,511480,no,[],non-search,0
+j79dwi6a,foresight,10180,yes,"[""gamma cephei b""]",non-search,1
+j79du6p7,foresight,188700,no,[],search,0
+j79fvepg,foresight,216048,no,[],non-search,0
+j79e76fm,control,79957,yes,"[""gj 317 b"",""gl 86 b"",""gl 179 b"",""gl 581 b"",""gj 849 b"",""gj 3021 b""]",non-search,6
+j79sfbhh,foresight,120272,no,[],non-search,0
+j79sfzz0,control,257662,no,[],non-search,0
+j79eo25j,foresight,181504,not sure,"[""cfbds 1458 b"",""hat-p-19 b""]",search,2
+j79s8dna,foresight,69285,no,[],search,0
+j79d96vl,foresight,182126,no,[],search,0
+j79dlhe3,foresight,36574,no,[],non-search,0
+j79dj7a1,control,253417,not sure,[],non-search,0
+j79s050h,control,178518,no,[],non-search,0
+j79tyi93,foresight,45878,no,[],non-search,0
+j79s18f7,foresight,185504,no,[],search,0
+j79s0vsw,control,567442,not sure,[],non-search,0
+j79e2l4i,foresight,265273,no,[],search,0
+j79eosl2,control,54617,no,[],non-search,0
+j79s85cm,foresight,83417,no,[],non-search,0
+j79d6vzd,foresight,337587,not sure,"[""hd 10180 e""]",search,1
+j79fbah1,foresight,117974,yes,"[""corot-14 b"",""hat-p-25 b"",""11 umi b""]",search,3
+j79ef39l,control,74853,no,[],non-search,0
+j79d1qtz,control,23306,no,[],non-search,0
+j79djegz,foresight,53199,no,[],search,0
+j79cvztj,control,600751,no,[],non-search,0
+j79dft7g,control,59613,no,[],non-search,0
+j79d159a,control,199437,no,[],non-search,0
+j79t5fa4,foresight,170420,yes,[],search,0
+j79fs4kq,foresight,163803,no,[],non-search,0
+j79txqta,foresight,217610,no,[],search,0
+j79gpn07,foresight,33619,no,[],search,0
+j79cw6v9,foresight,65019,yes,"[""hat-p-33 b""]",search,1
+j79cw0o3,foresight,33304,no,[],non-search,0
+j79fa7ex,control,399818,not sure,[],non-search,0
+j79s3acr,control,100667,yes,[],non-search,0
+j79dpl1c,foresight,13387,not sure,[],non-search,0
+j79ebhyd,foresight,129318,no,[],search,0

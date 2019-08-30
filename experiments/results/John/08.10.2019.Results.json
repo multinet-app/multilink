@@ -1,0 +1,543 @@
+[{
+    "worker": "7eKPji",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task1",
+            "workerID": "7eKPji"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task2",
+            "workerID": "7eKPji"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task3",
+            "workerID": "7eKPji"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task4",
+            "workerID": "7eKPji"
+        }
+    }
+}, {
+    "worker": "FaP5YL",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [{
+                    "id": 18325271,
+                    "name": "Alper"
+                }],
+                "value": ""
+            },
+            "endTime": 1565203362233,
+            "feedback": {
+                "difficulty": "1",
+                "explanation": ""
+            },
+            "minutesToComplete": 0.26995,
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565203346036,
+            "taskID": "task1",
+            "workerID": "FaP5YL"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task2",
+            "workerID": "FaP5YL"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task3",
+            "workerID": "FaP5YL"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task4",
+            "workerID": "FaP5YL"
+        }
+    }
+}, {
+    "worker": "MqknUo",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task1",
+            "workerID": "MqknUo"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task2",
+            "workerID": "MqknUo"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [{
+                    "id": 247943631,
+                    "name": "Jeffrey"
+                }],
+                "value": ""
+            },
+            "endTime": 1565203305735,
+            "feedback": {
+                "difficulty": "1",
+                "explanation": ""
+            },
+            "minutesToComplete": 0.9419833333333333,
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565203249216,
+            "taskID": "task3",
+            "workerID": "MqknUo"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task4",
+            "workerID": "MqknUo"
+        }
+    }
+}, {
+    "worker": "GtVOYl",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [{
+                    "id": 21084111,
+                    "name": "Lenny"
+                }],
+                "value": ""
+            },
+            "endTime": 1565304420436,
+            "feedback": {
+                "difficulty": "5",
+                "explanation": "I had to use the popup tooltip for comparing the actual values. For some reason, the tooltip disapeared on me even though I was still hovering the node"
+            },
+            "minutesToComplete": 0.6625833333333333,
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565304380681,
+            "taskID": "task1",
+            "visType": "nodeLink"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [{
+                    "id": 36853217,
+                    "name": "Ned"
+                }],
+                "value": ""
+            },
+            "endTime": 1565304609224,
+            "feedback": {
+                "difficulty": "6",
+                "explanation": "I had to perform sequential scanning. Moreover, I couldn't even find \"Lane\" I did it for someone else (Louis I think) because I couldn't find Lane. Clicking on the node to see the neighbors was very useful. Neighbors is a weird word to use on the Twitter context though, connection could be better"
+            },
+            "minutesToComplete": 2.0983,
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": 1565304483326,
+            "taskID": "task2",
+            "visType": "nodeLink"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task3",
+            "visType": "nodeLink"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task4",
+            "visType": "nodeLink"
+        }
+    }
+}, {
+    "worker": "T391Hp",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [{
+                    "id": 18406335,
+                    "name": "Teo"
+                }],
+                "value": ""
+            },
+            "endTime": 1565306463902,
+            "feedback": {
+                "difficulty": "2",
+                "explanation": "With sorting the task is significantly easier to complete, however, it wasn't obvious that I could sort. Try changing the mouse cursor at least. Selecting the node wasn't easy either, I clicked on the bar and it didn't select it"
+            },
+            "minutesToComplete": 14.647983333333332,
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565305585023,
+            "taskID": "task1",
+            "visType": "adjMatrix"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [{
+                    "id": 11493602,
+                    "name": "Evan"
+                }],
+                "value": ""
+            },
+            "endTime": 1565307436782,
+            "feedback": {
+                "difficulty": "5",
+                "explanation": "The bars rendered outside of my screen width, so I had to reduce the size of the whole page (cmd -). Finding connections on a matrix is always difficult, but the hightlighting really helped. Sorting was very useful once more, but I had to click about 4 times to get it to work, seems like it only work when I clicked on the text of \"Type\". I had to perform a sequential scan, and comparing the bars was very difficult, I basically used the tooltips"
+            },
+            "minutesToComplete": 2.339166666666667,
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": 1565307296432,
+            "taskID": "task2",
+            "visType": "adjMatrix"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [{
+                    "id": 1873322353,
+                    "name": "IDL"
+                }],
+                "value": ""
+            },
+            "endTime": 1565307867275,
+            "feedback": {
+                "difficulty": "7",
+                "explanation": "I really have to push my understanding of network matrices to figure out this one. Sorting really helped (the chart was sorted by type by default, which seems a little unfair). Highlighting was also very useful, but I had to remember many things at once"
+            },
+            "minutesToComplete": 5.11435,
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565307560414,
+            "taskID": "task3",
+            "visType": "adjMatrix"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [{
+                    "id": 2889052877,
+                    "name": "Johan"
+                }],
+                "value": ""
+            },
+            "endTime": 1565308149858,
+            "feedback": {
+                "difficulty": "6",
+                "explanation": "Being able to sort by # of tweets really helped here, however I had to manually count the number of purple boxes. Opacity was very difficult to tell apart here. I kept on wishing to be able to sort by number of rts too. I also had to check the legend about 6 times to learn which one was rts and which one was mentions"
+            },
+            "minutesToComplete": 3.3033166666666665,
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": 1565307951659,
+            "taskID": "task4",
+            "visType": "adjMatrix"
+        }
+    }
+}, {
+    "worker": "T7asXK",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task1",
+            "visType": "adjMatrix"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task2",
+            "visType": "adjMatrix"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "taskID": "task3",
+            "visType": "adjMatrix"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [],
+                "value": ""
+            },
+            "feedback": "",
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "taskID": "task4",
+            "visType": "adjMatrix"
+        }
+    }
+}, {
+    "worker": "yXA0Sm",
+    "data": {
+        "task1": {
+            "answer": {
+                "nodes": [{
+                    "id": 18406335,
+                    "name": "Teo"
+                }],
+                "value": ""
+            },
+            "endTime": 1565305615977,
+            "feedback": {
+                "difficulty": "4",
+                "explanation": ""
+            },
+            "minutesToComplete": 0.5303333333333333,
+            "order": 0,
+            "prompt": "Select the European account which has liked the most tweets.",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565305584157,
+            "taskID": "task1",
+            "visType": "nodeLink"
+        },
+        "task2": {
+            "answer": {
+                "nodes": [{
+                    "id": 11493602,
+                    "name": "Evan"
+                }],
+                "value": ""
+            },
+            "endTime": 1565305654500,
+            "feedback": {
+                "difficulty": "6",
+                "explanation": ""
+            },
+            "minutesToComplete": 0.5663833333333333,
+            "order": 1,
+            "prompt": "Select all of Lane's neighbors that are *people* and have more friends than followers.",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": 1565305620517,
+            "taskID": "task2",
+            "visType": "nodeLink"
+        },
+        "task3": {
+            "answer": {
+                "nodes": [{
+                    "id": 1873322353,
+                    "name": "IDL"
+                }],
+                "value": ""
+            },
+            "endTime": 1565305831054,
+            "feedback": {
+                "difficulty": "7",
+                "explanation": "This task was very difficult to complete. There were too many things that I had to remember at once. The links were greatly occluded by the nodes, so it was very difficult to tell them apart. I used search for nodes (it has a bug, when you write some one's name and then select it from the autocomplete with the keyboard, it doesn't fire the event). I searched for Jeef first, selected it, and then searched for Robert. Being able to drag nodes was very useful. I would have thought that clicking on the legeng values on the left would provide filters, so I tried doing that, but of course it didn't work"
+            },
+            "minutesToComplete": 2.830633333333333,
+            "order": 2,
+            "prompt": "Select the *institution* from North America that has retweeted Jeffrey and mentioned Robert. ",
+            "replyCount": 1,
+            "replyType": ["singleNodeSelection"],
+            "startTime": 1565305661216,
+            "taskID": "task3",
+            "visType": "nodeLink"
+        },
+        "task4": {
+            "answer": {
+                "nodes": [{
+                    "id": 81658145,
+                    "name": "Alex"
+                }],
+                "value": ""
+            },
+            "endTime": 1565306114879,
+            "feedback": {
+                "difficulty": "6",
+                "explanation": "Link colors in the legend don't match the ones in the graph. Again dragging was very useful, but I had to guess what \"being inactive\" meant (I went for having few likes and tweets). Again, too many things to keep in mind at once. Having filters with the legend will greatly help I think"
+            },
+            "minutesToComplete": 1.4453833333333332,
+            "order": 3,
+            "prompt": "Which person is frequently retweeted in this network despite being relatively inactive on twitter?",
+            "replyCount": {
+                "type": "at least",
+                "value": 1
+            },
+            "replyType": ["multipleNodeSelection"],
+            "startTime": 1565306028156,
+            "taskID": "task4",
+            "visType": "nodeLink"
+        }
+    }
+}]

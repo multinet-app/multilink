@@ -1,0 +1,176 @@
+
+ <div id = '#consent' class="card">
+    <header class="card-header">
+        <p class="card-header-title">
+            Analyzing a Multivariate Network
+        </p>
+
+    </header>
+    <div class="card-content">
+        <div class="content">
+            <p>
+                    The purpose of this research study is to examine the data analysis practices of Multivariate Networks. 
+                    We are completing this study in order to articulate the strengths and weaknesses of different representations of network visualizations.
+                    </p>
+
+                <p>
+                        If you agree, you will participate in a series of tests to assess how you interact with a particular visualization of social network data. 
+                        The study should take about 45 minutes. Your participation is completely voluntary. 
+                        You may choose not to answer a question or are free to withdraw consent and discontinue participation in the interview at any time for any reason. 
+                        There are no known risks associated with participating in this study.                    
+                </p>
+
+                    <p>
+                        By participating in this study, you will help provide a better understanding of the strengths and weaknesses of specific graph
+                         representations and improve data analysts' ability to understand their own graph data. 
+                         Additionally, this will lay the foundation for further research on the benefits of other graph representations.  
+                        </p>
+
+                     <p>
+                    The answers you submit and data about your performance (such as the time it took to answer and interactions prior to answer submission) will be digitally recorded. 
+                    Only interactions on the experiment page will be tracked. After the completion of the study, no other data will be recorded. 
+                    These records will be coded and a participant ID will be used to connect performance across tasks. 
+                    This data will be stored on a secure research database. You will not be identified in any publications.
+                    </p>
+                     
+
+                    <p>If you have any questions, complaints, or if you feel you have been harmed by this research please contact Carolina Nobre, 
+                        University of Utah at cnobre@sci.utah.edu.
+                         Contact the Institutional Review Board (IRB) if you have questions regarding your rights as a research participant. 
+                         Also, contact the IRB if you have questions, complaints or concerns which you do not feel you can discuss with the investigator. 
+                         The University of Utah IRB may be reached by phone at (801) 581-3655 or by e-mail at irb@hsc.utah.edu.
+                          By participating in the study, you are giving your consent to participate in this research. </p>
+           
+
+            <p>
+                    Please enter your Worker ID to confirm you have read and agree to this document: </p>
+                <strong>You may only complete this survey once.</strong> Subsequent completions cannot be accepted:
+
+    
+                <input class="input" type="text" placeholder="Enter Worker Id" id="workerId" name="workerId" size="30" />
+                <a class="button" id="checkId" >Check ID</a>
+
+
+                <br/>
+
+                <span id="screenErrorMsg">
+                    It seems your are on a screen that is smaller than the minimum required 15'' laptop size. Please attempt to take this hit again on a larger screen. 
+                </span>
+    
+                <span id="invalidMessage">
+                    Our records show that you have taken part in this study before, so we cannot allow you to take this HIT again at this time. Please contact us if you feel this is in error.
+                </span>
+            </p>
+
+            <p>
+                <a class="button" id="consentYes" disabled="true">I Agree</a>
+            </p>
+    
+            <p>
+                <strong>Note: </br>1. This survey requires a modern browser such as Chrome, Firefox, or Safari.  
+                
+                </strong></br><strong style="color:red">2. The minimum screen size required for this survey is a 15'' display, or  1980px x 1020px (no touch screen devices!)</strong>
+            </p>
+    
+            
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<style>
+    #invalidMessage, #screenErrorMsg {
+        display: none;
+        color: red;
+    }
+    #consentForm {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        height: 200px;
+        overflow-y: scroll;
+        padding: 15px;
+    }
+</style>
+
+<script>
+
+    (function () {
+        var data = {}
+        , workers = null;
+        init();
+        function init() {
+            experimentr.hideNext();
+            d3.select('#workerId').attr('disabled', null);
+
+            d3.selectAll('#workerId')
+                    .on('keypress', function () {
+                        data.workerId = this.value;
+                    })
+                    .on('blur', function () {
+                        data.workerId = this.value;
+                    });
+            d3.select('#consentYes').on('click', async function(){
+                //if the user consents to particpate in the study, create a random completion code, add him to the list of particpants, and set the global
+                // memberID variable
+
+                let screenSize = screenTest(0,0);
+                //check screen size before allowing the user to proceed; 
+                if (!screenSize){
+                    d3.select('#consentYes').attr('disabled', true);
+                    d3.select('#screenErrorMsg').style('display', 'inline');  
+                    return;              
+                }
+
+                //set global variable to be the santizied version of the input workerID; 
+                workerID = sanitizeWorkerID(data.workerId);
+
+                //start tracking user interaction with study_provenance
+                await setUpStudyProvenance('signed consent form');
+                
+                db.collection(participantCollection).doc(workerID).set({
+                    screenSize,
+                    completionCode:makeid(6),
+                    startTime:new Date().toString()
+
+                },{merge:true}); 
+
+                
+                experimentr.next();
+            });
+
+            d3.select('#checkId').on('click', validate );
+        }
+
+        async function validate() {
+
+            if (data.workerId) {
+                // experimentr.addData(data);
+                console.log('workerId is ', data.workerId)
+
+                //Check firebase to see if this participant has already participated: 
+                let pastParticipants = await db.collection(participantCollection).get();
+
+                let firstTimer = true;
+                pastParticipants.forEach(function(doc) {
+                    if (doc.id == data.workerId) {
+                        firstTimer = false;
+                    }
+                });
+
+                if (firstTimer) {
+                    d3.select('#consentYes').attr('disabled', null);
+                    d3.select('#invalidMessage').style('display', 'none');
+
+                } else {
+                    d3.select('#consentYes').attr('disabled', true);
+                    d3.select('#invalidMessage').style('display', 'inline');
+                }
+            }
+        }
+ 
+    }());
+</script>

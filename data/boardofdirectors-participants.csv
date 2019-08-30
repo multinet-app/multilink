@@ -1,0 +1,199 @@
+postId,condition,time_diff_exploration,strategy_locate,strategy_active_search_array,used_search,strategy_active_search_num
+j0fjrfjo,foresight,121349,yes,"[""walt disney ""]",search,1
+j0fjdu3n,control,182802,no,[],non-search,0
+j0fpq4eh,foresight,166673,yes,"[""intel "",""comcast "",""cisco systems"",""alphabet "",""apple"",""microsoft ""]",non-search,6
+j0fnpnxt,foresight,233492,yes,"[""facebook ""]",search,1
+j0fk191f,foresight,465668,no,[],non-search,0
+j0fka8nh,foresight,284566,yes,"[""consol energy"",""apple"",""berkshire hathaway"",""facebook ""]",non-search,4
+j0fj4nc0,foresight,229494,yes,"[""facebook "",""amazon.com"",""garmin""]",non-search,3
+j0fj5s26,control,210610,yes,"[""amazon.com""]",non-search,1
+j0g2f252,foresight,3964,yes,[],non-search,0
+j0fj7x8o,foresight,59816,no,[],non-search,0
+j0fonq7h,foresight,77895,no,[],non-search,0
+j0fjzwlg,foresight,901428,yes,"[""apple"",""wells fargo"",""cbs ""]",search,3
+j0fp664j,foresight,109516,no,[],non-search,0
+j0fo4x0l,foresight,297800,no,[],non-search,0
+j0fnt4tn,foresight,236461,no,[],non-search,0
+j0g26v0v,foresight,222264,yes,"[""target "",""mcdonald""]",search,2
+j0fjh8h5,control,157488,no,[],non-search,0
+j0fnognp,foresight,758026,yes,"[""navient""]",search,1
+j0g3zibs,foresight,20987,not sure,[],non-search,0
+j0fk3wao,foresight,136444,no,[],non-search,0
+j0flivfr,foresight,376804,no,[],non-search,0
+j0fjlisq,control,276480,no,[],non-search,0
+j0fj70gc,foresight,66318,no,[],non-search,0
+j0fk3k64,control,632053,no,[],non-search,0
+j0fjbyi9,control,461032,no,[],non-search,0
+j0fj381l,control,479986,not sure,[],non-search,0
+j0fox4rf,foresight,762976,no,[],non-search,0
+j0fkfliv,foresight,649490,no,[],search,0
+j0fkqr85,foresight,171345,yes,"[""amazon.com"",""facebook "",""wells fargo"",""jpmorgan chase "",""mcdonald"",""tripadvisor "",""goldman sachs group ""]",non-search,7
+j0g2uflr,foresight,155847,no,[],non-search,0
+j0fp4ynl,foresight,430101,no,[],non-search,0
+j0foco36,foresight,72093,yes,"[""suntrust banks""]",non-search,1
+j0fnst7s,foresight,245564,yes,"[""facebook "",""total system services""]",non-search,2
+j0fj7fzi,foresight,1030626,yes,"[""target "",""apple"",""facebook ""]",search,3
+j0fl9z33,foresight,492243,no,[],non-search,0
+j0fnxpu8,foresight,321512,no,[],non-search,0
+j0fjizxt,control,106997,no,[],non-search,0
+j0g2idx3,foresight,664096,yes,"[""wal-mart stores"",""wells fargo"",""macy"",""michael kors holdings "",""tegna "",""microsoft ""]",search,6
+j0g27iec,foresight,86096,yes,[],search,0
+j0g2846j,foresight,300960,no,[],search,0
+j0fouapd,foresight,336804,no,[],non-search,0
+j0fnrsbq,foresight,237085,yes,"[""apple"",""johnson & johnson""]",search,2
+j0g2o7qw,foresight,101659,no,[],non-search,0
+j0g2b4i0,foresight,272356,no,"[""bank of america"",""wal-mart stores"",""costco wholesale ""]",search,3
+j0fnoloj,foresight,248644,yes,"[""spectra energy "",""noble energy"",""l-3 communications holdings"",""cms energy "",""entergy ""]",non-search,5
+j0fnosxy,foresight,60590,no,[],non-search,0
+j0fpfzbo,foresight,303689,yes,"[""walt disney "",""coca-cola"",""wal-mart stores"",""apple"",""microsoft "",""amazon.com"",""facebook ""]",non-search,7
+j0fjaulu,foresight,733189,no,[],search,0
+j0fknpen,foresight,496219,no,[],non-search,0
+j0fk098d,foresight,209289,no,[],search,0
+j0fldxkl,control,106398,no,[],non-search,0
+j0fkkg9f,control,259747,no,[],non-search,0
+j0fkmw9w,foresight,278920,yes,"[""exxon mobil "",""berkshire hathaway"",""facebook "",""alexion pharmaceuticals""]",non-search,4
+j0fo3r32,foresight,285486,no,[],non-search,0
+j0g2gzui,foresight,330323,yes,"[""pioneer natural resources"",""mcdonald"",""wells fargo"",""navient"",""michael kors holdings "",""kinder morgan "",""ford motor"",""berkshire hathaway""]",non-search,8
+j0fjgnrq,foresight,264812,no,[],non-search,0
+j0foumcg,foresight,452908,yes,"[""verizon communications"",""amazon.com"",""facebook "",""bank of america"",""hartford financial services group "",""netflix"",""unitedhealth group "",""gap "",""fidelity national information services"",""kohl"",""darden restaurants""]",search,11
+j0g4c4ny,foresight,139290,yes,"[""apple""]",search,1
+j0fnz5vz,foresight,490798,yes,"[""apple"",""amazon.com"",""michael kors holdings ""]",search,3
+j0flgjsp,control,140083,no,[],non-search,0
+j0flfns6,foresight,482048,yes,[],search,0
+j0fjy358,control,1649,no,[],non-search,0
+j0g2ojvn,foresight,496158,yes,"[""apple"",""microsoft ""]",search,2
+j0fkzr4m,foresight,342082,no,"[""apple"",""microsoft "",""amazon.com"",""facebook "",""gamestop "",""navient"",""equinix ""]",non-search,7
+j0g4dfwz,foresight,327904,no,[],non-search,0
+j0g3a0bs,foresight,165976,not sure,[],non-search,0
+j0fj6lk3,control,502223,no,[],non-search,0
+j0fnzr54,foresight,181892,no,[],search,0
+j0g2bvvq,foresight,244403,no,[],non-search,0
+j0fo85k7,foresight,691103,yes,[],non-search,0
+j0fj59di,control,762408,no,[],non-search,0
+j0fjel98,control,236328,no,[],non-search,0
+j0formuu,foresight,176361,yes,"[""navient""]",search,1
+j0g3sqk0,foresight,495568,no,[],non-search,0
+j0g2jq2c,foresight,552315,no,[],non-search,0
+j0fl4i9m,foresight,10951,yes,[],non-search,0
+j0fop1ev,foresight,332306,not sure,[],search,0
+j0fj8uzi,control,624581,no,[],non-search,0
+j0g5dk6c,foresight,271704,no,[],non-search,0
+j0fonps5,foresight,382802,no,[],non-search,0
+j0g9ogee,foresight,108176,no,[],non-search,0
+j0g26021,foresight,164143,no,[],non-search,0
+j0fpq6lf,foresight,262831,yes,"[""facebook "",""marriott international ""]",search,2
+j0fkrdr2,control,86132,no,[],non-search,0
+j0fjn81s,control,380997,no,[],non-search,0
+j0g29cmk,foresight,482980,yes,"[""facebook "",""international business machines ""]",search,2
+j0fjecgt,foresight,168354,no,[],non-search,0
+j0fk17gy,foresight,364248,no,[],non-search,0
+j0fogvar,foresight,316507,yes,"[""amazon.com""]",non-search,1
+j0fk6uor,control,46703,no,[],non-search,0
+j0fk9clg,foresight,262651,no,[],search,0
+j0fjzjn9,control,332249,not sure,[],non-search,0
+j0fnqcnr,foresight,311558,yes,[],search,0
+j0fofew5,foresight,63310,yes,"[""microsoft "",""alphabet "",""apple"",""amazon.com"",""facebook "",""mcdonald""]",non-search,6
+j0fjm5vv,control,391081,no,[],non-search,0
+j0foi6id,foresight,184220,no,[],non-search,0
+j0fpck7m,foresight,490752,yes,[],non-search,0
+j0forghg,foresight,238878,yes,"[""coca-cola"",""walt disney "",""berkshire hathaway"",""amazon.com""]",non-search,4
+j0g2i78f,foresight,133947,no,[],non-search,0
+j0foble3,foresight,392517,yes,"[""general electric"",""berkshire hathaway"",""apple""]",search,3
+j0fkrn4g,control,363749,yes,"[""walt disney ""]",non-search,1
+j0fq95ph,foresight,237864,not sure,[],non-search,0
+j0fpeyty,foresight,658175,no,[],non-search,0
+j0fjh7e2,control,110554,no,[],non-search,0
+j0fj3lph,foresight,148613,no,[],non-search,0
+j0fp0qwz,foresight,259802,yes,"[""best buy co "",""amazon.com"",""microsoft "",""apple""]",search,4
+j0g2d0ku,foresight,67472,not sure,[],non-search,0
+j0fnmgkv,foresight,84108,no,[],non-search,0
+j0fo1wa5,foresight,63948,no,[],non-search,0
+j0fldvrb,foresight,765112,yes,"[""facebook "",""home depot ""]",search,2
+j0fli2wz,control,72454,no,[],non-search,0
+j0g2bwo9,foresight,90023,no,[],non-search,0
+j0fk1ckq,control,94020,no,[],non-search,0
+j0g49x3e,foresight,188421,yes,"[""verizon communications"",""tripadvisor "",""facebook "",""amazon.com""]",non-search,4
+j0fj5wvh,foresight,305460,no,[],non-search,0
+j0fovlha,foresight,268995,yes,"[""citigroup "",""home depot "",""intel "",""bank of america""]",non-search,4
+j0g33y00,foresight,682681,yes,[],search,0
+j0fjnryk,foresight,345341,no,[],search,0
+j0fpyw4m,foresight,139469,yes,"[""apple""]",search,1
+j0fjv6bl,foresight,219133,no,[],non-search,0
+j0fk7wtm,foresight,276712,no,[],non-search,0
+j0fjy86i,foresight,227023,no,[],non-search,0
+j0g26du1,foresight,305854,no,[],search,0
+j0fkbkdu,control,221690,yes,[],non-search,0
+j0fo5mlt,foresight,43272,not sure,[],non-search,0
+j0fjqwt1,control,305873,no,[],non-search,0
+j0g2so0y,foresight,119541,no,[],non-search,0
+j0flsyu3,control,207572,no,[],non-search,0
+j0g2ar09,foresight,334948,no,[],non-search,0
+j0fkrqt4,foresight,830290,yes,"[""alphabet "",""hershey ""]",search,2
+j0fkzhng,control,123390,no,[],non-search,0
+j0fqffpi,foresight,282960,yes,"[""oracle "",""apple"",""microsoft "",""amazon.com"",""yahoo!"",""intel "",""facebook "",""cisco systems"",""sandisk ""]",non-search,9
+j0fjf7m6,foresight,410458,yes,[],search,0
+j0fk26lp,foresight,220227,not sure,[],non-search,0
+j0fj52ps,foresight,115185,yes,"[""johnson & johnson"",""comcast "",""nasdaq "",""facebook ""]",non-search,4
+j0fjpvmh,foresight,187439,not sure,[],non-search,0
+j0fjdixt,control,170176,yes,"[""apple""]",non-search,1
+j0fj8pt2,foresight,50365,no,[],non-search,0
+j0foijx2,foresight,373954,no,[],non-search,0
+j0fja875,control,410947,yes,"[""microsoft "",""amazon.com"",""apple"",""electronic arts"",""activision blizzard""]",non-search,5
+j0fokzqw,foresight,534412,yes,"[""apple"",""amazon.com"",""jpmorgan chase "",""pepsico"",""mcdonald"",""darden restaurants""]",search,6
+j0flrb5j,control,119867,yes,"[""alphabet "",""exxon mobil "",""amazon.com""]",non-search,3
+j0fk6pqh,foresight,953405,yes,"[""apple"",""fidelity national information services"",""corning ""]",non-search,3
+j0fo5nqt,foresight,130733,no,[],non-search,0
+j0fke6pg,foresight,334045,yes,"[""apple"",""amazon.com"",""facebook "",""consol energy""]",non-search,4
+j0g4bl5d,foresight,421610,yes,"[""agilent technologies "",""celgene "",""information technology""]",search,3
+j0g28aap,foresight,356347,yes,"[""amazon.com"",""apple"",""microsoft "",""facebook ""]",non-search,4
+j0fkj7a5,control,464864,no,[],non-search,0
+j0fjvfco,foresight,1502938,yes,"[""apple"",""microsoft "",""amazon.com"",""general electric"",""facebook "",""procter & gamble ""]",non-search,6
+j0fk5qxd,foresight,583672,no,[],non-search,0
+j0g2du1b,foresight,281841,yes,"[""mktcap1"",""apple"",""berkshire hathaway"",""amazon.com"",""facebook ""]",non-search,5
+j0fj7pd0,foresight,119221,no,[],non-search,0
+j0fj7t8r,foresight,146063,no,"[""halliburton"",""kansas city southern"",""pultegroup""]",non-search,3
+j0fj7ngg,control,902937,no,"[""women1"",""women2""]",non-search,2
+j0g27l9f,foresight,188331,yes,"[""apple"",""facebook ""]",search,2
+j0foyhx5,foresight,501080,yes,"[""amazon.com"",""facebook ""]",non-search,2
+j0fo8yb1,foresight,121047,no,[],search,0
+j0fooryc,foresight,95714,no,[],non-search,0
+j0fj3mf1,control,286039,no,"[""amazon.com"",""o""]",non-search,2
+j0fok9rx,foresight,358238,no,[],non-search,0
+j0fkv3zi,foresight,412652,no,[],non-search,0
+j0fkvrp5,foresight,349199,yes,"[""dollar tree"",""wal-mart stores""]",non-search,2
+j0fogbns,foresight,216452,yes,"[""sandisk "",""citrix systems"",""facebook "",""nvidia ""]",non-search,4
+j0fjbf9s,foresight,691009,yes,"[""apple""]",search,1
+j0fotnsw,foresight,784485,yes,"[""apple"",""microsoft "",""wells fargo"",""discovery communications"",""tripadvisor ""]",search,5
+j0g8ptta,foresight,288755,no,"[""nike ""]",search,1
+j0fjbojx,foresight,36643,no,[],non-search,0
+j0fkq1db,control,66449,no,[],non-search,0
+j0fk4wjt,control,368776,no,[],non-search,0
+j0fl78g6,foresight,474671,yes,"[""apple"",""facebook ""]",non-search,2
+j0fp2o9e,foresight,289772,not sure,[],non-search,0
+j0fjl3ec,control,508179,yes,"[""southwest airlines "",""bank of america"",""chevron ""]",non-search,3
+j0fofg0b,foresight,155894,yes,"[""consol energy"",""women1"",""total system services"",""tenure2""]",non-search,4
+j0fk48d3,foresight,84829,not sure,[],non-search,0
+j0fj89tu,control,158416,no,[],non-search,0
+j0fj3t5f,control,170837,no,[],non-search,0
+j0g48c9d,foresight,406981,yes,"[""microsoft "",""apple""]",search,2
+j0fo8dxa,foresight,287784,yes,"[""wec energy group "",""diamond offshore drilling "",""american electric power company ""]",non-search,3
+j0fjritd,control,371300,no,[],non-search,0
+j0foiyom,foresight,216686,yes,[],search,0
+j0fk2684,foresight,254807,yes,[],search,0
+j0g2t283,foresight,207234,yes,"[""apple""]",search,1
+j0g2cwja,foresight,211692,yes,"[""walt disney "",""apple"",""facebook "",""wal-mart stores"",""michael kors holdings "",""estee lauder companies "",""macy""]",search,7
+j0fo5zvu,foresight,357674,no,[],non-search,0
+j0fl68wh,foresight,513510,yes,"[""target ""]",search,1
+j0fjzt0u,control,87021,yes,"[""macy""]",non-search,1
+j0fjkuea,control,49100,yes,"[""apple"",""women1"",""age1"",""tenure1"",""regeneron pharmaceuticals ""]",non-search,5
+j0fjeksv,control,291106,yes,"[""walt disney "",""amazon.com"",""facebook ""]",non-search,3
+j0fjolco,control,1065808,no,[],non-search,0
+j0fjiqv1,control,143050,no,[],non-search,0
+j0g2shyy,foresight,386991,no,[],non-search,0
+j0fl7f7j,control,197796,no,[],non-search,0
+j0fka3yy,foresight,720370,no,[],non-search,0
+j0fo5m2l,foresight,213046,yes,"[""facebook ""]",search,1
+j0g2tddo,foresight,53032,not sure,[],non-search,0
+j0fjzjnn,foresight,110558,yes,"[""berkshire hathaway"",""monsanto"",""amazon.com"",""apple""]",non-search,4
+j0fkjvzl,foresight,298577,yes,[],non-search,0
+j0fnzfa5,foresight,894922,no,[],non-search,0
