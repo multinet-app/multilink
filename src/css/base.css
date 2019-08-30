@@ -8,19 +8,19 @@ body {
     /* width: 90%; */
 }
 
-#trialBar{
-    background-color:#fac667;
+#trialBar {
+    background-color: #fac667;
 }
 
-.helpIcon{
-    cursor:pointer;
+.helpIcon {
+    cursor: pointer;
 }
 
 div.tooltip {
     position: absolute;
-    color:black;
+    color: black;
     text-align: center;
-    font-size:13px;
+    font-size: 13px;
     width: 100px;
     border-radius: 5px;
     padding: 2px;
@@ -29,159 +29,155 @@ div.tooltip {
     pointer-events: none;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
-    }
+}
 
-#targetSize{
-    width:1920px;
-    height:1080px;
+#targetSize {
+    width: 1920px;
+    height: 1080px;
     /* width:1920px; */
     /* height:1080px; */
 }
 
-#visPanel{
-    height:1060px;
-    overflow-y:scroll;
+#visPanel {
+    height: 1060px;
+    overflow-y: scroll;
 }
 
-#easyLabel{
-    padding-left:0px;
+#easyLabel {
+    padding-left: 0px;
 }
 
-.message-header p, .message-body{
+.message-header p,
+.message-body {
     white-space: normal;
 }
 
-.selectBox.selected{
-    fill:rgb(255, 111, 0);
-    
+.selectBox.selected {
+    fill: rgb(255, 111, 0);
 }
 
 .input.searchInput {
-    width:80% !important;
+    width: 80% !important;
 }
 
-.taskMenu{
-    height:300px;
-    overflow-y:scroll;
+.taskMenu {
+    height: 300px;
+    overflow-y: scroll;
 }
 
-.taskMenu .button{
-    padding:10px 10px;
-    color:white;
-    background-color:#4285f4;
+.taskMenu .button {
+    padding: 10px 10px;
+    color: white;
+    background-color: #4285f4;
 }
 
-.taskShortcut.currentTask{
-    padding:10px 10px;
-    color:white;
-    background-color:#244d90;
+.taskShortcut.currentTask {
+    padding: 10px 10px;
+    color: white;
+    background-color: #244d90;
 }
 
-#hardLabel{
-    padding-left:190px;
+#hardLabel {
+    padding-left: 190px;
 }
 
-#easyHardRating{
-    padding:0px 5px;
+#easyHardRating {
+    padding: 0px 5px;
 }
 
-#taskArea .card-header-title{
-    display:block
+#taskArea .card-header-title {
+    display: block
 }
 
-.task{
-    font-size:30px;
+.task {
+    font-size: 30px;
 }
 
-.answer{
-    font-size:25px;
+.answer {
+    font-size: 25px;
 }
 
-
-#taskArea .taskCard, #taskArea .answerHeader{
-    background-color:#4285f4;
+#taskArea .taskCard,
+#taskArea .answerHeader {
+    background-color: #4285f4;
 }
 
-#taskArea .taskCard .card-header-title, .answerHeader .card-header-title{
-    color:white;
+#taskArea .taskCard .card-header-title,
+.answerHeader .card-header-title {
+    color: white;
 }
 
-.taskCard, .answerHeader{
-    padding:10px 10px;
-    font-size:20px;
+.taskCard,
+.answerHeader {
+    padding: 10px 10px;
+    font-size: 20px;
 }
 
-#clear-selection{
-    width:80%;
-    margin-top:10px;
+#clear-selection {
+    width: 80%;
+    margin-top: 10px;
 }
 
-
-#submitButton, #searchButton{
-    color:white;
-    background-color:#4285f4;
+#submitButton,
+#searchButton {
+    color: white;
+    background-color: #4285f4;
 }
 
-#nextTrialTask{
-
+#nextTrialTask {
     /* display:none; */
-    color:white;
+    color: white;
     background-color: #787878;
-    border-width:0px;
-
-
+    border-width: 0px;
 }
 
-.modalStartTrials .modal-card, .modalStartStudy .modal-card{
-    width: calc(100vh - 100px);
+.hint {
+    color: rgb(50, 50, 50);
+    font-size: 14px;
+    display: block;
 }
 
-.hint{
-    color:rgb(50, 50, 50);
-    font-size:14px;
-    display:block;
-}
-
-.correctMsg{
-    color:white;
+.correctMsg {
+    color: white;
     /* font-style:italic; */
-    font-size:23px;
+    font-size: 23px;
     /* display:none; */
 }
 
-#feedbackCard{
-    background-color:#fac667;
+#feedbackCard {
+    background-color: #fac667;
     font-size: 20px;
     font-weight: 900;
-    display:none;
-
-}
-#clear-selection{
-    color:white;
-    background-color:#898989;
+    display: none;
 }
 
-
-#start-training{
-    color:white;
-    background-color:#898989;
-    width:100%;
+#clear-selection {
+    color: white;
+    background-color: #898989;
 }
 
-.taskCard .errorMsg{
-    margin-bottom:0px;
-    display:none;
+#start-training {
+    color: white;
+    background-color: #898989;
+    width: 100%;
 }
 
-#submitButton[disabled], #clear-selection[disabled]{
-    color:#505050;
-    background-color:lightgrey;
+.taskCard .errorMsg {
+    margin-bottom: 0px;
+    display: none;
 }
 
-.errorMsg{
-    color:rgb(211, 5, 5);
-    font-style:italic;
+#submitButton[disabled],
+#clear-selection[disabled] {
+    color: #505050;
+    background-color: lightgrey;
 }
+
+.errorMsg {
+    color: rgb(211, 5, 5);
+    font-style: italic;
+}
+
 
 /* .correctMsg{
     color:#4285f4;
@@ -189,22 +185,19 @@ div.tooltip {
     display:none;
 } */
 
-#submitSuccessful{
-    color:#4285f4;
-    font-weight:bold;
+#submitSuccessful {
+    color: #4285f4;
+    font-weight: bold;
 }
 
-#nextTask{
-    margin:10px 0px;
-    padding:10px;
-    color:white;
-    background-color:#4285f4;
-    font-size:18px;
-    font-weight:bold;
+#nextTask {
+    margin: 10px 0px;
+    padding: 10px;
+    color: white;
+    background-color: #4285f4;
+    font-size: 18px;
+    font-weight: bold;
 }
-
-
-
 
 #experimentr {
     margin: 4em auto 1em auto;
@@ -225,7 +218,6 @@ div.tooltip {
     text-decoration: underline;
 }
 
-
-#workerId{
-    width:60%
+#workerId {
+    width: 60%
 }

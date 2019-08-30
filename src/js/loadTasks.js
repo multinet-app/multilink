@@ -11,44 +11,16 @@ let app;
 async function resetPanel() {
 
     let task = taskList[currentTask];
-    task.startTime = new Date().toString();
 
-    d3.selectAll(".taskShortcut").classed("currentTask", function() {
-        return d3.select(this).attr("id") === taskList[currentTask].taskID;
-    });
-
-    //Only start off with the submit button enabled for when the task only requires an unspecified node count;
-
-    let flexibleAnswer =
-        task.replyType.includes("multipleNodeSelection") &&
-        task.replyCount.type === "at least";
-
-    // clear any values in the feedback or search box;
-    d3.select(".modalFeedback")
-        .select(".textarea")
-        .property("value", "");
+    // clear any values in the search box;
 
     d3.select(".searchInput").property("value", "");
 
     d3.select(".searchMsg").style("display", "none");
-
-    d3.select("#answerBox").property("value", "");
-
-    d3.selectAll(".submit").attr("disabled", flexibleAnswer ? null : true);
-
-    // d3.select('#nextTrialTask').style('display','none');
-    // d3.select('#trialFeedback').select('.errorMsg').style('display','none');
-    // d3.select('#trialFeedback').select('.correctMsg').style('display','none');
-
     // //Clear Selected Node List
     d3.select("#selectedNodeList")
         .selectAll("li")
         .remove();
-
-    //clear any selected Radio buttons in the feedback box;
-    d3.select(".modalFeedback")
-        .selectAll("input")
-        .property("checked", false);
 
     //check for different reply types
 
@@ -283,5 +255,3 @@ d3.select('#searchButton').on("click", function() {
     }
 
 });
-
-// /
