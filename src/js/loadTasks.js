@@ -12,37 +12,14 @@ async function resetPanel() {
 
     let task = taskList[currentTask];
 
-    // clear any values in the search box;
-
+    // Clear any values in the search box and the search message
     d3.select(".searchInput").property("value", "");
-
     d3.select(".searchMsg").style("display", "none");
-    // //Clear Selected Node List
+
+    // Clear Selected Node List
     d3.select("#selectedNodeList")
         .selectAll("li")
         .remove();
-
-    //check for different reply types
-
-    if (task.replyType.includes("value")) {
-        d3.select("#valueAnswer").style("display", "inline");
-    } else {
-        d3.select("#valueAnswer").style("display", "none");
-    }
-
-    if (
-        task.replyType.includes("singleNodeSelection") ||
-        task.replyType.includes("multipleNodeSelection")
-    ) {
-        d3.select("#nodeAnswer").style("display", "block");
-    } else {
-        d3.select("#nodeAnswer").style("display", "none");
-    }
-
-    d3.select("#taskArea")
-        // .select(".card-header-title")
-        .select(".taskText")
-        .text(task.prompt + " (" + task.taskID + ")");
 
     config = task.config;
 
@@ -99,24 +76,16 @@ async function loadTasks(visType, tasksType) {
     //reset currentTask to 0
     currentTask = 0;
 
-    //Helper function to shuffle the order of tasks given - based on https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
-            [array[i], array[j]] = [array[j], array[i]]; // swap elements
-        }
-    }
-
     let taskListFiles = { "heuristics": "taskLists/heuristics.json" };
     // let conditions = conditionsObj.data().conditionList;
 
-    let group;
-
-    // dynamically assign a vistype according to firebase tracking
-    group = visType === "nodeLink" ? 0 : 1;
-
     // let selectedCondition = conditions[group];
-    let selectedVis = visType;
+
+    // Hard-coded the vis to be nodeLink
+    let selectedVis = (
+        //"nodeLink" ||
+        "adjMatrix"
+    );
 
     vis = selectedVis;
 
@@ -179,6 +148,7 @@ async function loadTasks(visType, tasksType) {
             );
         };
 
+        console.log(selectedVis)
         await loadAllScripts();
 
         cssTags[selectedVis].map(href => {
@@ -221,37 +191,3 @@ function loadScript(url, callback) {
         document.getElementsByTagName("head")[0].appendChild(script);
     });
 }
-
-d3.select('#searchButton').on("click", function() {
-
-    let selectedOption = d3.select('.searchInput').property("value").trim();
-
-    //empty search box;
-    if (selectedOption.length === 0) {
-        d3.select(".searchMsg")
-            .style("display", "block")
-            .text("Please enter a node name to search for!");
-        return;
-    }
-
-    let searchSuccess = vis == 'nodeLink' ? searchFor(selectedOption) : window.controller.view.search(selectedOption);
-
-    if (searchSuccess === -1) {
-        d3.select(".searchMsg")
-            .style("display", "block")
-            .text("Could not find a node with that name!");
-    }
-
-    if (searchSuccess === 1) {
-        d3.select(".searchMsg").style("display", "none");
-
-        // d3.select('#clear-selection').attr('disabled', null)
-    }
-
-    if (searchSuccess === 0) {
-        d3.select(".searchMsg")
-            .style("display", "block")
-            .text(selectedOption + " is already selected.");
-    }
-
-});

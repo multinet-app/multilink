@@ -60,17 +60,6 @@ div.tooltip {
     width: 80% !important;
 }
 
-.taskMenu {
-    height: 300px;
-    overflow-y: scroll;
-}
-
-.taskMenu .button {
-    padding: 10px 10px;
-    color: white;
-    background-color: #4285f4;
-}
-
 .taskShortcut.currentTask {
     padding: 10px 10px;
     color: white;

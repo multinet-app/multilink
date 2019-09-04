@@ -37,7 +37,7 @@
 
 
 <body>
-    <div class="hit" style=display:none>
+    <div class="hit" style=display:inline>
         <div class="columns" id="visContent">
             <div id="targetSize">
                 <div class="column ">
@@ -346,6 +346,7 @@
 </body>
 
 <script src="js/loadTasks.js" type="text/javascript"></script>
+<script src="js/ui.js" type="text/javascript"></script>
 
 <script>
     function getUrlVars() {
@@ -363,7 +364,6 @@
         track,
         mode,
         shuffleTasks,
-        taskMenu,
         configPanel,
         trials
     } = getUrlVars();
@@ -375,10 +375,6 @@
     //remove ui components that are not relevant
     if (!configPanel) {
         d3.selectAll('.development').remove();
-    }
-
-    if (!taskMenu) {
-        d3.select('.taskMenu').remove();
     }
 
     let sequence;
