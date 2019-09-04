@@ -83,11 +83,10 @@ async function loadTasks(visType, tasksType) {
 
     // Hard-coded the vis to be nodeLink
     let selectedVis = (
+        vis ||
         "nodeLink" ||
         "adjMatrix"
     );
-
-    vis = selectedVis;
 
     //do an async load of the designated task list;
     console.log(taskListFiles, tasksType)

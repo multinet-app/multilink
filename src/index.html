@@ -15,7 +15,6 @@
 
 <!-- Adding Provenance and Experimentr Libraries  -->
 <script src="libs/provenance.min.js"></script>
-<script src="libs/experimentr.js"></script>
 
 <filter id="shadow" x="0" y="0" width="200%" height="200%">
     <feDropShadow dx="40" dy="40" stdDeviation="35" flood-color="#ff0000" flood-opacity="1" />
@@ -355,24 +354,30 @@
     //set global variables such as vis type, whether to track userInteraction, if develop mode, etc... from url params
     var {
         vis,
-        track,
-        mode,
-        shuffleTasks,
         configPanel,
-        trials
+        trials // TODO: remove this
     } = getUrlVars();
 
-    mode = mode || 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
+    mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
 
-    onfigPanel = eval(configPanel);
+    configPanel = eval(configPanel);
 
     //remove ui components that are not relevant
     if (!configPanel) {
         d3.selectAll('.development').remove();
     }
 
-    let sequence;
+    async function startStudy() {
+        await loadTasks(vis, mode);
 
-    sequence = ["modules/hit.html"]
-    experimentr.sequence(sequence).start();
+        if (vis === 'nodeLink') {
+            loadVis("vis");
+        } else {
+            // included script already auto loads the vis. 
+        }
+
+        resetPanel();
+    }
+
+    startStudy();
 </script>
