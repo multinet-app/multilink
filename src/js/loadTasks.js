@@ -83,7 +83,7 @@ async function loadTasks(visType, tasksType) {
 
     // Hard-coded the vis to be nodeLink
     let selectedVis = (
-        //"nodeLink" ||
+        "nodeLink" ||
         "adjMatrix"
     );
 
