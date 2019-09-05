@@ -983,7 +983,6 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
     let nodePos = nodePositionMap(nodes);
 
     const initialState = {
-        workerID, //gets value from global workerID variable
         taskID,
         order,
         nodePos, //map of node positions, 

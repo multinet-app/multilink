@@ -318,7 +318,7 @@ function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
 }
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
-function loadVis(id) {
+function loadVis() {
     let targetDiv = d3.select("#targetSize");
     width = targetDiv.style("width").replace("px", "");
     height = targetDiv.style("height").replace("px", "");

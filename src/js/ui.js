@@ -11,7 +11,7 @@ d3.select('#searchButton').on("click", function() {
         return;
     }
 
-    let searchSuccess = vis == 'nodeLink' ? searchFor(selectedOption) : window.controller.view.search(selectedOption);
+    let searchSuccess = searchFor(selectedOption);
 
     if (searchSuccess === -1) {
         d3.select(".searchMsg")
