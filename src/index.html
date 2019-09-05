@@ -80,16 +80,6 @@
                             <svg id="node-link-svg"></svg>
                         </div>
 
-                        <div class="adjMatrix vis">
-                            <div class="loading"></div>
-                            <div class="loadingOverlay"></div>
-                            <div id="interactiveFreeFormMain">
-                                <div id="topology" class="topocontainer" height="700" width="700"> </div>
-                                <div id="attributes" class="attrcontainer" height="700" width="650"> </div>
-
-                            </div>
-                        </div>
-
                     </div>
 
                     <a class="button" id="panelControl">Hide/Show Control Panel</a>
@@ -325,19 +315,10 @@
                             <br />
 
                             <a class="button is-light" id="exportBaseConfig">Export Base Config</a>
-
-
                 </aside>
             </div>
-
-
-
         </div>
     </div>
-
-
-
-
 </body>
 
 <script src="js/loadTasks.js" type="text/javascript"></script>
@@ -355,9 +336,8 @@
 
     //set global variables such as vis type, whether to track userInteraction, if develop mode, etc... from url params
     var {
-        vis,
         configPanel,
-        trials // TODO: remove this
+        // trials // TODO: remove this
     } = getUrlVars();
 
     mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
@@ -372,12 +352,7 @@
     async function startStudy() {
         await loadTasks(vis, mode);
 
-        if (vis === 'nodeLink') {
-            loadVis("vis");
-        } else {
-            // included script already auto loads the vis. 
-        }
-
+        loadVis("vis")
         resetPanel();
     }
 
