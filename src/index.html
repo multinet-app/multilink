@@ -334,25 +334,24 @@
         return vars;
     }
 
-    //set global variables such as vis type, whether to track userInteraction, if develop mode, etc... from url params
+    //set global variables from query string
     var {
-        configPanel,
-        // trials // TODO: remove this
+        configPanel
     } = getUrlVars();
 
     mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
 
     configPanel = eval(configPanel);
 
-    //remove ui components that are not relevant
+    // remove ui components that are not relevant
     if (!configPanel) {
         d3.selectAll('.development').remove();
     }
 
     async function startStudy() {
-        await loadTasks(vis, mode);
+        await loadTasks(mode);
 
-        loadVis("vis")
+        loadVis()
         resetPanel();
     }
 

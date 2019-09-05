@@ -1,7 +1,6 @@
 //global variable that defines the tasks to be shown to the user and the (randomized) order in which to show them
 var taskList;
-//let currentTask; //start at task 0
-// let vis;
+let currentTask; //start at task 0
 let app;
 
 
@@ -29,10 +28,6 @@ async function loadNewGraph(fileName) {
     // console.log('loading ', fileName)
     graph = await d3.json(fileName);
 
-    // console.log(graph.links)
-    //
-    //update the datalist associated to the search box (in case the nodes in the new graph have changed)
-    //if (vis === 'nodeLink'){
     d3.select("#search-input").attr("list", "characters");
     let inputParent = d3.select("#search-input").node().parentNode;
 
@@ -64,7 +59,7 @@ async function loadNewGraph(fileName) {
     // options.on("click",console.log('clicked an option!'))
 }
 
-async function loadTasks(visType, tasksType) {
+async function loadTasks(tasksType) {
     //reset currentTask to 0
     currentTask = 0;
 
