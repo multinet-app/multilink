@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>NodeLink View</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+<link rel="shortcut icon" href="#" />
+
+
+<link rel="stylesheet" href="css/base.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css">
+
+
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+<!-- Adding Provenance and Experimentr Libraries  -->
+<script src="libs/provenance.min.js"></script>
+
+<filter id="shadow" x="0" y="0" width="200%" height="200%">
+    <feDropShadow dx="40" dy="40" stdDeviation="35" flood-color="#ff0000" flood-opacity="1" />
+</filter>
+
+
+<script src="https://d3js.org/d3.v5.min.js" type="text/javascript"></script>
+
+
+<!-- Helper scripts to generate graphs and complete task Configurations -->
+<!-- <script src="js/generateTwitterGraph.js" type="text/javascript"></script> -->
+<!-- <script src="js/createTaskConfig.js" type="text/javascript"></script> -->
+
+
+<body>
+    <div class="hit" style=display:inline>
+        <div class="columns" id="visContent">
+            <div id="targetSize">
+                <div class="column ">
+                    <div id="vis">
+                        <div class="card" id="visPanel">
+                            <div id="taskArea">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <div>
+                                                <!-- <label class="label">Search for Nodes</label> -->
+                                                <input class="input searchInput" type="text" placeholder="Search for node" id="search-input"></input>
+                                                <a class="button is-pulled-right search" id="searchButton">Search</a>
+                                                <p class='searchMsg errorMsg'></p>
+
+                                                <a class="button" id="clear-selection">Clear Selections</a>
+
+                                            </div>
+
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                                <!-- Legend code -->
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="content">
+
+                                            <svg id="legend-svg"></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="nodeLink">
+                            <svg id="node-link-svg"></svg>
+                        </div>
+
+                        <div class="adjMatrix vis">
+                            <div class="loading"></div>
+                            <div class="loadingOverlay"></div>
+                            <div id="interactiveFreeFormMain">
+                                <div id="topology" class="topocontainer" height="700" width="700"> </div>
+                                <div id="attributes" class="attrcontainer" height="700" width="650"> </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <a class="button" id="panelControl">Hide/Show Control Panel</a>
+
+                </div>
+
+            </div>
+
+            <!-- Config panel -->
+            <div class="column is-narrow development" id="panelDiv">
+
+                <!-- Control panel code -->
+                <aside class="menu">
+                    <!-- <p class="menu-label">
+                                                Graph Settings
+                                            </p> -->
+                    <ul class="menu-list">
+
+                        <li id="graphSize">
+                            <label>Graph Size</label>
+
+                            <ul>
+                                <div class="control">
+                                    <!-- <label class="radio">
+                                                                            <input type="radio" name="graphSize" value="small" >
+                                                                            Small [30]
+                                                                        </label> -->
+
+                                    <label class="radio">
+                                        <input type="radio" name="graphSize" value="small">
+                                        Small [50]
+                                    </label>
+
+                                    <label class="radio">
+                                        <input type="radio" name="graphSize" value="large">
+                                        Large [80]
+                                    </label>
+                                </div>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <!-- Set config.isDirected to true/false -->
+                            <a>Graph Type</a>
+                            <ul>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="isDirected" value="true">
+                                        Directed
+                                    </label>
+
+                                    <label class="radio">
+                                        <input type="radio" name="isDirected" value="false">
+                                        Undirected
+                                    </label>
+                                </div>
+
+                            </ul>
+
+
+                        </li>
+
+                        <li>
+                            <!-- Set config.isMultiEdge to true/false -->
+                            <a>Graph Edges</a>
+                            <ul>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="isMultiEdge" value="true">
+                                        Multiple Types
+                                    </label>
+
+                                    <label class="radio">
+                                        <input type="radio" name="isMultiEdge" value="false">
+                                        Single Type
+                                    </label>
+                                </div>
+
+                            </ul>
+
+
+                        </li>
+
+                        <li id="labelSize">
+                            <label>Node Label Font Size</label>
+                            <ul>
+                                <div class="control is-inline-flex">
+                                    <input class="slider" id="fontSlider" step="1" min="10" max="30" value="14" type="range">
+                                    <output id="fontSliderValue">14</output> </div>
+                            </ul>
+                        </li>
+
+
+                        <li id="nodeMarkerSize">
+                            <label>Node Size [width,height]</label>
+                            <ul>
+
+
+                                <div class="control is-inline-flex">
+                                    <input width="50%" id="markerSize" class="input" type="text" placeholder="width/height">
+                                </div>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <!-- Set config.isDirected to true/false -->
+                            <a>Select Neighbors on Click</a>
+                            <ul>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="selectNeighbors" value="true">
+                                        True
+                                    </label>
+
+                                    <label class="radio">
+                                        <input type="radio" name="selectNeighbors" value="false">
+                                        False
+                                    </label>
+                                </div>
+
+                            </ul>
+
+
+                        </li>
+
+
+                        <ul class="menu-list">
+
+                            <div style="padding-top: 30px; padding-bottom: 10px">
+
+                                <a class="button" id="stop-simulation">Stop Simulation</a>
+                                <a class="button" id="start-simulation">Restart Simulation</a>
+                                <a class="button" id="release-nodes">Release Pinned Nodes</a>
+                                <a class="button" id="exportGraph">Export Graph to Console</a>
+                            </div>
+
+
+                            <br />
+
+                            <div class="field">
+                                <input class="is-checkradio is-circle" id="renderBarsCheckbox" type="checkbox" name="renderBarsCheckbox" checked="checked">
+                                <label for="renderBarsCheckbox">Render Nested Charts</label>
+                            </div>
+
+
+                            <li id="nodeQuantSelect">
+                                <a>Attribute for Nested Quant Attributes (Bars)</a>
+                                <ul>
+                                </ul>
+                            </li>
+
+                            <br />
+
+                            <li id="nodeCatSelect">
+                                <a>Attribute for Nested Cat Attributes</a>
+                                <ul>
+                                </ul>
+                            </li>
+
+
+                            <li id="nodeQuantAttributes">
+                                <a>Node Attribute Inspector</a>
+                                <ul>
+                                    <div class="select ">
+                                        <select>
+                                        </select>
+                                    </div>
+
+                                </ul>
+                            </li>
+
+
+                            <li id="nodeFillSelect">
+                                <a>Attribute for Node Fill</a>
+                                <ul>
+                                    <div class="select">
+                                        <select>
+                                        </select>
+                                    </div>
+
+                                </ul>
+                            </li>
+
+                            <li id="nodeSizeSelect">
+                                <a>Attribute for Node Size</a>
+                                <ul>
+                                    <div class="select">
+                                        <select>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="control is-inline-flex">
+                                        <input width="50%" class="input" type="text" placeholder="[min,max]">
+                                    </div>
+
+                                </ul>
+                            </li>
+
+                            <li id="edgeStrokeSelect">
+                                <a>Attribute for Edge Stroke</a>
+                                <ul>
+                                    <div class="select">
+                                        <select>
+                                        </select>
+                                    </div>
+
+                                </ul>
+                            </li>
+
+                            <li id="edgeWidthSelect">
+                                <a>Attribute for Edge Width</a>
+                                <ul>
+                                    <div class="select ">
+                                        <select>
+                                        </select>
+                                    </div>
+
+                                    <div class="control is-inline-flex">
+                                        <input class="input" id="edgeWidthScale" type="text" placeholder="[min,max]">
+                                    </div>
+
+                                </ul>
+                            </li>
+
+                            <br />
+                            <br />
+
+                            <a class="button is-light" id="exportConfig">Export Task Config</a>
+
+                            <br />
+
+                            <a class="button is-light" id="exportBaseConfig">Export Base Config</a>
+
+
+                </aside>
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+
+
+</body>
+
+<script src="js/loadTasks.js" type="text/javascript"></script>
+<script src="js/ui.js" type="text/javascript"></script>
+
+<script>
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&*#]*)/gi, function(m, key, value) {
+            console.log(key, value)
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+    //set global variables such as vis type, whether to track userInteraction, if develop mode, etc... from url params
+    var {
+        vis,
+        configPanel,
+        trials // TODO: remove this
+    } = getUrlVars();
+
+    mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
+
+    configPanel = eval(configPanel);
+
+    //remove ui components that are not relevant
+    if (!configPanel) {
+        d3.selectAll('.development').remove();
+    }
+
+    async function startStudy() {
+        await loadTasks(vis, mode);
+
+        if (vis === 'nodeLink') {
+            loadVis("vis");
+        } else {
+            // included script already auto loads the vis. 
+        }
+
+        resetPanel();
+    }
+
+    startStudy();
+</script>
