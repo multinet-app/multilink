@@ -7,10 +7,11 @@ on:
 
 job:
   build:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
-        node-version: '11.x'
+        node-version: '10.x'
     - name: test-install
     - run: yarn install
