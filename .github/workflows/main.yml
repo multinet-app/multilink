@@ -5,7 +5,12 @@ on:
     branches:
     - master
 
-action "Build" {
-  uses = "nuxt/actions-yarn@node-11"
-  args = "install"
-}
+job:
+  build:
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '11.x'
+    - name: test-install
+    - run: yarn install
