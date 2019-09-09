@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
+    - name: test yarn
       with:
         node-version: '10.x'
-    - name: test yarn
     - run: yarn install
