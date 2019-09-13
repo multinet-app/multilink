@@ -10,13 +10,6 @@
 //Config is set up in input file and the potentially modified  by user changes to the panel.
 //dir and undir graphs store refs to the two flavors of a graph and that can be toggled by the user in the panel
 
-var graph;
-
-var taskNum = 0;
-
-var config;
-var allConfigs = {};
-
 //compute default data domains once and use when needed
 var defaultDomains = { node: {}, edge: {} };
 
@@ -42,7 +35,7 @@ let taskBar_height;
 var svg;
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
-var simulation; //so we're not restarting it every time updateVis is called;
+var simulation = 1; //so we're not restarting it every time updateVis is called;
 
 // var tooltipTimeout; 
 
@@ -209,7 +202,7 @@ function isSelected(node) {
 function searchFor(selectedOption) {
 
     //find the right nodeObject
-    node = graph.nodes.find(n => n.shortName.toLowerCase() === selectedOption.toLowerCase());
+    node = graph.nodes.find(n => n.nameame.toLowerCase() === selectedOption.toLowerCase());
 
     if (!node) {
         return -1;
@@ -414,7 +407,6 @@ function loadVis() {
 }
 
 function loadTask(graph_structure) {
-
 
     //determine x and y positions before starting provenance;
     if (graph_structure.nodes[0].fx === undefined) {
@@ -766,7 +758,7 @@ function updateVis(graph_structure) {
     let link = d3
         .select(".links")
         .selectAll(".linkGroup")
-        .data(graph.links, l => l.id);
+        .data(graph_structure.links, l => l._id);
 
     let linkEnter = link
         .enter()
@@ -825,7 +817,7 @@ function updateVis(graph_structure) {
     var node = d3
         .select(".nodes")
         .selectAll(".nodeGroup")
-        .data(graph.nodes, n => n.id);
+        .data(graph_structure.nodes, n => n._key);
 
     let nodeEnter = node
         .enter()

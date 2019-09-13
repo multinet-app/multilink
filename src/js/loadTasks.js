@@ -2,7 +2,7 @@
 let app;
 
 
-async function resetPanel() {
+async function resetSearch() {
     // Clear any values in the search box and the search message
     d3.select(".searchInput").property("value", "");
     d3.select(".searchMsg").style("display", "none");
@@ -40,36 +40,6 @@ async function loadNewGraph(graph_structure) {
 
     options.attr("value", d => d.shortName);
     options.attr("id", d => d.id);
-}
-
-async function loadTasks(tasksType) {
-    // Set import scripts
-    let scriptTags = [
-        "js/nodeLink/main_nodeLink.js",
-        "js/nodeLink/helperFunctions.js"
-    ];
-    let cssTags = [
-        "css/nodeLink/node-link.css",
-        "css/nodeLink/bulma-checkradio.min.css"
-    ]
-
-    const loadAllScripts = async() => {
-        return await Promise.all(
-            scriptTags.map(async src => {
-                return await loadScript(src, () => "");
-            })
-        );
-    };
-    await loadAllScripts();
-
-    cssTags.map(href => {
-        var newStyleSheet = document.createElement("link");
-        newStyleSheet.href = href;
-        newStyleSheet.rel = "stylesheet";
-        d3.select("head")
-            .node()
-            .appendChild(newStyleSheet);
-    });
 }
 
 //function that loads in a .js script tag and only resolves the promise once the script is fully loaded

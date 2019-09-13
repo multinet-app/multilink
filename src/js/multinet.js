@@ -1,7 +1,7 @@
 // Define global variables that store data
 let tables;
 let nodes = [];
-let edges = [];
+let links = [];
 let graph_structure;
 
 async function load_data(workspace, graph) {
@@ -17,11 +17,11 @@ async function load_data(workspace, graph) {
 
     // Load the edge table to a global variable
     edge_table = tables.edgeTable
-    edges_call = "http://127.0.0.1:8080/api/workspaces/" + workspace + "/tables/" + edge_table
-    await load_edges(edges_call)
+    links_call = "http://127.0.0.1:8080/api/workspaces/" + workspace + "/tables/" + edge_table
+    await load_links(links_call)
 
     // Set the global graph structure
-    graph_structure = { "nodes": nodes, "edges": edges }
+    graph_structure = { "nodes": nodes, "links": links }
 
     // Draw the graph
     await loadNewGraph(graph_structure)
@@ -39,9 +39,9 @@ async function load_nodes(call) {
     console.log(nodes)
 };
 
-async function load_edges(call) {
+async function load_links(call) {
     let table;
     table = await d3.json(call);
-    edges = [].concat(edges, table)
-    console.log(edges)
+    links = [].concat(links, table)
+    console.log(links)
 };

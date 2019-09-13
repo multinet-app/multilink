@@ -619,7 +619,7 @@ function setPanelValuesFromFile() {
 }
 
 function update() {
-    setPanelValuesFromFile();
+    //setPanelValuesFromFile();
     updateVis(graph_structure);
 }
 
@@ -835,16 +835,6 @@ function isCategorical(attr) {
     );
 }
 
-async function loadConfigs(taskID) {
-
-    // let baseConfig = await d3.json("../../configs/baseConfig.json");
-    // let taskConfig = await d3.json("../../configs/" + taskID + "Config.json");
-
-    // setConfigCallbacks(baseConfig,taskConfig);
-
-    // await loadNewGraph(config.graphFiles[config.loadedGraph]);     
-}
-
 // function getNodeState(nodes){
 //   return nodes.map(n=>{return {x:n.x,y:n.y,selected:n.selected || false ,answerSelected:n.answerSelected || false}})
 // }
@@ -873,81 +863,11 @@ d3.select("#exportConfig").on("click", function() {
 });
 
 
-// function setConfigCallbacks(baseConfig,taskConfig){
-
-//       d3.select("#exportBaseConfig").on("click", function() {
-//           exportConfig(
-//             Object.keys(baseConfig),
-//             Object.keys(baseConfig.nodeLink),
-//             false
-//           );
-//         });
-
-//         d3.select("#exportConfig").on("click", function() {
-
-//           exportConfig(
-//             Object.keys(taskConfig),
-//             Object.keys(taskConfig.nodeLink),
-//             true
-//           );
-//         });
-
-//         // rehape relevant config values into a single dictionary.
-//         config = mergeConfigs(baseConfig, taskConfig);
-
-//         allConfigs.optimalConfig = config;
-
-//         let task = tasks[taskNum];
-
-
-//         d3.select("#optimalConfig").on("click", () =>
-//           applyConfig("optimalConfig")
-//         );
-
-//         d3.select("#nodeLinkConfig").on("click", () =>
-//           applyConfig("nodeLinkConfig")
-//         );
-
-//         d3.select("#saturatedConfig").on("click", () =>
-//           applyConfig("saturatedConfig")
-//         );
-
-//         d3.select("#next").on("click", async () => {
-//           taskNum = d3.min([taskNum + 1, tasks.length - 1]);
-//           await loadConfigs(tasks[taskNum].id);
-//           applyConfig("optimalConfig");
-//         });
-
-//         d3.select("#previous").on("click", async () => {
-//           taskNum = d3.max([taskNum - 1, 0]);
-//           await loadConfigs(tasks[taskNum].id);
-//           applyConfig("optimalConfig");
-//         });
-
-// }
-
-// function applyConfig(configType) {
-//   d3
-//     .selectAll(".button")
-//     .classed("clicked", false);
-//   d3.select("#" + configType).classed("clicked", true);
-//   config = JSON.parse(JSON.stringify(allConfigs[configType]));
-
-
-//   //Update Task Header and Answer type 
-
-//    // update global variables from config;
-//    setGlobalScales();
-
-//   update();
-// }
-
 function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
 
     let nodePos = nodePositionMap(nodes);
 
     const initialState = {
-        taskID,
         order,
         nodePos, //map of node positions, 
         userSelectedNeighbors: {}, //map of nodes that have neighbors selected (so they can be non-muted)
