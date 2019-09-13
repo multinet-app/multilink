@@ -1,13 +1,8 @@
 //global variable that defines the tasks to be shown to the user and the (randomized) order in which to show them
-var taskList;
-let currentTask; //start at task 0
 let app;
 
 
 async function resetPanel() {
-
-    let task = taskList[currentTask];
-
     // Clear any values in the search box and the search message
     d3.select(".searchInput").property("value", "");
     d3.select(".searchMsg").style("display", "none");
@@ -16,18 +11,9 @@ async function resetPanel() {
     d3.select("#selectedNodeList")
         .selectAll("li")
         .remove();
-
-    config = task.config;
-
-    await loadNewGraph(config.graphFiles[config.loadedGraph]);
-
-    loadTask(task);
 }
 
-async function loadNewGraph(fileName) {
-    // console.log('loading ', fileName)
-    graph = await d3.json(fileName);
-
+async function loadNewGraph(graph_structure) {
     d3.select("#search-input").attr("list", "characters");
     let inputParent = d3.select("#search-input").node().parentNode;
 
@@ -45,7 +31,7 @@ async function loadNewGraph(fileName) {
 
     datalist = enterSelection.merge(datalist);
 
-    let options = datalist.selectAll("option").data(graph.nodes);
+    let options = datalist.selectAll("option").data(graph_structure.nodes);
 
     let optionsEnter = options.enter().append("option");
     options.exit().remove();
@@ -54,30 +40,27 @@ async function loadNewGraph(fileName) {
 
     options.attr("value", d => d.shortName);
     options.attr("id", d => d.id);
-    // options.attr('onclick',"console.log('clicked')");
-
-    // options.on("click",console.log('clicked an option!'))
 }
 
 async function loadTasks(tasksType) {
-    //reset currentTask to 0
-    currentTask = 0;
+    // //reset currentTask to 0
+    // currentTask = 0;
 
-    let taskListFiles = { "heuristics": "taskLists/heuristics.json" };
+    // let taskListFiles = { "heuristics": "taskLists/heuristics.json" };
 
-    //do an async load of the designated task list;
-    console.log(taskListFiles, tasksType)
-    let taskListObj = await d3.json(taskListFiles[tasksType]);
+    // //do an async load of the designated task list;
+    // console.log(taskListFiles, tasksType)
+    // let taskListObj = await d3.json(taskListFiles[tasksType]);
 
-    let taskListEntries = Object.entries(taskListObj);
+    // let taskListEntries = Object.entries(taskListObj);
 
-    // insert order and taskID into each element in this list
-    taskList = taskListEntries.map((t, i) => {
-        let task = t[1];
-        task.order = i;
-        task.taskID = t[0];
-        return task;
-    });
+    // // insert order and taskID into each element in this list
+    // taskList = taskListEntries.map((t, i) => {
+    //     let task = t[1];
+    //     task.order = i;
+    //     task.taskID = t[0];
+    //     return task;
+    // });
 
     // Set import scripts
     let scriptTags = [

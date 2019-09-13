@@ -342,7 +342,8 @@
         graph
     } = getUrlVars();
 
-    console.log(load_data(workspace, graph))
+    graph_structure = load_data(workspace, graph).then(d => console.log(d))
+    loadNewGraph(graph_structure)
 
     mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
 
