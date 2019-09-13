@@ -2,6 +2,7 @@
 let tables;
 let nodes = [];
 let edges = [];
+let graph_structure;
 
 async function load_data(workspace, graph) {
     // Fetch the node and edge tables
@@ -19,7 +20,12 @@ async function load_data(workspace, graph) {
     edges_call = "http://127.0.0.1:8080/api/workspaces/" + workspace + "/tables/" + edge_table
     await load_edges(edges_call)
 
-    return { "nodes": nodes, "edges": edges }
+    // Set the global graph structure
+    graph_structure = { "nodes": nodes, "edges": edges }
+
+    // Draw the graph
+    await loadNewGraph(graph_structure)
+
 };
 
 async function load_tables(call) {

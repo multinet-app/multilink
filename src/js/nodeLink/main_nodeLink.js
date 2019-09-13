@@ -413,13 +413,11 @@ function loadVis() {
     // })();
 }
 
-function loadTask(task) {
+function loadTask(graph_structure) {
 
-    // update global variables from config;
-    // setGlobalScales();
 
     //determine x and y positions before starting provenance;
-    if (graph.nodes[0].fx === undefined) {
+    if (graph_structure.nodes[0].fx === undefined) {
         //scale node positions to this screen;
 
 
@@ -427,15 +425,15 @@ function loadTask(task) {
 
         let xPos = d3
             .scaleLinear()
-            .domain(d3.extent(graph.nodes, n => n.x))
+            .domain(d3.extent(graph_structure.nodes, n => n.x))
             .range([50, visDimensions.width - 50]);
         let yPos = d3
             .scaleLinear()
-            .domain(d3.extent(graph.nodes, n => n.y))
+            .domain(d3.extent(graph_structure.nodes, n => n.y))
             .range([50, visDimensions.height - 50]);
 
         let needsScaling = xPos.domain()[1] > xPos.range()[1] || yPos.domain()[1] > yPos.range()[1]
-        graph.nodes.map(n => {
+        graph_structure.nodes.map(n => {
             n.x = needsScaling ? xPos(n.x) : n.x;
             n.y = needsScaling ? yPos(n.y) : n.y;
             n.fx = n.x;
@@ -444,7 +442,7 @@ function loadTask(task) {
             n.savedY = n.fy;
         });
     } else {
-        graph.nodes.map(n => {
+        graph_structure.nodes.map(n => {
             n.fx = n.savedX;
             n.fy = n.savedY;
             n.x = n.savedX;
@@ -454,7 +452,7 @@ function loadTask(task) {
 
 
     //pass in workerID to setupProvenance
-    setUpProvenance(graph.nodes, task.taskID, task.order);
+    setUpProvenance(graph_structure.nodes, task.taskID, task.order);
 
     setUpObserver("selected", highlightSelectedNodes);
     setUpObserver("hardSelected", highlightHardSelectedNodes);
@@ -693,7 +691,7 @@ function hideTooltip() {
     d3.select('.tooltip').transition().duration(100).style("opacity", 0);
 }
 
-function updateVis() {
+function updateVis(graph_structure) {
 
     setGlobalScales();
 

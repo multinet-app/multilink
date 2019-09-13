@@ -43,25 +43,6 @@ async function loadNewGraph(graph_structure) {
 }
 
 async function loadTasks(tasksType) {
-    // //reset currentTask to 0
-    // currentTask = 0;
-
-    // let taskListFiles = { "heuristics": "taskLists/heuristics.json" };
-
-    // //do an async load of the designated task list;
-    // console.log(taskListFiles, tasksType)
-    // let taskListObj = await d3.json(taskListFiles[tasksType]);
-
-    // let taskListEntries = Object.entries(taskListObj);
-
-    // // insert order and taskID into each element in this list
-    // taskList = taskListEntries.map((t, i) => {
-    //     let task = t[1];
-    //     task.order = i;
-    //     task.taskID = t[0];
-    //     return task;
-    // });
-
     // Set import scripts
     let scriptTags = [
         "js/nodeLink/main_nodeLink.js",

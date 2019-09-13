@@ -335,17 +335,15 @@
         return vars;
     }
 
-    //set global variables from query string
+    // Set global variables from query string
     var {
         configPanel,
         workspace,
         graph
     } = getUrlVars();
 
-    graph_structure = load_data(workspace, graph).then(d => console.log(d))
-    loadNewGraph(graph_structure)
+    load_data(workspace, graph)
 
-    mode = 'heuristics'; //can be 'develop', 'test', 'heuristics', or 'study'
 
     configPanel = eval(configPanel);
 
@@ -355,7 +353,7 @@
     }
 
     async function startStudy() {
-        await loadTasks(mode);
+        await loadTasks(graph_structure);
 
         loadVis()
         resetPanel();

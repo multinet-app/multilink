@@ -1,39 +1,3 @@
-// Helper functions to export config files
-
-
-function exportConfig(baseKeys, nodeLinkKeys, isTaskConfig) {
-    let configCopy = JSON.parse(JSON.stringify(config));
-
-    console.log(baseKeys, nodeLinkKeys, isTaskConfig)
-        //only keep keys for this particular config file;
-
-    let removeKeys = ['graphFiles', 'attributeScales', 'style'];
-    Object.keys(configCopy).map(key => {
-        if (removeKeys.includes(key)) {
-            delete configCopy[key];
-        }
-    });
-
-    Object.keys(configCopy.nodeLink).map(nKey => {
-        if (!nodeLinkKeys.includes(nKey)) {
-            delete configCopy.nodeLink[nKey];
-        }
-    });
-
-    let fileName = "taskConfig.json"
-        // //find out which 'state' you're saving : optimal, 5attr, or 10attr;
-        // let state = d3.select(".button.clicked").attr("id");
-        // let fileName = {
-        //   optimalConfig: "task" + (taskNum + 1) + "Config.json",
-        //   nodeLinkConfig: "5AttrConfig.json",
-        //   saturatedConfig: "10AttrConfig.json"
-        // };
-
-    saveToFile(configCopy, isTaskConfig ? fileName : "baseConfig.json");
-}
-
-
-
 //Helper functions for node-link layout;
 //Helper functions to compute edge arcs
 function countSiblingLinks(graph, source, target) {
@@ -118,7 +82,7 @@ function setPanelValuesFromFile() {
     );
 
     d3.select("#fontSlider").on("change", function() {
-        updateVis();
+        updateVis(graph_structure);
     });
 
     d3.select("#markerSize").property(
@@ -133,7 +97,7 @@ function setPanelValuesFromFile() {
 
         config.nodeLink.nodeWidth = eval(markerSize[0]);
         config.nodeLink.nodeHeight = eval(markerSize[1]);
-        updateVis();
+        updateVis(graph_structure);
     });
 
     //set Panel Values
@@ -179,7 +143,7 @@ function setPanelValuesFromFile() {
         setDisabledRadioButtons();
 
         await loadNewGraph(config.graphFiles[file]);
-        updateVis();
+        updateVis(graph_structure);
     });
 
     let setDisabledRadioButtons = function() {
@@ -315,7 +279,7 @@ function setPanelValuesFromFile() {
                 );
             }
 
-            updateVis()
+            updateVis(graph_structure)
 
         });
 
@@ -407,12 +371,12 @@ function setPanelValuesFromFile() {
                     d3.select("#nodeQuantAttributes_histogram"),
                     graph.nodes
                 );
-                updateVis();
+                updateVis(graph_structure);
             } else {
                 config.nodeAttributes = config.nodeAttributes.filter(
                     el => el !== d.attr
                 );
-                updateVis();
+                updateVis(graph_structure);
             }
         });
 
@@ -434,7 +398,7 @@ function setPanelValuesFromFile() {
                 config.attributeScales.node[d.attr].domain = eval(this.value);
             }
 
-            updateVis();
+            updateVis(graph_structure);
 
             //call createHist for that attribute
             d3.select("#nodeQuantAttributes")
@@ -489,10 +453,10 @@ function setPanelValuesFromFile() {
             let includeAttr = d3.select(this).property("checked");
             if (includeAttr) {
                 config.nodeAttributes.push(d);
-                updateVis();
+                updateVis(graph_structure);
             } else {
                 config.nodeAttributes = config.nodeAttributes.filter(el => el !== d);
-                updateVis();
+                updateVis(graph_structure);
             }
         });
 
@@ -523,7 +487,7 @@ function setPanelValuesFromFile() {
             //update the array of attributes 
 
             d3.select("#renderBarsCheckbox").property("checked", false);
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeStrokeSelect")
@@ -533,7 +497,7 @@ function setPanelValuesFromFile() {
             // config.nodeLink.drawBars = false;
 
             // d3.select('#renderBarsCheckbox').property('checked', false)
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeSizeSelect")
@@ -571,7 +535,7 @@ function setPanelValuesFromFile() {
 
 
 
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeSizeSelect")
@@ -615,13 +579,13 @@ function setPanelValuesFromFile() {
                 graph.nodes
             );
 
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#renderBarsCheckbox").on("input", function() {
         config.nodeLink.drawBars = d3.select(this).property("checked");
 
-        updateVis();
+        updateVis(graph_structure);
     });
 
     d3.select("#edgeWidthScale").on("change", function() {
@@ -646,7 +610,7 @@ function setPanelValuesFromFile() {
             }
         }
 
-        updateVis();
+        updateVis(graph_structure);
 
 
     });
@@ -656,7 +620,7 @@ function setPanelValuesFromFile() {
 
 function update() {
     setPanelValuesFromFile();
-    updateVis();
+    updateVis(graph_structure);
 }
 
 //Function that creates histograms for the controlPanel
