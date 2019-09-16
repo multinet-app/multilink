@@ -1,7 +1,10 @@
+// Multinet data importer
+
 // Define global variables that store data
 let tables;
 let nodes = [];
 let links = [];
+let graph_structure;
 
 
 async function load_data(workspace, graph) {
@@ -26,8 +29,6 @@ async function load_data(workspace, graph) {
     // Draw the graph
     await loadNewGraph(graph_structure)
 
-    return graph_structure
-
 };
 
 async function load_tables(call) {
@@ -38,12 +39,10 @@ async function load_nodes(call) {
     let table;
     table = await d3.json(call);
     nodes = [].concat(nodes, table)
-    console.log(nodes)
 };
 
 async function load_links(call) {
     let table;
     table = await d3.json(call);
     links = [].concat(links, table)
-    console.log(links)
 };

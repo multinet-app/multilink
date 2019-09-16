@@ -1,3 +1,16 @@
+// Helper functions specifically related to the visualization and the rendered tools
+
+// Clear any values in the search box and the search message
+async function resetSearch() {
+    d3.select(".searchInput").property("value", "");
+    d3.select(".searchMsg").style("display", "none");
+
+    // Clear Selected Node List
+    d3.select("#selectedNodeList")
+        .selectAll("li")
+        .remove();
+}
+
 //Helper functions for node-link layout;
 //Helper functions to compute edge arcs
 function countSiblingLinks(graph, source, target) {

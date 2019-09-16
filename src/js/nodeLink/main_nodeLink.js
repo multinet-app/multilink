@@ -1,19 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// Main nodelink functions
 
-/*global queue, labels*/
-
-//Global config and graph variables;
-//Config is set up in input file and the potentially modified  by user changes to the panel.
-//dir and undir graphs store refs to the two flavors of a graph and that can be toggled by the user in the panel
-
-//compute default data domains once and use when needed
 var defaultDomains = { node: {}, edge: {} };
-
-//object to store scales as a function of attr name;
 var scales = {};
 
 //Legend Scales
@@ -21,21 +8,18 @@ var circleScale = d3.scaleLinear().domain([0, 1]);
 
 var edgeScale = d3.scaleLinear().domain([0, 1]);
 
-var height;
-var width;
-
-//Dimensions of the actual Vis
+// Set dimensions of the panel with the task, legend, and user response and without those pieces
+var panelDimensions = { width: 0, height: 0 };
 var visDimensions = { width: 0, height: 0 };
 
-//Dimensions of the panel with the task, legend, and user response
-var panelDimensions = { width: 0, height: 0 };
-
+var height;
+var width;
 let taskBar_height;
 
 var svg;
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
-var simulation = 1; //so we're not restarting it every time updateVis is called;
+var simulation; //so we're not restarting it every time updateVis is called;
 
 // var tooltipTimeout; 
 
@@ -51,6 +35,15 @@ let nodeLength,
     // nodeStroke,
     edgeColor,
     edgeWidth;
+
+// Draws the visualization on first load
+async function makeVis() {
+    // Load data from the API
+    await load_data(workspace, graph)
+
+    loadVis();
+    resetSearch();
+}
 
 nodeLength = function(node) {
     let nodeSizeScale = d3
@@ -206,7 +199,7 @@ function isSelected(node) {
 function searchFor(selectedOption) {
 
     //find the right nodeObject
-    node = graph.nodes.find(n => n.nameame.toLowerCase() === selectedOption.toLowerCase());
+    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
     if (!node) {
         return -1;
@@ -708,37 +701,8 @@ async function updateVis(graph_structure) {
 
     //setGlobalScales();
 
-    //config.nodeIsRect = false;
-
     let fakeSmallNode = {};
     let fakeLargeNode = {};
-
-    // let nodeSizeAttr = config.nodeLink.nodeSizeAttr;
-    // let edgeWidthAttr = config.nodeLink.edgeWidthAttr;
-
-    // if (nodeSizeAttr) {
-    //     fakeSmallNode[nodeSizeAttr] =
-    //         config.attributeScales.node[nodeSizeAttr].domain[0];
-    //     fakeLargeNode[nodeSizeAttr] =
-    //         config.attributeScales.node[nodeSizeAttr].domain[1];
-
-    //     circleScale.range([nodeLength(fakeSmallNode), nodeLength(fakeLargeNode)]);
-
-    // } else {
-    circleScale.range([0, 0]).clamp(true);
-    // }
-
-    // if (edgeWidthAttr) {
-    //     fakeSmallNode[edgeWidthAttr] =
-    //         config.attributeScales.edge[edgeWidthAttr].domain[0];
-    //     fakeLargeNode[edgeWidthAttr] =
-    //         config.attributeScales.edge[edgeWidthAttr].domain[1];
-
-    //     edgeScale.range([edgeWidth(fakeSmallNode), edgeWidth(fakeLargeNode)]);
-
-    // } else {
-    edgeScale.range([5, 5]).clamp(true);
-    // }
 
     //create scales for bars;
     // let barAttributes = config.nodeAttributes.filter(isQuant);
@@ -808,19 +772,19 @@ async function updateVis(graph_structure) {
         .style("stroke", "#888888")
         .attr("id", d => d._key)
         .attr("d", d => arcPath(1, d))
-        // .on("mouseover", function(d) {
+        .on("mouseover", function(d) {
 
-    //     // console.log (d)
-    //     let tooltipData = d.type;
+            //     // console.log (d)
+            let tooltipData = "hello"; //d.name;
 
-    //     if (config.nodeLink.edgeWidthAttr) {
-    //         tooltipData = tooltipData.concat(" [" + d.count + "]")
-    //     }
+            //     if (config.nodeLink.edgeWidthAttr) {
+            //         tooltipData = tooltipData.concat(" [" + d.count + "]")
+            //     }
 
-    //     showTooltip(tooltipData, 400)
+            showTooltip(tooltipData, 400)
 
 
-    // })
+        })
 
     .on("mouseout", function(d) {
         hideTooltip();
@@ -883,8 +847,6 @@ async function updateVis(graph_structure) {
     let sizeDiff = 55 - nodeMarkerLength;
     let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
 
-    let config = {}
-    config["nodeIsRect"] = false
     node
         .selectAll(".nodeBox")
         .attr("x", d => d.x)
@@ -901,17 +863,18 @@ async function updateVis(graph_structure) {
 
     .on("mouseover", function(d) {
 
-        let tooltipData = '';
+        let tooltipData = 'hello node';
 
-        if (config.nodeLink.nodeFillAttr) {
-            tooltipData = tooltipData.concat(config.nodeLink.nodeFillAttr + ":" + d[config.nodeLink.nodeFillAttr] + " ")
-        };
+        // if (config.nodeLink.nodeFillAttr) {
+        //     tooltipData = tooltipData.concat(config.nodeLink.nodeFillAttr + ":" + d[config.nodeLink.nodeFillAttr] + " ")
+        // };
 
-        if (config.nodeLink.nodeSizeAttr) {
-            tooltipData = tooltipData.concat(config.attributeScales.node[config.nodeLink.nodeSizeAttr].label + ":" + Math.round(d[config.nodeLink.nodeSizeAttr]) + " ")
-        }
+        // if (config.nodeLink.nodeSizeAttr) {
+        //     tooltipData = tooltipData.concat(config.attributeScales.node[config.nodeLink.nodeSizeAttr].label + ":" + Math.round(d[config.nodeLink.nodeSizeAttr]) + " ")
+        // }
 
-        config.nodeLink.drawBars ? "" : showTooltip(tooltipData)
+        // config.nodeLink.drawBars ? "" : 
+        showTooltip(tooltipData)
     })
 
 
@@ -931,9 +894,8 @@ async function updateVis(graph_structure) {
 
             //let textWidth = -d3.select(this).node().getBBox().width / 2
 
-            return config.nodeIsRect ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : 50 + 8
+            return false ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : 50 + 8
         })
-        // .attr("x", d => config.nodeIsRect ? -nodeMarkerLength/ 2 -barPadding/2 -extraPadding/2 + checkboxSize+ 3  :-nodeLength(d) / 2 + checkboxSize)
 
     .attr('x', d => d.x)
         .on("click", selectNode);
@@ -951,7 +913,7 @@ async function updateVis(graph_structure) {
     //   //make sure label box spans the width of the node
     //   return config.nodeLink.drawBars ? nodeMarkerLength + 30 : d3.max([textWidth, nodeLength(d)])+4;
     // })
-    .attr("width", d => config.nodeIsRect ? nodeLength(d) + 8 + nodePadding + extraPadding : nodeLength(d) + 8)
+    .attr("width", d => false ? nodeLength(d) + 8 + nodePadding + extraPadding : nodeLength(d) + 8)
         .on("click", selectNode)
 
 
@@ -968,7 +930,7 @@ async function updateVis(graph_structure) {
     //   return config.nodeLink.drawBars ? -nodeMarkerLength / 2 -15  : d3.min([-textWidth / 2, -nodeLength(d) / 2 - 2]);
     // })
 
-    .attr("x", d => config.nodeIsRect ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
+    .attr("x", d => false ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
 
     .attr("y", d =>
         // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 14 : 
@@ -979,14 +941,11 @@ async function updateVis(graph_structure) {
         .select(".selectBox")
         .classed("selected", d => d.hardSelect)
         .attr("width", checkboxSize)
-        //if there is no selection to be made for this task, don't draw the checkbox
-        // .attr(
-        //     "height",
-        //     (taskList[currentTask].replyType.length === 1 && taskList[currentTask].replyType.includes("value")) ? 0 : checkboxSize)
-        // .attr("x", function(d) {
-        //     let nodeLabel = d3
-        //         .select(d3.select(this).node().parentNode)
-        //         .select("text");
+
+    // .attr("x", function(d) {
+    //     let nodeLabel = d3
+    //         .select(d3.select(this).node().parentNode)
+    //         .select("text");
 
     //     // let textWidth = nodeLabel.node().getBBox().width;
     //     // return -textWidth / 2 - checkboxSize - 5;
@@ -1275,7 +1234,7 @@ async function updateVis(graph_structure) {
     simulation.nodes(graph.nodes).on("tick", ticked);
     simulation
         .force("link")
-        .links(graph.links)
+        .links(graph_structure.links)
         .distance(l => l.count);
     simulation.force(
         "collision",
@@ -1283,7 +1242,7 @@ async function updateVis(graph_structure) {
     );
 
     //if source/target are still strings from the input file
-    if (graph.links[0].source.id === undefined) {
+    if (graph_structure.links[0]._from._key === undefined) {
         //restablish link references to their source and target nodes;
         graph.links.map(l => {
             l.source =
