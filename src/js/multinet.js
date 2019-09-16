@@ -2,7 +2,7 @@
 let tables;
 let nodes = [];
 let links = [];
-let graph_structure;
+
 
 async function load_data(workspace, graph) {
     // Fetch the node and edge tables
@@ -25,6 +25,8 @@ async function load_data(workspace, graph) {
 
     // Draw the graph
     await loadNewGraph(graph_structure)
+
+    return graph_structure
 
 };
 

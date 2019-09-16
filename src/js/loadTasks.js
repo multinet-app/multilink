@@ -1,18 +1,3 @@
-//global variable that defines the tasks to be shown to the user and the (randomized) order in which to show them
-let app;
-
-
-async function resetSearch() {
-    // Clear any values in the search box and the search message
-    d3.select(".searchInput").property("value", "");
-    d3.select(".searchMsg").style("display", "none");
-
-    // Clear Selected Node List
-    d3.select("#selectedNodeList")
-        .selectAll("li")
-        .remove();
-}
-
 async function loadNewGraph(graph_structure) {
     d3.select("#search-input").attr("list", "characters");
     let inputParent = d3.select("#search-input").node().parentNode;
@@ -40,34 +25,4 @@ async function loadNewGraph(graph_structure) {
 
     options.attr("value", d => d.shortName);
     options.attr("id", d => d.id);
-}
-
-//function that loads in a .js script tag and only resolves the promise once the script is fully loaded
-function loadScript(url, callback) {
-    return new Promise(function(resolve, reject) {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        if (script.readyState) {
-            // only required for IE <9
-            script.onreadystatechange = function() {
-                if (
-                    script.readyState === "loaded" ||
-                    script.readyState === "complete"
-                ) {
-                    script.onreadystatechange = null;
-                    callback();
-                    resolve();
-                }
-            };
-        } else {
-            //Others
-            script.onload = function() {
-                callback();
-                resolve();
-            };
-        }
-
-        script.src = url;
-        document.getElementsByTagName("head")[0].appendChild(script);
-    });
 }

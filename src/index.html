@@ -325,21 +325,13 @@
 
 <script src="js/loadTasks.js" type="text/javascript"></script>
 <script src="js/ui.js" type="text/javascript"></script>
+<script src="js/utils.js" type="text/javascript"></script>
 <script src="js/multinet.js" type="text/javascript"></script>
 <script src="js/nodeLink/main_nodeLink.js" type="text/javascript"></script>
 <script src="js/nodeLink/helperFunctions.js" type="text/javascript"></script>
 
 
 <script>
-    function getUrlVars() {
-        var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&*#]*)/gi, function(m, key, value) {
-            console.log(key, value)
-            vars[key] = value;
-        });
-        return vars;
-    }
-
     // Set global variables from query string
     var {
         configPanel,
@@ -347,19 +339,13 @@
         graph
     } = getUrlVars();
 
-    // Load data from the API
-    load_data(workspace, graph)
-
     // remove ui components that are not relevant
     configPanel = eval(configPanel);
     if (!configPanel) {
         d3.selectAll('.development').remove();
     }
 
-    async function startStudy() {
-        loadVis()
-        resetSearch();
-    }
 
-    startStudy();
+
+    makeVis();
 </script>

@@ -52,32 +52,54 @@ let nodeLength,
     edgeColor,
     edgeWidth;
 
+nodeLength = function(node) {
+    let nodeSizeScale = d3
+        .scaleLinear()
+        .range([nodeMarkerLength / 2, nodeMarkerLength * 2])
+        .clamp(true);
+
+    //if an attribute has been assigned to nodeSizeAttr, set domain
+    // if (config.nodeLink.nodeSizeAttr) {
+    //     nodeSizeScale.domain(
+    //         config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
+    //     );
+    // }
+
+    let value =
+        // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
+        // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
+        nodeMarkerLength;
+    //make circles a little larger than just the radius of the marker;
+    return value; //config.nodeIsRect ? value : value * 1.3;
+};
+
+nodeHeight = function(node) {
+    let nodeSizeScale = d3
+        .scaleLinear()
+        .range([nodeMarkerHeight / 2, nodeMarkerHeight * 2])
+        .clamp(true);
+
+    //if an attribute has been assigned to nodeSizeAttr, set domain
+    // if (config.nodeLink.nodeSizeAttr) {
+    //     nodeSizeScale.domain(
+    //         config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
+    //     );
+    // }
+
+    let value =
+        // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
+        // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
+        nodeMarkerHeight;
+    return value; //config.nodeIsRect ? value : value * 1.3;
+};
+
 function setGlobalScales() {
     nodeMarkerLength = config.nodeLink.nodeWidth || 60;
     nodeMarkerHeight = config.nodeLink.nodeHeight || 35;
     checkboxSize = nodeMarkerHeight / 4;
     //Create Scale Functions
 
-    nodeLength = function(node) {
-        let nodeSizeScale = d3
-            .scaleLinear()
-            .range([nodeMarkerLength / 2, nodeMarkerLength * 2])
-            .clamp(true);
 
-        //if an attribute has been assigned to nodeSizeAttr, set domain
-        if (config.nodeLink.nodeSizeAttr) {
-            nodeSizeScale.domain(
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
-            );
-        }
-
-        let value =
-            config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
-            nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
-            nodeMarkerLength;
-        //make circles a little larger than just the radius of the marker;
-        return value; //config.nodeIsRect ? value : value * 1.3;
-    };
 
     //function that was meant to
     quantColors = function(i) {
@@ -85,25 +107,7 @@ function setGlobalScales() {
         return color;
     };
 
-    nodeHeight = function(node) {
-        let nodeSizeScale = d3
-            .scaleLinear()
-            .range([nodeMarkerHeight / 2, nodeMarkerHeight * 2])
-            .clamp(true);
 
-        //if an attribute has been assigned to nodeSizeAttr, set domain
-        if (config.nodeLink.nodeSizeAttr) {
-            nodeSizeScale.domain(
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
-            );
-        }
-
-        let value =
-            config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
-            nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
-            nodeMarkerHeight;
-        return value; //config.nodeIsRect ? value : value * 1.3;
-    };
 
     nodeFill = function(node) {
         let nodeFillScale = d3.scaleOrdinal();
@@ -370,7 +374,9 @@ function loadVis() {
             "center",
             d3.forceCenter(visDimensions.width / 2, visDimensions.height / 2)
         );
-    // .force("y", d3.forceY().y(0));
+
+    updateVis(graph_structure)
+        // .force("y", d3.forceY().y(0));
 
     //TODO combine these two variables into one;
 
@@ -410,29 +416,39 @@ function loadTask(graph_structure) {
 
     //determine x and y positions before starting provenance;
     if (graph_structure.nodes[0].fx === undefined) {
-        //scale node positions to this screen;
-
-
-        //only scale if positions fall outside of domain; 
-
-        let xPos = d3
-            .scaleLinear()
-            .domain(d3.extent(graph_structure.nodes, n => n.x))
-            .range([50, visDimensions.width - 50]);
-        let yPos = d3
-            .scaleLinear()
-            .domain(d3.extent(graph_structure.nodes, n => n.y))
-            .range([50, visDimensions.height - 50]);
-
-        let needsScaling = xPos.domain()[1] > xPos.range()[1] || yPos.domain()[1] > yPos.range()[1]
         graph_structure.nodes.map(n => {
-            n.x = needsScaling ? xPos(n.x) : n.x;
-            n.y = needsScaling ? yPos(n.y) : n.y;
+            n.x = 100;
+            n.y = 100;
             n.fx = n.x;
             n.fy = n.y;
             n.savedX = n.fx;
             n.savedY = n.fy;
         });
+
+
+        //scale node positions to this screen;
+
+
+        //only scale if positions fall outside of domain; 
+
+        // let xPos = d3
+        //     .scaleLinear()
+        //     .domain(d3.extent(graph_structure.nodes, n => n.x))
+        //     .range([50, visDimensions.width - 50]);
+        // let yPos = d3
+        //     .scaleLinear()
+        //     .domain(d3.extent(graph_structure.nodes, n => n.y))
+        //     .range([50, visDimensions.height - 50]);
+
+        // let needsScaling = xPos.domain()[1] > xPos.range()[1] || yPos.domain()[1] > yPos.range()[1]
+        // graph_structure.nodes.map(n => {
+        //     n.x = needsScaling ? xPos(n.x) : n.x;
+        //     n.y = needsScaling ? yPos(n.y) : n.y;
+        //     n.fx = n.x;
+        //     n.fy = n.y;
+        //     n.savedX = n.fx;
+        //     n.savedY = n.fy;
+        // });
     } else {
         graph_structure.nodes.map(n => {
             n.fx = n.savedX;
@@ -683,62 +699,62 @@ function hideTooltip() {
     d3.select('.tooltip').transition().duration(100).style("opacity", 0);
 }
 
-function updateVis(graph_structure) {
+async function updateVis(graph_structure) {
 
-    setGlobalScales();
+    //setGlobalScales();
 
-    config.nodeIsRect = config.nodeLink.drawBars;
+    //config.nodeIsRect = false;
 
     let fakeSmallNode = {};
     let fakeLargeNode = {};
 
-    let nodeSizeAttr = config.nodeLink.nodeSizeAttr;
-    let edgeWidthAttr = config.nodeLink.edgeWidthAttr;
+    // let nodeSizeAttr = config.nodeLink.nodeSizeAttr;
+    // let edgeWidthAttr = config.nodeLink.edgeWidthAttr;
 
-    if (nodeSizeAttr) {
-        fakeSmallNode[nodeSizeAttr] =
-            config.attributeScales.node[nodeSizeAttr].domain[0];
-        fakeLargeNode[nodeSizeAttr] =
-            config.attributeScales.node[nodeSizeAttr].domain[1];
+    // if (nodeSizeAttr) {
+    //     fakeSmallNode[nodeSizeAttr] =
+    //         config.attributeScales.node[nodeSizeAttr].domain[0];
+    //     fakeLargeNode[nodeSizeAttr] =
+    //         config.attributeScales.node[nodeSizeAttr].domain[1];
 
-        circleScale.range([nodeLength(fakeSmallNode), nodeLength(fakeLargeNode)]);
+    //     circleScale.range([nodeLength(fakeSmallNode), nodeLength(fakeLargeNode)]);
 
-    } else {
-        circleScale.range([0, 0]).clamp(true);
-    }
+    // } else {
+    circleScale.range([0, 0]).clamp(true);
+    // }
 
-    if (edgeWidthAttr) {
-        fakeSmallNode[edgeWidthAttr] =
-            config.attributeScales.edge[edgeWidthAttr].domain[0];
-        fakeLargeNode[edgeWidthAttr] =
-            config.attributeScales.edge[edgeWidthAttr].domain[1];
+    // if (edgeWidthAttr) {
+    //     fakeSmallNode[edgeWidthAttr] =
+    //         config.attributeScales.edge[edgeWidthAttr].domain[0];
+    //     fakeLargeNode[edgeWidthAttr] =
+    //         config.attributeScales.edge[edgeWidthAttr].domain[1];
 
-        edgeScale.range([edgeWidth(fakeSmallNode), edgeWidth(fakeLargeNode)]);
+    //     edgeScale.range([edgeWidth(fakeSmallNode), edgeWidth(fakeLargeNode)]);
 
-    } else {
-        edgeScale.range([5, 5]).clamp(true);
-    }
+    // } else {
+    edgeScale.range([5, 5]).clamp(true);
+    // }
 
     //create scales for bars;
-    let barAttributes = config.nodeAttributes.filter(isQuant);
+    // let barAttributes = config.nodeAttributes.filter(isQuant);
 
     let scaleColors = {}; //Object to store which color to use for which scales
 
     let barPadding = 3;
 
-    barAttributes.map((b, i) => {
-        let scale = d3
-            .scaleLinear()
-            .domain(config.attributeScales.node[b].domain)
-            .range([0, nodeMarkerHeight - 2 * barPadding])
-            .clamp(true);
+    // barAttributes.map((b, i) => {
+    //     let scale = d3
+    //         .scaleLinear()
+    //         .domain(config.attributeScales.node[b].domain)
+    //         .range([0, nodeMarkerHeight - 2 * barPadding])
+    //         .clamp(true);
 
-        let domainKey = scale.domain().join("-");
-        scaleColors[domainKey] = "";
+    //     let domainKey = scale.domain().join("-");
+    //     scaleColors[domainKey] = "";
 
-        //save scale and color to use with that attribute bar
-        scales[b] = { scale, domainKey };
-    });
+    //     //save scale and color to use with that attribute bar
+    //     scales[b] = { scale, domainKey };
+    // });
 
     let singleDomain = Object.keys(scaleColors).length === 1;
     //Assign one color per unique domain;
@@ -757,8 +773,7 @@ function updateVis(graph_structure) {
     //Draw Links
     let link = d3
         .select(".links")
-        .selectAll(".linkGroup")
-        .data(graph_structure.links, l => l._id);
+        .data(graph_structure.links);
 
     let linkEnter = link
         .enter()
@@ -805,19 +820,19 @@ function updateVis(graph_structure) {
     })
 
     // TO DO , set ARROW DIRECTION DYNAMICALLY
-    link
-        .select("textPath")
-        .attr("xlink:href", d => "#" + d.id)
-        .text(d => (config.isDirected ? (d.type === "mentions" ? "▶" : "◀") : ""))
-        .style("fill", edgeColor)
-        .style("stroke", edgeColor)
+    // link
+    //     .select("textPath")
+    //     .attr("xlink:href", d => "#" + d.id)
+    //     .text(d => (config.isDirected ? (d.type === "mentions" ? "▶" : "◀") : ""))
+    //     .style("fill", edgeColor)
+    //     .style("stroke", edgeColor)
 
 
     //draw Nodes
+    console.log("nodes", graph_structure.nodes)
     var node = d3
         .select(".nodes")
-        .selectAll(".nodeGroup")
-        .data(graph_structure.nodes, n => n._key);
+        .data(graph_structure.nodes);
 
     let nodeEnter = node
         .enter()
@@ -844,20 +859,24 @@ function updateVis(graph_structure) {
 
 
     //determine the size of the node here: 
-    let barAttrs = config.nodeLink.drawBars ?
-        config.nodeAttributes.filter(isQuant) : [];
+    // let barAttrs = config.nodeLink.drawBars ?
+    //     config.nodeAttributes.filter(isQuant) : [];
 
-    let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
+    //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
+    let drawCat = 0
     let radius = drawCat ? nodeMarkerHeight * 0.15 : 0;
     let padding = drawCat ? 3 : 0;
 
 
-    nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
+    // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
+    nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
 
     let nodePadding = 2;
     let sizeDiff = 55 - nodeMarkerLength;
     let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
 
+    let config = {}
+    config["nodeIsRect"] = false
     node
         .selectAll(".nodeBox")
         .attr("x", d => config.nodeIsRect ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
@@ -871,8 +890,8 @@ function updateVis(graph_structure) {
 
     node.select('.node')
         .style("fill", nodeFill)
-        .classed("clicked", d => app.currentState().selected.includes(d.id))
-        .classed("selected", d => app.currentState().hardSelected.includes(d.id))
+        // .classed("clicked", d => app.currentState().selected.includes(d.id))
+        // .classed("selected", d => app.currentState().hardSelected.includes(d.id))
 
     .on("mouseover", function(d) {
 
@@ -893,17 +912,20 @@ function updateVis(graph_structure) {
     node
         .select("text")
         .classed("selected", d => d.hardSelect)
-        .style("font-size", config.nodeLink.drawBars ? config.nodeLink.labelSize : '18')
-        .text(d => d[config.nodeLink.labelAttr])
+        .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
+            '18')
+        .text(d => d.name)
         .attr("y", d =>
-            config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : ".5em"
+            // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : 
+            ".5em"
         )
-        .attr('dy', config.nodeLink.drawBars ? 0 : -2)
+        .attr('dy', //config.nodeLink.drawBars ? 0 : 
+            -2)
         .attr("dx", function(d) {
 
-            let textWidth = -d3.select(this).node().getBBox().width / 2
+            //let textWidth = -d3.select(this).node().getBBox().width / 2
 
-            return config.nodeIsRect ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : textWidth + 8
+            return config.nodeIsRect ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : 50 + 8
         })
         // .attr("x", d => config.nodeIsRect ? -nodeMarkerLength/ 2 -barPadding/2 -extraPadding/2 + checkboxSize+ 3  :-nodeLength(d) / 2 + checkboxSize)
 
@@ -912,7 +934,7 @@ function updateVis(graph_structure) {
 
     node
         .select(".labelBackground")
-        .classed('nested', config.nodeLink.drawBars)
+        // .classed('nested', config.nodeLink.drawBars)
         // .attr("width", function(d) {
         //   let textWidth = d3
         //     .select(d3.select(this).node().parentNode)
@@ -927,7 +949,8 @@ function updateVis(graph_structure) {
         .on("click", selectNode)
 
 
-    .attr('height', config.nodeLink.drawBars ? 16 : "1em")
+    .attr('height', //config.nodeLink.drawBars ? 16 : 
+            "1em")
         // .attr("x", function(d) {
         //   let textWidth = d3
         //     .select(d3.select(this).node().parentNode)
@@ -942,7 +965,8 @@ function updateVis(graph_structure) {
     .attr("x", d => config.nodeIsRect ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
 
     .attr("y", d =>
-        config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 14 : "-.5em"
+        // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 14 : 
+        "-.5em"
     );
 
     node
@@ -950,29 +974,30 @@ function updateVis(graph_structure) {
         .classed("selected", d => d.hardSelect)
         .attr("width", checkboxSize)
         //if there is no selection to be made for this task, don't draw the checkbox
-        .attr(
-            "height",
-            (taskList[currentTask].replyType.length === 1 && taskList[currentTask].replyType.includes("value")) ? 0 : checkboxSize)
-        .attr("x", function(d) {
-            let nodeLabel = d3
-                .select(d3.select(this).node().parentNode)
-                .select("text");
+        // .attr(
+        //     "height",
+        //     (taskList[currentTask].replyType.length === 1 && taskList[currentTask].replyType.includes("value")) ? 0 : checkboxSize)
+        // .attr("x", function(d) {
+        //     let nodeLabel = d3
+        //         .select(d3.select(this).node().parentNode)
+        //         .select("text");
 
-            let textWidth = nodeLabel.node().getBBox().width;
-            // return -textWidth / 2 - checkboxSize - 5;
+    //     // let textWidth = nodeLabel.node().getBBox().width;
+    //     // return -textWidth / 2 - checkboxSize - 5;
 
-            return config.nodeIsRect ? -nodeMarkerLength / 2 - nodePadding / 2 - extraPadding / 2 : -textWidth / 2 - checkboxSize / 2;
+    //     return config.nodeIsRect ? -nodeMarkerLength / 2 - nodePadding / 2 - extraPadding / 2 : -textWidth / 2 - checkboxSize / 2;
 
-        })
-        // .attr("y", d =>
-        //   config.nodeLink.drawBars
-        //     ? -(nodeHeight(d) / 2 + 4 + checkboxSize)
-        //     : -checkboxSize / 2
-        // )
-        .attr("y", d =>
-            config.nodeLink.drawBars ?
-            -(nodeMarkerHeight / 2) - 11 :
-            -checkboxSize / 2
+    // })
+    // .attr("y", d =>
+    //   config.nodeLink.drawBars
+    //     ? -(nodeHeight(d) / 2 + 4 + checkboxSize)
+    //     : -checkboxSize / 2
+    // )
+    .attr("y", d =>
+            // config.nodeLink.drawBars ?
+            -(nodeMarkerHeight / 2) - 11
+            // :
+            // -checkboxSize / 2
         )
         // .attr("x", -nodeMarkerLength/2 -checkboxSize)
         // .attr("x", d => {
@@ -1002,170 +1027,170 @@ function updateVis(graph_structure) {
 
     // //  Separate enter/exit/update for bars so as to bind to the correct data;
 
-    let xPos = drawCat ? nodeMarkerLength / 2 - radius : 0;
+    // let xPos = drawCat ? nodeMarkerLength / 2 - radius : 0;
 
-    let numBars = barAttrs.length;
-    let nodeWidth = nodeMarkerLength - barPadding - radius * 2 - padding;
-    let barWidth = nodeWidth / numBars - barPadding;
+    // let numBars = barAttrs.length;
+    // let nodeWidth = nodeMarkerLength - barPadding - radius * 2 - padding;
+    // let barWidth = nodeWidth / numBars - barPadding;
 
-    let scaleStart = -nodeMarkerLength / 2 + barPadding;
-    let scaleEnd = scaleStart + (numBars - 1) * (barWidth + barPadding);
+    // let scaleStart = -nodeMarkerLength / 2 + barPadding;
+    // let scaleEnd = scaleStart + (numBars - 1) * (barWidth + barPadding);
 
-    let barXScale = d3
-        .scaleLinear()
-        .domain([0, numBars - 1])
-        .range([scaleStart, scaleEnd]);
+    // let barXScale = d3
+    //     .scaleLinear()
+    //     .domain([0, numBars - 1])
+    //     .range([scaleStart, scaleEnd]);
 
-    let bars = node
-        .selectAll(".bars")
-        //for each bar associate the relevant data from the parent node, and the attr name to use the correct scale
-        .data(
-            d =>
-            barAttrs.map(b => {
-                return { data: d[b], attr: b };
-            }),
-            d => d.attr
-        );
+    // let bars = node
+    //     .selectAll(".bars")
+    //     //for each bar associate the relevant data from the parent node, and the attr name to use the correct scale
+    //     .data(
+    //         d =>
+    //         barAttrs.map(b => {
+    //             return { data: d[b], attr: b };
+    //         }),
+    //         d => d.attr
+    //     );
 
-    let barsEnter = bars
-        .enter()
-        .append("g")
-        .attr("class", "bars");
+    // let barsEnter = bars
+    //     .enter()
+    //     .append("g")
+    //     .attr("class", "bars");
 
-    barsEnter
-        .append("rect")
-        .attr("class", "frame")
-        .append("title");
+    // barsEnter
+    //     .append("rect")
+    //     .attr("class", "frame")
+    //     .append("title");
 
-    barsEnter
-        .append("rect")
-        .attr("class", "bar")
-        .append("title");
+    // barsEnter
+    //     .append("rect")
+    //     .attr("class", "bar")
+    //     .append("title");
 
-    bars.exit().remove();
+    // bars.exit().remove();
 
-    bars = barsEnter.merge(bars);
+    // bars = barsEnter.merge(bars);
 
-    bars.selectAll("rect").attr("width", barWidth);
+    // bars.selectAll("rect").attr("width", barWidth);
 
-    // bars.selectAll("title").text(function(d) {
-    //   return d.attr + " : " + d.data;
+    // // bars.selectAll("title").text(function(d) {
+    // //   return d.attr + " : " + d.data;
+    // // });
+
+    // bars.on("mouseover", function(d) {
+    //     let label = config.attributeScales.node[d.attr].label
+    //     showTooltip(label + " : " + Math.round(d.data))
+    // })
+
+    // bars.attr("transform", (d, i) => {
+    //     return "translate(" + barXScale(i) + ",2)";
     // });
 
-    bars.on("mouseover", function(d) {
-        let label = config.attributeScales.node[d.attr].label
-        showTooltip(label + " : " + Math.round(d.data))
-    })
+    // bars
+    //     .select(".frame")
+    //     .attr("height", d => scales[d.attr].scale.range()[1])
+    //     .attr("y", d => -scales[d.attr].scale.range()[1] / 2)
+    //     .style("stroke", d => scales[d.attr].fill);
 
-    bars.attr("transform", (d, i) => {
-        return "translate(" + barXScale(i) + ",2)";
-    });
+    // bars
+    //     .select(".bar")
+    //     .classed("clipped", d => d.data > scales[d.attr].scale.domain()[1])
+    //     .attr("height", d => scales[d.attr].scale(d.data))
+    //     .attr(
+    //         "y",
+    //         d => nodeMarkerHeight / 2 - barPadding - scales[d.attr].scale(d.data)
+    //     )
+    //     .style("fill", d => scales[d.attr].fill);
 
-    bars
-        .select(".frame")
-        .attr("height", d => scales[d.attr].scale.range()[1])
-        .attr("y", d => -scales[d.attr].scale.range()[1] / 2)
-        .style("stroke", d => scales[d.attr].fill);
+    // d3.select("#nodeBarsSelect")
+    //     .selectAll("label")
+    //     .style("color", "#a6a6a6")
+    //     .style("font-weight", "normal");
 
-    bars
-        .select(".bar")
-        .classed("clipped", d => d.data > scales[d.attr].scale.domain()[1])
-        .attr("height", d => scales[d.attr].scale(d.data))
-        .attr(
-            "y",
-            d => nodeMarkerHeight / 2 - barPadding - scales[d.attr].scale(d.data)
-        )
-        .style("fill", d => scales[d.attr].fill);
+    // //color the text from the panel accordingly
+    // d3.select("#nodeQuantSelect")
+    //     .selectAll("label")
+    //     .style("color", d =>
+    //         barAttrs.includes(d.attr) ? scales[d.attr].fill : "#b2afaf"
+    //     )
+    //     .style("font-weight", "bold");
 
-    d3.select("#nodeBarsSelect")
-        .selectAll("label")
-        .style("color", "#a6a6a6")
-        .style("font-weight", "normal");
+    // let catAttrs = config.nodeLink.drawBars ?
+    //     config.nodeAttributes.filter(isCategorical) : [];
 
-    //color the text from the panel accordingly
-    d3.select("#nodeQuantSelect")
-        .selectAll("label")
-        .style("color", d =>
-            barAttrs.includes(d.attr) ? scales[d.attr].fill : "#b2afaf"
-        )
-        .style("font-weight", "bold");
+    // let yRange =
+    //     catAttrs.length < 2 ? [1, 1] : [-nodeMarkerHeight * 0.2 + 1, nodeMarkerHeight * 0.2 + 1];
 
-    let catAttrs = config.nodeLink.drawBars ?
-        config.nodeAttributes.filter(isCategorical) : [];
+    // let catYScale = d3
+    //     .scaleLinear()
+    //     .domain([0, catAttrs.length - 1])
+    //     .range(yRange);
 
-    let yRange =
-        catAttrs.length < 2 ? [1, 1] : [-nodeMarkerHeight * 0.2 + 1, nodeMarkerHeight * 0.2 + 1];
+    // let catGlyphs = node
+    //     .selectAll(".categorical")
+    //     //for each circle associate the relevant data from the parent node
+    //     .data(
+    //         d =>
+    //         catAttrs.map(attr => {
+    //             let valuePos = config.attributeScales.node[attr].domain.indexOf(
+    //                 d[attr]
+    //             );
+    //             return {
+    //                 data: d[attr],
+    //                 attr,
+    //                 label: config.attributeScales.node[attr].legendLabels[valuePos]
+    //             };
+    //         }),
+    //         d => d.attr
+    //     );
 
-    let catYScale = d3
-        .scaleLinear()
-        .domain([0, catAttrs.length - 1])
-        .range(yRange);
+    // let catGlyphsEnter = catGlyphs
+    //     .enter()
+    //     .append("g")
+    //     .attr("class", "categorical");
 
-    let catGlyphs = node
-        .selectAll(".categorical")
-        //for each circle associate the relevant data from the parent node
-        .data(
-            d =>
-            catAttrs.map(attr => {
-                let valuePos = config.attributeScales.node[attr].domain.indexOf(
-                    d[attr]
-                );
-                return {
-                    data: d[attr],
-                    attr,
-                    label: config.attributeScales.node[attr].legendLabels[valuePos]
-                };
-            }),
-            d => d.attr
-        );
+    // catGlyphsEnter.append("rect");
+    // catGlyphsEnter.append("text");
 
-    let catGlyphsEnter = catGlyphs
-        .enter()
-        .append("g")
-        .attr("class", "categorical");
+    // catGlyphs.exit().remove();
 
-    catGlyphsEnter.append("rect");
-    catGlyphsEnter.append("text");
+    // catGlyphs = catGlyphsEnter.merge(catGlyphs);
 
-    catGlyphs.exit().remove();
-
-    catGlyphs = catGlyphsEnter.merge(catGlyphs);
-
-    catGlyphs.on("mouseover", function(d) {
-        showTooltip(d.attr + ":" + d.data)
-    })
+    // catGlyphs.on("mouseover", function(d) {
+    //     showTooltip(d.attr + ":" + d.data)
+    // })
 
 
-    catGlyphs.attr(
-        "transform",
-        (d, i) =>
-        "translate(" + (xPos - radius) + "," + (catYScale(i) - radius) + ")"
-    );
-    // .attr("x", xPos - radius)
-    // .attr("y", (d, i) => catYScale(i) - radius)
+    // catGlyphs.attr(
+    //     "transform",
+    //     (d, i) =>
+    //     "translate(" + (xPos - radius) + "," + (catYScale(i) - radius) + ")"
+    // );
+    // // .attr("x", xPos - radius)
+    // // .attr("y", (d, i) => catYScale(i) - radius)
 
-    catGlyphs
-        .select("rect")
-        .style("fill", d => catFill(d.attr, d.data))
-        .attr("width", d =>
-            config.attributeScales.node[d.attr].type === "Text" ?
-            radius * 2 :
-            radius * 2
-        )
-        .attr("height", radius * 2)
-        .attr("rx", d =>
-            config.attributeScales.node[d.attr].glyph === "square" ? 0 : radius * 2
-        )
-        .attr("ry", d =>
-            config.attributeScales.node[d.attr].glyph === "square" ? 0 : radius * 2
-        );
+    // catGlyphs
+    //     .select("rect")
+    //     .style("fill", d => catFill(d.attr, d.data))
+    //     .attr("width", d =>
+    //         config.attributeScales.node[d.attr].type === "Text" ?
+    //         radius * 2 :
+    //         radius * 2
+    //     )
+    //     .attr("height", radius * 2)
+    //     .attr("rx", d =>
+    //         config.attributeScales.node[d.attr].glyph === "square" ? 0 : radius * 2
+    //     )
+    //     .attr("ry", d =>
+    //         config.attributeScales.node[d.attr].glyph === "square" ? 0 : radius * 2
+    //     );
 
-    catGlyphs
-        .select("text")
-        // .text(d=>config.attributeScales.node[d.attr].glyph === 'square' ? d.label : '')
-        .attr("y", radius * 2)
-        .attr("x", radius * 2)
-        .style("text-anchor", "start");
+    // catGlyphs
+    //     .select("text")
+    //     // .text(d=>config.attributeScales.node[d.attr].glyph === 'square' ? d.label : '')
+    //     .attr("y", radius * 2)
+    //     .attr("x", radius * 2)
+    //     .style("text-anchor", "start");
 
 
     d3.select("#exportGraph").on("click", () => {
