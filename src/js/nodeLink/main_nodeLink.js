@@ -773,6 +773,7 @@ async function updateVis(graph_structure) {
     //Draw Links
     let link = d3
         .select(".links")
+        .selectAll(".linkGroup")
         .data(graph_structure.links);
 
     let linkEnter = link
@@ -832,6 +833,7 @@ async function updateVis(graph_structure) {
     console.log("nodes", graph_structure.nodes)
     var node = d3
         .select(".nodes")
+        .selectAll(".nodeGroup")
         .data(graph_structure.nodes);
 
     let nodeEnter = node
@@ -879,17 +881,15 @@ async function updateVis(graph_structure) {
     config["nodeIsRect"] = false
     node
         .selectAll(".nodeBox")
-        .attr("x", d => config.nodeIsRect ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
-        .attr("y", d => config.nodeIsRect ? -nodeHeight(d) / 2 - 14 : -nodeHeight(d) / 2 - 4)
-        .attr("width", d => config.nodeIsRect ? nodeLength(d) + 8 + nodePadding + extraPadding : nodeLength(d) + 8)
-        .attr("height", d =>
-            config.nodeIsRect ? nodeHeight(d) + 18 : nodeLength(d) + 8
-        )
-        .attr("rx", d => (config.nodeIsRect ? 0 : nodeLength(d))) //nodeLength(d)/20
-        .attr("ry", d => (config.nodeIsRect ? 0 : nodeHeight(d)));
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+        .attr("width", d => 50)
+        .attr("height", d => 50)
+        .attr("rx", d => 25) //nodeLength(d)/20
+        .attr("ry", d => 25);
 
     node.select('.node')
-        .style("fill", nodeFill)
+        .style("fill", "#888888")
         // .classed("clicked", d => app.currentState().selected.includes(d.id))
         // .classed("selected", d => app.currentState().hardSelected.includes(d.id))
 
@@ -917,7 +917,7 @@ async function updateVis(graph_structure) {
         .text(d => d.name)
         .attr("y", d =>
             // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : 
-            ".5em"
+            d.y
         )
         .attr('dy', //config.nodeLink.drawBars ? 0 : 
             -2)
@@ -929,8 +929,8 @@ async function updateVis(graph_structure) {
         })
         // .attr("x", d => config.nodeIsRect ? -nodeMarkerLength/ 2 -barPadding/2 -extraPadding/2 + checkboxSize+ 3  :-nodeLength(d) / 2 + checkboxSize)
 
-    // .attr('x',-nodeMarkerLength / 2 + 3 )
-    .on("click", selectNode);
+    .attr('x', d => d.x)
+        .on("click", selectNode);
 
     node
         .select(".labelBackground")
