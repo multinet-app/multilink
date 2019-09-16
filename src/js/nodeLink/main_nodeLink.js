@@ -581,7 +581,7 @@ function dragNode() {
     d3.selectAll(".linkGroup")
         .select("path")
         .attr("d", function(d) {
-            let path = arcPath(d.type === "mentions", d);
+            let path = arcPath(1, d);
             if (path.includes("null")) {
                 console.log("bad path");
             }
@@ -602,7 +602,8 @@ function updatePos(state) {
     d3.selectAll(".linkGroup")
         .select("path")
         .attr("d", function(d) {
-            let path = arcPath(d.type === "mentions", d, state);
+            let path = arcPath(1, d, //state
+            );
             if (path.includes("null")) {
                 console.log("bad path");
             }
@@ -617,10 +618,14 @@ function updatePos(state) {
 }
 
 function arcPath(leftHand, d, state = false) {
+    console.log("in arcpath")
     let source = state ? { x: state.nodePos[d.source.id].x, y: state.nodePos[d.source.id].y } :
-        d.source;
+        d._from;
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
-        d.target;
+        d._to;
+
+    source = graph_structure.nodes.find(x => "nodes/" + x._key === source)
+    target = graph_structure.nodes.find(x => "nodes/" + x._key === target)
 
     var x1 = leftHand ? source.x : target.x,
         y1 = leftHand ? source.y : target.y,
@@ -799,22 +804,23 @@ async function updateVis(graph_structure) {
 
     link
         .select("path")
-        .style("stroke-width", edgeWidth)
-        .style("stroke", edgeColor)
-        .attr("id", d => d.id)
-        .on("mouseover", function(d) {
+        .style("stroke-width", 10)
+        .style("stroke", "#888888")
+        .attr("id", d => d._key)
+        .attr("d", d => arcPath(1, d))
+        // .on("mouseover", function(d) {
 
-            // console.log (d)
-            let tooltipData = d.type;
+    //     // console.log (d)
+    //     let tooltipData = d.type;
 
-            if (config.nodeLink.edgeWidthAttr) {
-                tooltipData = tooltipData.concat(" [" + d.count + "]")
-            }
+    //     if (config.nodeLink.edgeWidthAttr) {
+    //         tooltipData = tooltipData.concat(" [" + d.count + "]")
+    //     }
 
-            showTooltip(tooltipData, 400)
+    //     showTooltip(tooltipData, 400)
 
 
-        })
+    // })
 
     .on("mouseout", function(d) {
         hideTooltip();
