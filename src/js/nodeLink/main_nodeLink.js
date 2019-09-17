@@ -38,7 +38,8 @@ let nodeLength,
 
 // Draws the visualization on first load
 async function makeVis() {
-    // Load data from the API
+    removeConfig(configPanel)
+        // Load data from the API
     await load_data(workspace, graph)
 
     loadVis();
@@ -87,8 +88,8 @@ nodeHeight = function(node) {
 };
 
 function setGlobalScales() {
-    nodeMarkerLength = config.nodeLink.nodeWidth || 60;
-    nodeMarkerHeight = config.nodeLink.nodeHeight || 35;
+    nodeMarkerLength = 60;
+    nodeMarkerHeight = 35;
     checkboxSize = nodeMarkerHeight / 4;
     //Create Scale Functions
 
@@ -313,15 +314,11 @@ function loadVis() {
     width = targetDiv.style("width").replace("px", "");
     height = targetDiv.style("height").replace("px", "");
 
-    // height = height*0.75;
-    taskBar_height = 74;
-    //  console.log(width2,height2)
-
     visDimensions.width = width * 0.75 - 24;
-    visDimensions.height = height - taskBar_height;
+    visDimensions.height = height;
 
     panelDimensions.width = width * 0.25;
-    panelDimensions.height = height - taskBar_height;
+    panelDimensions.height = height;
 
 
     d3.select("#visPanel").style("width", panelDimensions.width + "px");
@@ -331,9 +328,8 @@ function loadVis() {
         .attr("width", visDimensions.width) //size + margin.left + margin.right)
         .attr("height", visDimensions.height);
 
-    //set up svg and groups for nodes/links
+    // Set up groups for nodes/links
     svg.append("g").attr("class", "links");
-
     svg.append("g").attr("class", "nodes");
 
     let parentWidth = d3
@@ -342,7 +338,6 @@ function loadVis() {
         .node()
         .getBoundingClientRect().width;
 
-    //parentWidth is 0 because the div is hidden at the point this code is run?
     legend = d3
         .select("#legend-svg")
         .attr("width", parentWidth) //size + margin.left + margin.right)
@@ -359,100 +354,20 @@ function loadVis() {
         .force(
             "link",
             d3.forceLink().id(function(d) {
-                return d.id;
+                return d._key;
             })
         )
-        .force("charge", d3.forceManyBody().strength(-1200))
+        .force("charge", d3.forceManyBody().strength(10))
         .force(
             "center",
             d3.forceCenter(visDimensions.width / 2, visDimensions.height / 2)
         );
 
     updateVis(graph_structure)
-        // .force("y", d3.forceY().y(0));
-
-    //TODO combine these two variables into one;
-
-    // tasks = taskList;
-    //load in firstTask
-    // resetPanel();
-    // loadTask(taskList[currentTask])
-
-    // (async function() {
-
-    // tasks = taskList;
-    // let firstTask = tasks[0]
-    // await loadConfigs(firstTask.taskID);
-
-    // console.log(firstTask)
-
-    //   //apply configs to visualization
-    // applyConfig("optimalConfig");
-
-    // //pass in workerID to setupProvenance
-    // setUpProvenance(getNodeState(graph.nodes));
-
-    // //Set up observers for provenance graph
-    // setUpObserver("nodes", highlightSelectedNodes);
-    // // setUpObserver("nodes", highlightAnswerNodes);
-
-    // let baseConfig = await d3.json("../../configs/baseConfig.json");
-    // let nodeLinkConfig = await d3.json("../../configs/5AttrConfig.json");
-    // let saturatedConfig = await d3.json("../../configs/10AttrConfig.json");
-
-    // allConfigs.nodeLinkConfig = mergeConfigs(baseConfig, nodeLinkConfig);
-    // allConfigs.saturatedConfig = mergeConfigs(baseConfig, saturatedConfig);
-    // })();
 }
 
-function loadTask(graph_structure) {
-
-    //determine x and y positions before starting provenance;
-    if (graph_structure.nodes[0].fx === undefined) {
-        graph_structure.nodes.map(n => {
-            n.x = 100;
-            n.y = 100;
-            n.fx = n.x;
-            n.fy = n.y;
-            n.savedX = n.fx;
-            n.savedY = n.fy;
-        });
-
-
-        //scale node positions to this screen;
-
-
-        //only scale if positions fall outside of domain; 
-
-        // let xPos = d3
-        //     .scaleLinear()
-        //     .domain(d3.extent(graph_structure.nodes, n => n.x))
-        //     .range([50, visDimensions.width - 50]);
-        // let yPos = d3
-        //     .scaleLinear()
-        //     .domain(d3.extent(graph_structure.nodes, n => n.y))
-        //     .range([50, visDimensions.height - 50]);
-
-        // let needsScaling = xPos.domain()[1] > xPos.range()[1] || yPos.domain()[1] > yPos.range()[1]
-        // graph_structure.nodes.map(n => {
-        //     n.x = needsScaling ? xPos(n.x) : n.x;
-        //     n.y = needsScaling ? yPos(n.y) : n.y;
-        //     n.fx = n.x;
-        //     n.fy = n.y;
-        //     n.savedX = n.fx;
-        //     n.savedY = n.fy;
-        // });
-    } else {
-        graph_structure.nodes.map(n => {
-            n.fx = n.savedX;
-            n.fy = n.savedY;
-            n.x = n.savedX;
-            n.y = n.savedY;
-        });
-    }
-
-
-    //pass in workerID to setupProvenance
+function initalizeProvenance(graph_structure) {
+    // pass in workerID to setupProvenance
     setUpProvenance(graph_structure.nodes, task.taskID, task.order);
 
     setUpObserver("selected", highlightSelectedNodes);

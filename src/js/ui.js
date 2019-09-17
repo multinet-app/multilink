@@ -1,6 +1,16 @@
-// Search box code
-d3.select('#searchButton').on("click", function() {
+// Remove config panel if not in query string
+function removeConfig(configPanel) {
+    configPanel = eval(configPanel);
+    if (!configPanel) {
+        d3.selectAll('.development').remove();
+    }
+}
 
+// Attach the search box code to the button
+d3.select('#searchButton').on("click", searchForNode());
+
+// Search for a node in the datalist
+function searchForNode() {
     let selectedOption = d3.select('.searchInput').property("value").trim();
 
     //empty search box;
@@ -21,8 +31,6 @@ d3.select('#searchButton').on("click", function() {
 
     if (searchSuccess === 1) {
         d3.select(".searchMsg").style("display", "none");
-
-        // d3.select('#clear-selection').attr('disabled', null)
     }
 
     if (searchSuccess === 0) {
@@ -30,5 +38,4 @@ d3.select('#searchButton').on("click", function() {
             .style("display", "block")
             .text(selectedOption + " is already selected.");
     }
-
-});
+}

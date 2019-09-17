@@ -23,6 +23,6 @@ async function loadNewGraph(graph_structure) {
 
     options = optionsEnter.merge(options);
 
-    options.attr("value", d => d.shortName);
-    options.attr("id", d => d.id);
+    options.attr("value", d => d.name);
+    options.attr("id", d => d._key);
 }
