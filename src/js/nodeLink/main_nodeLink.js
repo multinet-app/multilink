@@ -39,11 +39,14 @@ let nodeLength,
 // Draws the visualization on first load
 async function makeVis() {
     removeConfig(configPanel)
-        // Load data from the API
+
+    // Load data from the API
     await load_data(workspace, graph)
 
+    populateSearchList(graph_structure)
+    resetSearchBox()
+
     loadVis();
-    resetSearch();
 }
 
 nodeLength = function(node) {

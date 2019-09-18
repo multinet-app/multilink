@@ -1,7 +1,7 @@
 // Helper functions specifically related to the visualization and the rendered tools
 
 // Clear any values in the search box and the search message
-async function resetSearch() {
+async function resetSearchBox() {
     d3.select(".searchInput").property("value", "");
     d3.select(".searchMsg").style("display", "none");
 
