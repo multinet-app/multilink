@@ -737,9 +737,11 @@ async function updateVis(graph_structure) {
         .data(graph_structure.nodes);
 
     let nodeEnter = node
+
         .enter()
         .append("g")
-        .attr("class", "nodeGroup");
+        .attr("class", "nodeGroup")
+
 
 
     nodeEnter.append("rect").attr("class", "nodeBorder nodeBox");
@@ -758,6 +760,11 @@ async function updateVis(graph_structure) {
 
     node.classed("muted", false)
         .classed("selected", false)
+        .attr("transform", d => {
+            // d.x = Math.max(radius, Math.min(visDimensions.width, d.x));
+            // d.y = Math.max(radius, Math.min(visDimensions.height, d.y));
+            return "translate(" + d.x + "," + d.y + ")";
+        })
 
 
     //determine the size of the node here: 
@@ -779,8 +786,8 @@ async function updateVis(graph_structure) {
 
     node
         .selectAll(".nodeBox")
-        .attr("x", d => d.x)
-        .attr("y", d => d.y)
+        // .attr("x", d => d.x)
+        // .attr("y", d => d.y)
         .attr("width", d => 50)
         .attr("height", d => 50)
         .attr("rx", d => 25) //nodeLength(d)/20
@@ -814,10 +821,10 @@ async function updateVis(graph_structure) {
         .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
             '18')
         .text(d => d.name)
-        .attr("y", d =>
-            // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : 
-            d.y
-        )
+        // .attr("y", d =>
+        //     // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : 
+        //     d.y
+        // )
         .attr('dy', //config.nodeLink.drawBars ? 0 : 
             -2)
         .attr("dx", function(d) {
@@ -827,8 +834,8 @@ async function updateVis(graph_structure) {
             return false ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : 50 + 8
         })
 
-    .attr('x', d => d.x)
-        .on("click", selectNode);
+    // .attr('x', d => d.x)
+    .on("click", selectNode);
 
     node
         .select(".labelBackground")
