@@ -36,14 +36,26 @@ let nodeLength,
     edgeColor,
     edgeWidth;
 
+let app;
+
 // Draws the visualization on first load
 async function makeVis() {
+    /* Set the UI */
     removeConfig(configPanel)
 
-    // Load data from the API
+
+
+    /* Load from multinet */
     await load_data(workspace, graph)
 
+    // Start provenance
+    app = initalizeProvenance(graph_structure)
+
     populateSearchList(graph_structure)
+
+    // Attach the search box code to the button
+    d3.select('#searchButton').on("click", searchForNode());
+
     resetSearchBox()
 
     loadVis();
@@ -202,19 +214,19 @@ function isSelected(node) {
 //function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
 function searchFor(selectedOption) {
 
-    //find the right nodeObject
-    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
+    // //find the right nodeObject
+    // node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
-    if (!node) {
-        return -1;
-    }
+    // if (!node) {
+    //     return -1;
+    // }
 
-    if (isSelected(node)) {
-        return 0
-    } else {
-        nodeClick(node, true);
-        return 1
-    }
+    // if (isSelected(node)) {
+    //     return 0
+    // } else {
+    //     nodeClick(node, true);
+    //     return 1
+    // }
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
@@ -371,7 +383,7 @@ function loadVis() {
 
 function initalizeProvenance(graph_structure) {
     // pass in workerID to setupProvenance
-    setUpProvenance(graph_structure.nodes, task.taskID, task.order);
+    setUpProvenance(graph_structure.nodes /*, task.taskID, task.order*/ );
 
     setUpObserver("selected", highlightSelectedNodes);
     setUpObserver("hardSelected", highlightHardSelectedNodes);
@@ -499,7 +511,7 @@ function dragNode() {
             return path;
         });
 
-    let radius = nodeMarkerLength / 2;
+    let radius = 25;
 
     d3.selectAll(".nodeGroup").attr("transform", d => {
         d.x = Math.max(radius, Math.min(visDimensions.width, d.x));
@@ -538,10 +550,10 @@ function arcPath(leftHand, d, state = false) {
     source = graph_structure.nodes.find(x => "nodes/" + x._key === source)
     target = graph_structure.nodes.find(x => "nodes/" + x._key === target)
 
-    var x1 = leftHand ? source.x : target.x,
-        y1 = leftHand ? source.y : target.y,
-        x2 = leftHand ? target.x : source.x,
-        y2 = leftHand ? target.y : source.y;
+    var x1 = leftHand ? parseFloat(source.x) + 25 : target.x,
+        y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
+        x2 = leftHand ? parseFloat(target.x) + 25 : source.x,
+        y2 = leftHand ? parseFloat(target.y) + 25 : source.y;
     (dx = x2 - x1),
     (dy = y2 - y1),
     (dr = Math.sqrt(dx * dx + dy * dy)),

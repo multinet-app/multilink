@@ -6,11 +6,9 @@ function removeConfig(configPanel) {
     }
 }
 
-// Attach the search box code to the button
-d3.select('#searchButton').on("click", searchForNode());
-
 // Search for a node in the datalist
 function searchForNode() {
+    console.log("searching")
     let selectedOption = d3.select('.searchInput').property("value").trim();
 
     //empty search box;
