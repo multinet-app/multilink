@@ -21,6 +21,10 @@ var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
 var simulation; //so we're not restarting it every time updateVis is called;
 
+let wasDragged = false;
+
+let graph_structure;
+
 // var tooltipTimeout; 
 
 //global sizes
@@ -44,7 +48,7 @@ async function makeVis() {
 
 
     /* Load from multinet */
-    await load_data(workspace, graph)
+    graph_structure = await load_data(workspace, graph)
 
     // Start provenance
     initializeProvenance(graph_structure)

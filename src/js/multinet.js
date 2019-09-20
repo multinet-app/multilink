@@ -1,48 +1,51 @@
 /* Multinet data importer */
 
-// Define global variables that store data
-let tables;
-let nodes = [];
-let links = [];
-let graph_structure;
+// Define local variables that will store the api url and the responses from the database
+let multinet = {
+    "tables": {},
+    "nodes": [],
+    "links": [],
+    "graph_structure": {},
+    "api_root": "https://multinet.app/api"
+};
 
 
 async function load_data(workspace, graph) {
-    // Fetch the node and edge tables
-    tables_call = "https://multinet.app/api/workspaces/" + workspace + "/graphs/" + graph
-    await load_tables(tables_call)
+    // Fetch the names of all the node and edge tables 
+    await load_tables(workspace, graph);
 
-    // Loop through each node table and fetch the nodes to global variables
-    for (node_table of tables.nodeTables) {
-        nodes_call = "https://multinet.app/api/workspaces/" + workspace + "/tables/" + node_table
-        await load_nodes(nodes_call)
-    }
+    // Loop through each node tables and fetch the nodes to global variables
+    for (let node_table of multinet.tables.nodeTables) {
+        await load_nodes(workspace, node_table);
+    };
 
-    // Load the edge table to a global variable
-    edge_table = tables.edgeTable
-    links_call = "https://multinet.app/api/workspaces/" + workspace + "/tables/" + edge_table
-    await load_links(links_call)
+    // Load the edge table (ONLY ONE BECAUSE OF ARANGO API LIMITATIONS) to a global variable
+    let edge_table = multinet.tables.edgeTable;
+    await load_links(workspace, edge_table);
 
-    // Set the global graph structure
-    graph_structure = { "nodes": nodes, "links": links }
+    // Set the graph structure
+    graph_structure = { "nodes": multinet.nodes, "links": multinet.links }
+
+    return graph_structure
 
 };
 
 
-async function load_tables(call) {
-    tables = await d3.json(call);
+async function load_tables(workspace, graph) {
+    var tables_call = multinet.api_root + "/workspaces/" + workspace + "/graphs/" + graph
+    multinet.tables = await d3.json(tables_call);
 };
 
 
-async function load_nodes(call) {
-    let table;
-    table = await d3.json(call);
-    nodes = [].concat(nodes, table)
+async function load_nodes(workspace, node_table) {
+    nodes_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + node_table
+    table = await d3.json(nodes_call);
+    multinet.nodes = [].concat(multinet.nodes, table)
 };
 
 
-async function load_links(call) {
-    let table;
-    table = await d3.json(call);
-    links = [].concat(links, table)
+async function load_links(workspace, edge_table) {
+    links_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + edge_table
+    table = await d3.json(links_call);
+    multinet.links = [].concat(multinet.links, table)
 };
