@@ -682,6 +682,11 @@ async function updateVis(graph_structure) {
 
 
     //draw Nodes
+    //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
+    let drawCat = 0
+    let radius = drawCat ? nodeMarkerHeight * 0.15 : 0;
+    let padding = drawCat ? 3 : 0;
+
     console.log("nodes", graph_structure.nodes)
     var node = d3
         .select(".nodes")
@@ -689,7 +694,6 @@ async function updateVis(graph_structure) {
         .data(graph_structure.nodes);
 
     let nodeEnter = node
-
         .enter()
         .append("g")
         .attr("class", "nodeGroup")
@@ -713,20 +717,17 @@ async function updateVis(graph_structure) {
     node.classed("muted", false)
         .classed("selected", false)
         .attr("transform", d => {
-            d.x = d.x === undefined ? Math.random() * visDimensions.width : Math.max(radius, Math.min(visDimensions.width, d.x));
-            d.y = d.y === undefined ? Math.random() * visDimensions.height : Math.max(radius, Math.min(visDimensions.height, d.y));
+            d.x = d.x === undefined ? (Math.random() * visDimensions.width - margin.left - margin.right) + 100 : Math.max(radius, Math.min(visDimensions.width, d.x));
+            d.y = d.y === undefined ? (Math.random() * visDimensions.height - margin.bottom - margin.top) : Math.max(radius, Math.min(visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
-        })
+        });
 
 
     //determine the size of the node here: 
     // let barAttrs = config.nodeLink.drawBars ?
     //     config.nodeAttributes.filter(isQuant) : [];
 
-    //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
-    let drawCat = 0
-    let radius = drawCat ? nodeMarkerHeight * 0.15 : 0;
-    let padding = drawCat ? 3 : 0;
+
 
 
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
