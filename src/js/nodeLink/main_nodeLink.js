@@ -548,8 +548,8 @@ function arcPath(leftHand, d, state = false) {
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
         d._to;
 
-    source = graph_structure.nodes.find(x => "nodes/" + x._key === source)
-    target = graph_structure.nodes.find(x => "nodes/" + x._key === target)
+    source = graph_structure.nodes.find(x => x._id === source)
+    target = graph_structure.nodes.find(x => x._id === target)
 
     var x1 = leftHand ? parseFloat(source.x) + 25 : target.x,
         y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
@@ -670,56 +670,7 @@ async function updateVis(graph_structure) {
 
     //Drawing Graph
 
-    //Draw Links
-    let link = d3
-        .select(".links")
-        .selectAll(".linkGroup")
-        .data(graph_structure.links);
 
-    let linkEnter = link
-        .enter()
-        .append("g")
-        .attr("class", "linkGroup");
-
-    linkEnter.append("path").attr("class", "links");
-
-    linkEnter
-        .append("text")
-        .attr("class", "edgeArrow")
-        .attr("dy", 4)
-        .append("textPath")
-        .attr("startOffset", "50%");
-
-    link.exit().remove();
-
-    link = linkEnter.merge(link);
-
-
-    link.classed("muted", false);
-
-    link
-        .select("path")
-        .style("stroke-width", 10)
-        .style("stroke", "#888888")
-        .attr("id", d => d._key)
-        .attr("d", d => arcPath(1, d))
-        .on("mouseover", function(d) {
-
-            //     // console.log (d)
-            let tooltipData = "hello"; //d.name;
-
-            //     if (config.nodeLink.edgeWidthAttr) {
-            //         tooltipData = tooltipData.concat(" [" + d.count + "]")
-            //     }
-
-            showTooltip(tooltipData, 400)
-
-
-        })
-
-    .on("mouseout", function(d) {
-        hideTooltip();
-    })
 
     // TO DO , set ARROW DIRECTION DYNAMICALLY
     // link
@@ -762,8 +713,8 @@ async function updateVis(graph_structure) {
     node.classed("muted", false)
         .classed("selected", false)
         .attr("transform", d => {
-            // d.x = Math.max(radius, Math.min(visDimensions.width, d.x));
-            // d.y = Math.max(radius, Math.min(visDimensions.height, d.y));
+            d.x = d.x === undefined ? Math.random() * visDimensions.width : Math.max(radius, Math.min(visDimensions.width, d.x));
+            d.y = d.y === undefined ? Math.random() * visDimensions.height : Math.max(radius, Math.min(visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         })
 
@@ -924,6 +875,57 @@ async function updateVis(graph_structure) {
         .on("drag", dragged)
         .on("end", dragended)
     );
+
+    //Draw Links
+    let link = d3
+        .select(".links")
+        .selectAll(".linkGroup")
+        .data(graph_structure.links);
+
+    let linkEnter = link
+        .enter()
+        .append("g")
+        .attr("class", "linkGroup");
+
+    linkEnter.append("path").attr("class", "links");
+
+    linkEnter
+        .append("text")
+        .attr("class", "edgeArrow")
+        .attr("dy", 4)
+        .append("textPath")
+        .attr("startOffset", "50%");
+
+    link.exit().remove();
+
+    link = linkEnter.merge(link);
+
+
+    link.classed("muted", false);
+
+    link
+        .select("path")
+        .style("stroke-width", 10)
+        .style("stroke", "#888888")
+        .attr("id", d => d._key)
+        .attr("d", d => arcPath(1, d))
+        .on("mouseover", function(d) {
+
+            //     // console.log (d)
+            let tooltipData = "hello"; //d.name;
+
+            //     if (config.nodeLink.edgeWidthAttr) {
+            //         tooltipData = tooltipData.concat(" [" + d.count + "]")
+            //     }
+
+            showTooltip(tooltipData, 400)
+
+
+        })
+
+    .on("mouseout", function(d) {
+        hideTooltip();
+    })
 
 
     //Drawing Nested Bar Charts
