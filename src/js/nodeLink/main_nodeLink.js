@@ -36,8 +36,6 @@ let nodeLength,
     edgeColor,
     edgeWidth;
 
-let app;
-
 // Draws the visualization on first load
 async function makeVis() {
     /* Set the UI */
@@ -49,12 +47,13 @@ async function makeVis() {
     await load_data(workspace, graph)
 
     // Start provenance
-    app = initalizeProvenance(graph_structure)
+    initializeProvenance(graph_structure)
+    console.log("app = ", app)
 
     populateSearchList(graph_structure)
 
     // Attach the search box code to the button
-    d3.select('#searchButton').on("click", searchForNode());
+    d3.select('#searchButton').on("click", () => searchForNode());
 
     resetSearchBox()
 
@@ -214,19 +213,22 @@ function isSelected(node) {
 //function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
 function searchFor(selectedOption) {
 
-    // //find the right nodeObject
-    // node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
+    //find the right nodeObject
+    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
-    // if (!node) {
-    //     return -1;
-    // }
+    if (!node) {
+        console.log("not found")
+        return -1;
+    }
 
-    // if (isSelected(node)) {
-    //     return 0
-    // } else {
-    //     nodeClick(node, true);
-    //     return 1
-    // }
+    if (isSelected(node)) {
+        console.log("already selected")
+        return 0
+    } else {
+        console.log("selecting")
+        nodeClick(node, true);
+        return 1
+    }
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
@@ -281,46 +283,46 @@ function nodeClick(node, search = false) {
 }
 
 function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
-    if (!config.nodeLink.selectNeighbors) {
-        return {};
-    }
+    // if (!config.nodeLink.selectNeighbors) {
+    //     return {};
+    // }
 
-    //iterate through the neighbors of the currently clicked node only and set or remove itself from the relevant lists;
-    clickedNode.neighbors.map(neighbor => {
-        toggleSelection(neighbor);
-    });
+    // //iterate through the neighbors of the currently clicked node only and set or remove itself from the relevant lists;
+    // clickedNode.neighbors.map(neighbor => {
+    //     toggleSelection(neighbor);
+    // });
 
-    //'tag or untag neighboring links as necessary
-    graph.links.map(link => {
-        if (
-            link.source.id == clickedNode.id ||
-            link.target.id == clickedNode.id
-        ) {
-            toggleSelection(link.id);
-        }
-    });
+    // //'tag or untag neighboring links as necessary
+    // graph.links.map(link => {
+    //     if (
+    //         link.source.id == clickedNode.id ||
+    //         link.target.id == clickedNode.id
+    //     ) {
+    //         toggleSelection(link.id);
+    //     }
+    // });
 
-    //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
-    function toggleSelection(target) {
-        if (wasClicked) {
-            userSelectedNeighbors[target] ?
-                userSelectedNeighbors[target].push(clickedNode.id) :
-                (userSelectedNeighbors[target] = [clickedNode.id]);
-        } else {
-            if (userSelectedNeighbors[target]) {
-                userSelectedNeighbors[target] = userSelectedNeighbors[target].filter(
-                    n => n !== clickedNode.id
-                );
+    // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
+    // function toggleSelection(target) {
+    //     if (wasClicked) {
+    //         userSelectedNeighbors[target] ?
+    //             userSelectedNeighbors[target].push(clickedNode.id) :
+    //             (userSelectedNeighbors[target] = [clickedNode.id]);
+    //     } else {
+    //         if (userSelectedNeighbors[target]) {
+    //             userSelectedNeighbors[target] = userSelectedNeighbors[target].filter(
+    //                 n => n !== clickedNode.id
+    //             );
 
-                // if array is empty, remove key from dict;
-                if (userSelectedNeighbors[target].length === 0) {
-                    delete userSelectedNeighbors[target];
-                }
-            }
-        }
-    }
+    //             // if array is empty, remove key from dict;
+    //             if (userSelectedNeighbors[target].length === 0) {
+    //                 delete userSelectedNeighbors[target];
+    //             }
+    //         }
+    //     }
+    // }
 
-    return userSelectedNeighbors;
+    // return userSelectedNeighbors;
 }
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
@@ -381,7 +383,7 @@ function loadVis() {
     updateVis(graph_structure)
 }
 
-function initalizeProvenance(graph_structure) {
+function initializeProvenance(graph_structure) {
     // pass in workerID to setupProvenance
     setUpProvenance(graph_structure.nodes /*, task.taskID, task.order*/ );
 
@@ -403,7 +405,6 @@ function highlightSelectedNodes(state) {
         .selectAll(".nodeGroup")
         .classed("muted", d => {
             return (
-                config.nodeLink.selectNeighbors &&
                 hasUserSelection &&
                 !state.hardSelected.includes(d.id) &&
                 !state.selected.includes(d.id) &&

@@ -902,6 +902,7 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
     //set global variables
     provenance = ProvenanceLibrary.initProvenance(initialState);
     app = nodeLink(provenance);
+    console.log(app)
 }
 
 function setUpObserver(stateField, callback) {
