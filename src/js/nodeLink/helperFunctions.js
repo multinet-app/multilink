@@ -1,38 +1,15 @@
-// Helper functions to export config files
+// Helper functions specifically related to the visualization and the rendered tools
 
+// Clear any values in the search box and the search message
+async function resetSearchBox() {
+    d3.select(".searchInput").property("value", "");
+    d3.select(".searchMsg").style("display", "none");
 
-function exportConfig(baseKeys, nodeLinkKeys, isTaskConfig) {
-    let configCopy = JSON.parse(JSON.stringify(config));
-
-    console.log(baseKeys, nodeLinkKeys, isTaskConfig)
-        //only keep keys for this particular config file;
-
-    let removeKeys = ['graphFiles', 'attributeScales', 'style'];
-    Object.keys(configCopy).map(key => {
-        if (removeKeys.includes(key)) {
-            delete configCopy[key];
-        }
-    });
-
-    Object.keys(configCopy.nodeLink).map(nKey => {
-        if (!nodeLinkKeys.includes(nKey)) {
-            delete configCopy.nodeLink[nKey];
-        }
-    });
-
-    let fileName = "taskConfig.json"
-        // //find out which 'state' you're saving : optimal, 5attr, or 10attr;
-        // let state = d3.select(".button.clicked").attr("id");
-        // let fileName = {
-        //   optimalConfig: "task" + (taskNum + 1) + "Config.json",
-        //   nodeLinkConfig: "5AttrConfig.json",
-        //   saturatedConfig: "10AttrConfig.json"
-        // };
-
-    saveToFile(configCopy, isTaskConfig ? fileName : "baseConfig.json");
+    // Clear Selected Node List
+    d3.select("#selectedNodeList")
+        .selectAll("li")
+        .remove();
 }
-
-
 
 //Helper functions for node-link layout;
 //Helper functions to compute edge arcs
@@ -118,7 +95,7 @@ function setPanelValuesFromFile() {
     );
 
     d3.select("#fontSlider").on("change", function() {
-        updateVis();
+        updateVis(graph_structure);
     });
 
     d3.select("#markerSize").property(
@@ -133,7 +110,7 @@ function setPanelValuesFromFile() {
 
         config.nodeLink.nodeWidth = eval(markerSize[0]);
         config.nodeLink.nodeHeight = eval(markerSize[1]);
-        updateVis();
+        updateVis(graph_structure);
     });
 
     //set Panel Values
@@ -179,7 +156,7 @@ function setPanelValuesFromFile() {
         setDisabledRadioButtons();
 
         await loadNewGraph(config.graphFiles[file]);
-        updateVis();
+        updateVis(graph_structure);
     });
 
     let setDisabledRadioButtons = function() {
@@ -315,7 +292,7 @@ function setPanelValuesFromFile() {
                 );
             }
 
-            updateVis()
+            updateVis(graph_structure)
 
         });
 
@@ -407,12 +384,12 @@ function setPanelValuesFromFile() {
                     d3.select("#nodeQuantAttributes_histogram"),
                     graph.nodes
                 );
-                updateVis();
+                updateVis(graph_structure);
             } else {
                 config.nodeAttributes = config.nodeAttributes.filter(
                     el => el !== d.attr
                 );
-                updateVis();
+                updateVis(graph_structure);
             }
         });
 
@@ -434,7 +411,7 @@ function setPanelValuesFromFile() {
                 config.attributeScales.node[d.attr].domain = eval(this.value);
             }
 
-            updateVis();
+            updateVis(graph_structure);
 
             //call createHist for that attribute
             d3.select("#nodeQuantAttributes")
@@ -489,10 +466,10 @@ function setPanelValuesFromFile() {
             let includeAttr = d3.select(this).property("checked");
             if (includeAttr) {
                 config.nodeAttributes.push(d);
-                updateVis();
+                updateVis(graph_structure);
             } else {
                 config.nodeAttributes = config.nodeAttributes.filter(el => el !== d);
-                updateVis();
+                updateVis(graph_structure);
             }
         });
 
@@ -523,7 +500,7 @@ function setPanelValuesFromFile() {
             //update the array of attributes 
 
             d3.select("#renderBarsCheckbox").property("checked", false);
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeStrokeSelect")
@@ -533,7 +510,7 @@ function setPanelValuesFromFile() {
             // config.nodeLink.drawBars = false;
 
             // d3.select('#renderBarsCheckbox').property('checked', false)
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeSizeSelect")
@@ -571,7 +548,7 @@ function setPanelValuesFromFile() {
 
 
 
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#nodeSizeSelect")
@@ -615,13 +592,13 @@ function setPanelValuesFromFile() {
                 graph.nodes
             );
 
-            updateVis();
+            updateVis(graph_structure);
         });
 
     d3.select("#renderBarsCheckbox").on("input", function() {
         config.nodeLink.drawBars = d3.select(this).property("checked");
 
-        updateVis();
+        updateVis(graph_structure);
     });
 
     d3.select("#edgeWidthScale").on("change", function() {
@@ -646,7 +623,7 @@ function setPanelValuesFromFile() {
             }
         }
 
-        updateVis();
+        updateVis(graph_structure);
 
 
     });
@@ -655,8 +632,8 @@ function setPanelValuesFromFile() {
 }
 
 function update() {
-    setPanelValuesFromFile();
-    updateVis();
+    //setPanelValuesFromFile();
+    updateVis(graph_structure);
 }
 
 //Function that creates histograms for the controlPanel
@@ -871,16 +848,6 @@ function isCategorical(attr) {
     );
 }
 
-async function loadConfigs(taskID) {
-
-    // let baseConfig = await d3.json("../../configs/baseConfig.json");
-    // let taskConfig = await d3.json("../../configs/" + taskID + "Config.json");
-
-    // setConfigCallbacks(baseConfig,taskConfig);
-
-    // await loadNewGraph(config.graphFiles[config.loadedGraph]);     
-}
-
 // function getNodeState(nodes){
 //   return nodes.map(n=>{return {x:n.x,y:n.y,selected:n.selected || false ,answerSelected:n.answerSelected || false}})
 // }
@@ -909,81 +876,11 @@ d3.select("#exportConfig").on("click", function() {
 });
 
 
-// function setConfigCallbacks(baseConfig,taskConfig){
-
-//       d3.select("#exportBaseConfig").on("click", function() {
-//           exportConfig(
-//             Object.keys(baseConfig),
-//             Object.keys(baseConfig.nodeLink),
-//             false
-//           );
-//         });
-
-//         d3.select("#exportConfig").on("click", function() {
-
-//           exportConfig(
-//             Object.keys(taskConfig),
-//             Object.keys(taskConfig.nodeLink),
-//             true
-//           );
-//         });
-
-//         // rehape relevant config values into a single dictionary.
-//         config = mergeConfigs(baseConfig, taskConfig);
-
-//         allConfigs.optimalConfig = config;
-
-//         let task = tasks[taskNum];
-
-
-//         d3.select("#optimalConfig").on("click", () =>
-//           applyConfig("optimalConfig")
-//         );
-
-//         d3.select("#nodeLinkConfig").on("click", () =>
-//           applyConfig("nodeLinkConfig")
-//         );
-
-//         d3.select("#saturatedConfig").on("click", () =>
-//           applyConfig("saturatedConfig")
-//         );
-
-//         d3.select("#next").on("click", async () => {
-//           taskNum = d3.min([taskNum + 1, tasks.length - 1]);
-//           await loadConfigs(tasks[taskNum].id);
-//           applyConfig("optimalConfig");
-//         });
-
-//         d3.select("#previous").on("click", async () => {
-//           taskNum = d3.max([taskNum - 1, 0]);
-//           await loadConfigs(tasks[taskNum].id);
-//           applyConfig("optimalConfig");
-//         });
-
-// }
-
-// function applyConfig(configType) {
-//   d3
-//     .selectAll(".button")
-//     .classed("clicked", false);
-//   d3.select("#" + configType).classed("clicked", true);
-//   config = JSON.parse(JSON.stringify(allConfigs[configType]));
-
-
-//   //Update Task Header and Answer type 
-
-//    // update global variables from config;
-//    setGlobalScales();
-
-//   update();
-// }
-
 function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
 
     let nodePos = nodePositionMap(nodes);
 
     const initialState = {
-        taskID,
         order,
         nodePos, //map of node positions, 
         userSelectedNeighbors: {}, //map of nodes that have neighbors selected (so they can be non-muted)
@@ -1005,6 +902,7 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
     //set global variables
     provenance = ProvenanceLibrary.initProvenance(initialState);
     app = nodeLink(provenance);
+    console.log(app)
 }
 
 function setUpObserver(stateField, callback) {

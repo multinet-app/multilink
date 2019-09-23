@@ -5,15 +5,8 @@ To start a development environment you need to serve the main index.html file fr
 
 ```
 # Install http-server
-$ sudo npm install -g http-server
+$ yarn install
 
 # Serve the webpage on localhost (default port is 8080)
-$ cd src
-$ http-server -c-1
-
+$ yarn serve
 ```
-
-## Config Files
-Config files determine how the visualization is rendered. 
-
-Config files are written in .hjson to allow for comments.
