@@ -908,3 +908,5 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
 function setUpObserver(stateField, callback) {
     provenance.addObserver(stateField, callback);
 }
+
+module.exports = { setUpProvenance, setUpObserver };

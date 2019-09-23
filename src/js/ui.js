@@ -47,18 +47,75 @@ function searchFor(selectedOption) {
     node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
     if (!node) {
-        console.log("not found")
         return -1;
     }
 
     if (isSelected(node)) {
-        console.log("already selected")
         return 0
     } else {
-        console.log("selecting")
         nodeClick(node, true);
         return 1
     }
+}
+
+//function that checks the state to see if the node is selected
+function isSelected(node) {
+    const currentState = app.currentState();
+
+    //find out if this node was selected before;
+    let selected = currentState.selected;
+    return selected.includes(node._id);
+}
+
+//function that updates the state, and includes a flag for when this was done through a search
+function nodeClick(node, search = false) {
+
+    const currentState = app.currentState();
+
+    //find out if this node was selected before;
+    let selected = currentState.selected;
+
+
+    let wasSelected = isSelected(node);
+
+    if (wasSelected) {
+        selected = selected.filter(s => s !== node._id);
+    } else {
+        selected.push(node._id);
+    }
+
+    // let neighbors = tagNeighbors(
+    //     node, !wasSelected,
+    //     currentState.userSelectedNeighbors
+    // );
+
+    let label = search ?
+        "Searched for Node" :
+        wasSelected ?
+        "Unselect Node" :
+        "Select Node";
+
+    let action = {
+        label: label,
+        action: () => {
+            const currentState = app.currentState();
+            //add time stamp to the state graph
+            currentState.time = Date.now();
+            //Add label describing what the event was
+            currentState.event = label;
+            //Update actual node data
+            currentState.selected = selected;
+            // currentState.userSelectedNeighbors = neighbors;
+            //If node was searched, push him to the search array
+            if (search) {
+                currentState.search.push(node.id);
+            }
+            return currentState;
+        },
+        args: []
+    };
+
+    provenance.applyAction(action);
 }
 
 function populateSearchList(graph_structure) {
@@ -90,4 +147,4 @@ function populateSearchList(graph_structure) {
     options.attr("id", d => d._key);
 }
 
-module.exports = searchFor;
+module.exports = { searchFor, isSelected };

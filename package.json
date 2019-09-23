@@ -9,11 +9,12 @@
     "main": "index.js",
     "repository": "https://github.com/multinet-app/view-nodelink",
     "author": "Visualization Design Lab <vdl.sci.utah.edu>",
-    "license": "Apache v2",
+    "license": "Apache-2.0",
     "dependencies": {
         "http-server": "^0.11.1"
     },
     "devDependencies": {
+        "d3": "^5.12.0",
         "jest": "^24.9.0"
     }
 }

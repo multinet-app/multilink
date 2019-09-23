@@ -192,65 +192,9 @@ function setGlobalScales() {
     };
 }
 
-//function that checks the state to see if the node is selected
-function isSelected(node) {
-    const currentState = app.currentState();
-
-    //find out if this node was selected before;
-    let selected = currentState.selected;
-    return selected.includes(node.id);
-}
-
-//function that updates the state, and includes a flag for when this was done through a search
-function nodeClick(node, search = false) {
-
-    const currentState = app.currentState();
-
-    //find out if this node was selected before;
-    let selected = currentState.selected;
 
 
-    let wasSelected = isSelected(node);
 
-    if (wasSelected) {
-        selected = selected.filter(s => s !== node.id);
-    } else {
-        selected.push(node.id);
-    }
-
-    let neighbors = tagNeighbors(
-        node, !wasSelected,
-        currentState.userSelectedNeighbors
-    );
-
-    let label = search ?
-        "Searched for Node" :
-        wasSelected ?
-        "Unselect Node" :
-        "Select Node";
-
-    let action = {
-        label: label,
-        action: () => {
-            const currentState = app.currentState();
-            //add time stamp to the state graph
-            currentState.time = Date.now();
-            //Add label describing what the event was
-            currentState.event = label;
-            //Update actual node data
-            currentState.selected = selected;
-            currentState.userSelectedNeighbors = neighbors;
-            //If node was searched, push him to the search array
-            if (search) {
-                currentState.search.push(node.id);
-            }
-            return currentState;
-        },
-        args: []
-    };
-
-    provenance.applyAction(action);
-}
 
 function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
     // if (!config.nodeLink.selectNeighbors) {
@@ -1771,4 +1715,6 @@ function drawLegend() {
         "transform",
         "translate(0," + (drawBars ? upperGroupElement.height + 30 : 100) + ")"
     );
-}
+};
+
+module.exports = initializeProvenance;
