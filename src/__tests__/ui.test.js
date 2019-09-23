@@ -25,7 +25,7 @@ window.update = update;
 function tagNeighbors() {
 
 }
-window.update = update;
+window.tagNeighbors = tagNeighbors;
 
 
 describe("ui", () => {
