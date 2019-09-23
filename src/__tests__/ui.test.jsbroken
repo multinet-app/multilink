@@ -1,0 +1,41 @@
+// Import functions
+const searchFor = require("../js/ui");
+
+
+// Set global objects
+
+
+describe("ui", () => {
+    describe("searchFor", () => {
+        it("Searching for node in empty list throws error", () => {
+            // Arrange
+            graph_structure = {
+                "nodes": [],
+                "links": []
+            }
+
+            // Act + Assert
+            searchFor("someone")
+                // expect(() => searchFor("someone")).toThrow()
+
+        });
+
+        it("Searching for node in empty list throws error", () => {
+            // Arrange
+            person1 = { "_key": 1, "_id": "nodes/1", "name": "Test Testerson" }
+            person2 = { "_key": 2, "_id": "nodes/2", "name": "Jimmy Test" }
+            link1 = { "_key": 115100, "_id": "links/1", "_from": "nodes/1", "_to": "nodes/2" }
+            graph_structure = {
+                "nodes": [person1, person2],
+                "links": [link1]
+            }
+
+            // Act 
+            target = 1
+            outcome = searchFor("Jimmy Test")
+
+            // Assert
+            expect(outcome).toBe(1)
+        });
+    });
+});

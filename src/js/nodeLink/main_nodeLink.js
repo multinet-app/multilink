@@ -201,27 +201,6 @@ function isSelected(node) {
     return selected.includes(node.id);
 }
 
-//function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
-function searchFor(selectedOption) {
-
-    //find the right nodeObject
-    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
-
-    if (!node) {
-        console.log("not found")
-        return -1;
-    }
-
-    if (isSelected(node)) {
-        console.log("already selected")
-        return 0
-    } else {
-        console.log("selecting")
-        nodeClick(node, true);
-        return 1
-    }
-}
-
 //function that updates the state, and includes a flag for when this was done through a search
 function nodeClick(node, search = false) {
 

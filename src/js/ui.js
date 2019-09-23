@@ -36,6 +36,29 @@ function searchForNode() {
             .style("display", "block")
             .text(selectedOption + " is already selected.");
     }
+
+    return searchSuccess;
+}
+
+//function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
+function searchFor(selectedOption) {
+
+    //find the right nodeObject
+    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
+
+    if (!node) {
+        console.log("not found")
+        return -1;
+    }
+
+    if (isSelected(node)) {
+        console.log("already selected")
+        return 0
+    } else {
+        console.log("selecting")
+        nodeClick(node, true);
+        return 1
+    }
 }
 
 function populateSearchList(graph_structure) {
@@ -66,3 +89,5 @@ function populateSearchList(graph_structure) {
     options.attr("value", d => d.name);
     options.attr("id", d => d._key);
 }
+
+module.exports = searchFor;

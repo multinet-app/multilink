@@ -12,7 +12,6 @@ describe("utils", () => {
         it("When parameters are correctly defined, they are parsed correctly", () => {
             // Arrange
             window.location.href = "http://localhost/?workspace=test&graph=test&configPanel=1"
-            console.log(window.location.href)
 
             // Act
             var {
@@ -30,7 +29,6 @@ describe("utils", () => {
         it("When parameters are key words, they're still parsed as strings", () => {
             // Arrange
             window.location.href = "http://localhost/?workspace=undefined&graph=return&configPanel=true"
-            console.log(window.location.href)
 
             // Act
             var {
