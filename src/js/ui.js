@@ -84,10 +84,10 @@ function nodeClick(node, search = false) {
         selected.push(node._id);
     }
 
-    // let neighbors = tagNeighbors(
-    //     node, !wasSelected,
-    //     currentState.userSelectedNeighbors
-    // );
+    let neighbors = tagNeighbors(
+        node, wasSelected,
+        currentState.userSelectedNeighbors
+    );
 
     let label = search ?
         "Searched for Node" :
@@ -108,7 +108,7 @@ function nodeClick(node, search = false) {
             // currentState.userSelectedNeighbors = neighbors;
             //If node was searched, push him to the search array
             if (search) {
-                currentState.search.push(node.id);
+                currentState.search.push(node._id);
             }
             return currentState;
         },

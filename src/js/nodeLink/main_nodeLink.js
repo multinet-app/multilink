@@ -197,46 +197,48 @@ function setGlobalScales() {
 
 
 function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
-    // if (!config.nodeLink.selectNeighbors) {
-    //     return {};
-    // }
-
-    // //iterate through the neighbors of the currently clicked node only and set or remove itself from the relevant lists;
-    // clickedNode.neighbors.map(neighbor => {
-    //     toggleSelection(neighbor);
-    // });
-
-    // //'tag or untag neighboring links as necessary
-    // graph.links.map(link => {
+    // // tag or untag neighboring links as necessary
+    // graph_structure.links.map(link => {
     //     if (
-    //         link.source.id == clickedNode.id ||
-    //         link.target.id == clickedNode.id
+    //         link._from == clickedNode._id ||
+    //         link._to == clickedNode._id
     //     ) {
-    //         toggleSelection(link.id);
+    //         toggleSelection(link._id);
     //     }
     // });
 
     // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
     // function toggleSelection(target) {
-    //     if (wasClicked) {
-    //         userSelectedNeighbors[target] ?
-    //             userSelectedNeighbors[target].push(clickedNode.id) :
-    //             (userSelectedNeighbors[target] = [clickedNode.id]);
-    //     } else {
-    //         if (userSelectedNeighbors[target]) {
-    //             userSelectedNeighbors[target] = userSelectedNeighbors[target].filter(
-    //                 n => n !== clickedNode.id
-    //             );
+    neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
+    console.log(neighbor_nodes)
+    selected = app.currentState().selected
+    for (node of neighbor_nodes) {
+        if (!node in selected) {
+            selected.push(node)
+        }
+    }
 
-    //             // if array is empty, remove key from dict;
-    //             if (userSelectedNeighbors[target].length === 0) {
-    //                 delete userSelectedNeighbors[target];
-    //             }
-    //         }
-    //     }
-    // }
+    label = "select neighbors"
 
-    // return userSelectedNeighbors;
+    let action = {
+        label: label,
+        action: () => {
+            const currentState = app.currentState();
+            //add time stamp to the state graph
+            currentState.time = Date.now();
+            //Add label describing what the event was
+            currentState.event = label;
+            //Update actual node data
+            currentState.selected = selected;
+            return currentState;
+        },
+        args: []
+    };
+
+    provenance.applyAction(action);
+
+    console.log("currentstateselected", app.currentState().selected)
+
 }
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
@@ -337,7 +339,7 @@ function highlightSelectedNodes(state) {
         .classed(
             "muted",
             d =>
-            config.nodeLink.selectNeighbors &&
+            //config.nodeLink.selectNeighbors &&
             hasUserSelection &&
             !state.userSelectedNeighbors[d.id] //this id exists in the dict
         );
