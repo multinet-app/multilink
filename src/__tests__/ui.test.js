@@ -22,6 +22,11 @@ function update() {
 }
 window.update = update;
 
+function tagNeighbors() {
+
+}
+window.update = update;
+
 
 describe("ui", () => {
     describe("searchFor", () => {
