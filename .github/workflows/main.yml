@@ -18,3 +18,8 @@ jobs:
       with:
         node-version: '10.x'
     - run: yarn install
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - run: yarn test
