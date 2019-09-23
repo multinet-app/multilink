@@ -10,7 +10,8 @@ on:
     - master
 
 jobs:
-  build:
+  build-and-test:
+    name: Build and test on Ubuntu - Node 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -18,8 +19,5 @@ jobs:
       with:
         node-version: '10.x'
     - run: yarn install
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
     - run: yarn test
+    
