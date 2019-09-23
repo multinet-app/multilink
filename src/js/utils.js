@@ -34,7 +34,6 @@ function loadScript(url, callback) {
 function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&*#]*)/gi, function(m, key, value) {
-        console.log(key, value)
         vars[key] = value;
     });
     return vars;
