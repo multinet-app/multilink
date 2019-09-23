@@ -1,4 +1,6 @@
-// Main nodelink functions
+// Set dimensions of the panel with the task, legend, and user response and without those pieces
+let panelDimensions = { width: 0, height: 0 };
+let visDimensions = { width: 0, height: 0 };
 
 var defaultDomains = { node: {}, edge: {} };
 var scales = {};
@@ -7,10 +9,6 @@ var scales = {};
 var circleScale = d3.scaleLinear().domain([0, 1]);
 
 var edgeScale = d3.scaleLinear().domain([0, 1]);
-
-// Set dimensions of the panel with the task, legend, and user response and without those pieces
-var panelDimensions = { width: 0, height: 0 };
-var visDimensions = { width: 0, height: 0 };
 
 var height;
 var width;
@@ -42,24 +40,22 @@ let nodeLength,
 
 // Draws the visualization on first load
 async function makeVis() {
-    /* Set the UI */
+    // Set the UI
     removeConfig(configPanel)
 
-
-
-    /* Load from multinet */
+    //Load from multinet
     graph_structure = await load_data(workspace, graph)
+
+    // Set up the search box
+    populateSearchList(graph_structure)
+    resetSearchBox()
 
     // Start provenance
     initializeProvenance(graph_structure)
     console.log("app = ", app)
 
-    populateSearchList(graph_structure)
-
     // Attach the search box code to the button
     d3.select('#searchButton').on("click", () => searchForNode());
-
-    resetSearchBox()
 
     loadVis();
 }
@@ -109,17 +105,8 @@ function setGlobalScales() {
     nodeMarkerLength = 60;
     nodeMarkerHeight = 35;
     checkboxSize = nodeMarkerHeight / 4;
+
     //Create Scale Functions
-
-
-
-    //function that was meant to
-    quantColors = function(i) {
-        let color = d3.hsl(config.nodeLink.quantColors[i]);
-        return color;
-    };
-
-
 
     nodeFill = function(node) {
         let nodeFillScale = d3.scaleOrdinal();
