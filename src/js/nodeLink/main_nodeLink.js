@@ -320,16 +320,16 @@ function highlightSelectedNodes(state) {
         .classed("muted", d => {
             return (
                 hasUserSelection &&
-                !state.hardSelected.includes(d.id) &&
-                !state.selected.includes(d.id) &&
-                !state.userSelectedNeighbors[d.id] //this id exists in the dict
+                !state.hardSelected.includes(d._id) &&
+                !state.selected.includes(d._id) &&
+                !state.userSelectedNeighbors[d._id] //this id exists in the dict
             );
         });
 
     d3.select(".nodes")
         .selectAll(".node")
-        .classed("clicked", d => state.selected.includes(d.id))
-        .classed("selected", d => state.hardSelected.includes(d.id));
+        .classed("clicked", d => state.selected.includes(d._id))
+        .classed("selected", d => state.hardSelected.includes(d._id));
 
 
     d3.select(".links")
