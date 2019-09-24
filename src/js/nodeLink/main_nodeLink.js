@@ -56,6 +56,7 @@ async function makeVis() {
 
     // Attach the search box code to the button
     d3.select('#searchButton').on("click", () => searchForNode());
+    d3.select('#clear-selection').on("click", () => clearSelections());
 
     loadVis();
 }
@@ -196,33 +197,11 @@ function setGlobalScales() {
 
 
 
-function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
-    // // tag or untag neighboring links as necessary
-    // graph_structure.links.map(link => {
-    //     if (
-    //         link._from == clickedNode._id ||
-    //         link._to == clickedNode._id
-    //     ) {
-    //         toggleSelection(link._id);
-    //     }
-    // });
-
-    // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
-    // function toggleSelection(target) {
+function tagNeighbors(clickedNode) {
     neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
-    console.log("neighbor nodes", neighbor_nodes)
-    selected = app.currentState().selected
-    for (node of neighbor_nodes) {
-        if (node !== "") {
-            if (!isSelected(node)) {
-                selected.push(node)
-            }
-        }
-    }
-
-    return selected;
-
+    return neighbor_nodes;
 }
+
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 function loadVis() {
