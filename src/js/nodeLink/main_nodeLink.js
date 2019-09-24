@@ -197,9 +197,20 @@ function setGlobalScales() {
 
 
 
-function tagNeighbors(clickedNode) {
-    neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
-    return neighbor_nodes;
+function tagNeighbors(selected) {
+    let neighbors = [];
+
+    for (clicked_node of selected) {
+        neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? e._to : e._to === clicked_node ? e._from : "")
+        for (node of neighbor_nodes) {
+            if (node !== "" && neighbors.indexOf(node) === -1) {
+                neighbors.push(node);
+            }
+        }
+    }
+
+    console.log("neighbors", neighbors)
+    return neighbors;
 }
 
 
