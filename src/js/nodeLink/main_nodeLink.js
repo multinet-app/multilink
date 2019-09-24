@@ -210,34 +210,17 @@ function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
     // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
     // function toggleSelection(target) {
     neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
-    console.log(neighbor_nodes)
+    console.log("neighbor nodes", neighbor_nodes)
     selected = app.currentState().selected
     for (node of neighbor_nodes) {
-        if (!node in selected) {
-            selected.push(node)
+        if (node !== "") {
+            if (!isSelected(node)) {
+                selected.push(node)
+            }
         }
     }
 
-    label = "select neighbors"
-
-    let action = {
-        label: label,
-        action: () => {
-            const currentState = app.currentState();
-            //add time stamp to the state graph
-            currentState.time = Date.now();
-            //Add label describing what the event was
-            currentState.event = label;
-            //Update actual node data
-            currentState.selected = selected;
-            return currentState;
-        },
-        args: []
-    };
-
-    provenance.applyAction(action);
-
-    console.log("currentstateselected", app.currentState().selected)
+    return selected;
 
 }
 
@@ -324,14 +307,15 @@ function highlightSelectedNodes(state) {
                 hasUserSelection &&
                 !state.hardSelected.includes(d._id) &&
                 !state.selected.includes(d._id) &&
-                !state.userSelectedNeighbors[d._id] //this id exists in the dict
+                !state.userSelectedNeighbors.includes(d._id) //this id exists in the dict
             );
         });
 
     d3.select(".nodes")
         .selectAll(".node")
         .classed("clicked", d => state.selected.includes(d._id))
-        .classed("selected", d => state.hardSelected.includes(d._id));
+        .classed("selected", d => state.hardSelected.includes(d._id))
+        .classed("selected", d => state.userSelectedNeighbors.includes(d._id));
 
 
     d3.select(".links")

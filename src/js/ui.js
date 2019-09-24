@@ -105,7 +105,7 @@ function nodeClick(node, search = false) {
             currentState.event = label;
             //Update actual node data
             currentState.selected = selected;
-            // currentState.userSelectedNeighbors = neighbors;
+            currentState.userSelectedNeighbors = neighbors;
             //If node was searched, push him to the search array
             if (search) {
                 currentState.search.push(node._id);
