@@ -1,15 +1,20 @@
 {
-  "name": "view-nodelink",
-  "version": "0.1.0",
-  "scripts": {
-    "serve": "cd src/ && http-server -c-1"
-  },
-  "description": "A node-link visualization built to fit in with multinet",
-  "main": "index.js",
-  "repository": "https://github.com/multinet-app/view-nodelink",
-  "author": "Visualization Design Lab <vdl.sci.utah.edu>",
-  "license": "Apache v2",
-  "dependencies": {
-    "http-server": "^0.11.1"
-  }
+    "name": "view-nodelink",
+    "version": "0.1.0",
+    "scripts": {
+        "serve": "cd src/ && http-server -c-1",
+        "test": "cd src/ && jest"
+    },
+    "description": "A node-link visualization built to fit in with multinet",
+    "main": "index.js",
+    "repository": "https://github.com/multinet-app/view-nodelink",
+    "author": "Visualization Design Lab <vdl.sci.utah.edu>",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "http-server": "^0.11.1"
+    },
+    "devDependencies": {
+        "d3": "^5.12.0",
+        "jest": "^24.9.0"
+    }
 }

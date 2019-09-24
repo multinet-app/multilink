@@ -192,63 +192,33 @@ function setGlobalScales() {
     };
 }
 
-//function that checks the state to see if the node is selected
-function isSelected(node) {
-    const currentState = app.currentState();
 
-    //find out if this node was selected before;
-    let selected = currentState.selected;
-    return selected.includes(node.id);
-}
 
-//function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
-function searchFor(selectedOption) {
 
-    //find the right nodeObject
-    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
-    if (!node) {
-        console.log("not found")
-        return -1;
+function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
+    // // tag or untag neighboring links as necessary
+    // graph_structure.links.map(link => {
+    //     if (
+    //         link._from == clickedNode._id ||
+    //         link._to == clickedNode._id
+    //     ) {
+    //         toggleSelection(link._id);
+    //     }
+    // });
+
+    // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
+    // function toggleSelection(target) {
+    neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
+    console.log(neighbor_nodes)
+    selected = app.currentState().selected
+    for (node of neighbor_nodes) {
+        if (!node in selected) {
+            selected.push(node)
+        }
     }
 
-    if (isSelected(node)) {
-        console.log("already selected")
-        return 0
-    } else {
-        console.log("selecting")
-        nodeClick(node, true);
-        return 1
-    }
-}
-
-//function that updates the state, and includes a flag for when this was done through a search
-function nodeClick(node, search = false) {
-
-    const currentState = app.currentState();
-
-    //find out if this node was selected before;
-    let selected = currentState.selected;
-
-
-    let wasSelected = isSelected(node);
-
-    if (wasSelected) {
-        selected = selected.filter(s => s !== node.id);
-    } else {
-        selected.push(node.id);
-    }
-
-    let neighbors = tagNeighbors(
-        node, !wasSelected,
-        currentState.userSelectedNeighbors
-    );
-
-    let label = search ?
-        "Searched for Node" :
-        wasSelected ?
-        "Unselect Node" :
-        "Select Node";
+    label = "select neighbors"
 
     let action = {
         label: label,
@@ -260,60 +230,15 @@ function nodeClick(node, search = false) {
             currentState.event = label;
             //Update actual node data
             currentState.selected = selected;
-            currentState.userSelectedNeighbors = neighbors;
-            //If node was searched, push him to the search array
-            if (search) {
-                currentState.search.push(node.id);
-            }
             return currentState;
         },
         args: []
     };
 
     provenance.applyAction(action);
-}
 
-function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
-    // if (!config.nodeLink.selectNeighbors) {
-    //     return {};
-    // }
+    console.log("currentstateselected", app.currentState().selected)
 
-    // //iterate through the neighbors of the currently clicked node only and set or remove itself from the relevant lists;
-    // clickedNode.neighbors.map(neighbor => {
-    //     toggleSelection(neighbor);
-    // });
-
-    // //'tag or untag neighboring links as necessary
-    // graph.links.map(link => {
-    //     if (
-    //         link.source.id == clickedNode.id ||
-    //         link.target.id == clickedNode.id
-    //     ) {
-    //         toggleSelection(link.id);
-    //     }
-    // });
-
-    // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
-    // function toggleSelection(target) {
-    //     if (wasClicked) {
-    //         userSelectedNeighbors[target] ?
-    //             userSelectedNeighbors[target].push(clickedNode.id) :
-    //             (userSelectedNeighbors[target] = [clickedNode.id]);
-    //     } else {
-    //         if (userSelectedNeighbors[target]) {
-    //             userSelectedNeighbors[target] = userSelectedNeighbors[target].filter(
-    //                 n => n !== clickedNode.id
-    //             );
-
-    //             // if array is empty, remove key from dict;
-    //             if (userSelectedNeighbors[target].length === 0) {
-    //                 delete userSelectedNeighbors[target];
-    //             }
-    //         }
-    //     }
-    // }
-
-    // return userSelectedNeighbors;
 }
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
@@ -397,16 +322,16 @@ function highlightSelectedNodes(state) {
         .classed("muted", d => {
             return (
                 hasUserSelection &&
-                !state.hardSelected.includes(d.id) &&
-                !state.selected.includes(d.id) &&
-                !state.userSelectedNeighbors[d.id] //this id exists in the dict
+                !state.hardSelected.includes(d._id) &&
+                !state.selected.includes(d._id) &&
+                !state.userSelectedNeighbors[d._id] //this id exists in the dict
             );
         });
 
     d3.select(".nodes")
         .selectAll(".node")
-        .classed("clicked", d => state.selected.includes(d.id))
-        .classed("selected", d => state.hardSelected.includes(d.id));
+        .classed("clicked", d => state.selected.includes(d._id))
+        .classed("selected", d => state.hardSelected.includes(d._id));
 
 
     d3.select(".links")
@@ -414,7 +339,7 @@ function highlightSelectedNodes(state) {
         .classed(
             "muted",
             d =>
-            config.nodeLink.selectNeighbors &&
+            //config.nodeLink.selectNeighbors &&
             hasUserSelection &&
             !state.userSelectedNeighbors[d.id] //this id exists in the dict
         );
@@ -1792,4 +1717,6 @@ function drawLegend() {
         "transform",
         "translate(0," + (drawBars ? upperGroupElement.height + 30 : 100) + ")"
     );
-}
+};
+
+module.exports = initializeProvenance;
