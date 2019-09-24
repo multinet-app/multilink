@@ -32,7 +32,7 @@ let nodeMarkerLength, nodeMarkerHeight, checkboxSize;
 let nodeLength,
     quantColors,
     nodeHeight,
-    nodeFill,
+    nodeFill = "#888888",
     catFill,
     // nodeStroke,
     edgeColor,
