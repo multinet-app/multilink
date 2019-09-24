@@ -199,18 +199,26 @@ function setGlobalScales() {
 
 function tagNeighbors(selected) {
     let neighbors = [];
+    let edges = []
 
     for (clicked_node of selected) {
-        neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? e._to : e._to === clicked_node ? e._from : "")
+        neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? [e._to, graph_structure.links[i]._id] : e._to === clicked_node ? [e._from, graph_structure.links[i]._id] : "")
+        console.log(neighbor_nodes)
         for (node of neighbor_nodes) {
-            if (node !== "" && neighbors.indexOf(node) === -1) {
-                neighbors.push(node);
+            // push nodes
+            if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
+                neighbors.push(node[0]);
+            }
+
+            // push edges
+            if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
+                edges.push(node[1]);
             }
         }
     }
 
     console.log("neighbors", neighbors)
-    return neighbors;
+    return { "neighbors": neighbors, "edges": edges };
 }
 
 
@@ -313,9 +321,8 @@ function highlightSelectedNodes(state) {
         .classed(
             "muted",
             d =>
-            //config.nodeLink.selectNeighbors &&
             hasUserSelection &&
-            !state.userSelectedNeighbors[d.id] //this id exists in the dict
+            !state.userSelectedEdges.includes(d._id)
         );
     // .select('path')
     // .style("stroke", edgeColor);

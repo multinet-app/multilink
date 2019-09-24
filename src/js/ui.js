@@ -73,7 +73,7 @@ function nodeClick(node, search = false) {
         selected.push(node._id);
     }
 
-    let neighbors = tagNeighbors(selected);
+    let neighbors_and_edges = tagNeighbors(selected);
 
     let label = search ?
         "Searched for Node" :
@@ -91,7 +91,8 @@ function nodeClick(node, search = false) {
             currentState.event = label;
             //Update actual node data
             currentState.selected = selected;
-            currentState.userSelectedNeighbors = neighbors;
+            currentState.userSelectedNeighbors = neighbors_and_edges.neighbors;
+            currentState.userSelectedEdges = neighbors_and_edges.edges;
             //If node was searched, push him to the search array
             if (search) {
                 currentState.search.push(node._id);
@@ -136,6 +137,7 @@ function populateSearchList() {
 function clearSelections() {
     let selected = [];
     let neighbors = [];
+    let edges = [];
     let label = "Cleared selections";
 
     let action = {
@@ -149,6 +151,7 @@ function clearSelections() {
             //Update actual node data
             currentState.selected = selected;
             currentState.userSelectedNeighbors = neighbors;
+            currentState.userSelectedEdges = edges;
             return currentState;
         },
         args: []
