@@ -291,7 +291,6 @@ function initializeProvenance(graph_structure) {
 }
 
 function highlightSelectedNodes(state) {
-    console.log("calling highlightSelectedNodes");
     // see if there is at least one node 'clicked'
     //check state not ui, since ui has not yet been updated;
     let hasUserSelection = state.selected.length > 0;
