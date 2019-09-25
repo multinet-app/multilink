@@ -11,7 +11,9 @@ const helperFunctions = require("../js/nodeLink/helperFunctions")
 window.setUpProvenance = helperFunctions.setUpProvenance
 window.setUpObserver = helperFunctions.setUpObserver
 
-const initializeProvenance = require("../js/nodeLink/main_nodeLink")
+const main_nodeLink = require("../js/nodeLink/main_nodeLink")
+window.initializeProvenance = main_nodeLink.initializeProvenance
+window.tagNeighbors = main_nodeLink.tagNeighbors
 
 
 // Set global objects
@@ -21,11 +23,6 @@ function update() {
 
 }
 window.update = update;
-
-function tagNeighbors() {
-
-}
-window.tagNeighbors = tagNeighbors;
 
 
 describe("ui", () => {
@@ -43,7 +40,7 @@ describe("ui", () => {
 
         });
 
-        it("Searching for node in empty list throws error", () => {
+        it("Searching for node in a proper graph works as expected", () => {
             // Arrange
             person1 = { "_key": 1, "_id": "nodes/1", "name": "Test Testerson" }
             person2 = { "_key": 2, "_id": "nodes/2", "name": "Jimmy Test" }
@@ -52,9 +49,9 @@ describe("ui", () => {
                 "nodes": [person1, person2],
                 "links": [link1]
             }
+            initializeProvenance(graph_structure)
 
             // Act 
-            target = 1
             outcome1 = ui.searchFor("Test Testerson")
             outcome2 = ui.searchFor("Jimmy Test")
             outcome3 = ui.searchFor("test testerson")

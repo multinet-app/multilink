@@ -21,7 +21,7 @@ var simulation; //so we're not restarting it every time updateVis is called;
 
 let wasDragged = false;
 
-let graph_structure;
+//let graph_structure;
 
 // var tooltipTimeout; 
 
@@ -203,7 +203,7 @@ function tagNeighbors(selected) {
 
     for (clicked_node of selected) {
         neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? [e._to, graph_structure.links[i]._id] : e._to === clicked_node ? [e._from, graph_structure.links[i]._id] : "")
-        console.log(neighbor_nodes)
+
         for (node of neighbor_nodes) {
             // push nodes
             if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
@@ -217,7 +217,6 @@ function tagNeighbors(selected) {
         }
     }
 
-    console.log("neighbors", neighbors)
     return { "neighbors": neighbors, "edges": edges };
 }
 
@@ -1700,4 +1699,4 @@ function drawLegend() {
     );
 };
 
-module.exports = initializeProvenance;
+module.exports = { initializeProvenance, tagNeighbors };
