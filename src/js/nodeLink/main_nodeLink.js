@@ -21,7 +21,7 @@ var simulation; //so we're not restarting it every time updateVis is called;
 
 let wasDragged = false;
 
-let graph_structure;
+//let graph_structure;
 
 // var tooltipTimeout; 
 
@@ -32,7 +32,7 @@ let nodeMarkerLength, nodeMarkerHeight, checkboxSize;
 let nodeLength,
     quantColors,
     nodeHeight,
-    nodeFill,
+    nodeFill = "#888888",
     catFill,
     // nodeStroke,
     edgeColor,
@@ -56,6 +56,7 @@ async function makeVis() {
 
     // Attach the search box code to the button
     d3.select('#searchButton').on("click", () => searchForNode());
+    d3.select('#clear-selection').on("click", () => clearSelections());
 
     loadVis();
 }
@@ -196,50 +197,29 @@ function setGlobalScales() {
 
 
 
-function tagNeighbors(clickedNode, wasClicked, userSelectedNeighbors) {
-    // // tag or untag neighboring links as necessary
-    // graph_structure.links.map(link => {
-    //     if (
-    //         link._from == clickedNode._id ||
-    //         link._to == clickedNode._id
-    //     ) {
-    //         toggleSelection(link._id);
-    //     }
-    // });
+function tagNeighbors(selected) {
+    let neighbors = [];
+    let edges = []
 
-    // //helper function that adds or removes the clicked node id from the userSelectedNeighbors map as necessary
-    // function toggleSelection(target) {
-    neighbor_nodes = graph_structure.links.map((e, i) => e._from === clickedNode._id ? e._to : e._to === clickedNode._id ? e._from : "")
-    console.log(neighbor_nodes)
-    selected = app.currentState().selected
-    for (node of neighbor_nodes) {
-        if (!node in selected) {
-            selected.push(node)
+    for (clicked_node of selected) {
+        neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? [e._to, graph_structure.links[i]._id] : e._to === clicked_node ? [e._from, graph_structure.links[i]._id] : "")
+
+        for (node of neighbor_nodes) {
+            // push nodes
+            if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
+                neighbors.push(node[0]);
+            }
+
+            // push edges
+            if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
+                edges.push(node[1]);
+            }
         }
     }
 
-    label = "select neighbors"
-
-    let action = {
-        label: label,
-        action: () => {
-            const currentState = app.currentState();
-            //add time stamp to the state graph
-            currentState.time = Date.now();
-            //Add label describing what the event was
-            currentState.event = label;
-            //Update actual node data
-            currentState.selected = selected;
-            return currentState;
-        },
-        args: []
-    };
-
-    provenance.applyAction(action);
-
-    console.log("currentstateselected", app.currentState().selected)
-
+    return { "neighbors": neighbors, "edges": edges };
 }
+
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 function loadVis() {
@@ -311,7 +291,6 @@ function initializeProvenance(graph_structure) {
 }
 
 function highlightSelectedNodes(state) {
-    console.log("calling highlightSelectedNodes");
     // see if there is at least one node 'clicked'
     //check state not ui, since ui has not yet been updated;
     let hasUserSelection = state.selected.length > 0;
@@ -324,14 +303,15 @@ function highlightSelectedNodes(state) {
                 hasUserSelection &&
                 !state.hardSelected.includes(d._id) &&
                 !state.selected.includes(d._id) &&
-                !state.userSelectedNeighbors[d._id] //this id exists in the dict
+                !state.userSelectedNeighbors.includes(d._id) //this id exists in the dict
             );
         });
 
     d3.select(".nodes")
         .selectAll(".node")
         .classed("clicked", d => state.selected.includes(d._id))
-        .classed("selected", d => state.hardSelected.includes(d._id));
+        .classed("selected", d => state.hardSelected.includes(d._id))
+        .classed("selected", d => state.userSelectedNeighbors.includes(d._id));
 
 
     d3.select(".links")
@@ -339,9 +319,8 @@ function highlightSelectedNodes(state) {
         .classed(
             "muted",
             d =>
-            //config.nodeLink.selectNeighbors &&
             hasUserSelection &&
-            !state.userSelectedNeighbors[d.id] //this id exists in the dict
+            !state.userSelectedEdges.includes(d._id)
         );
     // .select('path')
     // .style("stroke", edgeColor);
@@ -1719,4 +1698,4 @@ function drawLegend() {
     );
 };
 
-module.exports = initializeProvenance;
+module.exports = { initializeProvenance, tagNeighbors };

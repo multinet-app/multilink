@@ -883,7 +883,8 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
     const initialState = {
         order,
         nodePos, //map of node positions, 
-        userSelectedNeighbors: {}, //map of nodes that have neighbors selected (so they can be non-muted)
+        userSelectedNeighbors: [], //map of nodes that have neighbors selected (so they can be non-muted)
+        userSelectedEdges: [],
         selected: [], //set of nodes that have been 'soft selected'
         hardSelected: [], //set of nodes that have been 'hard selected'
         search: [], //field to store the id of a searched node;
@@ -902,7 +903,6 @@ function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
     //set global variables
     provenance = ProvenanceLibrary.initProvenance(initialState);
     app = nodeLink(provenance);
-    console.log(app)
 }
 
 function setUpObserver(stateField, callback) {

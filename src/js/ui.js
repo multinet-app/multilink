@@ -42,15 +42,11 @@ function searchForNode() {
 
 //function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
 function searchFor(selectedOption) {
-
-    //find the right nodeObject
     node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
-    if (!node) {
+    if (node === undefined) {
         return -1;
-    }
-
-    if (isSelected(node)) {
+    } else if (isSelected(node)) {
         return 0
     } else {
         nodeClick(node, true);
@@ -61,21 +57,14 @@ function searchFor(selectedOption) {
 //function that checks the state to see if the node is selected
 function isSelected(node) {
     const currentState = app.currentState();
-
-    //find out if this node was selected before;
     let selected = currentState.selected;
     return selected.includes(node._id);
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
 function nodeClick(node, search = false) {
-
     const currentState = app.currentState();
-
-    //find out if this node was selected before;
     let selected = currentState.selected;
-
-
     let wasSelected = isSelected(node);
 
     if (wasSelected) {
@@ -84,10 +73,7 @@ function nodeClick(node, search = false) {
         selected.push(node._id);
     }
 
-    let neighbors = tagNeighbors(
-        node, wasSelected,
-        currentState.userSelectedNeighbors
-    );
+    let neighbors_and_edges = tagNeighbors(selected);
 
     let label = search ?
         "Searched for Node" :
@@ -105,7 +91,8 @@ function nodeClick(node, search = false) {
             currentState.event = label;
             //Update actual node data
             currentState.selected = selected;
-            // currentState.userSelectedNeighbors = neighbors;
+            currentState.userSelectedNeighbors = neighbors_and_edges.neighbors;
+            currentState.userSelectedEdges = neighbors_and_edges.edges;
             //If node was searched, push him to the search array
             if (search) {
                 currentState.search.push(node._id);
@@ -118,7 +105,7 @@ function nodeClick(node, search = false) {
     provenance.applyAction(action);
 }
 
-function populateSearchList(graph_structure) {
+function populateSearchList() {
     d3.select("#search-input").attr("list", "characters");
     let inputParent = d3.select("#search-input").node().parentNode;
 
@@ -144,7 +131,34 @@ function populateSearchList(graph_structure) {
     options = optionsEnter.merge(options);
 
     options.attr("value", d => d.name);
-    options.attr("id", d => d._key);
+    options.attr("id", d => d._id);
+}
+
+function clearSelections() {
+    let selected = [];
+    let neighbors = [];
+    let edges = [];
+    let label = "Cleared selections";
+
+    let action = {
+        label: label,
+        action: () => {
+            const currentState = app.currentState();
+            //add time stamp to the state graph
+            currentState.time = Date.now();
+            //Add label describing what the event was
+            currentState.event = label;
+            //Update actual node data
+            currentState.selected = selected;
+            currentState.userSelectedNeighbors = neighbors;
+            currentState.userSelectedEdges = edges;
+            return currentState;
+        },
+        args: []
+    };
+
+    provenance.applyAction(action);
+
 }
 
 module.exports = { searchFor, isSelected };
