@@ -21,7 +21,6 @@ var simulation; //so we're not restarting it every time updateVis is called;
 
 let wasDragged = false;
 
-//let graph_structure;
 
 // var tooltipTimeout; 
 
