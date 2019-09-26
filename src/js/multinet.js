@@ -24,7 +24,7 @@ async function load_data(workspace, graph) {
     await load_links(workspace, edge_table);
 
     // Set the graph structure
-    graph_structure = { "nodes": multinet.nodes, "links": multinet.links }
+    graph_structure = { "nodes": multinet.nodes, "links": rename_link_vars(multinet.links) }
 
     return graph_structure
 
@@ -49,3 +49,15 @@ async function load_links(workspace, edge_table) {
     table = await d3.json(links_call);
     multinet.links = [].concat(multinet.links, table)
 };
+
+function rename_link_vars(links) {
+
+    for (row of links) {
+        row.source = row._from;
+        row.target = row._to;
+        delete row._from
+        delete row._to
+    };
+
+    return links;
+}

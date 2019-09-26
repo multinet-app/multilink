@@ -44,7 +44,7 @@ describe("ui", () => {
             // Arrange
             person1 = { "_key": 1, "_id": "nodes/1", "name": "Test Testerson" }
             person2 = { "_key": 2, "_id": "nodes/2", "name": "Jimmy Test" }
-            link1 = { "_key": 115100, "_id": "links/1", "_from": "nodes/1", "_to": "nodes/2" }
+            link1 = { "_key": 115100, "_id": "links/1", "source": "nodes/1", "target": "nodes/2" }
             graph_structure = {
                 "nodes": [person1, person2],
                 "links": [link1]
