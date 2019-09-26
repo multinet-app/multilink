@@ -15,10 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: git clone https://github.com/multinet-app/multinet.git
-    - run: pwd
-    - run: ls
-    - run: cd multinet
-    - run: pwd
+    - run: cd multinet && pwd
+    - run: PIPENV_VENV_IN_PROJECT="./multinet/"
 
     - uses: actions/setup-python@v1
       with:
