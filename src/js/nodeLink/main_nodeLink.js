@@ -1,12 +1,12 @@
 // Set dimensions of the panel with the task, legend, and user response and without those pieces
 let panel = {
-    panelDimensions: { width: 0, height: 0 },
-
+    panelDimensions: { width: 0, height: 0 }
 };
 
 let vis = {
     visDimensions: { width: 0, height: 0 },
-    svg: undefined
+    svg: undefined,
+    simulation: undefined
 };
 
 let browser = {
@@ -22,7 +22,7 @@ edgeScale = d3.scaleLinear().domain([0, 1]);
 
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
-var simulation; //so we're not restarting it every time updateVis is called;
+//so we're not restarting it every time updateVis is called;
 
 let wasDragged = false;
 
@@ -206,7 +206,7 @@ function tagNeighbors(selected) {
     let edges = []
 
     for (clicked_node of selected) {
-        neighbor_nodes = graph_structure.links.map((e, i) => e._from === clicked_node ? [e._to, graph_structure.links[i]._id] : e._to === clicked_node ? [e._from, graph_structure.links[i]._id] : "")
+        neighbor_nodes = graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, graph_structure.links[i]._id] : e.target === clicked_node ? [e.source, graph_structure.links[i]._id] : "")
 
         for (node of neighbor_nodes) {
             // push nodes
@@ -266,7 +266,7 @@ function loadVis() {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    simulation = d3
+    vis.simulation = d3
         .forceSimulation()
         .force(
             "link",
@@ -443,9 +443,9 @@ function updatePos(state) {
 function arcPath(leftHand, d, state = false) {
     console.log("in arcpath")
     let source = state ? { x: state.nodePos[d.source.id].x, y: state.nodePos[d.source.id].y } :
-        d._from;
+        d.source;
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
-        d._to;
+        d.target;
 
     source = graph_structure.nodes.find(x => x._id === source)
     target = graph_structure.nodes.find(x => x._id === target)
@@ -1071,20 +1071,21 @@ async function updateVis(graph_structure) {
 
 
     //set up simulation
-    simulation.nodes(graph.nodes).on("tick", ticked);
-    simulation
+    vis.simulation.nodes(graph_structure.nodes).on("tick", ticked);
+    vis.simulation
         .force("link")
         .links(graph_structure.links)
         .distance(l => l.count);
-    simulation.force(
+    vis.simulation.force(
         "collision",
         d3.forceCollide().radius(d => d3.max([nodeLength(d), nodeHeight(d)]))
     );
 
-    //if source/target are still strings from the input file
-    if (graph_structure.links[0]._from._key === undefined) {
+    console.log(graph_structure)
+        //if source/target are still strings from the input file
+    if (graph_structure.links[0].source._key === undefined) {
         //restablish link references to their source and target nodes;
-        graph.links.map(l => {
+        graph_structure.links.map(l => {
             l.source =
                 graph.nodes.find(n => n.id === l.source) ||
                 graph.nodes[l.source] ||
@@ -1113,8 +1114,8 @@ async function updateVis(graph_structure) {
     //     n.fy = null;
     //   });
 
-    //   for (var i = 0; i < 2000; ++i) simulation.tick();
-    //   simulation.stop();
+    for (var i = 0; i < 2000; ++i) simulation.tick();
+    simulation.stop();
 
     //   //  add a collision force that is proportional to the radius of the nodes;
     //   simulation.force("collision", d3.forceCollide().radius(d => nodeLength(d)));
