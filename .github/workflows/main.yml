@@ -14,7 +14,8 @@ jobs:
     name: Build and test on Ubuntu - Node 10
     runs-on: ubuntu-latest
     steps:
-    - run: git clone https://github.com/multinet-app/multinet.git && cd multinet
+    - run: git clone https://github.com/multinet-app/multinet.git
+    - run: cd multinet
 
     - uses: actions/setup-python@v1
       with:
