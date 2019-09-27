@@ -8,7 +8,6 @@ function removeConfig(configPanel) {
 
 // Search for a node in the datalist
 function searchForNode() {
-    console.log("searching")
     let selectedOption = d3.select('.searchInput').property("value").trim();
 
     //empty search box;
