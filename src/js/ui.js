@@ -1,7 +1,6 @@
 // Remove config panel if not in query string
 function removeConfig(configPanel) {
-    configPanel = eval(configPanel);
-    if (!configPanel) {
+    if (configPanel === "false" || configPanel === "0" || !configPanel) {
         d3.selectAll('.development').remove();
     }
 }
