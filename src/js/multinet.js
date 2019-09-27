@@ -24,9 +24,9 @@ async function load_data(workspace, graph) {
     await load_links(workspace, edge_table);
 
     // Set the graph structure
-    graph_structure = { "nodes": multinet.nodes, "links": rename_link_vars(multinet.links) }
+    multinet.graph_structure = { "nodes": multinet.nodes, "links": rename_link_vars(multinet.links) }
 
-    return graph_structure
+    return multinet.graph_structure
 
 };
 

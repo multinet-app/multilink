@@ -633,7 +633,7 @@ function setPanelValuesFromFile() {
 
 function update() {
     //setPanelValuesFromFile();
-    updateVis(graph_structure);
+    updateVis(vis.graph_structure);
 }
 
 //Function that creates histograms for the controlPanel
