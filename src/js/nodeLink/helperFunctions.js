@@ -74,16 +74,12 @@ function setPanelValuesFromFile() {
 
     //ser values for radioButtons
     d3.select('#panelDiv').selectAll("input[type='radio']").property("checked", function() {
-        if (this.name === "graphSize") {
-            return config[this.name] === this.value;
-        } else {
-            return config[this.name] === eval(this.value);
-        }
+        return config[this.name] === this.value;
     });
 
     d3.select("#fontSlider").on("input", function() {
         d3.select("#fontSliderValue").text(this.value);
-        config.nodeLink.labelSize = eval(this.value);
+        config.nodeLink.labelSize = this.value;
     });
 
     d3.select("#fontSlider").property(
@@ -108,8 +104,8 @@ function setPanelValuesFromFile() {
     d3.select("#markerSize").on("change", function() {
         let markerSize = this.value.split(",");
 
-        config.nodeLink.nodeWidth = eval(markerSize[0]);
-        config.nodeLink.nodeHeight = eval(markerSize[1]);
+        config.nodeLink.nodeWidth = markerSize[0];
+        config.nodeLink.nodeHeight = markerSize[1];
         updateVis(graph_structure);
     });
 
@@ -140,11 +136,10 @@ function setPanelValuesFromFile() {
     d3.select('#panelDiv').selectAll("input[type='radio']").on("change", async function() {
 
         if (this.name === 'selectNeighbors') {
-            config.nodeLink[this.name] = eval(this.value);
+            config.nodeLink[this.name] = this.value;
             return;
         }
-        config[this.name] =
-            this.name === "graphSize" ? this.value : eval(this.value);
+        config[this.name] = this.value;
 
         let file =
             config.graphSize +
@@ -403,11 +398,11 @@ function setPanelValuesFromFile() {
         .attr("id", d => d.attr + "-domain")
         .on("change", function(d) {
             if (this.value) {
-                config.attributeScales.node[d.attr].domain = eval(this.value);
+                config.attributeScales.node[d.attr].domain = this.value;
             } else {
                 // if value is empty, use 'default ranges';
                 this.value = "[" + defaultDomains.node[d.attr] + "]";
-                config.attributeScales.node[d.attr].domain = eval(this.value);
+                config.attributeScales.node[d.attr].domain = this.value;
             }
 
             updateVis(graph_structure);
@@ -558,16 +553,12 @@ function setPanelValuesFromFile() {
         .select("input")
         .on("change", function() {
             if (this.value) {
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = eval(
-                    this.value
-                );
+                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = this.value
             } else {
                 // if value is empty, use 'default ranges';
                 this.value =
                     "[" + defaultDomains.node[config.nodeLink.nodeSizeAttr] + "]";
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = eval(
-                    this.value
-                );
+                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = this.value
             }
 
             //also update the string for the corresponding domain input above
@@ -596,9 +587,7 @@ function setPanelValuesFromFile() {
 
     d3.select("#edgeWidthScale").on("change", function() {
         if (this.value) {
-            config.attributeScales.edge[config.nodeLink.edgeWidthAttr].domain = eval(
-                this.value
-            );
+            config.attributeScales.edge[config.nodeLink.edgeWidthAttr].domain = this.value
         } else {
             // if value is empty, use 'default ranges';
             if (config.nodeLink.edgeWidthAttr) {
