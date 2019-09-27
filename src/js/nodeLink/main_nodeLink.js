@@ -1009,7 +1009,6 @@ async function updateVis(graph_structure) {
         // let parseInputFilename =
         // let filename = config.isDirected ? config.directedGraph : config.undir_graph;
 
-        // console.log(JSON.stringify(newGraph));
     });
 
 

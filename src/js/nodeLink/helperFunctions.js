@@ -557,7 +557,6 @@ function setPanelValuesFromFile() {
     d3.select("#nodeSizeSelect")
         .select("input")
         .on("change", function() {
-            console.log("d is ", config.nodeLink.nodeSizeAttr);
             if (this.value) {
                 config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = eval(
                     this.value
@@ -570,11 +569,6 @@ function setPanelValuesFromFile() {
                     this.value
                 );
             }
-
-            console.log(
-                "new domain is",
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr]
-            );
 
             //also update the string for the corresponding domain input above
             d3.select("#" + config.nodeLink.nodeSizeAttr + "-domain").property(
@@ -710,8 +704,6 @@ function createHist(attrName, svgSelection, data, isNode = true) {
 
     // group data for bars
     var bins = histogram(data);
-
-    // console.log('bins', bins)
 
     // y domain based on binned data
     y.domain([
