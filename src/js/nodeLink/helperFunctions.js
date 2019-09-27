@@ -279,7 +279,6 @@ function setPanelValuesFromFile() {
         //  //Set up callbacks for the config panel on the left.
         item.select("select").on("change", function() {
 
-            console.log("value is ", this.value);
             if (this.value === 'None') {
                 config.nodeLink[m.configAttr] = null;
             } else {

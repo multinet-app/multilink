@@ -11,6 +11,8 @@ let vis = {
     simulation: undefined,
     scales: {},
     edgeScale: d3.scaleLinear().domain([0, 1]),
+    circleScale: d3.scaleLinear().domain([0, 1]),
+    nodeFill: "#888888",
 
     // Functions
     nodeLength: () => {}
@@ -21,23 +23,10 @@ let browser = {
     width: 0
 };
 
-var circleScale = d3.scaleLinear().domain([0, 1]);
-
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
-
-let wasDragged = false;
 
 //global sizes
 let nodeMarkerLength, nodeMarkerHeight, checkboxSize;
-
-//global scales
-let quantColors,
-    nodeHeight,
-    nodeFill = "#888888",
-    catFill,
-    // nodeStroke,
-    edgeColor,
-    edgeWidth;
 
 // Draws the visualization on first load
 async function makeVis() {
@@ -53,7 +42,6 @@ async function makeVis() {
 
     // Start provenance
     initializeProvenance(vis.graph_structure)
-    console.log("app = ", app)
 
     // Attach the search box code to the button
     d3.select('#searchButton').on("click", () => searchForNode());
@@ -309,7 +297,7 @@ function highlightSelectedNodes(state) {
 
     d3.selectAll(".nodeGroup")
         .select(".node")
-        .style("fill", nodeFill) //using local bound data, ok, since state should not influence the fill
+        .style("fill", vis.nodeFill) //using local bound data, ok, since state should not influence the fill
         // .style("stroke", d => nodeStroke(state.selected.includes(d.id)));
 }
 
@@ -383,9 +371,6 @@ function dragNode() {
         .select("path")
         .attr("d", function(d) {
             let path = arcPath(1, d);
-            if (path.includes("null")) {
-                console.log("bad path");
-            }
             return path;
         });
 
@@ -399,15 +384,11 @@ function dragNode() {
 }
 
 function updatePos(state) {
-    console.log("calling  updatePos");
     d3.selectAll(".linkGroup")
         .select("path")
         .attr("d", function(d) {
             let path = arcPath(1, d, //state
             );
-            if (path.includes("null")) {
-                console.log("bad path");
-            }
             return path;
         });
 
@@ -419,7 +400,6 @@ function updatePos(state) {
 }
 
 function arcPath(leftHand, d, state = false) {
-    console.log("in arcpath")
     let source = state ? { x: state.nodePos[d.source.id].x, y: state.nodePos[d.source.id].y } :
         d.source;
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
@@ -564,7 +544,6 @@ async function updateVis(graph_structure) {
     let radius = drawCat ? nodeMarkerHeight * 0.15 : 0;
     let padding = drawCat ? 3 : 0;
 
-    console.log("nodes", graph_structure.nodes)
     var node = d3
         .select(".nodes")
         .selectAll(".nodeGroup")
@@ -630,7 +609,7 @@ async function updateVis(graph_structure) {
 
     .on("mouseover", function(d) {
 
-        let tooltipData = 'hello node';
+        let tooltipData = d._id;;
 
         // if (config.nodeLink.nodeFillAttr) {
         //     tooltipData = tooltipData.concat(config.nodeLink.nodeFillAttr + ":" + d[config.nodeLink.nodeFillAttr] + " ")
@@ -788,9 +767,7 @@ async function updateVis(graph_structure) {
         .attr("id", d => d._key)
         .attr("d", d => arcPath(1, d))
         .on("mouseover", function(d) {
-
-            //     // console.log (d)
-            let tooltipData = "hello"; //d.name;
+            let tooltipData = d._id;
 
             //     if (config.nodeLink.edgeWidthAttr) {
             //         tooltipData = tooltipData.concat(" [" + d.count + "]")
@@ -1047,10 +1024,8 @@ async function updateVis(graph_structure) {
 
 
 
-    console.log("before sim")
 
     //set up simulation
-    console.log("", vis.simulation)
 
     // vis.simulation.nodes(graph_structure.nodes).on("tick", ticked);
     // vis.simulation
@@ -1062,7 +1037,7 @@ async function updateVis(graph_structure) {
     //     d3.forceCollide().radius(d => d3.max([vis.nodeLength(d), nodeHeight(d)]))
     // );
 
-    // console.log("graph", graph_structure)
+
     //     //if source/target are still strings from the input file
     // if (graph_structure.links[0].source._id === undefined) {
     //     //restablish link references to their source and target nodes;
@@ -1095,8 +1070,8 @@ async function updateVis(graph_structure) {
     //     n.fy = null;
     //   });
 
-    // for (var i = 0; i < 2000; ++i) simulation.tick();
-    // simulation.stop();
+    // for (var i = 0; i < 2000; ++i) vis.simulation.tick();
+    // vis.simulation.stop();
 
     //   //  add a collision force that is proportional to the radius of the nodes;
     //   simulation.force("collision", d3.forceCollide().radius(d => vis.nodeLength(d)));
@@ -1145,8 +1120,6 @@ async function updateVis(graph_structure) {
         d.y = d3.event.y;
         dragNode();
         wasDragged = true;
-
-        // console.log('dragged')
     }
 
     function dragended(d) {
@@ -1601,7 +1574,7 @@ function drawLegend() {
 
 
     let findCenter = function(i) {
-        return circleScale.range()[1] / 2 - circleScale(i) / 2;
+        return vis.circleScale.range()[1] / 2 - vis.circleScale(i) / 2;
     };
 
     sizeCircles
@@ -1610,18 +1583,18 @@ function drawLegend() {
             edgeScale(1) :
             d.type === "edgeWidth" ?
             edgeScale(i) :
-            circleScale(i)
+            vis.circleScale(i)
         )
-        .attr("width", (d, i) => (d.type === "node" ? circleScale(i) : 30))
+        .attr("width", (d, i) => (d.type === "node" ? vis.circleScale(i) : 30))
         .attr("y", (d, i) =>
             d.type === "node" ?
             findCenter(i) + 5 :
             d.type === "edgeWidth" ?
-            circleScale.range()[1] / 2 + 5 :
-            circleScale.range()[1] / 2 - 5
+            vis.circleScale.range()[1] / 2 + 5 :
+            vis.circleScale.range()[1] / 2 - 5
         )
-        .attr("rx", (d, i) => (d.type === "node" ? circleScale(i) : 0))
-        .attr("ry", (d, i) => (d.type === "node" ? circleScale(i) : 0))
+        .attr("rx", (d, i) => (d.type === "node" ? vis.circleScale(i) : 0))
+        .attr("ry", (d, i) => (d.type === "node" ? vis.circleScale(i) : 0))
         .style("fill", d => (d.type === "edgeType" ? edgeStrokeScale(d.data) : ""))
         .classed("edgeLegend", (d, i) => d.type === "edgeType");
 
@@ -1633,14 +1606,14 @@ function drawLegend() {
             (d, i) =>
             "translate(" +
             (d.type === "node" ?
-                circleScale(i) / 2 :
+                vis.circleScale(i) / 2 :
                 d.type === "edgeWidth" ?
                 edgeScale(i) :
                 0) +
             "," +
             (d.type === "edgeType" ?
-                circleScale.range()[1] / 2 + 20 :
-                circleScale.range()[1] + 25) +
+                vis.circleScale.range()[1] / 2 + 20 :
+                vis.circleScale.range()[1] + 25) +
             ")"
         )
         .style("text-anchor", "start")
@@ -1674,7 +1647,6 @@ function drawLegend() {
     //   })
     // let lowerTranslate = !drawBars ? 0 : longerLabel ;
 
-    // console.log(longerLabel)
     d3.select(".upperGroup").attr(
         "transform",
         "translate(15," + (drawBars ? barHeight + 20 : 30) + ")"
@@ -1684,5 +1656,6 @@ function drawLegend() {
         "translate(0," + (drawBars ? upperGroupElement.height + 30 : 100) + ")"
     );
 };
+
 
 module.exports = { initializeProvenance };
