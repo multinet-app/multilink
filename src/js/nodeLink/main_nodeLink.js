@@ -266,12 +266,14 @@ function loadVis() {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+    console.log(vis.simulation)
     vis.simulation = d3
         .forceSimulation()
         .force(
             "link",
-            d3.forceLink().id(function(d) {
-                return d._key;
+            d3.forceLink()
+            .id(function(d) {
+                return d._id;
             })
         )
         .force("charge", d3.forceManyBody().strength(10))
@@ -279,6 +281,8 @@ function loadVis() {
             "center",
             d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
         );
+    console.log(vis.simulation)
+
 
     updateVis(graph_structure)
 }
@@ -433,11 +437,11 @@ function updatePos(state) {
             return path;
         });
 
-    d3.selectAll(".nodeGroup").attr(
-        "transform",
-        d =>
-        "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
-    );
+    // d3.selectAll(".nodeGroup").attr(
+    //     "transform",
+    //     d =>
+    //     "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
+    // );
 }
 
 function arcPath(leftHand, d, state = false) {
@@ -1069,40 +1073,43 @@ async function updateVis(graph_structure) {
 
 
 
+    console.log("before sim")
 
     //set up simulation
-    vis.simulation.nodes(graph_structure.nodes).on("tick", ticked);
-    vis.simulation
-        .force("link")
-        .links(graph_structure.links)
-        .distance(l => l.count);
-    vis.simulation.force(
-        "collision",
-        d3.forceCollide().radius(d => d3.max([nodeLength(d), nodeHeight(d)]))
-    );
+    console.log("", vis.simulation)
 
-    console.log(graph_structure)
-        //if source/target are still strings from the input file
-    if (graph_structure.links[0].source._key === undefined) {
-        //restablish link references to their source and target nodes;
-        graph_structure.links.map(l => {
-            l.source =
-                graph.nodes.find(n => n.id === l.source) ||
-                graph.nodes[l.source] ||
-                l.source;
-            l.target =
-                graph.nodes.find(n => n.id === l.target) ||
-                graph.nodes[l.target] ||
-                l.target;
-        });
-    }
+    // vis.simulation.nodes(graph_structure.nodes).on("tick", ticked);
+    // vis.simulation
+    //     .force("link")
+    //     .links(graph_structure.links)
+    //     .distance(l => l.count);
+    // vis.simulation.force(
+    //     "collision",
+    //     d3.forceCollide().radius(d => d3.max([nodeLength(d), nodeHeight(d)]))
+    // );
+
+    // console.log("graph", graph_structure)
+    //     //if source/target are still strings from the input file
+    // if (graph_structure.links[0].source._id === undefined) {
+    //     //restablish link references to their source and target nodes;
+    //     graph_structure.links.map(l => {
+    //         l.source =
+    //             graph_structure.nodes.find(n => n._id === l.source) ||
+    //             graph_structure.nodes[l.source] ||
+    //             l.source;
+    //         l.target =
+    //             graph_structure.nodes.find(n => n._id === l.target) ||
+    //             graph_structure.nodes[l.target] ||
+    //             l.target;
+    //     });
+    // }
     //check to see if there are already saved positions in the file, if not
     //run simulation to get fixed positions;
 
     //remove collision force
     // simulation.force('collision',null);
 
-    dragNode();
+    //dragNode();
 
     // else {
     //   graph.nodes.map(n => {
@@ -1114,8 +1121,8 @@ async function updateVis(graph_structure) {
     //     n.fy = null;
     //   });
 
-    for (var i = 0; i < 2000; ++i) simulation.tick();
-    simulation.stop();
+    // for (var i = 0; i < 2000; ++i) simulation.tick();
+    // simulation.stop();
 
     //   //  add a collision force that is proportional to the radius of the nodes;
     //   simulation.force("collision", d3.forceCollide().radius(d => nodeLength(d)));
@@ -1182,8 +1189,8 @@ async function updateVis(graph_structure) {
                     //Add label describing what the event was
                     currentState.event = "Dragged Node";
                     //Update node positions
-                    graph.nodes.map(
-                        n => (currentState.nodePos[n.id] = { x: n.x, y: n.y })
+                    graph_structure.nodes.map(
+                        n => (currentState.nodePos[n._id] = { x: n.x, y: n.y })
                     );
                     return currentState;
                 },
