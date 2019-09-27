@@ -1,4 +1,4 @@
-// Set dimensions of the panel with the task, legend, and user response and without those pieces
+// Set local namespaces
 let panel = {
     panelDimensions: { width: 0, height: 0 }
 };
@@ -13,6 +13,8 @@ let vis = {
     edgeScale: d3.scaleLinear().domain([0, 1]),
     circleScale: d3.scaleLinear().domain([0, 1]),
     nodeFill: "#888888",
+    nodeMarkerLength: 0,
+    nodeMarkerHeight: 0,
 
     // Functions
     nodeLength: () => {}
@@ -23,10 +25,12 @@ let browser = {
     width: 0
 };
 
-var margin = { left: 0, right: 100, top: 0, bottom: 0 };
-
-//global sizes
-let nodeMarkerLength, nodeMarkerHeight, checkboxSize;
+var margin = {
+    left: 0,
+    right: 100,
+    top: 0,
+    bottom: 0
+};
 
 // Draws the visualization on first load
 async function makeVis() {
@@ -53,7 +57,7 @@ async function makeVis() {
 vis.nodeLength = function(node) {
     let nodeSizeScale = d3
         .scaleLinear()
-        .range([nodeMarkerLength / 2, nodeMarkerLength * 2])
+        .range([vis.nodeMarkerLength / 2, vis.nodeMarkerLength * 2])
         .clamp(true);
 
     //if an attribute has been assigned to nodeSizeAttr, set domain
@@ -66,7 +70,7 @@ vis.nodeLength = function(node) {
     let value =
         // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
         // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
-        nodeMarkerLength;
+        vis.nodeMarkerLength;
     //make circles a little larger than just the radius of the marker;
     return value; //config.nodeIsRect ? value : value * 1.3;
 };
@@ -74,7 +78,7 @@ vis.nodeLength = function(node) {
 nodeHeight = function(node) {
     let nodeSizeScale = d3
         .scaleLinear()
-        .range([nodeMarkerHeight / 2, nodeMarkerHeight * 2])
+        .range([vis.nodeMarkerHeight / 2, vis.nodeMarkerHeight * 2])
         .clamp(true);
 
     //if an attribute has been assigned to nodeSizeAttr, set domain
@@ -87,14 +91,13 @@ nodeHeight = function(node) {
     let value =
         // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
         // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
-        nodeMarkerHeight;
+        vis.nodeMarkerHeight;
     return value; //config.nodeIsRect ? value : value * 1.3;
 };
 
 function setGlobalScales() {
-    nodeMarkerLength = 60;
-    nodeMarkerHeight = 35;
-    checkboxSize = nodeMarkerHeight / 4;
+    vis.nodeMarkerLength = 60;
+    vis.nodeMarkerHeight = 35;
 
     //Create Scale Functions
 
@@ -541,7 +544,7 @@ async function updateVis(graph_structure) {
     //draw Nodes
     //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
     let drawCat = 0
-    let radius = drawCat ? nodeMarkerHeight * 0.15 : 0;
+    let radius = drawCat ? vis.nodeMarkerHeight * 0.15 : 0;
     let padding = drawCat ? 3 : 0;
 
     var node = d3
@@ -587,10 +590,10 @@ async function updateVis(graph_structure) {
 
 
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
-    nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
+    vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
 
     let nodePadding = 2;
-    let sizeDiff = 55 - nodeMarkerLength;
+    let sizeDiff = 55 - vis.nodeMarkerLength;
     let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
 
     node
@@ -640,7 +643,7 @@ async function updateVis(graph_structure) {
 
             //let textWidth = -d3.select(this).node().getBBox().width / 2
 
-            return false ? -nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + checkboxSize + 3 : 50 + 8
+            return false ? -vis.nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + 3 : 50 + 8
         })
 
     // .attr('x', d => d.x)
@@ -686,7 +689,6 @@ async function updateVis(graph_structure) {
     node
         .select(".selectBox")
         .classed("selected", d => d.hardSelect)
-        .attr("width", checkboxSize)
 
     // .attr("x", function(d) {
     //     let nodeLabel = d3
@@ -694,35 +696,30 @@ async function updateVis(graph_structure) {
     //         .select("text");
 
     //     // let textWidth = nodeLabel.node().getBBox().width;
-    //     // return -textWidth / 2 - checkboxSize - 5;
 
-    //     return config.nodeIsRect ? -nodeMarkerLength / 2 - nodePadding / 2 - extraPadding / 2 : -textWidth / 2 - checkboxSize / 2;
+    //     return config.nodeIsRect ? -nodeMarkerLength / 2 - nodePadding / 2 - extraPadding / 2 : -textWidth / 2;
 
     // })
     // .attr("y", d =>
     //   config.nodeLink.drawBars
-    //     ? -(nodeHeight(d) / 2 + 4 + checkboxSize)
-    //     : -checkboxSize / 2
+    //     ? -(nodeHeight(d) / 2 + 4)
     // )
     .attr("y", d =>
             // config.nodeLink.drawBars ?
-            -(nodeMarkerHeight / 2) - 11
-            // :
-            // -checkboxSize / 2
+            -(vis.nodeMarkerHeight / 2) - 11
         )
-        // .attr("x", -nodeMarkerLength/2 -checkboxSize)
+        // .attr("x", -nodeMarkerLength/2 )
         // .attr("x", d => {
         //   // let nodeLabel = d3
         //   //     .select(d3.select(this).node().parentNode)
         //   //     .select("text");
 
     //   //   let textWidth = nodeLabel.node().getBBox().width;
-    //   //   return -textWidth / 2 - checkboxSize/2;
+    //   //   return -textWidth / 2;
 
     //   return config.nodeIsRect ? -nodeMarkerLength/2 - nodePadding/2 -extraPadding/2  :-vis.nodeLength(d) / 2 - 4;
     // })
 
-    // .attr("y", -checkboxSize / 2 - 5)
     .on("click", selectNode);
 
     node.call(
