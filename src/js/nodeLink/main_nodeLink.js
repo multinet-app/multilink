@@ -4,9 +4,16 @@ let panel = {
 };
 
 let vis = {
+    // Variables
+    graph_structure: {},
     visDimensions: { width: 0, height: 0 },
     svg: undefined,
-    simulation: undefined
+    simulation: undefined,
+    scales: {},
+    edgeScale: d3.scaleLinear().domain([0, 1]),
+
+    // Functions
+    nodeLength: () => {}
 };
 
 let browser = {
@@ -14,27 +21,17 @@ let browser = {
     width: 0
 };
 
-var scales = {};
-
 var circleScale = d3.scaleLinear().domain([0, 1]);
-
-edgeScale = d3.scaleLinear().domain([0, 1]);
 
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
-//so we're not restarting it every time updateVis is called;
-
 let wasDragged = false;
-
-
-// var tooltipTimeout; 
 
 //global sizes
 let nodeMarkerLength, nodeMarkerHeight, checkboxSize;
 
 //global scales
-let nodeLength,
-    quantColors,
+let quantColors,
     nodeHeight,
     nodeFill = "#888888",
     catFill,
@@ -48,14 +45,14 @@ async function makeVis() {
     removeConfig(configPanel)
 
     //Load from multinet
-    graph_structure = await load_data(workspace, graph)
+    vis.graph_structure = await load_data(workspace, graph)
 
     // Set up the search box
-    populateSearchList(graph_structure)
+    populateSearchList(vis.graph_structure)
     resetSearchBox()
 
     // Start provenance
-    initializeProvenance(graph_structure)
+    initializeProvenance(vis.graph_structure)
     console.log("app = ", app)
 
     // Attach the search box code to the button
@@ -65,7 +62,7 @@ async function makeVis() {
     loadVis();
 }
 
-nodeLength = function(node) {
+vis.nodeLength = function(node) {
     let nodeSizeScale = d3
         .scaleLinear()
         .range([nodeMarkerLength / 2, nodeMarkerLength * 2])
@@ -201,28 +198,7 @@ function setGlobalScales() {
 
 
 
-function tagNeighbors(selected) {
-    let neighbors = [];
-    let edges = []
 
-    for (clicked_node of selected) {
-        neighbor_nodes = graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, graph_structure.links[i]._id] : e.target === clicked_node ? [e.source, graph_structure.links[i]._id] : "")
-
-        for (node of neighbor_nodes) {
-            // push nodes
-            if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
-                neighbors.push(node[0]);
-            }
-
-            // push edges
-            if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
-                edges.push(node[1]);
-            }
-        }
-    }
-
-    return { "neighbors": neighbors, "edges": edges };
-}
 
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
@@ -266,7 +242,6 @@ function loadVis() {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    console.log(vis.simulation)
     vis.simulation = d3
         .forceSimulation()
         .force(
@@ -281,10 +256,9 @@ function loadVis() {
             "center",
             d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
         );
-    console.log(vis.simulation)
 
 
-    updateVis(graph_structure)
+    updateVis(vis.graph_structure)
 }
 
 function initializeProvenance(graph_structure) {
@@ -437,11 +411,11 @@ function updatePos(state) {
             return path;
         });
 
-    // d3.selectAll(".nodeGroup").attr(
-    //     "transform",
-    //     d =>
-    //     "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
-    // );
+    d3.selectAll(".nodeGroup").attr(
+        "transform",
+        d =>
+        "translate(" + state.nodePos[d._id].x + "," + state.nodePos[d._id].y + ")"
+    );
 }
 
 function arcPath(leftHand, d, state = false) {
@@ -451,8 +425,8 @@ function arcPath(leftHand, d, state = false) {
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
         d.target;
 
-    source = graph_structure.nodes.find(x => x._id === source)
-    target = graph_structure.nodes.find(x => x._id === target)
+    source = vis.graph_structure.nodes.find(x => x._id === source)
+    target = vis.graph_structure.nodes.find(x => x._id === target)
 
     var x1 = leftHand ? parseFloat(source.x) + 25 : target.x,
         y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
@@ -567,9 +541,9 @@ async function updateVis(graph_structure) {
         scaleColors[domainKey] = singleDomain ? "#afafaf" : quantColors(i);
     });
 
-    Object.keys(scales).map(
-        s => (scales[s].fill = scaleColors[scales[s].domainKey])
-    );
+    // Object.keys(scales).map(
+    //     s => (scales[s].fill = scaleColors[scales[s].domainKey])
+    // );
 
     //Drawing Graph
 
@@ -646,7 +620,7 @@ async function updateVis(graph_structure) {
         // .attr("y", d => d.y)
         .attr("width", d => 50)
         .attr("height", d => 50)
-        .attr("rx", d => 25) //nodeLength(d)/20
+        .attr("rx", d => 25) //vis.nodeLength(d)/20
         .attr("ry", d => 25);
 
     node.select('.node')
@@ -704,9 +678,9 @@ async function updateVis(graph_structure) {
         //     .getBBox().width;
 
     //   //make sure label box spans the width of the node
-    //   return config.nodeLink.drawBars ? nodeMarkerLength + 30 : d3.max([textWidth, nodeLength(d)])+4;
+    //   return config.nodeLink.drawBars ? nodeMarkerLength + 30 : d3.max([textWidth, vis.nodeLength(d)])+4;
     // })
-    .attr("width", d => false ? nodeLength(d) + 8 + nodePadding + extraPadding : nodeLength(d) + 8)
+    .attr("width", d => false ? vis.nodeLength(d) + 8 + nodePadding + extraPadding : vis.nodeLength(d) + 8)
         .on("click", selectNode)
 
 
@@ -720,10 +694,10 @@ async function updateVis(graph_structure) {
         //     .getBBox().width;
 
     //   //make sure label box spans the width of the node
-    //   return config.nodeLink.drawBars ? -nodeMarkerLength / 2 -15  : d3.min([-textWidth / 2, -nodeLength(d) / 2 - 2]);
+    //   return config.nodeLink.drawBars ? -nodeMarkerLength / 2 -15  : d3.min([-textWidth / 2, -vis.nodeLength(d) / 2 - 2]);
     // })
 
-    .attr("x", d => false ? -nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -nodeLength(d) / 2 - 4)
+    .attr("x", d => false ? -vis.nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -vis.nodeLength(d) / 2 - 4)
 
     .attr("y", d =>
         // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 14 : 
@@ -766,7 +740,7 @@ async function updateVis(graph_structure) {
     //   //   let textWidth = nodeLabel.node().getBBox().width;
     //   //   return -textWidth / 2 - checkboxSize/2;
 
-    //   return config.nodeIsRect ? -nodeMarkerLength/2 - nodePadding/2 -extraPadding/2  :-nodeLength(d) / 2 - 4;
+    //   return config.nodeIsRect ? -nodeMarkerLength/2 - nodePadding/2 -extraPadding/2  :-vis.nodeLength(d) / 2 - 4;
     // })
 
     // .attr("y", -checkboxSize / 2 - 5)
@@ -1085,7 +1059,7 @@ async function updateVis(graph_structure) {
     //     .distance(l => l.count);
     // vis.simulation.force(
     //     "collision",
-    //     d3.forceCollide().radius(d => d3.max([nodeLength(d), nodeHeight(d)]))
+    //     d3.forceCollide().radius(d => d3.max([vis.nodeLength(d), nodeHeight(d)]))
     // );
 
     // console.log("graph", graph_structure)
@@ -1125,7 +1099,7 @@ async function updateVis(graph_structure) {
     // simulation.stop();
 
     //   //  add a collision force that is proportional to the radius of the nodes;
-    //   simulation.force("collision", d3.forceCollide().radius(d => nodeLength(d)));
+    //   simulation.force("collision", d3.forceCollide().radius(d => vis.nodeLength(d)));
 
     //   simulation.alphaTarget(0.1).restart();
     // }
@@ -1229,7 +1203,8 @@ function drawLegend() {
         padding: 10
     };
 
-    let drawBars = config.nodeLink.drawBars;
+    let drawBars = //config.nodeLink.drawBars || 
+        false;
 
     let quantAttributes = drawBars ? config.nodeAttributes.filter(isQuant) : [];
     let catAttributes = drawBars ?
@@ -1710,4 +1685,4 @@ function drawLegend() {
     );
 };
 
-module.exports = { initializeProvenance, tagNeighbors };
+module.exports = { initializeProvenance };

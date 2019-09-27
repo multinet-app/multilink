@@ -42,7 +42,7 @@ function searchForNode() {
 
 //function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
 function searchFor(selectedOption) {
-    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
+    node = vis.graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
     if (node === undefined) {
         return -1;
@@ -123,7 +123,7 @@ function populateSearchList() {
 
     datalist = enterSelection.merge(datalist);
 
-    let options = datalist.selectAll("option").data(graph_structure.nodes);
+    let options = datalist.selectAll("option").data(vis.graph_structure.nodes);
 
     let optionsEnter = options.enter().append("option");
     options.exit().remove();
@@ -159,6 +159,29 @@ function clearSelections() {
 
     provenance.applyAction(action);
 
+}
+
+function tagNeighbors(selected) {
+    let neighbors = [];
+    let edges = []
+
+    for (clicked_node of selected) {
+        neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i]._id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i]._id] : "")
+
+        for (node of neighbor_nodes) {
+            // push nodes
+            if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
+                neighbors.push(node[0]);
+            }
+
+            // push edges
+            if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
+                edges.push(node[1]);
+            }
+        }
+    }
+
+    return { "neighbors": neighbors, "edges": edges };
 }
 
 module.exports = { searchFor, isSelected };
