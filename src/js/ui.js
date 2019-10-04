@@ -56,7 +56,7 @@ function searchFor(selectedOption) {
 function isSelected(node) {
     const currentState = app.currentState();
     let selected = currentState.selected;
-    return selected.includes(node._id);
+    return selected.includes(node.id);
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
@@ -66,9 +66,9 @@ function nodeClick(node, search = false) {
     let wasSelected = isSelected(node);
 
     if (wasSelected) {
-        selected = selected.filter(s => s !== node._id);
+        selected = selected.filter(s => s !== node.id);
     } else {
-        selected.push(node._id);
+        selected.push(node.id);
     }
 
     let neighbors_and_edges = tagNeighbors(selected);
@@ -93,7 +93,7 @@ function nodeClick(node, search = false) {
             currentState.userSelectedEdges = neighbors_and_edges.edges;
             //If node was searched, push him to the search array
             if (search) {
-                currentState.search.push(node._id);
+                currentState.search.push(node.id);
             }
             return currentState;
         },
@@ -129,7 +129,7 @@ function populateSearchList() {
     options = optionsEnter.merge(options);
 
     options.attr("value", d => d.name);
-    options.attr("id", d => d._id);
+    options.attr("id", d => d.id);
 }
 
 function clearSelections() {
@@ -164,7 +164,12 @@ function tagNeighbors(selected) {
     let edges = []
 
     for (clicked_node of selected) {
-        neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i]._id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i]._id] : "")
+        if (vis.simOff) {
+            neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i].id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i].id] : "")
+        } else {
+            neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source.id === clicked_node ? [e.target.id, vis.graph_structure.links[i].id] : e.target.id === clicked_node ? [e.source.id, vis.graph_structure.links[i].id] : "")
+        }
+
 
         for (node of neighbor_nodes) {
             // push nodes

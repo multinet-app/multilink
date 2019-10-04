@@ -24,7 +24,7 @@ async function load_data(workspace, graph) {
     await load_links(workspace, edge_table);
 
     // Set the graph structure
-    multinet.graph_structure = { "nodes": multinet.nodes, "links": rename_link_vars(multinet.links) }
+    multinet.graph_structure = { "nodes": rename_link_vars(multinet.nodes), "links": rename_link_vars(multinet.links) }
 
     return multinet.graph_structure
 
@@ -51,13 +51,25 @@ async function load_links(workspace, edge_table) {
 };
 
 function rename_link_vars(links) {
-
     for (row of links) {
+        row.id = row._id;
         row.source = row._from;
         row.target = row._to;
-        delete row._from
-        delete row._to
+
+        delete row._id;
+        delete row._from;
+        delete row._to;
     };
 
     return links;
+}
+
+function rename_node_vars(nodes) {
+    for (row of nodes) {
+        row.id = row._id;
+
+        delete row._id;
+    };
+
+    return nodes;
 }
