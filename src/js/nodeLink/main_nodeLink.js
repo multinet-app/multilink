@@ -1,27 +1,31 @@
 // Set dimensions of the panel with the task, legend, and user response and without those pieces
-let panelDimensions = { width: 0, height: 0 };
-let visDimensions = { width: 0, height: 0 };
+let panel = {
+    panelDimensions: { width: 0, height: 0 },
 
-var defaultDomains = { node: {}, edge: {} };
+};
+
+let vis = {
+    visDimensions: { width: 0, height: 0 },
+    svg: undefined
+};
+
+let browser = {
+    height: 0,
+    width: 0
+};
+
 var scales = {};
 
-//Legend Scales
 var circleScale = d3.scaleLinear().domain([0, 1]);
 
-var edgeScale = d3.scaleLinear().domain([0, 1]);
+edgeScale = d3.scaleLinear().domain([0, 1]);
 
-var height;
-var width;
-let taskBar_height;
-
-var svg;
 var margin = { left: 0, right: 100, top: 0, bottom: 0 };
 
 var simulation; //so we're not restarting it every time updateVis is called;
 
 let wasDragged = false;
 
-//let graph_structure;
 
 // var tooltipTimeout; 
 
@@ -227,23 +231,23 @@ function loadVis() {
     width = targetDiv.style("width").replace("px", "");
     height = targetDiv.style("height").replace("px", "");
 
-    visDimensions.width = width * 0.75 - 24;
-    visDimensions.height = height;
+    vis.visDimensions.width = width * 0.75 - 24;
+    vis.visDimensions.height = height;
 
-    panelDimensions.width = width * 0.25;
-    panelDimensions.height = height;
+    panel.panelDimensions.width = width * 0.25;
+    panel.panelDimensions.height = height;
 
 
-    d3.select("#visPanel").style("width", panelDimensions.width + "px");
+    d3.select("#visPanel").style("width", panel.panelDimensions.width + "px");
 
-    svg = d3
+    vis.svg = d3
         .select("#node-link-svg")
-        .attr("width", visDimensions.width) //size + margin.left + margin.right)
-        .attr("height", visDimensions.height);
+        .attr("width", vis.visDimensions.width) //size + margin.left + margin.right)
+        .attr("height", vis.visDimensions.height);
 
     // Set up groups for nodes/links
-    svg.append("g").attr("class", "links");
-    svg.append("g").attr("class", "nodes");
+    vis.svg.append("g").attr("class", "links");
+    vis.svg.append("g").attr("class", "nodes");
 
     let parentWidth = d3
         .select("#visPanel")
@@ -273,7 +277,7 @@ function loadVis() {
         .force("charge", d3.forceManyBody().strength(10))
         .force(
             "center",
-            d3.forceCenter(visDimensions.width / 2, visDimensions.height / 2)
+            d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
         );
 
     updateVis(graph_structure)
@@ -410,8 +414,8 @@ function dragNode() {
     let radius = 25;
 
     d3.selectAll(".nodeGroup").attr("transform", d => {
-        d.x = Math.max(radius, Math.min(visDimensions.width, d.x));
-        d.y = Math.max(radius, Math.min(visDimensions.height, d.y));
+        d.x = Math.max(radius, Math.min(vis.visDimensions.width, d.x));
+        d.y = Math.max(radius, Math.min(vis.visDimensions.height, d.y));
         return "translate(" + d.x + "," + d.y + ")";
     });
 }
@@ -612,8 +616,8 @@ async function updateVis(graph_structure) {
     node.classed("muted", false)
         .classed("selected", false)
         .attr("transform", d => {
-            d.x = d.x === undefined ? (Math.random() * visDimensions.width - margin.left - margin.right) + 100 : Math.max(radius, Math.min(visDimensions.width, d.x));
-            d.y = d.y === undefined ? (Math.random() * visDimensions.height - margin.bottom - margin.top) : Math.max(radius, Math.min(visDimensions.height, d.y));
+            d.x = d.x === undefined ? (Math.random() * vis.visDimensions.width - margin.left - margin.right) + 100 : Math.max(radius, Math.min(vis.visDimensions.width, d.x));
+            d.y = d.y === undefined ? (Math.random() * vis.visDimensions.height - margin.bottom - margin.top) : Math.max(radius, Math.min(vis.visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         });
 
