@@ -20,21 +20,22 @@ afterAll(() => {
 describe("End to end", () => {
     describe("Visualization", () => {
         it("Clicking on node highlights it", async() => {
+
             // Arrange
             let node, value;
             await page.goto("http://127.0.0.1:8080/?workspace=test&graph=test");
             await page.waitForSelector(".nodeGroup");
 
 
-            await page.click(".nodeGroup");
-            node = await page.$(".nodeGroup");
-            value = await node.getProperty("class");
-            expect(value).toBe("node nodeBox clicked");
+            await page.click(".node.nodeBox");
+            node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
+            console.log(node)
+            expect(node[2]).toBe("clicked");
 
-            await page.click(".nodeGroup");
-            node = await page.$(".nodeGroup");
-            value = await node.getProperty("class");
-            expect(value).toBe("node nodeBox");
+            await page.click(".node.nodeBox");
+            node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
+            console.log(node)
+            expect(node[2]).toBe(undefined);
 
         });
 
