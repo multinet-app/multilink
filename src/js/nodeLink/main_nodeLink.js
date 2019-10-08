@@ -1,13 +1,16 @@
 // Set local namespaces
-let panel = {
-    panelDimensions: { width: 0, height: 0 }
-};
-
 let vis = {
     // Variables
     graph_structure: {},
     nodeTypes: {},
+    panelDimensions: { width: 0, height: 0 },
     visDimensions: { width: 0, height: 0 },
+    visMargins: {
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10
+    },
     svg: undefined,
     simulation: undefined,
     simOn: false,
@@ -15,6 +18,7 @@ let vis = {
     edgeScale: d3.scaleLinear().domain([0, 1]),
     circleScale: d3.scaleLinear().domain([0, 1]),
     colorClasses: [],
+    nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
     nodeFill: "#888888",
     nodeMarkerLength: 0,
     nodeMarkerHeight: 0,
@@ -32,13 +36,7 @@ let browser = {
     width: 0
 };
 
-var margin = {
-    left: 0,
-    right: 100,
-    top: 0,
-    bottom: 0
-};
-
+let radius = 25;
 
 // Draws the visualization on first load
 async function makeVis() {
@@ -180,45 +178,52 @@ function setGlobalScales() {
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 function loadVis() {
+    // Set total dimensions
     let targetDiv = d3.select("#targetSize");
-    width = targetDiv.style("width").replace("px", "");
-    height = targetDiv.style("height").replace("px", "");
+    browser.width = targetDiv.style("width").replace("px", "");
+    browser.height = targetDiv.style("height").replace("px", "");
 
-    vis.visDimensions.width = width * 0.75 - 24;
-    vis.visDimensions.height = height * 1;
+    // Set dimensions of the node link
+    vis.visDimensions.width = browser.width * 0.75 - 24;
+    vis.visDimensions.height = browser.height * 1;
 
-    panel.panelDimensions.width = width * 0.25;
-    panel.panelDimensions.height = height * 1;
+    // Set dimensions of panel
+    vis.panelDimensions.width = browser.width * 0.25;
+    vis.panelDimensions.height = browser.height * 1;
 
+    // Size panel
+    d3.select("#visPanel").style("width", vis.panelDimensions.width + "px");
 
-    d3.select("#visPanel").style("width", panel.panelDimensions.width + "px");
-
+    // Size the node link
     vis.svg = d3
         .select("#node-link-svg")
-        .attr("width", vis.visDimensions.width) //size + margin.left + margin.right)
+        .attr("width", vis.visDimensions.width)
         .attr("height", vis.visDimensions.height);
 
     // Set up groups for nodes/links
     vis.svg.append("g").attr("class", "links");
     vis.svg.append("g").attr("class", "nodes");
 
+    // Get with of the content (panel width - margins) as dimensions for the legend
     let parentWidth = d3
         .select("#visPanel")
         .select(".content")
         .node()
         .getBoundingClientRect().width;
 
+    // Size the legend
     legend = d3
         .select("#legend-svg")
-        .attr("width", parentWidth) //size + margin.left + margin.right)
+        .attr("width", parentWidth)
         .attr("height", 270);
 
-    //add tooltip
+    // Add tooltip
     d3.select("body")
         .append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+    // Set up the colorClasses (names of the tables) so we can assign colors based on index later
     for (node of vis.graph_structure.nodes) {
         table = node.id.split("/")[0]
         if (!vis.colorClasses.includes(table)) {
@@ -226,11 +231,11 @@ function loadVis() {
         }
     }
 
-
-
+    // Call update vis to append all the data to the svg
     updateVis(vis.graph_structure)
 
-    if (!vis.simOff) {
+    // If the simulation is requested build and start it
+    if (vis.simOn) {
         makeSimulation()
     }
 }
@@ -284,8 +289,7 @@ function highlightSelectedNodes(state) {
 
 function nodeFill2(node) {
     index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-    colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854']
-    return colors[index]
+    return vis.nodeColors[index]
 }
 
 function selectNode(node) {
@@ -326,10 +330,6 @@ function highlightHardSelectedNodes(state) {
 
     let hasUserSelection = state.selected.length > 0;
 
-
-    d3.selectAll(".selectBox").classed("selected", d =>
-        state.hardSelected.includes(d.id)
-    );
     d3.select(".nodes")
         .selectAll(".nodeGroup")
         .classed("selected", d => state.hardSelected.includes(d.id))
@@ -361,11 +361,12 @@ function dragNode() {
             return path;
         });
 
-    let radius = 25;
+    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
+    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
 
     d3.selectAll(".nodeGroup").attr("transform", d => {
-        d.x = Math.max(radius, Math.min(vis.visDimensions.width, d.x));
-        d.y = Math.max(radius, Math.min(vis.visDimensions.height, d.y));
+        d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace + vis.visMargins.left, d.x));
+        d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace + vis.visMargins.top, d.y));
         return "translate(" + d.x + "," + d.y + ")";
     });
 }
@@ -379,11 +380,11 @@ function updatePos(state) {
             return path;
         });
 
-    d3.selectAll(".nodeGroup").attr(
-        "transform",
-        d =>
-        "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
-    );
+    // d3.selectAll(".nodeGroup").attr(
+    //     "transform",
+    //     d =>
+    //     "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
+    // );
 }
 
 function arcPath(leftHand, d, state = false) {
@@ -434,14 +435,6 @@ function arcPath(leftHand, d, state = false) {
             y2
         );
     }
-
-    // }
-
-
-
-    // return ("M" + x1 + "," + y1
-    //    + "S" + x2 + "," + y2
-    //    + " " + x2 + "," + y2)
 }
 
 function showTooltip(data, delay = 200) {
@@ -516,7 +509,6 @@ function updateVis(graph_structure) {
     //draw Nodes
     //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
     let drawCat = 0
-    let radius = drawCat ? vis.nodeMarkerHeight * 0.15 : 0;
     let padding = drawCat ? 3 : 0;
 
     var node = d3
@@ -539,8 +531,6 @@ function updateVis(graph_structure) {
 
     nodeEnter.append("text").classed("label", true);
 
-    nodeEnter.append("rect").classed("selectBox", true);
-
     node.exit().remove();
 
     node = nodeEnter.merge(node);
@@ -548,8 +538,13 @@ function updateVis(graph_structure) {
     node.classed("muted", false)
         .classed("selected", false)
         .attr("transform", d => {
-            d.x = (Math.random() * vis.visDimensions.width - margin.left - margin.right) + 100 // : Math.max(radius, Math.min(vis.visDimensions.width, d.x));
-            d.y = (Math.random() * vis.visDimensions.height - margin.bottom - margin.top) // : Math.max(radius, Math.min(vis.visDimensions.height, d.y));
+            // Get the space we have to work with
+            horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
+            verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+
+            // Get a random place in the space we have and bump it over by 1 margin
+            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(d.radius, Math.min(vis.visDimensions.width, d.x));
+            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(d.radius, Math.min(vis.visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         });
 
@@ -557,8 +552,6 @@ function updateVis(graph_structure) {
     //determine the size of the node here: 
     // let barAttrs = config.nodeLink.drawBars ?
     //     config.nodeAttributes.filter(isQuant) : [];
-
-
 
 
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
@@ -651,16 +644,6 @@ function updateVis(graph_structure) {
     //   return config.nodeLink.drawBars ? -nodeMarkerLength / 2 -15  : d3.min([-textWidth / 2, -vis.nodeLength(d) / 2 - 2]);
     // })
 
-    .attr("x", d => false ? -vis.nodeLength(d) / 2 - 4 - nodePadding / 2 - extraPadding / 2 : -vis.nodeLength(d) / 2 - 4)
-
-    .attr("y", d =>
-        // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 14 : 
-        "-.5em"
-    );
-
-    node
-        .select(".selectBox")
-        .classed("selected", d => d.hardSelect)
 
     // .attr("x", function(d) {
     //     let nodeLabel = d3
