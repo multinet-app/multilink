@@ -6,6 +6,7 @@ let panel = {
 let vis = {
     // Variables
     graph_structure: {},
+    nodeTypes: {},
     visDimensions: { width: 0, height: 0 },
     svg: undefined,
     simulation: undefined,
@@ -13,6 +14,7 @@ let vis = {
     scales: {},
     edgeScale: d3.scaleLinear().domain([0, 1]),
     circleScale: d3.scaleLinear().domain([0, 1]),
+    colorClasses: [],
     nodeFill: "#888888",
     nodeMarkerLength: 0,
     nodeMarkerHeight: 0,
@@ -110,22 +112,7 @@ function setGlobalScales() {
     nodeFill = function(node) {
         let nodeFillScale = d3.scaleOrdinal();
 
-
-        //if an attribute has been assigned to nodeFillAttr, set domain
-        if (config.nodeLink.nodeFillAttr) {
-            nodeFillScale
-                .domain(
-                    config.attributeScales.node[config.nodeLink.nodeFillAttr].domain
-                )
-                .range(config.attributeScales.node[config.nodeLink.nodeFillAttr].range);
-        }
-
-        let value =
-            config.nodeLink.nodeFillAttr && !config.nodeLink.drawBars ?
-            nodeFillScale(node[config.nodeLink.nodeFillAttr]) :
-            (config.nodeLink.drawBars ? "white" : config.nodeLink.noNodeFill);
-
-        return value;
+        return vis.nodeFill;
     };
 
     //function to determine fill color of nestedCategoricalMarks
@@ -191,13 +178,6 @@ function setGlobalScales() {
     };
 }
 
-
-
-
-
-
-
-
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 function loadVis() {
     let targetDiv = d3.select("#targetSize");
@@ -238,6 +218,13 @@ function loadVis() {
         .append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+
+    for (node of vis.graph_structure.nodes) {
+        table = node.id.split("/")[0]
+        if (!vis.colorClasses.includes(table)) {
+            vis.colorClasses.push(table)
+        }
+    }
 
 
 
@@ -293,11 +280,12 @@ function highlightSelectedNodes(state) {
         );
     // .select('path')
     // .style("stroke", edgeColor);
+}
 
-    d3.selectAll(".nodeGroup")
-        .select(".node")
-        .style("fill", vis.nodeFill) //using local bound data, ok, since state should not influence the fill
-        // .style("stroke", d => nodeStroke(state.selected.includes(d.id)));
+function nodeFill2(node) {
+    index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
+    colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854']
+    return colors[index]
 }
 
 function selectNode(node) {
@@ -590,7 +578,7 @@ function updateVis(graph_structure) {
         .attr("ry", d => 25);
 
     node.select('.node')
-        .style("fill", "#888888")
+        .style("fill", d => nodeFill2(d))
         // .classed("clicked", d => app.currentState().selected.includes(d.id))
         // .classed("selected", d => app.currentState().hardSelected.includes(d.id))
 
@@ -1557,7 +1545,6 @@ function updateVis(graph_structure) {
 // };
 
 function makeSimulation() {
-    console.log(vis.visDimensions.width / 2)
     vis.simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(d => d.id))
         .force("charge", d3.forceManyBody().strength(0.2))
@@ -1592,11 +1579,6 @@ function makeSimulation() {
     function ticked(d) {
         dragNode();
     }
-
-
-    vis.simon = false;
-
-    console.log("simulation", vis.simulation)
 
 
     vis.simulation.restart();
