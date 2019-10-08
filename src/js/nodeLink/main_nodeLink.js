@@ -1015,51 +1015,10 @@ async function updateVis(graph_structure) {
 
 
     //set up simulation
-    const forceX = d3.forceX(width / 2).strength(0.1)
-    const forceY = d3.forceY(height / 2).strength(0.1)
+    if (!vis.simulation) {
+        makeSimulation()
+    }
 
-
-    vis.simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(d => d.id))
-        .force("charge", d3.forceManyBody().strength(0.2))
-        .force(
-            "center",
-            d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
-        )
-
-    vis.simulation
-        .nodes(vis.graph_structure.nodes)
-
-    vis.simulation
-        .force("link")
-        .links(vis.graph_structure.links);
-
-    vis.simulation
-        .force("center");
-
-    vis.simulation
-        .on("tick", d => {
-            console.log("tick");
-            ticked(d)
-        });
-
-
-    vis.simulation.force(
-        "collision",
-        d3.forceCollide().radius(d => 40
-            // d3.max([vis.nodeLength(d), vis.nodeHeight(d)])
-        ).strength(0.5)
-    );
-
-
-    vis.simOff = false;
-
-    console.log("simulation", vis.simulation)
-
-
-    vis.simulation.restart();
-    for (var i = 0; i < 200; ++i) vis.simulation.tick();
-    vis.simulation.alphaTarget(0.095).restart();
 
 
 
@@ -1126,9 +1085,7 @@ async function updateVis(graph_structure) {
         vis.simulation.alphaTarget(0.1).restart();
     });
 
-    function ticked(d) {
-        dragNode();
-    }
+
 
     //Flag to distinguish a drag from a click.
     let wasDragged = false;
@@ -1683,6 +1640,53 @@ async function updateVis(graph_structure) {
 //         "translate(0," + (drawBars ? upperGroupElement.height + 30 : 100) + ")"
 //     );
 // };
+
+function makeSimulation() {
+    vis.simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(d => d.id))
+        .force("charge", d3.forceManyBody().strength(0.2))
+        .force(
+            "center",
+            d3.forceCenter(width / 2, height / 2)
+        )
+
+    vis.simulation
+        .nodes(vis.graph_structure.nodes)
+
+    vis.simulation
+        .force("link")
+        .links(vis.graph_structure.links);
+
+    vis.simulation
+        .force("center");
+
+    vis.simulation
+        .on("tick", d => {
+            ticked(d)
+        });
+
+
+    vis.simulation.force(
+        "collision",
+        d3.forceCollide().radius(d => 40
+            // d3.max([vis.nodeLength(d), vis.nodeHeight(d)])
+        ).strength(0.5)
+    );
+
+    function ticked(d) {
+        dragNode();
+    }
+
+
+    vis.simOff = false;
+
+    console.log("simulation", vis.simulation)
+
+
+    vis.simulation.restart();
+    for (var i = 0; i < 200; ++i) vis.simulation.tick();
+    vis.simulation.alphaTarget(0.095).restart();
+}
 
 
 module.exports = { initializeProvenance };
