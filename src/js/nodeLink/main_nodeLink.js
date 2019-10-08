@@ -1564,7 +1564,7 @@ function makeSimulation() {
 
     vis.simulation.force(
         "collision",
-        d3.forceCollide().radius(d => 40
+        d3.forceCollide().radius(d => radius + 15
             // d3.max([vis.nodeLength(d), vis.nodeHeight(d)])
         ).strength(0.5)
     );
