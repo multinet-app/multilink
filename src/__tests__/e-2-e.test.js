@@ -29,12 +29,10 @@ describe("End to end", () => {
 
             await page.click(".node.nodeBox");
             node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
-            console.log(node)
             expect(node[2]).toBe("clicked");
 
             await page.click(".node.nodeBox");
             node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
-            console.log(node)
             expect(node[2]).toBe(undefined);
 
         });

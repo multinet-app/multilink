@@ -64,7 +64,6 @@ function nodeClick(node, search = false) {
     const currentState = app.currentState();
     let selected = currentState.selected;
     let wasSelected = isSelected(node);
-    console.log(node)
 
     if (wasSelected) {
         selected = selected.filter(s => s !== node.id);

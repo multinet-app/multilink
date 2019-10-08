@@ -18,6 +18,7 @@ let vis = {
     nodeMarkerHeight: 0,
     nodeSizeAttr: undefined,
     drawBars: undefined,
+    straightEdges: false,
 
     // Functions
     nodeLength: () => {},
@@ -418,48 +419,34 @@ function arcPath(leftHand, d, state = false) {
     (drx = dr),
     (dry = dr),
     (sweep = leftHand ? 0 : 1);
-    // siblingCount = countSiblingLinks(graph, d.source, d.target);
     (xRotation = 0), (largeArc = 0);
 
-    // if (siblingCount > 1) {
-    //   var siblings = getSiblingLinks(graph, d.source, d.target);
-    //   var arcScale = d3
-    //     .scaleOrdinal()
-    //     .domain(siblings)
-    //     .range([1, siblingCount]);
+    if (vis.straightEdges) {
+        return (
+            'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2);
+    } else {
+        return (
+            "M" +
+            x1 +
+            "," +
+            y1 +
+            "A" +
+            drx +
+            ", " +
+            dry +
+            " " +
+            xRotation +
+            ", " +
+            largeArc +
+            ", " +
+            sweep +
+            " " +
+            x2 +
+            "," +
+            y2
+        );
+    }
 
-    //   drx = drx / (1 + (1 / siblingCount) * (arcScale(d.type) - 1));
-    //   dry = dry / (1 + (1 / siblingCount) * (arcScale(d.type) - 1));
-    // }
-
-
-
-    // if (config.isMultiEdge){
-    return (
-        "M" +
-        x1 +
-        "," +
-        y1 +
-        "A" +
-        drx +
-        ", " +
-        dry +
-        " " +
-        xRotation +
-        ", " +
-        largeArc +
-        ", " +
-        sweep +
-        " " +
-        x2 +
-        "," +
-        y2
-    );
-
-
-    // } else {
-    //   return (
-    //     'M '+source.x+' '+source.y+' L '+ target.x +' '+target.y );
     // }
 
 
