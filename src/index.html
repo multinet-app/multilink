@@ -310,8 +310,11 @@
     var {
         configPanel,
         workspace,
-        graph
+        graph,
+        simOn
     } = getUrlVars();
+
+    vis.simOn = simOn === "true"
 
     // Kick of the visualization
     makeVis();

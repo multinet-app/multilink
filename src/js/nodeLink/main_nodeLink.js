@@ -9,7 +9,7 @@ let vis = {
     visDimensions: { width: 0, height: 0 },
     svg: undefined,
     simulation: undefined,
-    simOn: true,
+    simOn: false,
     scales: {},
     edgeScale: d3.scaleLinear().domain([0, 1]),
     circleScale: d3.scaleLinear().domain([0, 1]),
@@ -241,6 +241,10 @@ function loadVis() {
 
 
     updateVis(vis.graph_structure)
+
+    if (!vis.simOff) {
+        makeSimulation()
+    }
 }
 
 function initializeProvenance(graph_structure) {
@@ -399,7 +403,7 @@ function arcPath(leftHand, d, state = false) {
     let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
         d.target;
 
-    if (vis.simOff) {
+    if (!vis.simOn) {
         source = vis.graph_structure.nodes.find(x => x.id === source)
         target = vis.graph_structure.nodes.find(x => x.id === target)
     }
@@ -481,7 +485,7 @@ function hideTooltip() {
     d3.select('.tooltip').transition().duration(100).style("opacity", 0);
 }
 
-async function updateVis(graph_structure) {
+function updateVis(graph_structure) {
 
     //setGlobalScales();
 
@@ -944,20 +948,20 @@ async function updateVis(graph_structure) {
 
 
     d3.select("#exportGraph").on("click", () => {
-        let graphCopy = JSON.parse(JSON.stringify(graph));
+        let graphCopy = JSON.parse(JSON.stringify(graph_structure));
 
-        // graphCopy.links.map(l => {
-        //   l.index = undefined;
-        //   l.source = l.source.id;
-        //   l.target = l.target.id;
-        // });
-        // graphCopy.nodes.map(n => {
-        //   n.index = undefined;
-        //   n.vx = undefined;
-        //   n.vy = undefined;
-        //   n.fx = n.x;
-        //   n.fy = n.y;
-        // });
+        graphCopy.links.map(l => {
+            l.index = undefined;
+            l.source = l.source.id;
+            l.target = l.target.id;
+        });
+        graphCopy.nodes.map(n => {
+            n.index = undefined;
+            n.vx = undefined;
+            n.vy = undefined;
+            n.fx = n.x;
+            n.fy = n.y;
+        });
 
         let newGraph = { nodes: [], links: [] };
 
@@ -982,6 +986,7 @@ async function updateVis(graph_structure) {
             newNode.id = n.id;
             newGraph.nodes.push(newNode);
         });
+
 
         var items = graphCopy.links;
         const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
@@ -1009,83 +1014,6 @@ async function updateVis(graph_structure) {
     })
 
     node.on("click", d => nodeClick(d));
-
-
-
-
-
-    //set up simulation
-    if (!vis.simulation) {
-        makeSimulation()
-    }
-
-
-
-
-
-
-    //if source/target are still strings from the input file
-    // if (vis.graph_structure.links[0].source.id === undefined) {
-    //     //restablish link references to their source and target nodes;
-    //     vis.graph_structure.links.map(l => {
-    //         l.source =
-    //             vis.graph_structure.nodes.find(n => n.id === l.source) ||
-    //             vis.graph_structure.nodes[l.source] ||
-    //             l.source;
-    //         l.target =
-    //             vis.graph_structure.nodes.find(n => n.id === l.target) ||
-    //             vis.graph_structure.nodes[l.target] ||
-    //             l.target;
-    //     });
-    // }
-    //check to see if there are already saved positions in the file, if not
-    //run simulation to get fixed positions;
-
-    //remove collision force
-    // simulation.force('collision',null);
-
-    // dragNode();
-
-    // else {
-    //   graph.nodes.map(n => {
-    //     n.x = 0;
-    //     n.y = 0;
-    //     n.vx = null;
-    //     n.vy = null;
-    //     n.fx = null;
-    //     n.fy = null;
-    //   });
-
-    // for (var i = 0; i < 2000; ++i) vis.simulation.tick();
-    // vis.simulation.stop();
-
-    //   //  add a collision force that is proportional to the radius of the nodes;
-    //   simulation.force("collision", d3.forceCollide().radius(d => vis.nodeLength(d)));
-
-    //   simulation.alphaTarget(0.1).restart();
-    // }
-
-    d3.select("#stop-simulation").on("click", () => {
-        vis.simulation.stop();
-        vis.graph_structure.nodes.map(n => {
-            n.savedX = n.x;
-            n.savedY = n.y;
-        });
-    });
-
-    d3.select("#start-simulation").on("click", () => {
-        vis.simulation.alphaTarget(0.1).restart();
-    });
-
-    d3.select("#release-nodes").on("click", () => {
-        vis.graph_structure.nodes.map(n => {
-            n.fx = null;
-            n.fy = null;
-        });
-        vis.simulation.alphaTarget(0.1).restart();
-    });
-
-
 
     //Flag to distinguish a drag from a click.
     let wasDragged = false;
@@ -1642,12 +1570,13 @@ async function updateVis(graph_structure) {
 // };
 
 function makeSimulation() {
+    console.log(vis.visDimensions.width / 2)
     vis.simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(d => d.id))
         .force("charge", d3.forceManyBody().strength(0.2))
         .force(
             "center",
-            d3.forceCenter(width / 2, height / 2)
+            d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
         )
 
     vis.simulation
@@ -1678,14 +1607,34 @@ function makeSimulation() {
     }
 
 
-    vis.simOff = false;
+    vis.simon = false;
 
     console.log("simulation", vis.simulation)
 
 
     vis.simulation.restart();
-    for (var i = 0; i < 200; ++i) vis.simulation.tick();
-    vis.simulation.alphaTarget(0.095).restart();
+    // for (var i = 0; i < 200; ++i) vis.simulation.tick();
+
+    // UI for the simulation
+    d3.select("#stop-simulation").on("click", () => {
+        vis.simulation.stop();
+        vis.graph_structure.nodes.map(n => {
+            n.savedX = n.x;
+            n.savedY = n.y;
+        });
+    });
+
+    d3.select("#start-simulation").on("click", () => {
+        vis.simulation.alphaTarget(0.1).restart();
+    });
+
+    d3.select("#release-nodes").on("click", () => {
+        vis.graph_structure.nodes.map(n => {
+            n.fx = null;
+            n.fy = null;
+        });
+        vis.simulation.alphaTarget(0.1).restart();
+    });
 }
 
 
