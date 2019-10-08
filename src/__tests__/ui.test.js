@@ -43,9 +43,9 @@ describe("ui", () => {
 
         it("Searching for node in a proper graph works as expected", () => {
             // Arrange
-            person1 = { "_key": 1, "_id": "nodes/1", "name": "Test Testerson" }
-            person2 = { "_key": 2, "_id": "nodes/2", "name": "Jimmy Test" }
-            link1 = { "_key": 115100, "_id": "links/1", "source": "nodes/1", "target": "nodes/2" }
+            person1 = { "_key": 1, "id": "nodes/1", "name": "Test Testerson" }
+            person2 = { "_key": 2, "id": "nodes/2", "name": "Jimmy Test" }
+            link1 = { "_key": 115100, "id": "links/1", "source": "nodes/1", "target": "nodes/2" }
             vis = {};
             vis.graph_structure = {
                 "nodes": [person1, person2],
