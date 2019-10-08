@@ -410,7 +410,6 @@ function arcPath(leftHand, d, state = false) {
     x2 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x2));
     y2 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y2));
 
-    console.log(x1, y1, x2, y2)
     dx = x2 - x1
     dy = y2 - y1
     dr = Math.sqrt(dx * dx + dy * dy)
