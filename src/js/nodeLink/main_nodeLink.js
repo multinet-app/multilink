@@ -6,10 +6,10 @@ let vis = {
     panelDimensions: { width: 0, height: 0 },
     visDimensions: { width: 0, height: 0 },
     visMargins: {
-        left: 10,
-        right: 10,
-        top: 10,
-        bottom: 10
+        left: 25,
+        right: 25,
+        top: 25,
+        bottom: 25
     },
     svg: undefined,
     simulation: undefined,
@@ -402,13 +402,23 @@ function arcPath(leftHand, d, state = false) {
         y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
         x2 = leftHand ? parseFloat(target.x) + 25 : source.x,
         y2 = leftHand ? parseFloat(target.y) + 25 : source.y;
-    (dx = x2 - x1),
-    (dy = y2 - y1),
-    (dr = Math.sqrt(dx * dx + dy * dy)),
-    (drx = dr),
-    (dry = dr),
-    (sweep = leftHand ? 0 : 1);
-    (xRotation = 0), (largeArc = 0);
+
+    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
+    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+    x1 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x1));
+    y1 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y1));
+    x2 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x2));
+    y2 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y2));
+
+    console.log(x1, y1, x2, y2)
+    dx = x2 - x1
+    dy = y2 - y1
+    dr = Math.sqrt(dx * dx + dy * dy)
+    drx = dr
+    dry = dr
+    sweep = leftHand ? 0 : 1
+    xRotation = 0
+    largeArc = 0
 
     if (vis.straightEdges) {
         return (
