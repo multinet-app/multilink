@@ -51,7 +51,6 @@
 .legendLabel,
 .catLegend {
     font-size: 1em;
-    /* font-weight:bold; */
 }
 
 .muted {
@@ -98,7 +97,6 @@
 .node {
     stroke-width: 1px;
     stroke: rgb(200, 200, 200);
-    /* stroke:white; */
 }
 
 .node.clicked {
