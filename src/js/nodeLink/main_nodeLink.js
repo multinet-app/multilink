@@ -1539,7 +1539,7 @@ function updateVis(graph_structure) {
 function makeSimulation() {
     vis.simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(d => d.id))
-        .force("charge", d3.forceManyBody().strength(0.2))
+        .force("charge", d3.forceManyBody().strength(1))
         .force(
             "center",
             d3.forceCenter(vis.visDimensions.width / 2, vis.visDimensions.height / 2)
@@ -1573,7 +1573,7 @@ function makeSimulation() {
     }
 
 
-    vis.simulation.restart();
+    vis.simulation.alphaTarget(0.02).restart();
     // for (var i = 0; i < 200; ++i) vis.simulation.tick();
 
     // UI for the simulation
@@ -1586,7 +1586,7 @@ function makeSimulation() {
     });
 
     d3.select("#start-simulation").on("click", () => {
-        vis.simulation.alphaTarget(0.1).restart();
+        vis.simulation.alphaTarget(0.02).restart();
     });
 
     d3.select("#release-nodes").on("click", () => {
@@ -1594,7 +1594,7 @@ function makeSimulation() {
             n.fx = null;
             n.fy = null;
         });
-        vis.simulation.alphaTarget(0.1).restart();
+        vis.simulation.alphaTarget(0.02).restart();
     });
 }
 

@@ -102,8 +102,15 @@ div.tooltip {
     font-size: 20px;
 }
 
-#clear-selection {
+#clear-selection,
+#panelControl {
     width: 80%;
+    color: white;
+    background-color: #898989;
+    width: 65%
+}
+
+#clear-selection {
     margin-top: 10px;
 }
 
@@ -111,6 +118,7 @@ div.tooltip {
 #searchButton {
     color: white;
     background-color: #4285f4;
+    width: 30%;
 }
 
 #nextTrialTask {
@@ -138,11 +146,6 @@ div.tooltip {
     font-size: 20px;
     font-weight: 900;
     display: none;
-}
-
-#clear-selection {
-    color: white;
-    background-color: #898989;
 }
 
 #start-training {
@@ -209,4 +212,8 @@ div.tooltip {
 
 #workerId {
     width: 60%
+}
+
+.card {
+    padding: 5px;
 }
