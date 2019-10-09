@@ -26,7 +26,7 @@ async function load_data(workspace, graph) {
     // Set the graph structure
     multinet.graph_structure = { "nodes": rename_node_vars(multinet.nodes), "links": rename_link_vars(multinet.links) }
 
-    return multinet.graph_structure
+    return JSON.parse(JSON.stringify(multinet.graph_structure))
 
 };
 
