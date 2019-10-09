@@ -164,7 +164,7 @@ function tagNeighbors(selected) {
     let edges = []
 
     for (clicked_node of selected) {
-        if (vis.simOff) {
+        if (!vis.simOn) {
             neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i].id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i].id] : "")
         } else {
             neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source.id === clicked_node ? [e.target.id, vis.graph_structure.links[i].id] : e.target.id === clicked_node ? [e.source.id, vis.graph_structure.links[i].id] : "")

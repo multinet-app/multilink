@@ -237,6 +237,12 @@ function loadVis() {
     // If the simulation is requested build and start it
     if (vis.simOn) {
         makeSimulation()
+    } else {
+        d3.select("#start-simulation").on("click", () => {
+            makeSimulation()
+            vis.simOn = true;
+            vis.simulation.restart()
+        });
     }
 }
 
@@ -245,7 +251,7 @@ function initializeProvenance(graph_structure) {
     setUpProvenance(graph_structure.nodes /*, task.taskID, task.order*/ );
 
     setUpObserver("selected", highlightSelectedNodes);
-    setUpObserver("hardSelected", highlightHardSelectedNodes);
+    // setUpObserver("hardSelected", highlightHardSelectedNodes);
     setUpObserver("nodePos", updatePos);
 
     update();
@@ -271,7 +277,6 @@ function highlightSelectedNodes(state) {
     d3.select(".nodes")
         .selectAll(".node")
         .classed("clicked", d => state.selected.includes(d.id))
-        .classed("selected", d => state.hardSelected.includes(d.id))
         .classed("selected", d => state.userSelectedNeighbors.includes(d.id));
 
 
@@ -335,7 +340,6 @@ function highlightHardSelectedNodes(state) {
         .classed("selected", d => state.hardSelected.includes(d.id))
         .classed("muted", d => {
             return (
-                config.nodeLink.selectNeighbors &&
                 hasUserSelection &&
                 !state.hardSelected.includes(d.id) &&
                 !state.selected.includes(d.id) &&
@@ -346,11 +350,6 @@ function highlightHardSelectedNodes(state) {
     d3.select(".nodes")
         .selectAll(".node")
         .classed("selected", d => state.hardSelected.includes(d.id));
-
-
-
-    //update the list of selected nodes in the answer panel.
-    updateAnswer(graph.nodes.filter(n => state.hardSelected.includes(n.id)));
 }
 
 function dragNode() {
