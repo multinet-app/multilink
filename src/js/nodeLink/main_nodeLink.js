@@ -1572,9 +1572,10 @@ function makeSimulation() {
         dragNode();
     }
 
-
+    // Start the simulation with an alpha target and an alpha min 
+    // that's a little larger so the sim ends
+    vis.simulation.alphaMin(0.025)
     vis.simulation.alphaTarget(0.02).restart();
-    // for (var i = 0; i < 200; ++i) vis.simulation.tick();
 
     // UI for the simulation
     d3.select("#stop-simulation").on("click", () => {
@@ -1586,14 +1587,19 @@ function makeSimulation() {
     });
 
     d3.select("#start-simulation").on("click", () => {
+        // Reset the alpha of the simulation and re-run it
+        vis.simulation.alpha(0.5);
         vis.simulation.alphaTarget(0.02).restart();
     });
 
     d3.select("#release-nodes").on("click", () => {
+        // Release the pinned nodes
         vis.graph_structure.nodes.map(n => {
             n.fx = null;
             n.fy = null;
         });
+        // Reset the alpha of the simulation and re-run it
+        vis.simulation.alpha(0.5);
         vis.simulation.alphaTarget(0.02).restart();
     });
 }
