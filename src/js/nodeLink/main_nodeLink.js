@@ -1,6 +1,7 @@
 // Set local namespaces
 let vis = {
     // Variables
+    configToggle: undefined,
     graph_structure: {},
     nodeTypes: {},
     panelDimensions: { width: 0, height: 0 },
@@ -43,9 +44,6 @@ let radius = 25;
 
 // Draws the visualization on first load
 async function makeVis() {
-    // Set the UI
-    removeConfig(configPanel)
-
     //Load from multinet
     vis.graph_structure = await load_data(workspace, graph)
 
@@ -60,7 +58,13 @@ async function makeVis() {
     d3.select('#searchButton').on("click", () => searchForNode());
     d3.select('#clear-selection').on("click", () => clearSelections());
 
+    // Attach the toggle to the config panel button
+    d3.select('#panelControl').on("click", () => vis.configToggle = toggleConfig(vis.configToggle));
+
     loadVis();
+
+    // Set the control panel
+    vis.configToggle = toggleConfig(configPanel)
 }
 
 vis.nodeLength = function(node) {
@@ -176,9 +180,9 @@ function setGlobalScales() {
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 function loadVis() {
     // Set total dimensions
-    let targetDiv = d3.select("#targetSize");
-    browser.width = targetDiv.style("width").replace("px", "");
-    browser.height = targetDiv.style("height").replace("px", "");
+    // let targetDiv = d3.select("#targetSize");
+    browser.width = d3.select("body").style("width").replace("px", "");
+    browser.height = d3.select("body").style("height").replace("px", "");
 
     // Set dimensions of the node link
     vis.visDimensions.width = browser.width * 0.75 - 24;
