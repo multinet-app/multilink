@@ -19,12 +19,15 @@ let vis = {
     circleScale: d3.scaleLinear().domain([0, 1]),
     colorClasses: [],
     nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
-    nodeFill: "#888888",
+    edgeColor: "#888888",
     nodeMarkerLength: 0,
     nodeMarkerHeight: 0,
     nodeSizeAttr: undefined,
     drawBars: undefined,
+    barPadding: 3,
     straightEdges: false,
+    isDirected: true,
+    onNode: {},
 
     // Functions
     nodeLength: () => {},
@@ -67,16 +70,17 @@ vis.nodeLength = function(node) {
         .clamp(true);
 
     //if an attribute has been assigned to nodeSizeAttr, set domain
-    // if (config.nodeLink.nodeSizeAttr) {
+    // if (vis.nodeSizeAttr) {
     //     nodeSizeScale.domain(
-    //         config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
+    //         config.attributeScales.node[vis.nodeSizeAttr].domain
     //     );
     // }
 
     let value =
-        // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
-        // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
+        // vis.nodeSizeAttr && !vis.drawBars ?
+        // nodeSizeScale(node[vis.nodeSizeAttr]) :
         vis.nodeMarkerLength;
+
     //make circles a little larger than just the radius of the marker;
     return value; //config.nodeIsRect ? value : value * 1.3;
 };
@@ -88,15 +92,15 @@ vis.nodeHeight = function(node) {
         .clamp(true);
 
     //if an attribute has been assigned to nodeSizeAttr, set domain
-    // if (config.nodeLink.nodeSizeAttr) {
+    // if (vis.nodeSizeAttr) {
     //     nodeSizeScale.domain(
-    //         config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain
+    //         config.attributeScales.node[vis.nodeSizeAttr].domain
     //     );
     // }
 
     let value =
-        // config.nodeLink.nodeSizeAttr && !config.nodeLink.drawBars ?
-        // nodeSizeScale(node[config.nodeLink.nodeSizeAttr]) :
+        // vis.nodeSizeAttr && !vis.drawBars ?
+        // nodeSizeScale(node[vis.nodeSizeAttr]) :
         vis.nodeMarkerHeight;
     return value; //config.nodeIsRect ? value : value * 1.3;
 };
@@ -106,13 +110,6 @@ function setGlobalScales() {
     vis.nodeMarkerHeight = 35;
 
     //Create Scale Functions
-
-    nodeFill = function(node) {
-        let nodeFillScale = d3.scaleOrdinal();
-
-        return vis.nodeFill;
-    };
-
     //function to determine fill color of nestedCategoricalMarks
     catFill = function(attr, value) {
         //assume there are defined domain and ranges for these
@@ -194,16 +191,6 @@ function loadVis() {
     // Size panel
     d3.select("#visPanel").style("width", vis.panelDimensions.width + "px");
 
-    // Size the node link
-    vis.svg = d3
-        .select("#node-link-svg")
-        .attr("width", vis.visDimensions.width)
-        .attr("height", vis.visDimensions.height);
-
-    // Set up groups for nodes/links
-    vis.svg.append("g").attr("class", "links");
-    vis.svg.append("g").attr("class", "nodes");
-
     // Get with of the content (panel width - margins) as dimensions for the legend
     let parentWidth = d3
         .select("#visPanel")
@@ -217,6 +204,16 @@ function loadVis() {
         .attr("width", parentWidth)
         .attr("height", 270);
 
+    // Size the node link
+    vis.svg = d3
+        .select("#node-link-svg")
+        .attr("width", vis.visDimensions.width)
+        .attr("height", vis.visDimensions.height);
+
+    // Set up groups for nodes/links
+    vis.svg.append("g").attr("class", "links");
+    vis.svg.append("g").attr("class", "nodes");
+
     // Add tooltip
     d3.select("body")
         .append("div")
@@ -225,7 +222,10 @@ function loadVis() {
 
     // Set up the colorClasses (names of the tables) so we can assign colors based on index later
     for (node of vis.graph_structure.nodes) {
+        // Get the table name
         table = node.id.split("/")[0]
+
+        // If we haven't seen it, push it to the colorClasses array
         if (!vis.colorClasses.includes(table)) {
             vis.colorClasses.push(table)
         }
@@ -248,36 +248,33 @@ function loadVis() {
 
 function initializeProvenance(graph_structure) {
     // pass in workerID to setupProvenance
-    setUpProvenance(graph_structure.nodes /*, task.taskID, task.order*/ );
+    setUpProvenance(graph_structure.nodes);
 
     setUpObserver("selected", highlightSelectedNodes);
-    // setUpObserver("hardSelected", highlightHardSelectedNodes);
-    setUpObserver("nodePos", updatePos);
 
     update();
 }
 
 function highlightSelectedNodes(state) {
     // see if there is at least one node 'clicked'
-    //check state not ui, since ui has not yet been updated;
+    //check state not ui, since ui has not yet been updated
     let hasUserSelection = state.selected.length > 0;
 
-    //set the class of everything to 'muted', except for the selected node and it's neighbors;
+    //set the class of everything to 'muted', except for the selected node and it's neighbors
     d3.select(".nodes")
         .selectAll(".nodeGroup")
         .classed("muted", d => {
             return (
                 hasUserSelection &&
-                !state.hardSelected.includes(d.id) &&
                 !state.selected.includes(d.id) &&
                 !state.userSelectedNeighbors.includes(d.id) //this id exists in the dict
             );
         });
 
+    // Set the class of a clicked node to clicked
     d3.select(".nodes")
         .selectAll(".node")
         .classed("clicked", d => state.selected.includes(d.id))
-        .classed("selected", d => state.userSelectedNeighbors.includes(d.id));
 
 
     d3.select(".links")
@@ -287,12 +284,12 @@ function highlightSelectedNodes(state) {
             d =>
             hasUserSelection &&
             !state.userSelectedEdges.includes(d.id)
-        );
-    // .select('path')
-    // .style("stroke", edgeColor);
+        )
+        .select('path')
+        .style("stroke", vis.edgeColor);
 }
 
-function nodeFill2(node) {
+function nodeFill(node) {
     index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
     return vis.nodeColors[index]
 }
@@ -331,59 +328,21 @@ function selectNode(node) {
     provenance.applyAction(action);
 }
 
-function highlightHardSelectedNodes(state) {
-
-    let hasUserSelection = state.selected.length > 0;
-
-    d3.select(".nodes")
-        .selectAll(".nodeGroup")
-        .classed("selected", d => state.hardSelected.includes(d.id))
-        .classed("muted", d => {
-            return (
-                hasUserSelection &&
-                !state.hardSelected.includes(d.id) &&
-                !state.selected.includes(d.id) &&
-                !state.userSelectedNeighbors[d.id] //this id exists in the dict
-            );
-        });
-
-    d3.select(".nodes")
-        .selectAll(".node")
-        .classed("selected", d => state.hardSelected.includes(d.id));
-}
-
 function dragNode() {
     d3.selectAll(".linkGroup")
         .select("path")
-        .attr("d", function(d) {
-            let path = arcPath(1, d);
-            return path;
-        });
+        .attr("d", d => arcPath(1, d));
 
-    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+    // Get the total space available on the svg
+    let horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
+    let verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
 
+    // Don't allow nodes to be dragged off the main svg area
     d3.selectAll(".nodeGroup").attr("transform", d => {
         d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace + vis.visMargins.left, d.x));
         d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace + vis.visMargins.top, d.y));
         return "translate(" + d.x + "," + d.y + ")";
     });
-}
-
-function updatePos(state) {
-    d3.selectAll(".linkGroup")
-        .select("path")
-        .attr("d", function(d) {
-            let path = arcPath(1, d, //state
-            );
-            return path;
-        });
-
-    // d3.selectAll(".nodeGroup").attr(
-    //     "transform",
-    //     d =>
-    //     "translate(" + state.nodePos[d.id].x + "," + state.nodePos[d.id].y + ")"
-    // );
 }
 
 function arcPath(leftHand, d, state = false) {
@@ -414,7 +373,7 @@ function arcPath(leftHand, d, state = false) {
     dr = Math.sqrt(dx * dx + dy * dy)
     drx = dr
     dry = dr
-    sweep = leftHand ? 0 : 1
+    sweep = 1
     xRotation = 0
     largeArc = 0
 
@@ -446,7 +405,6 @@ function arcPath(leftHand, d, state = false) {
 }
 
 function showTooltip(data, delay = 200) {
-
     let tooltip = d3.select('.tooltip');
 
     tooltip.html(data)
@@ -465,15 +423,8 @@ function updateVis(graph_structure) {
 
     //setGlobalScales();
 
-    let fakeSmallNode = {};
-    let fakeLargeNode = {};
-
     //create scales for bars;
     // let barAttributes = config.nodeAttributes.filter(isQuant);
-
-    let scaleColors = {}; //Object to store which color to use for which scales
-
-    let barPadding = 3;
 
     // barAttributes.map((b, i) => {
     //     let scale = d3
@@ -482,39 +433,22 @@ function updateVis(graph_structure) {
     //         .range([0, nodeMarkerHeight - 2 * barPadding])
     //         .clamp(true);
 
-    //     let domainKey = scale.domain().join("-");
-    //     scaleColors[domainKey] = "";
-
     //     //save scale and color to use with that attribute bar
     //     scales[b] = { scale, domainKey };
     // });
 
-    let singleDomain = Object.keys(scaleColors).length === 1;
+    // let singleDomain = Object.keys(scaleColors).length === 1;
     //Assign one color per unique domain;
-
-    //if only using one domain, use light grey; otherwise, use colors;
-    Object.keys(scaleColors).map((domainKey, i) => {
-        scaleColors[domainKey] = singleDomain ? "#afafaf" : quantColors(i);
-    });
 
     // Object.keys(scales).map(
     //     s => (scales[s].fill = scaleColors[scales[s].domainKey])
     // );
 
-    //Drawing Graph
 
 
+    // Draw graph
 
-    // TO DO , set ARROW DIRECTION DYNAMICALLY
-    // link
-    //     .select("textPath")
-    //     .attr("xlink:href", d => "#" + d.id)
-    //     .text(d => (config.isDirected ? (d.type === "mentions" ? "▶" : "◀") : ""))
-    //     .style("fill", edgeColor)
-    //     .style("stroke", edgeColor)
-
-
-    //draw Nodes
+    // Draw nodes
     //let drawCat = Object.keys(config.nodeAttributes.filter(isCategorical)).length > 0;
     let drawCat = 0
     let padding = drawCat ? 3 : 0;
@@ -550,7 +484,7 @@ function updateVis(graph_structure) {
             horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
             verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
 
-            // Get a random place in the space we have and bump it over by 1 margin
+            // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
             d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(radius, Math.min(vis.visDimensions.width, d.x));
             d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(radius, Math.min(vis.visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
@@ -571,82 +505,59 @@ function updateVis(graph_structure) {
 
     node
         .selectAll(".nodeBox")
-        // .attr("x", d => d.x)
-        // .attr("y", d => d.y)
         .attr("width", d => 50)
         .attr("height", d => 50)
-        .attr("rx", d => 25) //vis.nodeLength(d)/20
+        .attr("rx", d => 25)
         .attr("ry", d => 25);
 
     node.select('.node')
-        .style("fill", d => nodeFill2(d))
-        // .classed("clicked", d => app.currentState().selected.includes(d.id))
-        // .classed("selected", d => app.currentState().hardSelected.includes(d.id))
+        .style("fill", d => nodeFill(d))
 
     .on("mouseover", function(d) {
-
-        let tooltipData = d.id;;
-
-        // if (config.nodeLink.nodeFillAttr) {
-        //     tooltipData = tooltipData.concat(config.nodeLink.nodeFillAttr + ":" + d[config.nodeLink.nodeFillAttr] + " ")
-        // };
-
-        // if (config.nodeLink.nodeSizeAttr) {
-        //     tooltipData = tooltipData.concat(config.attributeScales.node[config.nodeLink.nodeSizeAttr].label + ":" + Math.round(d[config.nodeLink.nodeSizeAttr]) + " ")
-        // }
-
-        // config.nodeLink.drawBars ? "" : 
-        showTooltip(tooltipData)
+        showTooltip(d.id);
     })
 
 
     node
         .select("text")
-        .classed("selected", d => d.hardSelect)
         .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
             '18')
         .text(d => d.name)
-        // .attr("y", d =>
-        //     // config.nodeLink.drawBars ? -nodeMarkerHeight / 2 - 2 : 
-        //     d.y
-        // )
-        .attr('dy', //config.nodeLink.drawBars ? 0 : 
-            -2)
-        .attr("dx", function(d) {
-
-            //let textWidth = -d3.select(this).node().getBBox().width / 2
-
-            return false ? -vis.nodeMarkerLength / 2 - barPadding / 2 - extraPadding / 2 + 3 : 50 + 8
-        })
-
-    // .attr('x', d => d.x)
-    .on("click", selectNode);
+        .attr("dy", d => radius + 6)
+        .attr("dx", d => -(d.name.length * 4) / 2)
+        // .attr("y", d => d.y / 4)
+        .on("click", selectNode);
 
     node
         .select(".labelBackground")
-        // .classed('nested', config.nodeLink.drawBars)
-        // .attr("width", function(d) {
-        //   let textWidth = d3
-        //     .select(d3.select(this).node().parentNode)
-        //     .select(".label")
-        //     .node()
-        //     .getBBox().width;
+        .attr("y", d => radius - 8)
+        .on("click", selectNode)
+        .attr("width", d => 50)
+        .attr('height', //config.nodeLink.drawBars ? 16 : 
+            "1em")
+        // vis.nodeLength(d) + 8 + nodePadding + extraPadding : vis.nodeLength(d) + 8
+
+    // .classed('nested', config.nodeLink.drawBars)
+    // .attr("width", function(d) {
+    //   let textWidth = d3
+    //     .select(d3.select(this).node().parentNode)
+    //     .select(".label")
+    //     .node()
+    //     .getBBox().width;
 
     //   //make sure label box spans the width of the node
     //   return config.nodeLink.drawBars ? nodeMarkerLength + 30 : d3.max([textWidth, vis.nodeLength(d)])+4;
     // })
-    .attr("width", d => false ? vis.nodeLength(d) + 8 + nodePadding + extraPadding : vis.nodeLength(d) + 8)
-        .on("click", selectNode)
 
 
-    .attr('height', //config.nodeLink.drawBars ? 16 : 
-            "1em")
-        // .attr("x", function(d) {
-        //   let textWidth = d3
-        //     .select(d3.select(this).node().parentNode)
-        //     .select("text")
-        //     .node()
-        //     .getBBox().width;
+
+
+    // .attr("x", function(d) {
+    //   let textWidth = d3
+    //     .select(d3.select(this).node().parentNode)
+    //     .select("text")
+    //     .node()
+    //     .getBBox().width;
 
     //   //make sure label box spans the width of the node
     //   return config.nodeLink.drawBars ? -nodeMarkerLength / 2 -15  : d3.min([-textWidth / 2, -vis.nodeLength(d) / 2 - 2]);
@@ -667,15 +578,15 @@ function updateVis(graph_structure) {
     //   config.nodeLink.drawBars
     //     ? -(nodeHeight(d) / 2 + 4)
     // )
-    .attr("y", d =>
-            // config.nodeLink.drawBars ?
-            -(vis.nodeMarkerHeight / 2) - 11
-        )
-        // .attr("x", -nodeMarkerLength/2 )
-        // .attr("x", d => {
-        //   // let nodeLabel = d3
-        //   //     .select(d3.select(this).node().parentNode)
-        //   //     .select("text");
+    // .attr("y", d =>
+    //         // config.nodeLink.drawBars ?
+    //         -(vis.nodeMarkerHeight / 2) - 11
+    //     )
+    // .attr("x", -nodeMarkerLength/2 )
+    // .attr("x", d => {
+    //   // let nodeLabel = d3
+    //   //     .select(d3.select(this).node().parentNode)
+    //   //     .select("text");
 
     //   //   let textWidth = nodeLabel.node().getBBox().width;
     //   //   return -textWidth / 2;
@@ -683,7 +594,7 @@ function updateVis(graph_structure) {
     //   return config.nodeIsRect ? -nodeMarkerLength/2 - nodePadding/2 -extraPadding/2  :-vis.nodeLength(d) / 2 - 4;
     // })
 
-    .on("click", selectNode);
+
 
     node.call(
         d3
@@ -723,7 +634,7 @@ function updateVis(graph_structure) {
     link
         .select("path")
         .style("stroke-width", 10)
-        .style("stroke", "#888888")
+        .style("stroke", vis.edgeColor)
         .attr("id", d => d._key)
         .attr("d", d => arcPath(1, d))
         .on("mouseover", function(d) {
@@ -741,6 +652,14 @@ function updateVis(graph_structure) {
     .on("mouseout", function(d) {
         hideTooltip();
     })
+
+    // TODO , set ARROW DIRECTION DYNAMICALLY
+    // link
+    //     .select("textPath")
+    //     .attr("xlink:href", d => "#" + d.id)
+    //     .text(d => (vis.isDirected ? (true ? "▶" : "◀") : ""))
+    //     .style("fill", vis.edgeColor)
+    //     .style("stroke", vis.edgeColor)
 
 
     //Drawing Nested Bar Charts
