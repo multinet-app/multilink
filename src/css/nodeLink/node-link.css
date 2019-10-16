@@ -28,6 +28,11 @@
     fill: #3a3a3a;
     text-anchor: middle;
     dominant-baseline: middle;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .selectBox {
