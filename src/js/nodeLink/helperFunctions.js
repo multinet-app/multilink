@@ -148,31 +148,9 @@ function setPanelValuesFromFile() {
 
         config.loadedGraph = file;
 
-        setDisabledRadioButtons();
-
         await loadNewGraph(config.graphFiles[file]);
         updateVis(graph_structure);
     });
-
-    let setDisabledRadioButtons = function() {
-        //cannot have directed graph that is of single edge type, so disable that if it is the case;
-        d3.selectAll("input[name='isDirected']").property("disabled", function() {
-            return (
-                eval(d3.select(this).property("value")) === true &&
-                config.isMultiEdge === false
-            );
-        });
-
-        //cannot have directed graph that is of single edge type, so disable that if it is the case;
-        d3.selectAll("input[name='isMultiEdge']").property("disabled", function() {
-            return (
-                eval(d3.select(this).property("value")) === false &&
-                config.isDirected === true
-            );
-        });
-    };
-
-    setDisabledRadioButtons();
 
     d3.select("#renderBarsCheckbox").property(
         "checked",
