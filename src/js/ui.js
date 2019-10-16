@@ -1,14 +1,12 @@
 // Remove config panel if not in query string
 function removeConfig(configPanel) {
-    configPanel = eval(configPanel);
-    if (!configPanel) {
+    if (configPanel === "false" || configPanel === "0" || !configPanel) {
         d3.selectAll('.development').remove();
     }
 }
 
 // Search for a node in the datalist
 function searchForNode() {
-    console.log("searching")
     let selectedOption = d3.select('.searchInput').property("value").trim();
 
     //empty search box;
@@ -42,7 +40,7 @@ function searchForNode() {
 
 //function that searches for and 'clicks' on node, returns -1 if can't find that node, 0 if nodes is already selected, 1 if node exists and was not selected
 function searchFor(selectedOption) {
-    node = graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
+    node = vis.graph_structure.nodes.find(n => n.name.toLowerCase() === selectedOption.toLowerCase());
 
     if (node === undefined) {
         return -1;
@@ -58,7 +56,7 @@ function searchFor(selectedOption) {
 function isSelected(node) {
     const currentState = app.currentState();
     let selected = currentState.selected;
-    return selected.includes(node._id);
+    return selected.includes(node.id);
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
@@ -68,9 +66,9 @@ function nodeClick(node, search = false) {
     let wasSelected = isSelected(node);
 
     if (wasSelected) {
-        selected = selected.filter(s => s !== node._id);
+        selected = selected.filter(s => s !== node.id);
     } else {
-        selected.push(node._id);
+        selected.push(node.id);
     }
 
     let neighbors_and_edges = tagNeighbors(selected);
@@ -95,7 +93,7 @@ function nodeClick(node, search = false) {
             currentState.userSelectedEdges = neighbors_and_edges.edges;
             //If node was searched, push him to the search array
             if (search) {
-                currentState.search.push(node._id);
+                currentState.search.push(node.id);
             }
             return currentState;
         },
@@ -123,7 +121,7 @@ function populateSearchList() {
 
     datalist = enterSelection.merge(datalist);
 
-    let options = datalist.selectAll("option").data(graph_structure.nodes);
+    let options = datalist.selectAll("option").data(vis.graph_structure.nodes);
 
     let optionsEnter = options.enter().append("option");
     options.exit().remove();
@@ -131,7 +129,7 @@ function populateSearchList() {
     options = optionsEnter.merge(options);
 
     options.attr("value", d => d.name);
-    options.attr("id", d => d._id);
+    options.attr("id", d => d.id);
 }
 
 function clearSelections() {
@@ -159,6 +157,34 @@ function clearSelections() {
 
     provenance.applyAction(action);
 
+}
+
+function tagNeighbors(selected) {
+    let neighbors = [];
+    let edges = []
+
+    for (clicked_node of selected) {
+        if (!vis.simOn) {
+            neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i].id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i].id] : "")
+        } else {
+            neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source.id === clicked_node ? [e.target.id, vis.graph_structure.links[i].id] : e.target.id === clicked_node ? [e.source.id, vis.graph_structure.links[i].id] : "")
+        }
+
+
+        for (node of neighbor_nodes) {
+            // push nodes
+            if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
+                neighbors.push(node[0]);
+            }
+
+            // push edges
+            if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
+                edges.push(node[1]);
+            }
+        }
+    }
+
+    return { "neighbors": neighbors, "edges": edges };
 }
 
 module.exports = { searchFor, isSelected };

@@ -13,7 +13,7 @@ window.setUpObserver = helperFunctions.setUpObserver
 
 const main_nodeLink = require("../js/nodeLink/main_nodeLink")
 window.initializeProvenance = main_nodeLink.initializeProvenance
-window.tagNeighbors = main_nodeLink.tagNeighbors
+    //window.tagNeighbors = main_nodeLink.tagNeighbors
 
 
 // Set global objects
@@ -29,11 +29,12 @@ describe("ui", () => {
     describe("searchFor", () => {
         it("Searching for node in empty list throws error", () => {
             // Arrange
-            graph_structure = {
+            vis = {};
+            vis.graph_structure = {
                 "nodes": [],
                 "links": []
             }
-            initializeProvenance(graph_structure)
+            initializeProvenance(vis.graph_structure)
 
             // Act + Assert
             expect(() => searchFor("someone")).toThrow()
@@ -42,14 +43,15 @@ describe("ui", () => {
 
         it("Searching for node in a proper graph works as expected", () => {
             // Arrange
-            person1 = { "_key": 1, "_id": "nodes/1", "name": "Test Testerson" }
-            person2 = { "_key": 2, "_id": "nodes/2", "name": "Jimmy Test" }
-            link1 = { "_key": 115100, "_id": "links/1", "_from": "nodes/1", "_to": "nodes/2" }
-            graph_structure = {
+            person1 = { "_key": 1, "id": "nodes/1", "name": "Test Testerson" }
+            person2 = { "_key": 2, "id": "nodes/2", "name": "Jimmy Test" }
+            link1 = { "_key": 115100, "id": "links/1", "source": "nodes/1", "target": "nodes/2" }
+            vis = {};
+            vis.graph_structure = {
                 "nodes": [person1, person2],
                 "links": [link1]
             }
-            initializeProvenance(graph_structure)
+            initializeProvenance(vis.graph_structure)
 
             // Act 
             outcome1 = ui.searchFor("Test Testerson")

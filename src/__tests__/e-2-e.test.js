@@ -23,24 +23,28 @@ describe("End to end", () => {
 
             // Arrange
             let node, value;
-            await page.goto("http://127.0.0.1:8080/?workspace=test&graph=test");
+            await page.goto("http://127.0.0.1:8081/?workspace=test&graph=test");
             await page.waitForSelector(".nodeGroup");
 
+            // Act + Assert
+            // Should not be clicked when started
+            node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
+            expect(node[2]).toBe(undefined);
 
+            // Should be clicked on click
             await page.click(".node.nodeBox");
             node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
-            console.log(node)
             expect(node[2]).toBe("clicked");
 
+            // Should not be clicked after clicking again
             await page.click(".node.nodeBox");
             node = await page.evaluate(() => document.querySelectorAll(".node.nodeBox")[0].classList)
-            console.log(node)
             expect(node[2]).toBe(undefined);
 
         });
 
         it("Dragging node moves it", async() => {
-            await page.goto("http://127.0.0.1:8080/?workspace=test&graph=test");
+            await page.goto("http://127.0.0.1:8081/?workspace=test&graph=test");
             await page.waitForSelector(".nodeGroup");
             await page.click(".nodeGroup");
             e = await page.$(".nodeGroup");

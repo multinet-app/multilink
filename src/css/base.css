@@ -1,11 +1,9 @@
 * {
-    /* color: #333; */
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 body {
     margin: 0px;
-    /* width: 90%; */
 }
 
 #trialBar {
@@ -32,14 +30,12 @@ div.tooltip {
 }
 
 #targetSize {
-    width: 1920px;
-    height: 1080px;
-    /* width:1920px; */
-    /* height:1080px; */
+    width: 100vw;
+    height: 100vh;
 }
 
 #visPanel {
-    height: 1060px;
+    height: 100vh;
     overflow-y: scroll;
 }
 
@@ -102,8 +98,15 @@ div.tooltip {
     font-size: 20px;
 }
 
-#clear-selection {
+#clear-selection,
+#panelControl {
     width: 80%;
+    color: white;
+    background-color: #898989;
+    width: 65%
+}
+
+#clear-selection {
     margin-top: 10px;
 }
 
@@ -111,10 +114,10 @@ div.tooltip {
 #searchButton {
     color: white;
     background-color: #4285f4;
+    width: 30%;
 }
 
 #nextTrialTask {
-    /* display:none; */
     color: white;
     background-color: #787878;
     border-width: 0px;
@@ -128,9 +131,7 @@ div.tooltip {
 
 .correctMsg {
     color: white;
-    /* font-style:italic; */
     font-size: 23px;
-    /* display:none; */
 }
 
 #feedbackCard {
@@ -138,11 +139,6 @@ div.tooltip {
     font-size: 20px;
     font-weight: 900;
     display: none;
-}
-
-#clear-selection {
-    color: white;
-    background-color: #898989;
 }
 
 #start-training {
@@ -166,13 +162,6 @@ div.tooltip {
     color: rgb(211, 5, 5);
     font-style: italic;
 }
-
-
-/* .correctMsg{
-    color:#4285f4;
-    font-style:italic;
-    display:none;
-} */
 
 #submitSuccessful {
     color: #4285f4;
@@ -209,4 +198,8 @@ div.tooltip {
 
 #workerId {
     width: 60%
+}
+
+.card {
+    padding: 5px;
 }

@@ -2,7 +2,7 @@
     "name": "view-nodelink",
     "version": "0.1.0",
     "scripts": {
-        "serve": "cd src/ && http-server -c-1",
+        "serve": "cd src/ && http-server -c-1  -p 8081",
         "test": "cd src/ && jest"
     },
     "description": "A node-link visualization built to fit in with multinet",

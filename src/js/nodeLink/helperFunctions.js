@@ -74,16 +74,12 @@ function setPanelValuesFromFile() {
 
     //ser values for radioButtons
     d3.select('#panelDiv').selectAll("input[type='radio']").property("checked", function() {
-        if (this.name === "graphSize") {
-            return config[this.name] === this.value;
-        } else {
-            return config[this.name] === eval(this.value);
-        }
+        return config[this.name] === this.value;
     });
 
     d3.select("#fontSlider").on("input", function() {
         d3.select("#fontSliderValue").text(this.value);
-        config.nodeLink.labelSize = eval(this.value);
+        config.nodeLink.labelSize = this.value;
     });
 
     d3.select("#fontSlider").property(
@@ -108,8 +104,8 @@ function setPanelValuesFromFile() {
     d3.select("#markerSize").on("change", function() {
         let markerSize = this.value.split(",");
 
-        config.nodeLink.nodeWidth = eval(markerSize[0]);
-        config.nodeLink.nodeHeight = eval(markerSize[1]);
+        config.nodeLink.nodeWidth = markerSize[0];
+        config.nodeLink.nodeHeight = markerSize[1];
         updateVis(graph_structure);
     });
 
@@ -140,11 +136,10 @@ function setPanelValuesFromFile() {
     d3.select('#panelDiv').selectAll("input[type='radio']").on("change", async function() {
 
         if (this.name === 'selectNeighbors') {
-            config.nodeLink[this.name] = eval(this.value);
+            config.nodeLink[this.name] = this.value;
             return;
         }
-        config[this.name] =
-            this.name === "graphSize" ? this.value : eval(this.value);
+        config[this.name] = this.value;
 
         let file =
             config.graphSize +
@@ -153,31 +148,9 @@ function setPanelValuesFromFile() {
 
         config.loadedGraph = file;
 
-        setDisabledRadioButtons();
-
         await loadNewGraph(config.graphFiles[file]);
         updateVis(graph_structure);
     });
-
-    let setDisabledRadioButtons = function() {
-        //cannot have directed graph that is of single edge type, so disable that if it is the case;
-        d3.selectAll("input[name='isDirected']").property("disabled", function() {
-            return (
-                eval(d3.select(this).property("value")) === true &&
-                config.isMultiEdge === false
-            );
-        });
-
-        //cannot have directed graph that is of single edge type, so disable that if it is the case;
-        d3.selectAll("input[name='isMultiEdge']").property("disabled", function() {
-            return (
-                eval(d3.select(this).property("value")) === false &&
-                config.isDirected === true
-            );
-        });
-    };
-
-    setDisabledRadioButtons();
 
     d3.select("#renderBarsCheckbox").property(
         "checked",
@@ -279,7 +252,6 @@ function setPanelValuesFromFile() {
         //  //Set up callbacks for the config panel on the left.
         item.select("select").on("change", function() {
 
-            console.log("value is ", this.value);
             if (this.value === 'None') {
                 config.nodeLink[m.configAttr] = null;
             } else {
@@ -404,11 +376,11 @@ function setPanelValuesFromFile() {
         .attr("id", d => d.attr + "-domain")
         .on("change", function(d) {
             if (this.value) {
-                config.attributeScales.node[d.attr].domain = eval(this.value);
+                config.attributeScales.node[d.attr].domain = this.value;
             } else {
                 // if value is empty, use 'default ranges';
                 this.value = "[" + defaultDomains.node[d.attr] + "]";
-                config.attributeScales.node[d.attr].domain = eval(this.value);
+                config.attributeScales.node[d.attr].domain = this.value;
             }
 
             updateVis(graph_structure);
@@ -558,24 +530,14 @@ function setPanelValuesFromFile() {
     d3.select("#nodeSizeSelect")
         .select("input")
         .on("change", function() {
-            console.log("d is ", config.nodeLink.nodeSizeAttr);
             if (this.value) {
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = eval(
-                    this.value
-                );
+                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = this.value
             } else {
                 // if value is empty, use 'default ranges';
                 this.value =
                     "[" + defaultDomains.node[config.nodeLink.nodeSizeAttr] + "]";
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = eval(
-                    this.value
-                );
+                config.attributeScales.node[config.nodeLink.nodeSizeAttr].domain = this.value
             }
-
-            console.log(
-                "new domain is",
-                config.attributeScales.node[config.nodeLink.nodeSizeAttr]
-            );
 
             //also update the string for the corresponding domain input above
             d3.select("#" + config.nodeLink.nodeSizeAttr + "-domain").property(
@@ -603,9 +565,7 @@ function setPanelValuesFromFile() {
 
     d3.select("#edgeWidthScale").on("change", function() {
         if (this.value) {
-            config.attributeScales.edge[config.nodeLink.edgeWidthAttr].domain = eval(
-                this.value
-            );
+            config.attributeScales.edge[config.nodeLink.edgeWidthAttr].domain = this.value
         } else {
             // if value is empty, use 'default ranges';
             if (config.nodeLink.edgeWidthAttr) {
@@ -633,7 +593,7 @@ function setPanelValuesFromFile() {
 
 function update() {
     //setPanelValuesFromFile();
-    updateVis(graph_structure);
+    updateVis(vis.graph_structure);
 }
 
 //Function that creates histograms for the controlPanel
@@ -711,8 +671,6 @@ function createHist(attrName, svgSelection, data, isNode = true) {
 
     // group data for bars
     var bins = histogram(data);
-
-    // console.log('bins', bins)
 
     // y domain based on binned data
     y.domain([
