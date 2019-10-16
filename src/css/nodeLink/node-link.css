@@ -26,6 +26,8 @@
 
 .label {
     fill: #3a3a3a;
+    text-anchor: middle;
+    dominant-baseline: middle;
 }
 
 .selectBox {

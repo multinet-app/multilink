@@ -523,15 +523,13 @@ function updateVis(graph_structure) {
         .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
             '18')
         .text(d => d.name)
-        .attr("dy", d => radius + 6)
-        .attr("dx", d => -(d.name.length * 4) / 2)
+        .attr("dy", d => radius + 1)
+        .attr("dx", d => radius)
         // .attr("y", d => d.y / 4)
-        .on("click", selectNode);
 
     node
         .select(".labelBackground")
         .attr("y", d => radius - 8)
-        .on("click", selectNode)
         .attr("width", d => 50)
         .attr('height', //config.nodeLink.drawBars ? 16 : 
             "1em")
