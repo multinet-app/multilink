@@ -23,7 +23,7 @@ describe("End to end", () => {
 
             // Arrange
             let node, value;
-            await page.goto("http://127.0.0.1:8080/?workspace=test&graph=test");
+            await page.goto("http://127.0.0.1:8081/?workspace=test&graph=test");
             await page.waitForSelector(".nodeGroup");
 
             // Act + Assert
@@ -44,7 +44,7 @@ describe("End to end", () => {
         });
 
         it("Dragging node moves it", async() => {
-            await page.goto("http://127.0.0.1:8080/?workspace=test&graph=test");
+            await page.goto("http://127.0.0.1:8081/?workspace=test&graph=test");
             await page.waitForSelector(".nodeGroup");
             await page.click(".nodeGroup");
             e = await page.$(".nodeGroup");
