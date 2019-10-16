@@ -1,8 +1,16 @@
 // Remove config panel if not in query string
-function removeConfig(configPanel) {
-    if (configPanel === "false" || configPanel === "0" || !configPanel) {
-        d3.selectAll('.development').remove();
+function toggleConfig(configToggle) {
+    if (configToggle === "false" || configToggle === "0" || !configToggle) {
+        d3.selectAll('.development')
+            .style("display", "None")
+        configToggle = !configToggle
+    } else {
+        d3.selectAll('.development')
+            .style("display", "")
+        configToggle = !configToggle
     }
+
+    return configToggle;
 }
 
 // Search for a node in the datalist
