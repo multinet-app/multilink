@@ -22,8 +22,8 @@ let vis = {
     nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
     edgeColor: "#888888",
     nodeFontSize: 14,
-    nodeMarkerLength: 0,
-    nodeMarkerHeight: 0,
+    nodeMarkerLength: 50,
+    nodeMarkerHeight: 50,
     nodeSizeAttr: undefined,
     drawBars: undefined,
     barPadding: 3,
@@ -114,8 +114,6 @@ vis.nodeHeight = function(node) {
 };
 
 function setGlobalScales() {
-    vis.nodeMarkerLength = 60;
-    vis.nodeMarkerHeight = 35;
 
     //Create Scale Functions
     //function to determine fill color of nestedCategoricalMarks
@@ -241,17 +239,6 @@ function loadVis() {
 
     // Call update vis to append all the data to the svg
     updateVis(vis.graph_structure)
-
-    // If the simulation is requested build and start it
-    if (vis.simOn) {
-        makeSimulation()
-    } else {
-        d3.select("#start-simulation").on("click", () => {
-            makeSimulation()
-            vis.simOn = true;
-            vis.simulation.restart()
-        });
-    }
 }
 
 function initializeProvenance(graph_structure) {
@@ -513,10 +500,10 @@ function updateVis(graph_structure) {
 
     node
         .selectAll(".nodeBox")
-        .attr("width", d => 50)
-        .attr("height", d => 50)
-        .attr("rx", d => 25)
-        .attr("ry", d => 25);
+        .attr("width", d => vis.nodeMarkerLength)
+        .attr("height", d => vis.nodeMarkerHeight)
+        .attr("rx", d => vis.nodeMarkerLength / 2)
+        .attr("ry", d => vis.nodeMarkerHeight / 2);
 
     node.select('.node')
         .style("fill", d => nodeFill(d))
@@ -530,18 +517,17 @@ function updateVis(graph_structure) {
         .select("text")
         .text(d => d.name)
         .style("font-size", vis.nodeFontSize + "pt")
-        .attr("dy", d => radius + 1)
-        .attr("dx", d => radius)
+        .attr("dx", d => vis.nodeMarkerLength / 2)
+        .attr("dy", d => (vis.nodeMarkerHeight / 2) + 2)
         // .attr("style", "font-size: 20pt;")
         // .attr("y", d => d.y / 4)
 
     node
         .select(".labelBackground")
-        .attr("y", d => radius - 8)
-        .attr("width", d => 50)
+        .attr("y", d => vis.nodeMarkerHeight / 2 - 8)
+        .attr("width", d => vis.nodeMarkerLength)
         .attr('height', //config.nodeLink.drawBars ? 16 : 
             "1em")
-        // vis.nodeLength(d) + 8 + nodePadding + extraPadding : vis.nodeLength(d) + 8
 
     // .classed('nested', config.nodeLink.drawBars)
     // .attr("width", function(d) {
@@ -836,6 +822,17 @@ function updateVis(graph_structure) {
     //     .attr("y", radius * 2)
     //     .attr("x", radius * 2)
     //     .style("text-anchor", "start");
+
+    // If the simulation is requested build and start it
+    if (vis.simOn) {
+        makeSimulation()
+    } else {
+        d3.select("#start-simulation").on("click", () => {
+            makeSimulation()
+            vis.simOn = true;
+            vis.simulation.restart()
+        });
+    }
 
 
     d3.select("#exportGraph").on("click", () => {
@@ -1487,9 +1484,9 @@ function makeSimulation() {
 
     vis.simulation.force(
         "collision",
-        d3.forceCollide().radius(d => radius + 15
-            // d3.max([vis.nodeLength(d), vis.nodeHeight(d)])
-        ).strength(0.5)
+        d3.forceCollide().radius(d => {
+            return d3.max([vis.nodeMarkerLength / 2, vis.nodeMarkerHeight / 2]) * 1.5
+        }).strength(0.5)
     );
 
     function ticked(d) {

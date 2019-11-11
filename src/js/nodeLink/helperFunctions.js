@@ -77,20 +77,7 @@ function setPanelValuesFromFile() {
         return config[this.name] === this.value;
     });
 
-    d3.select("#markerSize").property(
-        "value",
-        config.nodeLink.nodeWidth +
-        "," +
-        config.nodeLink.nodeHeight
-    );
 
-    d3.select("#markerSize").on("change", function() {
-        let markerSize = this.value.split(",");
-
-        config.nodeLink.nodeWidth = markerSize[0];
-        config.nodeLink.nodeHeight = markerSize[1];
-        updateVis(graph_structure);
-    });
 
     //set Panel Values
 

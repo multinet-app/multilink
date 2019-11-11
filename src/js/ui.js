@@ -203,6 +203,7 @@ function tagNeighbors(selected) {
 // Configures the interactivity
 function addConfigPanel() {
 
+    // Font size slider
     d3.select("#fontSlider")
         .on("input", function() {
             d3.select("#fontSliderValue").text(this.value);
@@ -222,7 +223,24 @@ function addConfigPanel() {
 
     d3.select("#fontSlider")
         .on("change", function() {
-            console.log("updating")
+            updateVis(vis.graph_structure);
+        });
+
+    // Node size box
+    d3.select("#markerSize")
+        .property(
+            "value",
+            vis.nodeMarkerLength +
+            "," +
+            vis.nodeMarkerHeight
+        );
+
+    d3.select("#markerSize")
+        .on("change", function() {
+            let markerSize = this.value.split(",");
+
+            vis.nodeMarkerLength = markerSize[0];
+            vis.nodeMarkerHeight = markerSize[1];
             updateVis(vis.graph_structure);
         });
 }
