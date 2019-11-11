@@ -780,22 +780,6 @@ function nodePositionMap(nodes) {
     return nodeMap;
 }
 
-d3.select("#exportBaseConfig").on("click", function() {
-    exportConfig(
-        Object.keys(baseConfig),
-        Object.keys(baseConfig.nodeLink),
-        false
-    );
-});
-
-d3.select("#exportConfig").on("click", function() {
-    exportConfig(
-        Object.keys(config),
-        Object.keys(config.nodeLink),
-        true
-    );
-});
-
 
 function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {
 

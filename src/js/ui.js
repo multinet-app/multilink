@@ -275,6 +275,11 @@ function addConfigPanel() {
             await loadNewGraph(config.graphFiles[file]);
             updateVis(graph_structure);
         });
+
+    // Export config
+    d3.select("#exportConfig").on("click", function() {
+        console.log(vis)
+    });
 }
 
 module.exports = { searchFor, isSelected };
