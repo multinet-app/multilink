@@ -77,23 +77,6 @@ function setPanelValuesFromFile() {
         return config[this.name] === this.value;
     });
 
-    d3.select("#fontSlider").on("input", function() {
-        d3.select("#fontSliderValue").text(this.value);
-        config.nodeLink.labelSize = this.value;
-    });
-
-    d3.select("#fontSlider").property(
-        "value",
-        config.nodeLink.labelSize
-    );
-    d3.select("#fontSliderValue").text(
-        config.nodeLink.labelSize
-    );
-
-    d3.select("#fontSlider").on("change", function() {
-        updateVis(graph_structure);
-    });
-
     d3.select("#markerSize").property(
         "value",
         config.nodeLink.nodeWidth +

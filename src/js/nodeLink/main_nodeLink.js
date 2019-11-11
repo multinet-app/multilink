@@ -21,6 +21,7 @@ let vis = {
     colorClasses: [],
     nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
     edgeColor: "#888888",
+    nodeFontSize: 14,
     nodeMarkerLength: 0,
     nodeMarkerHeight: 0,
     nodeSizeAttr: undefined,
@@ -65,6 +66,9 @@ async function makeVis() {
 
     // Set the control panel
     vis.configToggle = toggleConfig(configPanel)
+
+    // Add the control panel interactivity 
+    addConfigPanel()
 }
 
 vis.nodeLength = function(node) {
@@ -524,11 +528,11 @@ function updateVis(graph_structure) {
 
     node
         .select("text")
-        .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
-            '18')
         .text(d => d.name)
+        .style("font-size", vis.nodeFontSize + "pt")
         .attr("dy", d => radius + 1)
         .attr("dx", d => radius)
+        // .attr("style", "font-size: 20pt;")
         // .attr("y", d => d.y / 4)
 
     node

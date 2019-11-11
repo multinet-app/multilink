@@ -195,4 +195,36 @@ function tagNeighbors(selected) {
     return { "neighbors": neighbors, "edges": edges };
 }
 
+
+
+
+
+
+// Configures the interactivity
+function addConfigPanel() {
+
+    d3.select("#fontSlider")
+        .on("input", function() {
+            d3.select("#fontSliderValue").text(this.value);
+            vis.nodeFontSize = this.value;
+        });
+
+    d3.select("#fontSlider")
+        .property(
+            "value",
+            vis.nodeFontSize
+        );
+
+    d3.select("#fontSliderValue")
+        .text(
+            vis.nodeFontSize
+        );
+
+    d3.select("#fontSlider")
+        .on("change", function() {
+            console.log("updating")
+            updateVis(vis.graph_structure);
+        });
+}
+
 module.exports = { searchFor, isSelected };
