@@ -171,7 +171,6 @@ function tagNeighbors(selected) {
     let neighbors = [];
     let edges = []
 
-    console.log(vis.selectNeighbors)
     if (!vis.selectNeighbors) {
         return { "neighbors": neighbors, "edges": edges }
     }
@@ -262,7 +261,6 @@ function addConfigPanel() {
         .on("change", async function() {
             if (this.name === 'selectNeighbors') {
                 vis.selectNeighbors = this.value === "true";
-                console.log("updating to ", this.value)
                 return;
             }
             config[this.name] = this.value;
