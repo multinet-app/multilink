@@ -277,9 +277,31 @@ function addConfigPanel() {
         });
 
     // Export config
-    d3.select("#exportConfig").on("click", function() {
-        console.log(vis)
-    });
+    d3.select("#exportConfig")
+        .on("click", function() {
+            console.log(vis)
+        });
+
+    // Load config
+    d3.select("#loadConfig")
+        .on("click", function() {
+            // Get the JSON from the textarea
+            let input = ""
+            try {
+                input = JSON.parse(d3.select("#config").node().value)
+            } catch (error) {
+                console.log("Problem parsing the vis object. Is the JSON malformed?")
+                return
+            }
+
+            // Update the values in vis
+            for (key in input) {
+                vis[key] = input[key]
+            }
+
+            // Trigger a re-render
+            updateVis(vis.graph_structure)
+        });
 }
 
 module.exports = { searchFor, isSelected };
