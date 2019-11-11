@@ -835,68 +835,10 @@ function updateVis(graph_structure) {
         });
     }
 
-
     d3.select("#exportGraph").on("click", () => {
         let graphCopy = JSON.parse(JSON.stringify(graph_structure));
-
-        graphCopy.links.map(l => {
-            l.index = undefined;
-            l.source = l.source.id;
-            l.target = l.target.id;
-        });
-        graphCopy.nodes.map(n => {
-            n.index = undefined;
-            n.vx = undefined;
-            n.vy = undefined;
-            n.fx = n.x;
-            n.fy = n.y;
-        });
-
-        let newGraph = { nodes: [], links: [] };
-
-        graphCopy.links.map(l => {
-            newLink = {};
-            l.index = undefined;
-            l.weight = l.count;
-            let source = graphCopy.nodes.find(n => n.id === l.source.id);
-            newLink.source = graphCopy.nodes.indexOf(source);
-
-            let target = graphCopy.nodes.find(n => n.id === l.target.id);
-            newLink.target = graphCopy.nodes.indexOf(target);
-            newLink.id = newGraph.links.length;
-            l.id = newLink.id;
-
-            newGraph.links.push(newLink);
-        });
-
-        graphCopy.nodes.map(n => {
-            let newNode = {};
-            newNode.name = n.shortName;
-            newNode.id = n.id;
-            newGraph.nodes.push(newNode);
-        });
-
-
-        var items = graphCopy.links;
-        const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
-        const header = Object.keys(items[0]).filter(
-            k => k !== "source" && k !== "target"
-        );
-        let csv = items.map(row =>
-            header
-            .map(fieldName => JSON.stringify(row[fieldName], replacer))
-            .join(",")
-        );
-        csv.unshift(header.join(","));
-        csv = csv.join("\r\n");
-
-        // let parseInputFilename =
-        // let filename = config.isDirected ? config.directedGraph : config.undir_graph;
-
+        console.log(multinet.graph_structure)
     });
-
-
-
 
     node.on("mouseout", () => {
         hideTooltip()
