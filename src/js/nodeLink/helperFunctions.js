@@ -88,13 +88,6 @@ function setPanelValuesFromFile() {
         .property("checked", "checked");
 
 
-    d3.selectAll("input[name='selectNeighbors']")
-        .filter(function() {
-            return d3.select(this).property("value") === config.nodeLink.selectNeighbors.toString();
-        })
-        .property("checked", "checked");
-
-
     d3.selectAll("input[name='isMultiEdge']")
         .filter(function() {
             return (

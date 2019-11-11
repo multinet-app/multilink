@@ -24,6 +24,7 @@ let vis = {
     nodeFontSize: 14,
     nodeMarkerLength: 50,
     nodeMarkerHeight: 50,
+    selectNeighbors: true,
     nodeSizeAttr: undefined,
     drawBars: undefined,
     barPadding: 3,

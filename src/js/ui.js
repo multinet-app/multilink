@@ -171,6 +171,11 @@ function tagNeighbors(selected) {
     let neighbors = [];
     let edges = []
 
+    console.log(vis.selectNeighbors)
+    if (!vis.selectNeighbors) {
+        return { "neighbors": neighbors, "edges": edges }
+    }
+
     for (clicked_node of selected) {
         if (!vis.simOn) {
             neighbor_nodes = vis.graph_structure.links.map((e, i) => e.source === clicked_node ? [e.target, vis.graph_structure.links[i].id] : e.target === clicked_node ? [e.source, vis.graph_structure.links[i].id] : "")
@@ -242,6 +247,35 @@ function addConfigPanel() {
             vis.nodeMarkerLength = markerSize[0];
             vis.nodeMarkerHeight = markerSize[1];
             updateVis(vis.graph_structure);
+        });
+
+    // Select neighbor toggle
+    d3.selectAll("input[name='selectNeighbors']")
+        .filter(function() {
+            return d3.select(this).property("value") === vis.selectNeighbors.toString();
+        })
+        .property("checked", "checked");
+
+    // All radio toggles
+    d3.select('#panelDiv')
+        .selectAll("input[type='radio']")
+        .on("change", async function() {
+            if (this.name === 'selectNeighbors') {
+                vis.selectNeighbors = this.value === "true";
+                console.log("updating to ", this.value)
+                return;
+            }
+            config[this.name] = this.value;
+
+            let file =
+                config.graphSize +
+                (config.isDirected ? "_directed" : "_undirected") +
+                (config.isMultiEdge ? "_multiEdge" : "_singleEdge");
+
+            config.loadedGraph = file;
+
+            await loadNewGraph(config.graphFiles[file]);
+            updateVis(graph_structure);
         });
 }
 
