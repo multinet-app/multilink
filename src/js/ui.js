@@ -264,7 +264,6 @@ function addConfigPanel() {
                 vis.isMultiEdge = this.value === "true";
                 return;
             }
-
         });
 
     // Export config
@@ -291,6 +290,22 @@ function addConfigPanel() {
             }
 
             // Trigger a re-render
+            updateVis(vis.graph_structure)
+        });
+
+    // Define the possible node labels
+    labels = d3.selectAll("#nodeLabel").selectAll("select").selectAll("option")
+        .data(Object.keys(vis.graph_structure.nodes[0]))
+        .enter()
+        .append("option", d => d)
+        .attr("value", d => d)
+        .attr("selected", d => d === "id" ? "selected" : undefined)
+        .text(d => d)
+
+    // Get the node label on change and update the vis
+    d3.select("#nodeLabel")
+        .on("change", async function() {
+            vis.nodeLabel = d3.select("#nodeLabel .select > select").property("value")
             updateVis(vis.graph_structure)
         });
 }

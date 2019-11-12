@@ -21,6 +21,7 @@ let vis = {
     colorClasses: [],
     nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
     edgeColor: "#888888",
+    nodeLabel: "id",
     nodeFontSize: 14,
     nodeMarkerLength: 50,
     nodeMarkerHeight: 50,
@@ -517,12 +518,10 @@ function updateVis(graph_structure) {
 
     node
         .select("text")
-        .text(d => d.name)
+        .text(d => { console.log(vis.nodeLabel); return d[vis.nodeLabel] })
         .style("font-size", vis.nodeFontSize + "pt")
         .attr("dx", d => vis.nodeMarkerLength / 2)
         .attr("dy", d => (vis.nodeMarkerHeight / 2) + 2)
-        // .attr("style", "font-size: 20pt;")
-        // .attr("y", d => d.y / 4)
 
     node
         .select(".labelBackground")
