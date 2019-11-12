@@ -215,15 +215,10 @@ function addConfigPanel() {
         });
 
     d3.select("#fontSlider")
-        .property(
-            "value",
-            vis.nodeFontSize
-        );
+        .property("value", vis.nodeFontSize);
 
     d3.select("#fontSliderValue")
-        .text(
-            vis.nodeFontSize
-        );
+        .text(vis.nodeFontSize);
 
     d3.select("#fontSlider")
         .on("change", function() {
@@ -232,12 +227,7 @@ function addConfigPanel() {
 
     // Node size box
     d3.select("#markerSize")
-        .property(
-            "value",
-            vis.nodeMarkerLength +
-            "," +
-            vis.nodeMarkerHeight
-        );
+        .property("value", vis.nodeMarkerLength + "," + vis.nodeMarkerHeight);
 
     d3.select("#markerSize")
         .on("change", function() {
@@ -250,30 +240,31 @@ function addConfigPanel() {
 
     // Select neighbor toggle
     d3.selectAll("input[name='selectNeighbors']")
-        .filter(function() {
-            return d3.select(this).property("value") === vis.selectNeighbors.toString();
-        })
+        .filter(() => d3.select(this).property("value") === vis.selectNeighbors.toString())
         .property("checked", "checked");
 
     // All radio toggles
     d3.select('#panelDiv')
         .selectAll("input[type='radio']")
         .on("change", async function() {
+            // If it's the selectNeighbors radio button, update the settings
             if (this.name === 'selectNeighbors') {
                 vis.selectNeighbors = this.value === "true";
                 return;
             }
-            config[this.name] = this.value;
 
-            let file =
-                config.graphSize +
-                (config.isDirected ? "_directed" : "_undirected") +
-                (config.isMultiEdge ? "_multiEdge" : "_singleEdge");
+            // If it's the selectNeighbors radio button, update the settings
+            if (this.name === 'isDirected') {
+                vis.isDirected = this.value === "true";
+                return;
+            }
 
-            config.loadedGraph = file;
+            // If it's the selectNeighbors radio button, update the settings
+            if (this.name === 'isMultiEdge') {
+                vis.isMultiEdge = this.value === "true";
+                return;
+            }
 
-            await loadNewGraph(config.graphFiles[file]);
-            updateVis(graph_structure);
         });
 
     // Export config

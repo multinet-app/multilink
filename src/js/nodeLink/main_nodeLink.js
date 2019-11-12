@@ -29,7 +29,8 @@ let vis = {
     drawBars: undefined,
     barPadding: 3,
     straightEdges: false,
-    isDirected: true,
+    isDirected: false,
+    isMultiEdge: false,
     onNode: {},
 
     // Functions
@@ -495,9 +496,9 @@ function updateVis(graph_structure) {
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
     // vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
 
-    let nodePadding = 2;
-    let sizeDiff = 55 - vis.nodeMarkerLength;
-    let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
+    // let nodePadding = 2;
+    // let sizeDiff = 55 - vis.nodeMarkerLength;
+    // let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
 
     node
         .selectAll(".nodeBox")
