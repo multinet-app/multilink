@@ -352,17 +352,17 @@ function arcPath(leftHand, d, state = false) {
         target = vis.graph_structure.nodes.find(x => x.id === target)
     }
 
-    var x1 = leftHand ? parseFloat(source.x) + 25 : target.x,
-        y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
-        x2 = leftHand ? parseFloat(target.x) + 25 : source.x,
-        y2 = leftHand ? parseFloat(target.y) + 25 : source.y;
+    var x1 = leftHand ? parseFloat(source.x) + vis.nodeMarkerLength / 2 : target.x,
+        y1 = leftHand ? parseFloat(source.y) + vis.nodeMarkerHeight / 2 : target.y,
+        x2 = leftHand ? parseFloat(target.x) + vis.nodeMarkerLength / 2 : source.x,
+        y2 = leftHand ? parseFloat(target.y) + vis.nodeMarkerHeight / 2 : source.y;
 
     horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
     verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
-    x1 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x1));
-    y1 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y1));
-    x2 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x2));
-    y2 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y2));
+    x1 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x1));
+    y1 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y1));
+    x2 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x2));
+    y2 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y2));
 
     dx = x2 - x1
     dy = y2 - y1
@@ -372,6 +372,8 @@ function arcPath(leftHand, d, state = false) {
     sweep = 1
     xRotation = 0
     largeArc = 0
+
+    console.log(vis.straightEdges)
 
     if (vis.straightEdges) {
         return (
