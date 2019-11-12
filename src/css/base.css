@@ -1,8 +1,5 @@
 * {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
-body {
     margin: 0px;
 }
 
@@ -50,22 +47,10 @@ div.tooltip {
 }
 
 .errorMsg {
-    margin-bottom: 0px;
+    margin-bottom: 0px !important;
     display: none;
-}
-
-#clear-selection[disabled] {
-    color: #505050;
-    background-color: lightgrey;
-}
-
-.errorMsg {
     color: rgb(211, 5, 5);
     font-style: italic;
-}
-
-.card {
-    padding: 5px;
 }
 
 #config {
