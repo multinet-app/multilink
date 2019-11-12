@@ -38,27 +38,25 @@
             <div class="">
                 <div id="vis">
                     <div class="card" id="visPanel">
-                        <div id="taskArea">
-                            <div class="card">
-                                <div class="card-content">
-                                    <div class="content">
-                                        <div>
-                                            <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
-                                            <a class="button is-pulled-right search" id="searchButton">Search</a>
-                                            <p class='searchMsg errorMsg'></p>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <div>
+                                        <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
+                                        <a class="button is-pulled-right search" id="searchButton">Search</a>
+                                        <p class='searchMsg errorMsg'></p>
 
-                                            <a class="button" id="clear-selection">Clear Selections</a>
-                                        </div>
+                                        <a class="button" id="clear-selection">Clear Selections</a>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Legend code -->
-                            <div class="card">
-                                <div class="card-content">
-                                    <div class="content">
-                                        <svg id="legend-svg"></svg>
-                                    </div>
+                        <!-- Legend code -->
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <svg id="legend-svg"></svg>
                                 </div>
                             </div>
                         </div>
@@ -291,16 +289,13 @@
                         </li>
 
                         <br />
-                        <br />
 
                         <a class="button is-light" id="exportConfig">Export Configuration</a>
 
                         <br />
-                        <br />
 
                         <textarea class="textarea" id="config" placeholder="Add vis object here"></textarea>
 
-                        <br />
 
                         <a class="button is-light" id="loadConfig">Load Config</a>
             </aside>
