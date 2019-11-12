@@ -486,8 +486,8 @@ function updateVis(graph_structure) {
             verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
 
             // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(vis.nodeMarkerLength, Math.min(vis.visDimensions.width, d.x));
-            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(vis.nodeMarkerHeight, Math.min(vis.visDimensions.height, d.y));
+            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(vis.visMargins.left, Math.min(vis.visDimensions.width - vis.nodeMarkerLength - vis.visMargins.right, d.x));
+            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(vis.visMargins.top, Math.min(vis.visDimensions.height - vis.nodeMarkerHeight - vis.visMargins.bottom, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         });
 
