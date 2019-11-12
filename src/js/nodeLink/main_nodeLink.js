@@ -188,7 +188,7 @@ function loadVis() {
     browser.height = d3.select("body").style("height").replace("px", "");
 
     // Set dimensions of the node link
-    vis.visDimensions.width = browser.width * 0.75 - 24;
+    vis.visDimensions.width = browser.width * 0.75 + 12;
     vis.visDimensions.height = browser.height * 1;
 
     // Set dimensions of panel
@@ -330,13 +330,13 @@ function dragNode() {
         .attr("d", d => arcPath(1, d));
 
     // Get the total space available on the svg
-    let horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
-    let verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
+    let horizontalSpace = vis.visDimensions.width - vis.visMargins.right - vis.nodeMarkerLength;
+    let verticalSpace = vis.visDimensions.height - vis.visMargins.top - vis.nodeMarkerHeight;
 
     // Don't allow nodes to be dragged off the main svg area
     d3.selectAll(".nodeGroup").attr("transform", d => {
-        d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace + vis.visMargins.left, d.x));
-        d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace + vis.visMargins.top, d.y));
+        d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace, d.x));
+        d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace, d.y));
         return "translate(" + d.x + "," + d.y + ")";
     });
 }
@@ -357,8 +357,8 @@ function arcPath(leftHand, d, state = false) {
         x2 = leftHand ? parseFloat(target.x) + vis.nodeMarkerLength / 2 : source.x,
         y2 = leftHand ? parseFloat(target.y) + vis.nodeMarkerHeight / 2 : source.y;
 
-    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
-    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
+    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - vis.nodeMarkerLength;
+    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - vis.nodeMarkerHeight;
     x1 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x1));
     y1 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y1));
     x2 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x2));
@@ -1452,6 +1452,7 @@ function makeSimulation() {
 
     d3.select("#start-simulation").on("click", () => {
         // Reset the alpha of the simulation and re-run it
+        console.log("clicked simulation")
         vis.simulation.alpha(0.5);
         vis.simulation.alphaTarget(0.02).restart();
     });

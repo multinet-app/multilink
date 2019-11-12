@@ -3,6 +3,10 @@
     margin: 0px;
 }
 
+body {
+    margin-top: 12px !important;
+}
+
 div.tooltip {
     position: absolute;
     color: black;
