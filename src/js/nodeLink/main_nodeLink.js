@@ -353,7 +353,11 @@ function arcPath(leftHand, d, state = false) {
     if (!vis.simOn) {
         source = vis.graph_structure.nodes.find(x => x.id === source)
         target = vis.graph_structure.nodes.find(x => x.id === target)
+    } else {
+        source = vis.graph_structure.nodes.find(x => x.id === source.id)
+        target = vis.graph_structure.nodes.find(x => x.id === target.id)
     }
+
 
     var x1 = leftHand ? parseFloat(source.x) + vis.nodeMarkerLength / 2 : target.x,
         y1 = leftHand ? parseFloat(source.y) + vis.nodeMarkerHeight / 2 : target.y,
@@ -375,8 +379,6 @@ function arcPath(leftHand, d, state = false) {
     sweep = 1
     xRotation = 0
     largeArc = 0
-
-    console.log(vis.straightEdges)
 
     if (vis.straightEdges) {
         return (
