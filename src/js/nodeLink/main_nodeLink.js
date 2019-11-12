@@ -188,7 +188,7 @@ function loadVis() {
     browser.height = d3.select("body").style("height").replace("px", "");
 
     // Set dimensions of the node link
-    vis.visDimensions.width = browser.width * 0.75 + 12;
+    vis.visDimensions.width = browser.width * 0.75;
     vis.visDimensions.height = browser.height * 1;
 
     // Set dimensions of panel
