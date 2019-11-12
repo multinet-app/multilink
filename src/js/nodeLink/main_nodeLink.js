@@ -42,8 +42,6 @@ let browser = {
     width: 0
 };
 
-let radius = 25;
-
 // Draws the visualization on first load
 async function makeVis() {
     //Load from multinet
@@ -330,8 +328,8 @@ function dragNode() {
         .attr("d", d => arcPath(1, d));
 
     // Get the total space available on the svg
-    let horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-    let verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+    let horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
+    let verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
 
     // Don't allow nodes to be dragged off the main svg area
     d3.selectAll(".nodeGroup").attr("transform", d => {
@@ -357,8 +355,8 @@ function arcPath(leftHand, d, state = false) {
         x2 = leftHand ? parseFloat(target.x) + vis.nodeMarkerLength / 2 : source.x,
         y2 = leftHand ? parseFloat(target.y) + vis.nodeMarkerHeight / 2 : source.y;
 
-    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
+    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
     x1 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x1));
     y1 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y1));
     x2 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x2));
@@ -479,12 +477,12 @@ function updateVis(graph_structure) {
         .classed("selected", false)
         .attr("transform", d => {
             // Get the space we have to work with
-            horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-            verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+            horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
+            verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
 
             // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(radius, Math.min(vis.visDimensions.width, d.x));
-            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(radius, Math.min(vis.visDimensions.height, d.y));
+            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(vis.nodeMarkerLength, Math.min(vis.visDimensions.width, d.x));
+            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(vis.nodeMarkerHeight, Math.min(vis.visDimensions.height, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         });
 
@@ -495,7 +493,7 @@ function updateVis(graph_structure) {
 
 
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
-    vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
+    // vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
 
     let nodePadding = 2;
     let sizeDiff = 55 - vis.nodeMarkerLength;
