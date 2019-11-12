@@ -33,6 +33,9 @@ let vis = {
     isDirected: false,
     isMultiEdge: false,
     onNode: {},
+    attributes: {
+        edgeWidthKey: undefined
+    },
 
     // Functions
     nodeLength: () => {},
@@ -633,9 +636,10 @@ function updateVis(graph_structure) {
         .on("mouseover", function(d) {
             let tooltipData = d.id;
 
-            //     if (config.nodeLink.edgeWidthAttr) {
-            //         tooltipData = tooltipData.concat(" [" + d.count + "]")
-            //     }
+            // Add the width attribute to the tooltip
+            if (vis.attributes.edgeWidthKey) {
+                tooltipData = tooltipData.concat(" [" + d[vis.attributes.edgeWidthKey] + "]")
+            }
 
             showTooltip(tooltipData, 400)
 

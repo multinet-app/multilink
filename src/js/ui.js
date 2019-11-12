@@ -308,6 +308,24 @@ function addConfigPanel() {
             vis.nodeLabel = d3.select("#nodeLabel .select > select").property("value")
             updateVis(vis.graph_structure)
         });
+
+
+
+    // Define the possible edge width metrics
+    edge_widthMetrics = d3.selectAll("#edgeWidthSelect").selectAll("select").selectAll("option")
+        .data(Object.keys(vis.graph_structure.links[0]))
+        .enter()
+        .append("option", d => d)
+        .attr("value", d => d)
+        .attr("selected", d => d === "id" ? "selected" : undefined)
+        .text(d => d)
+
+    // Get the edge width metric on change and update the vis
+    d3.select("#edgeWidthSelect")
+        .on("change", async function() {
+            vis.attributes.edgeWidthKey = d3.select("#edgeWidthSelect .select > select").property("value")
+            updateVis(vis.graph_structure)
+        });
 }
 
 module.exports = { searchFor, isSelected };
