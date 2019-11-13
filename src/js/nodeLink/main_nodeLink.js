@@ -526,7 +526,7 @@ function updateVis(graph_structure) {
 
     node
         .select("text")
-        .text(d => { console.log(vis.nodeLabel); return d[vis.nodeLabel] })
+        .text(d => d[vis.nodeLabel])
         .style("font-size", vis.nodeFontSize + "pt")
         .attr("dx", d => vis.nodeMarkerLength / 2)
         .attr("dy", d => (vis.nodeMarkerHeight / 2) + 2)
@@ -833,7 +833,7 @@ function updateVis(graph_structure) {
     //     .attr("x", radius * 2)
     //     .style("text-anchor", "start");
 
-    // If the simulation is requested build and start it
+    // If the simulation is requested build and start it, otherwise just set up the simulation-start button
     if (vis.simOn) {
         makeSimulation()
     } else {
@@ -844,10 +844,7 @@ function updateVis(graph_structure) {
         });
     }
 
-    d3.select("#exportGraph").on("click", () => {
-        let graphCopy = JSON.parse(JSON.stringify(graph_structure));
-        console.log(multinet.graph_structure)
-    });
+
 
     node.on("mouseout", () => {
         hideTooltip()
