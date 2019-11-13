@@ -1458,7 +1458,6 @@ function makeSimulation() {
 
     d3.select("#start-simulation").on("click", () => {
         // Reset the alpha of the simulation and re-run it
-        console.log("clicked simulation")
         vis.simulation.alpha(0.5);
         vis.simulation.alphaTarget(0.02).restart();
     });
