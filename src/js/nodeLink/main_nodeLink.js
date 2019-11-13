@@ -34,7 +34,8 @@ let vis = {
     isMultiEdge: false,
     onNode: {},
     attributes: {
-        edgeWidthKey: undefined
+        edgeWidthKey: undefined,
+        nodeFill: "table"
     },
 
     // Functions
@@ -289,8 +290,10 @@ function highlightSelectedNodes(state) {
 }
 
 function nodeFill(node) {
-    index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-    return vis.nodeColors[index]
+    if (vis.attributes.nodeFill === "table") {
+        index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
+        return vis.nodeColors[index]
+    }
 }
 
 function selectNode(node) {

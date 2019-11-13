@@ -269,7 +269,12 @@ function addConfigPanel() {
     // Export config
     d3.select("#exportConfig")
         .on("click", function() {
-            console.log(vis)
+            data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(vis))
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(vis)], { type: `text/json}` }));
+            a.download = name;
+            a.click();
         });
 
     // Load config
