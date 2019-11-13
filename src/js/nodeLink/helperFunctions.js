@@ -77,50 +77,13 @@ function setPanelValuesFromFile() {
         return config[this.name] === this.value;
     });
 
-    d3.select("#fontSlider").on("input", function() {
-        d3.select("#fontSliderValue").text(this.value);
-        config.nodeLink.labelSize = this.value;
-    });
 
-    d3.select("#fontSlider").property(
-        "value",
-        config.nodeLink.labelSize
-    );
-    d3.select("#fontSliderValue").text(
-        config.nodeLink.labelSize
-    );
-
-    d3.select("#fontSlider").on("change", function() {
-        updateVis(graph_structure);
-    });
-
-    d3.select("#markerSize").property(
-        "value",
-        config.nodeLink.nodeWidth +
-        "," +
-        config.nodeLink.nodeHeight
-    );
-
-    d3.select("#markerSize").on("change", function() {
-        let markerSize = this.value.split(",");
-
-        config.nodeLink.nodeWidth = markerSize[0];
-        config.nodeLink.nodeHeight = markerSize[1];
-        updateVis(graph_structure);
-    });
 
     //set Panel Values
 
     d3.selectAll("input[name='isDirected']")
         .filter(function() {
             return d3.select(this).property("value") === config.isDirected.toString();
-        })
-        .property("checked", "checked");
-
-
-    d3.selectAll("input[name='selectNeighbors']")
-        .filter(function() {
-            return d3.select(this).property("value") === config.nodeLink.selectNeighbors.toString();
         })
         .property("checked", "checked");
 
@@ -816,22 +779,6 @@ function nodePositionMap(nodes) {
     nodes.map(n => nodeMap[n.id] = { x: n.x, y: n.y });
     return nodeMap;
 }
-
-d3.select("#exportBaseConfig").on("click", function() {
-    exportConfig(
-        Object.keys(baseConfig),
-        Object.keys(baseConfig.nodeLink),
-        false
-    );
-});
-
-d3.select("#exportConfig").on("click", function() {
-    exportConfig(
-        Object.keys(config),
-        Object.keys(config.nodeLink),
-        true
-    );
-});
 
 
 function setUpProvenance(nodes, taskID = 'noID', order = 'noOrder') {

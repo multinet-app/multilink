@@ -21,14 +21,22 @@ let vis = {
     colorClasses: [],
     nodeColors: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854'],
     edgeColor: "#888888",
-    nodeMarkerLength: 0,
-    nodeMarkerHeight: 0,
+    nodeLabel: "id",
+    nodeFontSize: 14,
+    nodeMarkerLength: 50,
+    nodeMarkerHeight: 50,
+    selectNeighbors: true,
     nodeSizeAttr: undefined,
     drawBars: undefined,
     barPadding: 3,
     straightEdges: false,
-    isDirected: true,
+    isDirected: false,
+    isMultiEdge: false,
     onNode: {},
+    attributes: {
+        edgeWidthKey: undefined,
+        nodeFill: "table"
+    },
 
     // Functions
     nodeLength: () => {},
@@ -39,8 +47,6 @@ let browser = {
     height: 0,
     width: 0
 };
-
-let radius = 25;
 
 // Draws the visualization on first load
 async function makeVis() {
@@ -65,6 +71,9 @@ async function makeVis() {
 
     // Set the control panel
     vis.configToggle = toggleConfig(configPanel)
+
+    // Add the control panel interactivity 
+    addConfigPanel()
 }
 
 vis.nodeLength = function(node) {
@@ -110,8 +119,6 @@ vis.nodeHeight = function(node) {
 };
 
 function setGlobalScales() {
-    vis.nodeMarkerLength = 60;
-    vis.nodeMarkerHeight = 35;
 
     //Create Scale Functions
     //function to determine fill color of nestedCategoricalMarks
@@ -185,7 +192,7 @@ function loadVis() {
     browser.height = d3.select("body").style("height").replace("px", "");
 
     // Set dimensions of the node link
-    vis.visDimensions.width = browser.width * 0.75 - 24;
+    vis.visDimensions.width = browser.width * 0.75;
     vis.visDimensions.height = browser.height * 1;
 
     // Set dimensions of panel
@@ -237,17 +244,6 @@ function loadVis() {
 
     // Call update vis to append all the data to the svg
     updateVis(vis.graph_structure)
-
-    // If the simulation is requested build and start it
-    if (vis.simOn) {
-        makeSimulation()
-    } else {
-        d3.select("#start-simulation").on("click", () => {
-            makeSimulation()
-            vis.simOn = true;
-            vis.simulation.restart()
-        });
-    }
 }
 
 function initializeProvenance(graph_structure) {
@@ -294,8 +290,10 @@ function highlightSelectedNodes(state) {
 }
 
 function nodeFill(node) {
-    index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-    return vis.nodeColors[index]
+    if (vis.attributes.nodeFill === "table") {
+        index = vis.colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
+        return vis.nodeColors[index]
+    }
 }
 
 function selectNode(node) {
@@ -338,13 +336,13 @@ function dragNode() {
         .attr("d", d => arcPath(1, d));
 
     // Get the total space available on the svg
-    let horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-    let verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+    let horizontalSpace = vis.visDimensions.width - vis.visMargins.right - vis.nodeMarkerLength;
+    let verticalSpace = vis.visDimensions.height - vis.visMargins.top - vis.nodeMarkerHeight;
 
     // Don't allow nodes to be dragged off the main svg area
     d3.selectAll(".nodeGroup").attr("transform", d => {
-        d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace + vis.visMargins.left, d.x));
-        d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace + vis.visMargins.top, d.y));
+        d.x = Math.max(vis.visMargins.left, Math.min(horizontalSpace, d.x));
+        d.y = Math.max(vis.visMargins.top, Math.min(verticalSpace, d.y));
         return "translate(" + d.x + "," + d.y + ")";
     });
 }
@@ -358,19 +356,23 @@ function arcPath(leftHand, d, state = false) {
     if (!vis.simOn) {
         source = vis.graph_structure.nodes.find(x => x.id === source)
         target = vis.graph_structure.nodes.find(x => x.id === target)
+    } else {
+        source = vis.graph_structure.nodes.find(x => x.id === source.id)
+        target = vis.graph_structure.nodes.find(x => x.id === target.id)
     }
 
-    var x1 = leftHand ? parseFloat(source.x) + 25 : target.x,
-        y1 = leftHand ? parseFloat(source.y) + 25 : target.y,
-        x2 = leftHand ? parseFloat(target.x) + 25 : source.x,
-        y2 = leftHand ? parseFloat(target.y) + 25 : source.y;
 
-    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
-    x1 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x1));
-    y1 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y1));
-    x2 = Math.max(vis.visMargins.left + radius, Math.min(horizontalSpace + vis.visMargins.left + radius, x2));
-    y2 = Math.max(vis.visMargins.top + radius, Math.min(verticalSpace + vis.visMargins.top + radius, y2));
+    var x1 = leftHand ? parseFloat(source.x) + vis.nodeMarkerLength / 2 : target.x,
+        y1 = leftHand ? parseFloat(source.y) + vis.nodeMarkerHeight / 2 : target.y,
+        x2 = leftHand ? parseFloat(target.x) + vis.nodeMarkerLength / 2 : source.x,
+        y2 = leftHand ? parseFloat(target.y) + vis.nodeMarkerHeight / 2 : source.y;
+
+    horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - vis.nodeMarkerLength;
+    verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - vis.nodeMarkerHeight;
+    x1 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x1));
+    y1 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y1));
+    x2 = Math.max(vis.visMargins.left + vis.nodeMarkerLength / 2, Math.min(horizontalSpace + vis.visMargins.left + vis.nodeMarkerLength / 2, x2));
+    y2 = Math.max(vis.visMargins.top + vis.nodeMarkerHeight / 2, Math.min(verticalSpace + vis.visMargins.top + vis.nodeMarkerHeight / 2, y2));
 
     dx = x2 - x1
     dy = y2 - y1
@@ -485,12 +487,12 @@ function updateVis(graph_structure) {
         .classed("selected", false)
         .attr("transform", d => {
             // Get the space we have to work with
-            horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * radius);
-            verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * radius);
+            horizontalSpace = vis.visDimensions.width - vis.visMargins.left - vis.visMargins.right - (2 * vis.nodeMarkerLength);
+            verticalSpace = vis.visDimensions.height - vis.visMargins.bottom - vis.visMargins.top - (2 * vis.nodeMarkerHeight);
 
             // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(radius, Math.min(vis.visDimensions.width, d.x));
-            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(radius, Math.min(vis.visDimensions.height, d.y));
+            d.x = d.x === undefined ? (Math.random() * horizontalSpace) + vis.visMargins.left : Math.max(vis.visMargins.left, Math.min(vis.visDimensions.width - vis.nodeMarkerLength - vis.visMargins.right, d.x));
+            d.y = d.y === undefined ? (Math.random() * verticalSpace) + vis.visMargins.top : Math.max(vis.visMargins.top, Math.min(vis.visDimensions.height - vis.nodeMarkerHeight - vis.visMargins.bottom, d.y));
             return "translate(" + d.x + "," + d.y + ")";
         });
 
@@ -501,18 +503,18 @@ function updateVis(graph_structure) {
 
 
     // nodeMarkerLength = config.nodeLink.drawBars ? barAttrs.length * 10 + barPadding + radius * 2 + padding : nodeMarkerLength;
-    vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
+    // vis.nodeMarkerLength = false ? barAttrs.length * 10 + barPadding + radius * 2 + padding : vis.nodeMarkerLength;
 
-    let nodePadding = 2;
-    let sizeDiff = 55 - vis.nodeMarkerLength;
-    let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
+    // let nodePadding = 2;
+    // let sizeDiff = 55 - vis.nodeMarkerLength;
+    // let extraPadding = sizeDiff > 0 ? sizeDiff : 0;
 
     node
         .selectAll(".nodeBox")
-        .attr("width", d => 50)
-        .attr("height", d => 50)
-        .attr("rx", d => 25)
-        .attr("ry", d => 25);
+        .attr("width", d => vis.nodeMarkerLength)
+        .attr("height", d => vis.nodeMarkerHeight)
+        .attr("rx", d => vis.nodeMarkerLength / 2)
+        .attr("ry", d => vis.nodeMarkerHeight / 2);
 
     node.select('.node')
         .style("fill", d => nodeFill(d))
@@ -524,20 +526,17 @@ function updateVis(graph_structure) {
 
     node
         .select("text")
-        .style("font-size", //config.nodeLink.drawBars ? config.nodeLink.labelSize : 
-            '18')
-        .text(d => d.name)
-        .attr("dy", d => radius + 1)
-        .attr("dx", d => radius)
-        // .attr("y", d => d.y / 4)
+        .text(d => d[vis.nodeLabel])
+        .style("font-size", vis.nodeFontSize + "pt")
+        .attr("dx", d => vis.nodeMarkerLength / 2)
+        .attr("dy", d => (vis.nodeMarkerHeight / 2) + 2)
 
     node
         .select(".labelBackground")
-        .attr("y", d => radius - 8)
-        .attr("width", d => 50)
+        .attr("y", d => vis.nodeMarkerHeight / 2 - 8)
+        .attr("width", d => vis.nodeMarkerLength)
         .attr('height', //config.nodeLink.drawBars ? 16 : 
             "1em")
-        // vis.nodeLength(d) + 8 + nodePadding + extraPadding : vis.nodeLength(d) + 8
 
     // .classed('nested', config.nodeLink.drawBars)
     // .attr("width", function(d) {
@@ -642,9 +641,10 @@ function updateVis(graph_structure) {
         .on("mouseover", function(d) {
             let tooltipData = d.id;
 
-            //     if (config.nodeLink.edgeWidthAttr) {
-            //         tooltipData = tooltipData.concat(" [" + d.count + "]")
-            //     }
+            // Add the width attribute to the tooltip
+            if (vis.attributes.edgeWidthKey) {
+                tooltipData = tooltipData.concat(" [" + d[vis.attributes.edgeWidthKey] + "]")
+            }
 
             showTooltip(tooltipData, 400)
 
@@ -833,66 +833,16 @@ function updateVis(graph_structure) {
     //     .attr("x", radius * 2)
     //     .style("text-anchor", "start");
 
-
-    d3.select("#exportGraph").on("click", () => {
-        let graphCopy = JSON.parse(JSON.stringify(graph_structure));
-
-        graphCopy.links.map(l => {
-            l.index = undefined;
-            l.source = l.source.id;
-            l.target = l.target.id;
+    // If the simulation is requested build and start it, otherwise just set up the simulation-start button
+    if (vis.simOn) {
+        makeSimulation()
+    } else {
+        d3.select("#start-simulation").on("click", () => {
+            makeSimulation()
+            vis.simOn = true;
+            vis.simulation.restart()
         });
-        graphCopy.nodes.map(n => {
-            n.index = undefined;
-            n.vx = undefined;
-            n.vy = undefined;
-            n.fx = n.x;
-            n.fy = n.y;
-        });
-
-        let newGraph = { nodes: [], links: [] };
-
-        graphCopy.links.map(l => {
-            newLink = {};
-            l.index = undefined;
-            l.weight = l.count;
-            let source = graphCopy.nodes.find(n => n.id === l.source.id);
-            newLink.source = graphCopy.nodes.indexOf(source);
-
-            let target = graphCopy.nodes.find(n => n.id === l.target.id);
-            newLink.target = graphCopy.nodes.indexOf(target);
-            newLink.id = newGraph.links.length;
-            l.id = newLink.id;
-
-            newGraph.links.push(newLink);
-        });
-
-        graphCopy.nodes.map(n => {
-            let newNode = {};
-            newNode.name = n.shortName;
-            newNode.id = n.id;
-            newGraph.nodes.push(newNode);
-        });
-
-
-        var items = graphCopy.links;
-        const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
-        const header = Object.keys(items[0]).filter(
-            k => k !== "source" && k !== "target"
-        );
-        let csv = items.map(row =>
-            header
-            .map(fieldName => JSON.stringify(row[fieldName], replacer))
-            .join(",")
-        );
-        csv.unshift(header.join(","));
-        csv = csv.join("\r\n");
-
-        // let parseInputFilename =
-        // let filename = config.isDirected ? config.directedGraph : config.undir_graph;
-
-    });
-
+    }
 
 
 
@@ -1483,9 +1433,9 @@ function makeSimulation() {
 
     vis.simulation.force(
         "collision",
-        d3.forceCollide().radius(d => radius + 15
-            // d3.max([vis.nodeLength(d), vis.nodeHeight(d)])
-        ).strength(0.5)
+        d3.forceCollide().radius(d => {
+            return d3.max([vis.nodeMarkerLength / 2, vis.nodeMarkerHeight / 2]) * 1.5
+        }).strength(0.5)
     );
 
     function ticked(d) {

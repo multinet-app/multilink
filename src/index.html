@@ -35,46 +35,42 @@
 <body>
     <div class="columns" id="visContent">
         <div id="targetSize">
-            <div class="">
-                <div id="vis">
-                    <div class="card" id="visPanel">
-                        <div id="taskArea">
-                            <div class="card">
-                                <div class="card-content">
-                                    <div class="content">
-                                        <div>
-                                            <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
-                                            <a class="button is-pulled-right search" id="searchButton">Search</a>
-                                            <p class='searchMsg errorMsg'></p>
+            <div id="vis">
+                <div class="card" id="visPanel">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <div>
+                                    <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
+                                    <a class="button is-pulled-right search" id="searchButton">Search</a>
+                                    <p class='searchMsg errorMsg'></p>
 
-                                            <a class="button" id="clear-selection">Clear Selections</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Legend code -->
-                            <div class="card">
-                                <div class="card-content">
-                                    <div class="content">
-                                        <svg id="legend-svg"></svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <a class="button" id="panelControl">Toggle Control Panel</a>
+                                    <a class="button" id="clear-selection">Clear Selections</a>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="nodeLink">
-                        <svg id="node-link-svg"></svg>
+                    <!-- Legend code -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <svg id="legend-svg"></svg>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <a class="button" id="panelControl">Toggle Control Panel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nodeLink">
+                    <svg id="node-link-svg"></svg>
                 </div>
             </div>
         </div>
@@ -86,34 +82,9 @@
             <aside class="menu">
                 <p class="menu-label">Graph Settings</p>
                 <ul class="menu-list">
-
-                    <li id="graphSize">
-                        <label>Graph Size</label>
-
-                        <ul>
-                            <div class="control">
-                                <!-- <label class="radio">
-                                                                            <input type="radio" name="graphSize" value="small" >
-                                                                            Small [30]
-                                                                        </label> -->
-
-                                <label class="radio">
-                                        <input type="radio" name="graphSize" value="small">
-                                        Small [50]
-                                    </label>
-
-                                <label class="radio">
-                                        <input type="radio" name="graphSize" value="large">
-                                        Large [80]
-                                    </label>
-                            </div>
-
-                        </ul>
-                    </li>
-
                     <li>
                         <!-- Set config.isDirected to true/false -->
-                        <a>Graph Type</a>
+                        <a>Edge Type</a>
                         <ul>
                             <div class="control">
                                 <label class="radio">
@@ -126,10 +97,7 @@
                                         Undirected
                                     </label>
                             </div>
-
                         </ul>
-
-
                     </li>
 
                     <li>
@@ -147,10 +115,7 @@
                                         Single Type
                                     </label>
                             </div>
-
                         </ul>
-
-
                     </li>
 
                     <li id="labelSize">
@@ -166,12 +131,9 @@
                     <li id="nodeMarkerSize">
                         <label>Node Size [width,height]</label>
                         <ul>
-
-
                             <div class="control is-inline-flex">
                                 <input width="50%" id="markerSize" class="input" type="text" placeholder="width/height">
                             </div>
-
                         </ul>
                     </li>
 
@@ -190,12 +152,8 @@
                                         False
                                     </label>
                             </div>
-
                         </ul>
-
-
                     </li>
-
 
                     <ul class="menu-list">
 
@@ -204,106 +162,111 @@
                             <a class="button" id="stop-simulation">Stop Simulation</a>
                             <a class="button" id="start-simulation">Restart Simulation</a>
                             <a class="button" id="release-nodes">Release Pinned Nodes</a>
-                            <a class="button" id="exportGraph">Export Graph to Console</a>
+                            <a class="button" id="exportGraph">Export Graph</a>
                         </div>
+                    </ul>
+
+                    <br />
+
+                    <li id="nodeLabel">
+                        <a>Node Label</a>
+                        <ul>
+                            <div class="select">
+                                <select>
+                                </select>
+                            </div>
+
+                        </ul>
+                    </li>
+
+                    <div class="field">
+                        <input class="is-checkradio is-circle" id="renderBarsCheckbox" type="checkbox" name="renderBarsCheckbox" checked="checked">
+                        <label for="renderBarsCheckbox">Render Nested Charts</label>
+                    </div>
 
 
-                        <br />
+                    <li id="nodeQuantSelect">
+                        <a>Attribute for Nested Quant Attributes (Bars)</a>
+                        <ul>
+                        </ul>
+                    </li>
 
-                        <div class="field">
-                            <input class="is-checkradio is-circle" id="renderBarsCheckbox" type="checkbox" name="renderBarsCheckbox" checked="checked">
-                            <label for="renderBarsCheckbox">Render Nested Charts</label>
-                        </div>
+                    <br />
 
-
-                        <li id="nodeQuantSelect">
-                            <a>Attribute for Nested Quant Attributes (Bars)</a>
-                            <ul>
-                            </ul>
-                        </li>
-
-                        <br />
-
-                        <li id="nodeCatSelect">
-                            <a>Attribute for Nested Cat Attributes</a>
-                            <ul>
-                            </ul>
-                        </li>
+                    <li id="nodeCatSelect">
+                        <a>Attribute for Nested Cat Attributes</a>
+                        <ul>
+                        </ul>
+                    </li>
 
 
-                        <li id="nodeQuantAttributes">
-                            <a>Node Attribute Inspector</a>
-                            <ul>
-                                <div class="select ">
-                                    <select>
-                                        </select>
-                                </div>
+                    <li id="nodeQuantAttributes">
+                        <a>Node Attribute Inspector</a>
+                        <ul>
+                            <div class="select ">
+                                <select></select>
+                            </div>
 
-                            </ul>
-                        </li>
+                        </ul>
+                    </li>
 
 
-                        <li id="nodeFillSelect">
-                            <a>Attribute for Node Fill</a>
-                            <ul>
-                                <div class="select">
-                                    <select>
-                                        </select>
-                                </div>
+                    <li id="nodeFillSelect">
+                        <a>Attribute for Node Fill</a>
+                        <ul>
+                            <div class="select">
+                                <select></select>
+                            </div>
 
-                            </ul>
-                        </li>
+                        </ul>
+                    </li>
 
-                        <li id="nodeSizeSelect">
-                            <a>Attribute for Node Size</a>
-                            <ul>
-                                <div class="select">
-                                    <select>
-                                        </select>
+                    <li id="nodeSizeSelect">
+                        <a>Attribute for Node Size</a>
+                        <ul>
+                            <div class="select">
+                                <select></select>
+                            </div>
 
-                                </div>
+                            <div class="control is-inline-flex">
+                                <input width="50%" class="input" type="text" placeholder="[min,max]">
+                            </div>
 
-                                <div class="control is-inline-flex">
-                                    <input width="50%" class="input" type="text" placeholder="[min,max]">
-                                </div>
+                        </ul>
+                    </li>
 
-                            </ul>
-                        </li>
+                    <li id="edgeStrokeSelect">
+                        <a>Attribute for Edge Stroke</a>
+                        <ul>
+                            <div class="select">
+                                <select></select>
+                            </div>
 
-                        <li id="edgeStrokeSelect">
-                            <a>Attribute for Edge Stroke</a>
-                            <ul>
-                                <div class="select">
-                                    <select>
-                                        </select>
-                                </div>
+                        </ul>
+                    </li>
 
-                            </ul>
-                        </li>
+                    <li id="edgeWidthSelect">
+                        <a>Attribute for Edge Width</a>
+                        <ul>
+                            <div class="select ">
+                                <select></select>
+                            </div>
 
-                        <li id="edgeWidthSelect">
-                            <a>Attribute for Edge Width</a>
-                            <ul>
-                                <div class="select ">
-                                    <select>
-                                        </select>
-                                </div>
+                            <div class="control is-inline-flex">
+                                <input class="input" id="edgeWidthScale" type="text" placeholder="[min,max]">
+                            </div>
 
-                                <div class="control is-inline-flex">
-                                    <input class="input" id="edgeWidthScale" type="text" placeholder="[min,max]">
-                                </div>
+                        </ul>
+                    </li>
 
-                            </ul>
-                        </li>
+                    <br />
 
-                        <br />
-                        <br />
+                    <a class="button is-light" id="exportConfig">Export Configuration</a>
 
-                        <a class="button is-light" id="exportConfig">Export Task Config</a>
+                    <br />
 
-                        <br />
-
-                        <a class="button is-light" id="exportBaseConfig">Export Base Config</a>
+                    <textarea class="textarea" id="config" placeholder="Add vis object here"></textarea>
+                    <a class="button is-light" id="loadConfig">Load Config</a>
             </aside>
         </div>
     </div>

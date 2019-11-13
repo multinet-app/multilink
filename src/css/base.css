@@ -1,17 +1,6 @@
 * {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
-body {
     margin: 0px;
-}
-
-#trialBar {
-    background-color: #fac667;
-}
-
-.helpIcon {
-    cursor: pointer;
 }
 
 div.tooltip {
@@ -34,68 +23,18 @@ div.tooltip {
     height: 100vh;
 }
 
+#visContent {
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
 #visPanel {
     height: 100vh;
     overflow-y: scroll;
 }
 
-#easyLabel {
-    padding-left: 0px;
-}
-
-.message-header p,
-.message-body {
-    white-space: normal;
-}
-
-.selectBox.selected {
-    fill: rgb(255, 111, 0);
-}
-
-.input.searchInput {
-    width: 80% !important;
-}
-
-.taskShortcut.currentTask {
-    padding: 10px 10px;
-    color: white;
-    background-color: #244d90;
-}
-
-#hardLabel {
-    padding-left: 190px;
-}
-
-#easyHardRating {
-    padding: 0px 5px;
-}
-
-#taskArea .card-header-title {
-    display: block
-}
-
-.task {
-    font-size: 30px;
-}
-
-.answer {
-    font-size: 25px;
-}
-
-#taskArea .taskCard,
-#taskArea .answerHeader {
-    background-color: #4285f4;
-}
-
-#taskArea .taskCard .card-header-title,
-.answerHeader .card-header-title {
-    color: white;
-}
-
-.taskCard,
-.answerHeader {
-    padding: 10px 10px;
-    font-size: 20px;
+#vis {
+    height: 100vh;
 }
 
 #clear-selection,
@@ -110,96 +49,19 @@ div.tooltip {
     margin-top: 10px;
 }
 
-#submitButton,
 #searchButton {
     color: white;
     background-color: #4285f4;
     width: 30%;
 }
 
-#nextTrialTask {
-    color: white;
-    background-color: #787878;
-    border-width: 0px;
-}
-
-.hint {
-    color: rgb(50, 50, 50);
-    font-size: 14px;
-    display: block;
-}
-
-.correctMsg {
-    color: white;
-    font-size: 23px;
-}
-
-#feedbackCard {
-    background-color: #fac667;
-    font-size: 20px;
-    font-weight: 900;
-    display: none;
-}
-
-#start-training {
-    color: white;
-    background-color: #898989;
-    width: 100%;
-}
-
-.taskCard .errorMsg {
-    margin-bottom: 0px;
-    display: none;
-}
-
-#submitButton[disabled],
-#clear-selection[disabled] {
-    color: #505050;
-    background-color: lightgrey;
-}
-
 .errorMsg {
+    margin-bottom: 0px !important;
+    display: none;
     color: rgb(211, 5, 5);
     font-style: italic;
 }
 
-#submitSuccessful {
-    color: #4285f4;
-    font-weight: bold;
-}
-
-#nextTask {
-    margin: 10px 0px;
-    padding: 10px;
-    color: white;
-    background-color: #4285f4;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-#experimentr {
-    margin: 4em auto 1em auto;
-    width: 1200px;
-}
-
-#control {
-    margin-top: 1em;
-}
-
-#next-button {
-    float: right;
-}
-
-.placeholder {
-    color: #7A378B;
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-#workerId {
-    width: 60%
-}
-
-.card {
-    padding: 5px;
+#config {
+    margin: 2px;
 }
