@@ -3,10 +3,6 @@
     margin: 0px;
 }
 
-body {
-    margin-top: 12px !important;
-}
-
 div.tooltip {
     position: absolute;
     color: black;
@@ -27,9 +23,18 @@ div.tooltip {
     height: 100vh;
 }
 
+#visContent {
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
 #visPanel {
     height: 100vh;
     overflow-y: scroll;
+}
+
+#vis {
+    height: 100vh;
 }
 
 #clear-selection,

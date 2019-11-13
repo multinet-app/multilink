@@ -35,44 +35,42 @@
 <body>
     <div class="columns" id="visContent">
         <div id="targetSize">
-            <div class="">
-                <div id="vis">
-                    <div class="card" id="visPanel">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <div>
-                                        <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
-                                        <a class="button is-pulled-right search" id="searchButton">Search</a>
-                                        <p class='searchMsg errorMsg'></p>
+            <div id="vis">
+                <div class="card" id="visPanel">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <div>
+                                    <input class="input searchInput" type="text" placeholder="Search nodes" id="search-input"></input>
+                                    <a class="button is-pulled-right search" id="searchButton">Search</a>
+                                    <p class='searchMsg errorMsg'></p>
 
-                                        <a class="button" id="clear-selection">Clear Selections</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Legend code -->
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <svg id="legend-svg"></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <a class="button" id="panelControl">Toggle Control Panel</a>
+                                    <a class="button" id="clear-selection">Clear Selections</a>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="nodeLink">
-                        <svg id="node-link-svg"></svg>
+                    <!-- Legend code -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <svg id="legend-svg"></svg>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+                                <a class="button" id="panelControl">Toggle Control Panel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nodeLink">
+                    <svg id="node-link-svg"></svg>
                 </div>
             </div>
         </div>
