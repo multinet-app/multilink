@@ -32,6 +32,7 @@ let vis = {
     straightEdges: false,
     isDirected: false,
     isMultiEdge: false,
+    reloaded: false,
     onNode: {},
     attributes: {
         edgeWidthKey: undefined,
@@ -356,7 +357,7 @@ function arcPath(leftHand, d, state = false) {
     if (!vis.simOn) {
         source = vis.graph_structure.nodes.find(x => x.id === source)
         target = vis.graph_structure.nodes.find(x => x.id === target)
-    } else {
+    } else if (vis.reloaded) {
         source = vis.graph_structure.nodes.find(x => x.id === source.id)
         target = vis.graph_structure.nodes.find(x => x.id === target.id)
     }

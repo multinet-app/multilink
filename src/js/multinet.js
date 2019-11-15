@@ -38,14 +38,14 @@ async function load_tables(workspace, graph) {
 
 
 async function load_nodes(workspace, node_table) {
-    nodes_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + node_table
+    nodes_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + node_table + "?limit=1000"
     table = await d3.json(nodes_call);
     multinet.nodes = [].concat(multinet.nodes, table)
 };
 
 
 async function load_links(workspace, edge_table) {
-    links_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + edge_table
+    links_call = multinet.api_root + "/workspaces/" + workspace + "/tables/" + edge_table + "?limit=1000"
     table = await d3.json(links_call);
     multinet.links = [].concat(multinet.links, table)
 };
