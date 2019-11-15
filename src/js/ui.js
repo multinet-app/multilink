@@ -319,21 +319,24 @@ function addConfigPanel() {
     d3.select("#loadConfig")
         .on("click", function() {
             // Get the JSON from the textarea
-            let input = ""
+            let input = "";
             try {
-                input = JSON.parse(d3.select("#config").node().value)
+                input = JSON.parse(d3.select("#config").node().value);
             } catch (error) {
-                console.log("Problem parsing the vis object. Is the JSON malformed?")
-                return
+                console.log("Problem parsing the vis object. Is the JSON malformed?");
+                return;
             }
 
             // Update the values in vis
             for (key in input) {
-                vis[key] = input[key]
+                vis[key] = input[key];
             }
 
+            // Tell the app that we've loaded from json config
+            vis.reloaded = true;
+
             // Trigger a re-render
-            updateVis(vis.graph_structure)
+            updateVis(vis.graph_structure);
         });
 }
 
