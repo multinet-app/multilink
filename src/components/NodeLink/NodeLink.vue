@@ -62,7 +62,7 @@ export default {
     },
     simOn: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
@@ -122,7 +122,7 @@ export default {
       let hasUserSelection = state.selected.length > 0;
 
       //set the class of everything to 'muted', except for the selected node and it's neighbors
-      d3.select(this.svg)
+      this.svg
         .select(".nodes")
         .selectAll(".nodeGroup")
         .classed("muted", d => {
@@ -134,12 +134,12 @@ export default {
         });
 
       // Set the class of a clicked node to clicked
-      d3.select(this.svg)
+      this.svg
         .select(".nodes")
         .selectAll(".node")
         .classed("clicked", d => state.selected.includes(d.id));
 
-      d3.select(this.svg)
+      this.svg
         .select(".links")
         .selectAll(".linkGroup")
         .classed(
@@ -160,4 +160,5 @@ export default {
 </template>
 
 <style scoped>
+@import './NodeLink.css';
 </style>

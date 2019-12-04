@@ -4,7 +4,6 @@
 
 import * as d3 from "d3";
 
-// TODO: state is never passed; remove?
 function arcPath(leftHand, d, state = false) {
   const {
     graphStructure,

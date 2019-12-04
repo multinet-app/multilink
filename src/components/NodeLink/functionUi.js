@@ -58,7 +58,7 @@ function nodeClick(node, search = false) {
     selected.push(node.id);
   }
 
-  let neighbors_and_edges = tagNeighbors(selected);
+  let neighbors_and_edges = this.tagNeighbors(selected);
 
   let label = search ?
     "Searched for Node" :
