@@ -349,19 +349,19 @@ function updateVis(graphStructure) {
     this.hideTooltip();
   })
 
-  node.on("click", d => this.nodeClick(d));
+  node.on("click", (d) => this.nodeClick(d));
 
   //Flag to distinguish a drag from a click.
   let wasDragged = false;
 
-  function dragstarted(d) {
+  const dragstarted = (d) => {
     // if (!d3.event.active) simulation.alphaTarget(0.1).restart();
     d.fx = d.x;
     d.fy = d.y;
     // dragging = true;
   }
 
-  function dragged(d) {
+  const dragged = (d) => {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
     d.x = d3.event.x;
@@ -370,7 +370,7 @@ function updateVis(graphStructure) {
     wasDragged = true;
   }
 
-  function dragended() {
+  const dragended = () => {
     if (wasDragged) {
       //update node position in state graph;
       // updateState("Dragged Node");

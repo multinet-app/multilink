@@ -59,7 +59,11 @@ export default {
         edgeWidthKey: undefined,
         nodeFill: "table"
       })
-    }
+    },
+    simOn: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
@@ -151,7 +155,7 @@ export default {
 
 <template>
   <div>
-    <svg ref="svg" />
+    <svg ref="svg" width="800" height="900"/>
   </div>
 </template>
 

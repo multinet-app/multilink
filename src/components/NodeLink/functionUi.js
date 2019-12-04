@@ -46,11 +46,11 @@ function tagNeighbors(selected) {
 
 //function that updates the state, and includes a flag for when this was done through a search
 function nodeClick(node, search = false) {
-  const { app, provenance,  } = this;
+  const { app, provenance } = this;
 
   const currentState = app.currentState();
   let selected = currentState.selected;
-  let wasSelected = isSelected(node, { app });
+  let wasSelected = this.isSelected(node);
 
   if (wasSelected) {
     selected = selected.filter(s => s !== node.id);
