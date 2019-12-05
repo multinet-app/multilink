@@ -6,20 +6,20 @@ function clearSelections() {
   let label = "Cleared selections";
 
   let action = {
-      label: label,
-      action: () => {
-          const currentState = app.currentState();
-          //add time stamp to the state graph
-          currentState.time = Date.now();
-          //Add label describing what the event was
-          currentState.event = label;
-          //Update actual node data
-          currentState.selected = selected;
-          currentState.userSelectedNeighbors = neighbors;
-          currentState.userSelectedEdges = edges;
-          return currentState;
-      },
-      args: []
+    label: label,
+    action: () => {
+      const currentState = app.currentState();
+      //add time stamp to the state graph
+      currentState.time = Date.now();
+      //Add label describing what the event was
+      currentState.event = label;
+      //Update actual node data
+      currentState.selected = selected;
+      currentState.userSelectedNeighbors = neighbors;
+      currentState.userSelectedEdges = edges;
+      return currentState;
+    },
+    args: []
   };
   provenance.applyAction(action);
 }
@@ -111,6 +111,34 @@ function nodeClick(node, search = false) {
   provenance.applyAction(action);
 }
 
+function releaseNodes() {
+  const { graphStructure } = this;
+  // Release the pinned nodes
+  graphStructure.nodes.map(n => {
+    n.fx = null;
+    n.fy = null;
+  });
+  this.startSimulation();
+}
+
+function startSimulation() {
+  if (!this.simulation) {
+    this.$emit('update:simOn', true);
+    this.simulation = this.makeSimulation();
+  }
+  this.simulation.alpha(0.5);
+  this.simulation.alphaTarget(0.02).restart();
+}
+
+function stopSimulation() {
+  const { simulation, graphStructure } = this;
+  simulation.stop();
+  graphStructure.nodes.map(n => {
+    n.savedX = n.x;
+    n.savedY = n.y;
+  });
+}
+
 function tagNeighbors(selected) {
   const { simOn, selectNeighbors, graphStructure } = this;
   let neighbors = [];
@@ -155,5 +183,8 @@ export {
   highlightSelectedNodes,
   isSelected,
   nodeClick,
+  releaseNodes,
+  startSimulation,
+  stopSimulation,
   tagNeighbors,
 }

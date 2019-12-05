@@ -197,32 +197,6 @@ function makeSimulation() {
   simulation.alphaMin(0.025);
   simulation.alphaTarget(0.02).restart();
 
-  // TODO: Wire the buttons for the simulation differently
-  // // UI for the simulation
-  // d3.select("#stop-simulation").on("click", () => {
-  //   simulation.stop();
-  //   graphStructure.nodes.map(n => {
-  //     n.savedX = n.x;
-  //     n.savedY = n.y;
-  //   });
-  // });
-
-  // d3.select("#start-simulation").on("click", () => {
-  //   // Reset the alpha of the simulation and re-run it
-  //   simulation.alpha(0.5);
-  //   simulation.alphaTarget(0.02).restart();
-  // });
-
-  // d3.select("#release-nodes").on("click", () => {
-  //   // Release the pinned nodes
-  //   graphStructure.nodes.map(n => {
-  //     n.fx = null;
-  //     n.fy = null;
-  //   });
-  //   // Reset the alpha of the simulation and re-run it
-  //   simulation.alpha(0.5);
-  //   simulation.alphaTarget(0.02).restart();
-  // });
   return simulation;
 }
 
@@ -242,15 +216,16 @@ function showTooltip(data, delay = 200) {
   tooltip.transition().duration(delay).style("opacity", .9);
 }
 
-function updateVis(graphStructure) {
+
+function updateVis() {
   const {
     attributes,
     edgeColor,
+    graphStructure,
     nodeFontSize,
     nodeLabel,
     nodeMarkerLength,
     nodeMarkerHeight,
-    provenance,
     simOn,
     svg,
     visMargins,
@@ -370,17 +345,8 @@ function updateVis(graphStructure) {
 
   // If the simulation is requested build and start it, otherwise just set up the simulation-start button
   if (simOn) {
-    this.simulation = this.makeSimulation();
+    this.startSimulation();
   }
-
-  // TODO: controls
-  // else {
-  //   svg.select("#start-simulation").on("click", () => {
-  //     makeSimulation()
-  //     this.simOn = true;
-  //     simulation.restart()
-  //   });
-  // }
 
   node.on("mouseout", () => {
     this.hideTooltip();

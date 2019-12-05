@@ -1,22 +1,19 @@
-<template>
-  <div id="app">
-    <node-link
-      v-if="workspace"
-      v-bind="{ graphStructure, provenance, app }"
-    />
-  </div>
-</template>
-
 <script>
-import NodeLink from './components/NodeLink/NodeLink.vue'
-import { setUpProvenance } from './lib/provenance';
-import { getUrlVars } from './lib/utils';
-import { loadData } from './lib/multinet';
+/**
+ * Demo app for NodeLink component.  To use this library,
+ * you'll want to implement this "state container" component
+ * yourself and wire it up to your control board on your own.
+ */
+import NodeLink from "./components/NodeLink/NodeLink.vue";
+import Controls from "./components/Controls.vue";
+import { setUpProvenance } from "./lib/provenance";
+import { getUrlVars } from "./lib/utils";
+import { loadData } from "./lib/multinet";
 
 export default {
-  name: 'app',
-  
-  components: { NodeLink },
+  name: "app",
+
+  components: { Controls, NodeLink },
 
   data() {
     /**
@@ -27,11 +24,14 @@ export default {
       app: null,
       provenance: null,
       graphStructure: {
-        "nodes": [],
-        "links": [],
+        nodes: [],
+        links: []
       },
+      nodeMarkerHeight: 50,
+      nodeMarkerLength: 50,
       workspace: null,
       graph: null,
+      simOn: false,
     };
   },
 
@@ -42,7 +42,9 @@ export default {
   async mounted() {
     const { workspace, graph } = getUrlVars();
     if (!workspace || !graph) {
-      throw new Error(`Workspace and graph must be set! workspace=${workspace} graph=${graph}`);
+      throw new Error(
+        `Workspace and graph must be set! workspace=${workspace} graph=${graph}`
+      );
     }
     this.graphStructure = await loadData(workspace, graph);
     const { provenance, app } = setUpProvenance(this.graphStructure.nodes);
@@ -50,17 +52,46 @@ export default {
     this.provenance = provenance;
     this.workspace = workspace;
     this.graph = graph;
-  },
-}
+  }
+};
 </script>
+
+<template>
+  <v-app>
+    <v-content>
+      <v-container id="app" fluid class="pa-4 pt-0">
+        <v-row class="flex-nowrap">
+          <v-col class="shrink mt-4">
+            <controls class="node-link-controls"
+              :node-marker-height.sync="nodeMarkerHeight"
+              :node-marker-length.sync="nodeMarkerLength"
+              @restart-simulation="$refs.nodelink.startSimulation()"
+            />
+          </v-col>
+          <v-col>
+            <v-row row wrap class="ma-0 pa-0">
+              <node-link
+                ref="nodelink"
+                v-if="workspace"
+                :sim-on.sync="simOn"
+                v-bind="{ graphStructure, provenance, app, nodeMarkerHeight, nodeMarkerLength }"
+              />
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-content>
+  </v-app>
+</template>
 
 <style>
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.node-link-controls {
+  width: 300px;
 }
 </style>

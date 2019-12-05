@@ -62,7 +62,7 @@ export default {
     },
     simOn: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
@@ -116,7 +116,38 @@ export default {
     ...loadVisMethods,
     ...updateVisMethods,
     ...uiMethods,
-  }
+  },
+
+  computed: {
+    properties() {
+      const {
+        graphStructure,
+        nodeLabel,
+        nodeFontSize,
+        nodeMarkerLength,
+        nodeMarkerHeight,
+        isDirected,
+        isMultiEdge,
+        attributes,
+      } = this;
+      return {
+        graphStructure,
+        nodeLabel,
+        nodeFontSize,
+        nodeMarkerLength,
+        nodeMarkerHeight,
+        isDirected,
+        isMultiEdge,
+        attributes,
+      };
+    }
+  },
+
+  watch: {
+    properties() {
+      this.updateVis();
+    }
+  },
 };
 </script>
 
