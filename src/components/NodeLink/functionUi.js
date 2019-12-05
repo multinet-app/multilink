@@ -1,8 +1,27 @@
-//function that checks the state to see if the node is selected
-function isSelected(node) {
-  const currentState = this.app.currentState();
-  let selected = currentState.selected;
-  return selected.includes(node.id);
+function clearSelections() {
+  const { app, provenance } = this;
+  let selected = [];
+  let neighbors = [];
+  let edges = [];
+  let label = "Cleared selections";
+
+  let action = {
+      label: label,
+      action: () => {
+          const currentState = app.currentState();
+          //add time stamp to the state graph
+          currentState.time = Date.now();
+          //Add label describing what the event was
+          currentState.event = label;
+          //Update actual node data
+          currentState.selected = selected;
+          currentState.userSelectedNeighbors = neighbors;
+          currentState.userSelectedEdges = edges;
+          return currentState;
+      },
+      args: []
+  };
+  provenance.applyAction(action);
 }
 
 function highlightSelectedNodes(state) {
@@ -39,43 +58,11 @@ function highlightSelectedNodes(state) {
     .style("stroke", this.edgeColor);
 }
 
-function tagNeighbors(selected) {
-  const { simOn, selectNeighbors, graphStructure } = this;
-  let neighbors = [];
-  let edges = []
-
-  if (!selectNeighbors) {
-    return { "neighbors": neighbors, "edges": edges }
-  }
-
-  for (const clickedNode of selected) {
-    let neighborNodes;
-    if (!simOn) {
-      neighborNodes = graphStructure.links
-        .map((e, i) => e.source === clickedNode
-          ? [e.target, graphStructure.links[i].id]
-          : e.target === clickedNode ? [e.source, graphStructure.links[i].id] : "")
-    } else {
-      neighborNodes = graphStructure.links
-        .map((e, i) => e.source.id === clickedNode
-          ? [e.target.id, graphStructure.links[i].id]
-          : e.target.id === clickedNode ? [e.source.id, graphStructure.links[i].id] : "")
-    }
-
-    for (const node of neighborNodes) {
-      // push nodes
-      if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
-        neighbors.push(node[0]);
-      }
-
-      // push edges
-      if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
-        edges.push(node[1]);
-      }
-    }
-  }
-
-  return { "neighbors": neighbors, "edges": edges };
+//function that checks the state to see if the node is selected
+function isSelected(node) {
+  const currentState = this.app.currentState();
+  let selected = currentState.selected;
+  return selected.includes(node.id);
 }
 
 //function that updates the state, and includes a flag for when this was done through a search
@@ -124,7 +111,47 @@ function nodeClick(node, search = false) {
   provenance.applyAction(action);
 }
 
+function tagNeighbors(selected) {
+  const { simOn, selectNeighbors, graphStructure } = this;
+  let neighbors = [];
+  let edges = []
+
+  if (!selectNeighbors) {
+    return { "neighbors": neighbors, "edges": edges }
+  }
+
+  for (const clickedNode of selected) {
+    let neighborNodes;
+    if (!simOn) {
+      neighborNodes = graphStructure.links
+        .map((e, i) => e.source === clickedNode
+          ? [e.target, graphStructure.links[i].id]
+          : e.target === clickedNode ? [e.source, graphStructure.links[i].id] : "")
+    } else {
+      neighborNodes = graphStructure.links
+        .map((e, i) => e.source.id === clickedNode
+          ? [e.target.id, graphStructure.links[i].id]
+          : e.target.id === clickedNode ? [e.source.id, graphStructure.links[i].id] : "")
+    }
+
+    for (const node of neighborNodes) {
+      // push nodes
+      if (node[0] !== "" && neighbors.indexOf(node[0]) === -1) {
+        neighbors.push(node[0]);
+      }
+
+      // push edges
+      if (node[1] !== "" && edges.indexOf(node[1]) === -1) {
+        edges.push(node[1]);
+      }
+    }
+  }
+
+  return { "neighbors": neighbors, "edges": edges };
+}
+
 export {
+  clearSelections,
   highlightSelectedNodes,
   isSelected,
   nodeClick,

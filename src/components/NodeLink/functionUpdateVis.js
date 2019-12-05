@@ -4,6 +4,47 @@
 
 import * as d3 from "d3";
 
+function dragstarted(d) {
+  d.fx = d.x;
+  d.fy = d.y;
+  this.wasDragged = true;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+  d.x = d3.event.x;
+  d.y = d3.event.y;
+  this.dragNode();
+}
+
+function dragended() {
+  const { wasDragged, app, graphStructure, provenance } = this;
+  if (wasDragged) {
+    //update node position in state graph;
+    // updateState("Dragged Node");
+    let action = {
+      label: "Dragged Node",
+      action: () => {
+        const currentState = app.currentState();
+        //add time stamp to the state graph
+        currentState.time = Date.now();
+        //Add label describing what the event was
+        currentState.event = "Dragged Node";
+        //Update node positions
+        graphStructure.nodes.map(
+          n => (currentState.nodePos[n.id] = { x: n.x, y: n.y })
+        );
+        return currentState;
+      },
+      args: []
+    };
+
+    provenance.applyAction(action);
+  }
+  this.wasDragged = false;
+}
+
 function arcPath(leftHand, d, state = false) {
   const {
     graphStructure,
@@ -274,13 +315,12 @@ function updateVis(graphStructure) {
     .attr('height', //config.nodeLink.drawBars ? 16 : 
       "1em")
 
-
   node.call(
     d3
       .drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended)
+      .on("start", (d) => this.dragstarted(d))
+      .on("drag", (d) => this.dragged(d))
+      .on("end", () => this.dragended())
   );
 
   //Draw Links
@@ -349,52 +389,6 @@ function updateVis(graphStructure) {
 
   node.on("click", (d) => this.nodeClick(d));
 
-  //Flag to distinguish a drag from a click.
-  let wasDragged = false;
-
-  const dragstarted = (d) => {
-    // if (!d3.event.active) simulation.alphaTarget(0.1).restart();
-    d.fx = d.x;
-    d.fy = d.y;
-    // dragging = true;
-  }
-
-  const dragged = (d) => {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
-    d.x = d3.event.x;
-    d.y = d3.event.y;
-    this.dragNode();
-    wasDragged = true;
-  }
-
-  const dragended = () => {
-    if (wasDragged) {
-      //update node position in state graph;
-      // updateState("Dragged Node");
-
-      let action = {
-        label: "Dragged Node",
-        action: () => {
-          const currentState = app.currentState();
-          //add time stamp to the state graph
-          currentState.time = Date.now();
-          //Add label describing what the event was
-          currentState.event = "Dragged Node";
-          //Update node positions
-          graphStructure.nodes.map(
-            n => (currentState.nodePos[n.id] = { x: n.x, y: n.y })
-          );
-          return currentState;
-        },
-        args: []
-      };
-
-      provenance.applyAction(action);
-    }
-    wasDragged = false;
-  }
-
   // drawLegend();
 }
 
@@ -402,6 +396,9 @@ function updateVis(graphStructure) {
 export {
   arcPath,
   dragNode,
+  dragged,
+  dragstarted,
+  dragended,
   hideTooltip,
   makeSimulation,
   nodeFill,

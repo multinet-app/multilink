@@ -95,7 +95,9 @@ export default {
       nodeSizeAttr: undefined,
       drawBars: undefined,
       barPadding: 3,
-      straightEdges: false
+      straightEdges: false,
+      // distinguish a drag from a click
+      wasDragged: false,
     };
   },
 
