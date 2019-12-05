@@ -27,7 +27,7 @@ export default {
     },
     nodeLabel: {
       type: String,
-      defaule: "id"
+      default: "id"
     },
     nodeFontSize: {
       type: Number,

@@ -244,7 +244,6 @@ function showTooltip(data, delay = 200) {
 
 function updateVis(graphStructure) {
   const {
-    app,
     attributes,
     edgeColor,
     nodeFontSize,
