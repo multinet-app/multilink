@@ -4,47 +4,6 @@
 
 import * as d3 from "d3";
 
-function dragstarted(d) {
-  d.fx = d.x;
-  d.fy = d.y;
-  this.wasDragged = true;
-}
-
-function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-  d.x = d3.event.x;
-  d.y = d3.event.y;
-  this.dragNode();
-}
-
-function dragended() {
-  const { wasDragged, app, graphStructure, provenance } = this;
-  if (wasDragged) {
-    //update node position in state graph;
-    // updateState("Dragged Node");
-    let action = {
-      label: "Dragged Node",
-      action: () => {
-        const currentState = app.currentState();
-        //add time stamp to the state graph
-        currentState.time = Date.now();
-        //Add label describing what the event was
-        currentState.event = "Dragged Node";
-        //Update node positions
-        graphStructure.nodes.map(
-          n => (currentState.nodePos[n.id] = { x: n.x, y: n.y })
-        );
-        return currentState;
-      },
-      args: []
-    };
-
-    provenance.applyAction(action);
-  }
-  this.wasDragged = false;
-}
-
 function arcPath(leftHand, d, state = false) {
   const {
     graphStructure,
@@ -116,6 +75,47 @@ function arcPath(leftHand, d, state = false) {
       y2
     );
   }
+}
+
+function dragstarted(d) {
+  d.fx = d.x;
+  d.fy = d.y;
+  this.wasDragged = true;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+  d.x = d3.event.x;
+  d.y = d3.event.y;
+  this.dragNode();
+}
+
+function dragended() {
+  const { wasDragged, app, graphStructure, provenance } = this;
+  if (wasDragged) {
+    //update node position in state graph;
+    // updateState("Dragged Node");
+    let action = {
+      label: "Dragged Node",
+      action: () => {
+        const currentState = app.currentState();
+        //add time stamp to the state graph
+        currentState.time = Date.now();
+        //Add label describing what the event was
+        currentState.event = "Dragged Node";
+        //Update node positions
+        graphStructure.nodes.map(
+          n => (currentState.nodePos[n.id] = { x: n.x, y: n.y })
+        );
+        return currentState;
+      },
+      args: []
+    };
+
+    provenance.applyAction(action);
+  }
+  this.wasDragged = false;
 }
 
 function dragNode() {
