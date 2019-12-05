@@ -29,7 +29,6 @@ function arcPath(leftHand, d, state = false) {
     target = graphStructure.nodes.find(x => x.id === target.id)
   }
 
-
   let x1 = leftHand ? parseFloat(source.x) + nodeMarkerLength / 2 : target.x,
     y1 = leftHand ? parseFloat(source.y) + nodeMarkerHeight / 2 : target.y,
     x2 = leftHand ? parseFloat(target.x) + nodeMarkerLength / 2 : source.x,

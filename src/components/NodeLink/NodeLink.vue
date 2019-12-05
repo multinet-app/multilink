@@ -62,7 +62,7 @@ export default {
     },
     simOn: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
 
@@ -107,7 +107,6 @@ export default {
     this.provenance.addObserver("selected", state =>
       this.highlightSelectedNodes(state)
     );
-    console.log(this);
   },
 
   methods: {
@@ -115,40 +114,6 @@ export default {
     ...loadVisMethods,
     ...updateVisMethods,
     ...uiMethods,
-
-    highlightSelectedNodes(state) {
-      // see if there is at least one node 'clicked'
-      //check state not ui, since ui has not yet been updated
-      let hasUserSelection = state.selected.length > 0;
-
-      //set the class of everything to 'muted', except for the selected node and it's neighbors
-      this.svg
-        .select(".nodes")
-        .selectAll(".nodeGroup")
-        .classed("muted", d => {
-          return (
-            hasUserSelection &&
-            !state.selected.includes(d.id) &&
-            !state.userSelectedNeighbors.includes(d.id) //this id exists in the dict
-          );
-        });
-
-      // Set the class of a clicked node to clicked
-      this.svg
-        .select(".nodes")
-        .selectAll(".node")
-        .classed("clicked", d => state.selected.includes(d.id));
-
-      this.svg
-        .select(".links")
-        .selectAll(".linkGroup")
-        .classed(
-          "muted",
-          d => hasUserSelection && !state.userSelectedEdges.includes(d.id)
-        )
-        .select("path")
-        .style("stroke", this.edgeColor);
-    }
   }
 };
 </script>
