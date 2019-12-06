@@ -27,8 +27,7 @@ export default {
         nodes: [],
         links: []
       },
-      nodeMarkerHeight: 50,
-      nodeMarkerLength: 50,
+      nodeMarkerSize: 50,
       workspace: null,
       graph: null,
       simOn: false,
@@ -63,8 +62,7 @@ export default {
         <v-row class="flex-nowrap">
           <v-col class="shrink mt-4">
             <controls class="node-link-controls"
-              :node-marker-height.sync="nodeMarkerHeight"
-              :node-marker-length.sync="nodeMarkerLength"
+              :node-marker-size.sync="nodeMarkerSize"
               @restart-simulation="$refs.nodelink.startSimulation()"
             />
           </v-col>
@@ -74,7 +72,7 @@ export default {
                 ref="nodelink"
                 v-if="workspace"
                 :sim-on.sync="simOn"
-                v-bind="{ graphStructure, provenance, app, nodeMarkerHeight, nodeMarkerLength }"
+                v-bind="{ graphStructure, provenance, app, nodeMarkerHeight: nodeMarkerSize, nodeMarkerLength: nodeMarkerSize }"
               />
             </v-row>
           </v-col>

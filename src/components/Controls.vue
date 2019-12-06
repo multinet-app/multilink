@@ -9,14 +9,10 @@
  */
 export default {
   props: {
-    nodeMarkerLength: {
+    nodeMarkerSize: {
       type: Number,
       default: 50
     },
-    nodeMarkerHeight: {
-      type: Number,
-      default: 50
-    }
   }
 };
 </script>
@@ -26,18 +22,10 @@ export default {
     <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
     <v-card-text>
-      <v-card-subtitle class="pb-0">Marker Height</v-card-subtitle>
+      <v-card-subtitle class="pb-0">Marker Size</v-card-subtitle>
       <v-slider
-        :value="nodeMarkerHeight"
-        @input="$emit('update:nodeMarkerHeight', $event)"
-        :max="100"
-        :min="10"
-        hide-details
-      />
-      <v-card-subtitle class="pb-0">Marker Length</v-card-subtitle>
-      <v-slider
-        :value="nodeMarkerLength"
-        @input="$emit('update:nodeMarkerLength', $event)"
+        :value="nodeMarkerSize"
+        @input="$emit('update:nodeMarkerSize', $event)"
         :max="100"
         :min="10"
         hide-details
