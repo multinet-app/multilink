@@ -28,6 +28,7 @@ export default {
         links: []
       },
       nodeMarkerSize: 50,
+      nodeFontSize: 14,
       workspace: null,
       graph: null,
       simOn: false,
@@ -63,6 +64,7 @@ export default {
           <v-col class="shrink mt-4">
             <controls class="node-link-controls"
               :node-marker-size.sync="nodeMarkerSize"
+              :node-font-size.sync="nodeFontSize"
               @restart-simulation="$refs.nodelink.startSimulation()"
             />
           </v-col>
@@ -72,7 +74,14 @@ export default {
                 ref="nodelink"
                 v-if="workspace"
                 :sim-on.sync="simOn"
-                v-bind="{ graphStructure, provenance, app, nodeMarkerHeight: nodeMarkerSize, nodeMarkerLength: nodeMarkerSize }"
+                v-bind="{
+                  graphStructure,
+                  provenance,
+                  app,
+                  nodeMarkerHeight: nodeMarkerSize,
+                  nodeMarkerLength: nodeMarkerSize,
+                  nodeFontSize,
+                }"
               />
             </v-row>
           </v-col>

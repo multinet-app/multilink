@@ -13,6 +13,11 @@ export default {
       type: Number,
       default: 50
     },
+
+    nodeFontSize: {
+      type: Number,
+      default: 14,
+    },
   }
 };
 </script>
@@ -30,7 +35,21 @@ export default {
         :min="10"
         hide-details
       />
+      <p>{{ nodeMarkerSize }}</p>
     </v-card-text>
+
+    <v-card-text>
+      <v-card-subtitle class="pb-0">Font Size</v-card-subtitle>
+      <v-slider
+        :value="nodeFontSize"
+        @input="$emit('update:nodeFontSize', $event)"
+        :min="10"
+        :max="30"
+        hide-details
+      />
+      <p>{{ nodeFontSize }}</p>
+    </v-card-text>
+
     <v-card-actions>
       <v-btn small @click="$emit('restart-simulation')">Restart Simulation</v-btn>
     </v-card-actions>
