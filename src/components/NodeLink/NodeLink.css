@@ -44,7 +44,7 @@
 .label,
 .selectBox,
 .labelBackground {
-    cursor: pointer;
+    pointer-events: none;
 }
 
 .pathLabel>textPath {

@@ -270,6 +270,7 @@ function updateVis() {
 
   node.select('.node')
     .style("fill", d => this.nodeFill(d))
+    .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
     })
@@ -351,8 +352,6 @@ function updateVis() {
   node.on("mouseout", () => {
     this.hideTooltip();
   })
-
-  node.on("click", (d) => this.nodeClick(d));
 
   // drawLegend();
 }
