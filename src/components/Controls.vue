@@ -57,6 +57,24 @@ export default {
     this.workspace = workspace;
     this.graph = graph;
   },
+
+  methods: {
+    startSimulation() {
+      if (!this.simOn) {
+        this.simOn = true;
+      } else {
+        this.$refs.nodelink.startSimulation();
+      }
+    },
+
+    stopSimulation() {
+      this.$refs.nodelink.stopSimulation();
+    },
+
+    releaseNodes() {
+      this.$refs.nodelink.releaseNodes();
+    },
+  },
 };
 </script>
 
@@ -99,7 +117,15 @@ export default {
           </v-card-text>
 
           <v-card-actions>
-            <v-btn small @click="simOn = true">Restart Simulation</v-btn>
+            <v-btn small @click="startSimulation">Start Simulation</v-btn>
+          </v-card-actions>
+
+          <v-card-actions>
+            <v-btn small @click="stopSimulation">Stop Simulation</v-btn>
+          </v-card-actions>
+
+          <v-card-actions>
+            <v-btn small @click="releaseNodes">Release Pinned Nodes</v-btn>
           </v-card-actions>
         </v-card>
 
