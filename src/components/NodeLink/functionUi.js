@@ -123,7 +123,6 @@ function releaseNodes() {
 
 function startSimulation() {
   if (!this.simulation) {
-    this.$emit('update:simOn', true);
     this.simulation = this.makeSimulation();
   }
   this.simulation.alpha(0.5);
