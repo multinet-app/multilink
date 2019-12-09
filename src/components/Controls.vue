@@ -35,6 +35,7 @@ export default {
       workspace: null,
       graph: null,
       simOn: false,
+      selectNeighbors: true,
     };
   },
 
@@ -89,6 +90,14 @@ export default {
               <p>{{ nodeFontSize }}</p>
           </v-card-text>
 
+          <v-card-text>
+            <v-card-subtitle class="pb-0">Autoselect neighbors</v-card-subtitle>
+            <v-switch
+              v-model="selectNeighbors"
+              hide-details
+              />
+          </v-card-text>
+
           <v-card-actions>
             <v-btn small @click="simOn = true">Restart Simulation</v-btn>
           </v-card-actions>
@@ -110,6 +119,7 @@ export default {
               nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
               simOn,
+              selectNeighbors,
             }"
             @restart-simulation="hello()"
             />
