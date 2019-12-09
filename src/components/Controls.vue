@@ -88,41 +88,46 @@ export default {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row class="flex-nowrap">
       <!-- control panel content -->
-      <v-col class="shrink mt-4">
+      <v-col class="mt-4" cols="3">
         <v-card>
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
-            <v-card-subtitle class="pb-0">Marker Size</v-card-subtitle>
+            <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
               :min="10"
               :max="100"
+              :label="nodeMarkerSize"
+              inverse-label
               hide-details
-              />
-              <p>{{ nodeMarkerSize }}</p>
-          </v-card-text>
+            />
 
-          <v-card-text>
-            <v-card-subtitle class="pb-0">Font Size</v-card-subtitle>
+            <v-divider class="mt-4" />
+
+            <v-card-subtitle class="pb-0 pl-0">Font Size</v-card-subtitle>
             <v-slider
               v-model="nodeFontSize"
               :min="10"
               :max="30"
+              :label="nodeFontSize"
+              inverse-label
               hide-details
-              />
-              <p>{{ nodeFontSize }}</p>
-          </v-card-text>
+            />
 
-          <v-card-text>
-            <v-card-subtitle class="pb-0">Autoselect neighbors</v-card-subtitle>
-            <v-switch
-              v-model="selectNeighbors"
-              hide-details
+            <v-divider class="mt-4" />
+
+            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+              Autoselect neighbors
+              <v-switch
+                class="ma-0"
+                v-model="selectNeighbors"
+                hide-details
               />
+            </v-card-subtitle>
           </v-card-text>
 
           <v-card-actions>
