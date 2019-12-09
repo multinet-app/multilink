@@ -74,6 +74,15 @@ export default {
     releaseNodes() {
       this.$refs.nodelink.releaseNodes();
     },
+
+    exportGraph() {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graph_structure)], {
+        type: `text/json`
+      }));
+      a.download = "graph.json";
+      a.click();
+    },
   },
 };
 </script>
@@ -126,6 +135,10 @@ export default {
 
           <v-card-actions>
             <v-btn small @click="releaseNodes">Release Pinned Nodes</v-btn>
+          </v-card-actions>
+
+          <v-card-actions>
+            <v-btn small @click="exportGraph">Export Graph</v-btn>
           </v-card-actions>
         </v-card>
 
