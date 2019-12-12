@@ -96,7 +96,7 @@ export default {
               v-model="nodeMarkerSize"
               :min="10"
               :max="100"
-              :label="nodeMarkerSize"
+              :label="String(nodeMarkerSize)"
               inverse-label
               hide-details
             />
@@ -108,7 +108,7 @@ export default {
               v-model="nodeFontSize"
               :min="10"
               :max="30"
-              :label="nodeFontSize"
+              :label="String(nodeFontSize)"
               inverse-label
               hide-details
             />
