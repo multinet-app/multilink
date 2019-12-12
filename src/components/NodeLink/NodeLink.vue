@@ -101,23 +101,6 @@ export default {
     };
   },
 
-  async mounted() {
-    /**
-     * mounted hook runs after the component is injected into the DOM
-     */
-    this.loadVis();
-    this.provenance.addObserver("selected", state =>
-      this.highlightSelectedNodes(state)
-    );
-  },
-
-  methods: {
-    // define many functions externally
-    ...loadVisMethods,
-    ...updateVisMethods,
-    ...uiMethods,
-  },
-
   computed: {
     properties() {
       const {
@@ -149,6 +132,23 @@ export default {
     properties() {
       this.updateVis();
     }
+  },
+
+  async mounted() {
+    /**
+     * mounted hook runs after the component is injected into the DOM
+     */
+    this.loadVis();
+    this.provenance.addObserver("selected", state =>
+      this.highlightSelectedNodes(state)
+    );
+  },
+
+  methods: {
+    // define many functions externally
+    ...loadVisMethods,
+    ...updateVisMethods,
+    ...uiMethods,
   },
 };
 </script>
