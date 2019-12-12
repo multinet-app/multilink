@@ -122,9 +122,6 @@ function releaseNodes() {
 }
 
 function startSimulation() {
-  if (!this.simulation) {
-    this.simulation = this.makeSimulation();
-  }
   this.simulation.alpha(0.5);
   this.simulation.alphaTarget(0.02).restart();
 }
@@ -139,7 +136,7 @@ function stopSimulation() {
 }
 
 function tagNeighbors(selected) {
-  const { simOn, selectNeighbors, graphStructure } = this;
+  const { selectNeighbors, graphStructure } = this;
   let neighbors = [];
   let edges = []
 
@@ -148,18 +145,10 @@ function tagNeighbors(selected) {
   }
 
   for (const clickedNode of selected) {
-    let neighborNodes;
-    if (!simOn) {
-      neighborNodes = graphStructure.links
-        .map((e, i) => e.source === clickedNode
-          ? [e.target, graphStructure.links[i].id]
-          : e.target === clickedNode ? [e.source, graphStructure.links[i].id] : "")
-    } else {
-      neighborNodes = graphStructure.links
-        .map((e, i) => e.source.id === clickedNode
-          ? [e.target.id, graphStructure.links[i].id]
-          : e.target.id === clickedNode ? [e.source.id, graphStructure.links[i].id] : "")
-    }
+    let neighborNodes = graphStructure.links
+      .map((e, i) => e.source.id === clickedNode
+        ? [e.target.id, graphStructure.links[i].id]
+        : e.target.id === clickedNode ? [e.source.id, graphStructure.links[i].id] : "")
 
     for (const node of neighborNodes) {
       // push nodes

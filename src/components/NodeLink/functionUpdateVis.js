@@ -11,7 +11,6 @@ function arcPath(leftHand, d, state = false) {
     nodeMarkerHeight,
     visMargins,
     visDimensions,
-    simOn,
     straightEdges,
     reloaded,
   } = this;
@@ -21,10 +20,7 @@ function arcPath(leftHand, d, state = false) {
   let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
     d.target;
 
-  if (!simOn) {
-    source = graphStructure.nodes.find(x => x.id === source)
-    target = graphStructure.nodes.find(x => x.id === target)
-  } else if (reloaded) {
+  if (reloaded) {
     source = graphStructure.nodes.find(x => x.id === source.id)
     target = graphStructure.nodes.find(x => x.id === target.id)
   }
@@ -226,7 +222,6 @@ function updateVis() {
     nodeLabel,
     nodeMarkerLength,
     nodeMarkerHeight,
-    simOn,
     svg,
     visMargins,
     visDimensions,
@@ -342,12 +337,6 @@ function updateVis() {
     .on("mouseout", () => {
       this.hideTooltip();
     })
-
-
-  // If the simulation is requested build and start it, otherwise just set up the simulation-start button
-  if (simOn) {
-    this.startSimulation();
-  }
 
   node.on("mouseout", () => {
     this.hideTooltip();

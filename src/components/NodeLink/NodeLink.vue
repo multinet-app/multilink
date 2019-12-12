@@ -60,10 +60,6 @@ export default {
         nodeFill: "table"
       })
     },
-    simOn: {
-      type: Boolean,
-      default: false,
-    },
   },
 
   data() {
@@ -109,7 +105,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        simOn,
         isDirected,
         isMultiEdge,
         attributes,
@@ -120,7 +115,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        simOn,
         isDirected,
         isMultiEdge,
         attributes,
@@ -142,6 +136,8 @@ export default {
     this.provenance.addObserver("selected", state =>
       this.highlightSelectedNodes(state)
     );
+
+    this.simulation = this.makeSimulation()
   },
 
   methods: {

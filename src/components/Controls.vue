@@ -34,7 +34,6 @@ export default {
       nodeFontSize: 14,
       workspace: null,
       graph: null,
-      simOn: false,
       selectNeighbors: true,
     };
   },
@@ -60,11 +59,7 @@ export default {
 
   methods: {
     startSimulation() {
-      if (!this.simOn) {
-        this.simOn = true;
-      } else {
-        this.$refs.nodelink.startSimulation();
-      }
+      this.$refs.nodelink.startSimulation();
     },
 
     stopSimulation() {
@@ -162,7 +157,6 @@ export default {
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
-              simOn,
               selectNeighbors,
             }"
             @restart-simulation="hello()"
