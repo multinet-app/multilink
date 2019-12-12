@@ -175,17 +175,15 @@ function makeSimulation() {
 
   simulation.on("tick", () => this.dragNode());
 
-  simulation.force(
-    "collision",
-    d3
-      .forceCollide()
-      .radius(() => {
-        return (
-          d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) *
-          1.5
-        );
-      })
-      .strength(0.5)
+  simulation.force("collision", d3.forceCollide()
+    .radius(() => {
+      return (
+        d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) *
+        1.5
+      );
+    })
+    .strength(0.7)
+    .iterations(10)
   );
 
   // Start the simulation with an alpha target and an alpha min
