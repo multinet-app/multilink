@@ -5,8 +5,6 @@ import * as loadVisMethods from './functionLoadVis';
 import * as updateVisMethods from './functionUpdateVis';
 import * as uiMethods from './functionUi';
 
-console.log(updateVisMethods);
-
 export default {
   props: {
     /**
