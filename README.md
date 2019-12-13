@@ -1,15 +1,29 @@
-# Multinet Node-Link View
+# vue-nodelink
 
-## Status
-![](https://github.com/multinet-app/view-nodelink/workflows/CI/badge.svg)
-
-## Development Environment
-To start a development environment you need to serve the main index.html file from a webserver. The fastest way to do this is with the following code:
-
+## Project setup
 ```
-# Install http-server
-$ yarn install
-
-# Serve the webpage on localhost (default port is 8081)
-$ yarn serve
+yarn install
 ```
+
+### Compiles and hot-reloads for development
+```
+yarn run serve
+```
+
+### Compiles and minifies for production
+```
+yarn run build
+```
+
+### Run your tests
+```
+yarn run test
+```
+
+### Lints and fixes files
+```
+yarn run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
