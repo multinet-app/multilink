@@ -14,7 +14,7 @@ export function loadVis() {
     .replace("px", "");
 
   // Set dimensions of the node link
-  this.visDimensions.width = this.browser.width * 0.9;
+  this.visDimensions.width = this.browser.width * 0.75;
   this.visDimensions.height = this.browser.height * 1;
 
   // Set dimensions of panel
