@@ -1,2 +1,5 @@
 # Javascript libraries
 node_modules/
+
+# Compiled app
+dist/
