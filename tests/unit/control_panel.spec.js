@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import Controls from '../../App.vue'
+import Controls from '@/App.vue'
 
 describe("Control Panel", () => {
     describe("searchFor", () => {
