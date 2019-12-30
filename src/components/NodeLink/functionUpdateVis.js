@@ -47,29 +47,9 @@ function arcPath(leftHand, d, state = false) {
   const largeArc = 0
 
   if (straightEdges) {
-    return (
-      'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2);
+    return (`M ${x1} ${y1} L ${x2} ${y2}`);
   } else {
-    return (
-      "M" +
-      x1 +
-      "," +
-      y1 +
-      "A" +
-      drx +
-      ", " +
-      dry +
-      " " +
-      xRotation +
-      ", " +
-      largeArc +
-      ", " +
-      sweep +
-      " " +
-      x2 +
-      "," +
-      y2
-    );
+    return (`M ${x1}, ${y1} A ${drx}, ${dry} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
   }
 }
 
