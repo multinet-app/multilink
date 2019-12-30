@@ -1,5 +1,4 @@
-import { createLocalVue, shallowMount, mount } from '@vue/test-utils'
-import Vuetify from 'vuetify/lib';
+import { mount } from '@vue/test-utils'
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
 import App from '@/App.vue';
 
