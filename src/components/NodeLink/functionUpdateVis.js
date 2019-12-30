@@ -138,7 +138,7 @@ function makeSimulation() {
   const simulation = d3
     .forceSimulation()
     .force("link", d3.forceLink().id(d => d.id))
-    .force("charge", d3.forceManyBody().strength(1))
+    .force("charge", d3.forceManyBody().strength(-300))
     .force(
       "center",
       d3.forceCenter(
@@ -150,6 +150,7 @@ function makeSimulation() {
   simulation.nodes(graphStructure.nodes);
 
   simulation.force("link").links(graphStructure.links);
+  simulation.force("link").distance(() => 60)
 
   simulation.force("center");
 
