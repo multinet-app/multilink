@@ -39,6 +39,10 @@ export default {
       type: Number,
       default: 50
     },
+    nodeMarkerType: {
+      type: String,
+      default: "Circle"
+    },
     selectNeighbors: {
       type: Boolean,
       default: true
@@ -103,6 +107,7 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
+        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
@@ -113,6 +118,7 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
+        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,

@@ -31,6 +31,7 @@ export default {
         links: []
       },
       nodeMarkerSize: 50,
+      nodeMarkerType: "Circle",
       nodeFontSize: 14,
       workspace: null,
       graph: null,
@@ -91,6 +92,12 @@ export default {
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
+            <v-card-subtitle class="pb-0 pl-0">Marker Type</v-card-subtitle>
+            <v-radio-group v-model="nodeMarkerType">
+              <v-radio name="active" label="Circle" value="Circle"></v-radio>
+              <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
+            </v-radio-group>
+
             <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
@@ -156,6 +163,7 @@ export default {
               app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
+              nodeMarkerType: nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
             }"

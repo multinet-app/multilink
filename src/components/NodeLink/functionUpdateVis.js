@@ -201,6 +201,7 @@ function updateVis() {
     nodeLabel,
     nodeMarkerLength,
     nodeMarkerHeight,
+    nodeMarkerType,
     svg,
     visMargins,
     visDimensions,
@@ -239,8 +240,20 @@ function updateVis() {
     .selectAll(".nodeBox")
     .attr("width", () => nodeMarkerLength)
     .attr("height", () => nodeMarkerHeight)
-    .attr("rx", () => nodeMarkerLength / 2)
-    .attr("ry", () => nodeMarkerHeight / 2);
+    .attr("rx", () => { 
+      if (nodeMarkerType === "Circle") {
+        return nodeMarkerLength / 2 
+      } else {
+        return 0
+      }
+    })
+    .attr("ry", () => { 
+      if (nodeMarkerType === "Circle") {
+        return nodeMarkerLength / 2 
+      } else {
+        return 0
+      }
+    });
 
   node.select('.node')
     .style("fill", d => this.nodeFill(d))
