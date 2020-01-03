@@ -281,7 +281,7 @@ function updateVis() {
       return nodeMarkerLength / 2
     })
     .attr("dy", () => {
-      if (nodeMarkerType === "Circle") {
+      if (nodeMarkerType === "Circle" || !renderNested) {
         return (nodeMarkerHeight / 2) + 2
       } else {
         return 8
@@ -291,15 +291,14 @@ function updateVis() {
   node
     .select(".labelBackground")
     .attr("y", () => {
-      if (nodeMarkerType === "Circle") {
+      if (nodeMarkerType === "Circle" || !renderNested) {
         return (nodeMarkerHeight / 2) - 8
       } else {
         return 0
       }
     })
     .attr("width", () => nodeMarkerLength)
-    .attr('height', //config.nodeLink.drawBars ? 16 : 
-      "1em")
+    .attr('height', "1em")
 
   node.call(
     d3

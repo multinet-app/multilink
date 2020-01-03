@@ -95,7 +95,6 @@ export default {
       nodeColors: ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854"],
       edgeColor: "#888888",
       nodeSizeAttr: undefined,
-      drawBars: undefined,
       barPadding: 3,
       straightEdges: false,
       // distinguish a drag from a click
