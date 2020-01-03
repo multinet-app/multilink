@@ -217,8 +217,6 @@ function updateVis() {
     renderNested
   } = this;
 
-  console.log(renderNested)
-
   let node = svg
     .select(".nodes")
     .selectAll(".nodeGroup")
@@ -279,12 +277,26 @@ function updateVis() {
     .select("text")
     .text(d => d[nodeLabel])
     .style("font-size", nodeFontSize + "pt")
-    .attr("dx", () => nodeMarkerLength / 2)
-    .attr("dy", () => (nodeMarkerHeight / 2) + 2)
+    .attr("dx", () => {
+      return nodeMarkerLength / 2
+    })
+    .attr("dy", () => {
+      if (nodeMarkerType === "Circle") {
+        return (nodeMarkerHeight / 2) + 2
+      } else {
+        return 8
+      }
+    })
 
   node
     .select(".labelBackground")
-    .attr("y", () => nodeMarkerHeight / 2 - 8)
+    .attr("y", () => {
+      if (nodeMarkerType === "Circle") {
+        return (nodeMarkerHeight / 2) - 8
+      } else {
+        return 0
+      }
+    })
     .attr("width", () => nodeMarkerLength)
     .attr('height', //config.nodeLink.drawBars ? 16 : 
       "1em")
