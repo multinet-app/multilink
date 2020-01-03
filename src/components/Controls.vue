@@ -130,6 +130,7 @@ export default {
               <v-switch
                 class="ma-0"
                 v-model="renderNested"
+                :disabled="nodeMarkerType === 'Circle'"
                 hide-details
               />
             </v-card-subtitle>

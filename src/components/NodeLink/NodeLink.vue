@@ -62,6 +62,10 @@ export default {
         nodeFill: "table"
       })
     },
+    renderNested: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -111,6 +115,7 @@ export default {
         isDirected,
         isMultiEdge,
         attributes,
+        renderNested,
       } = this;
       return {
         graphStructure,
@@ -122,6 +127,7 @@ export default {
         isDirected,
         isMultiEdge,
         attributes,
+        renderNested,
       };
     }
   },

@@ -172,7 +172,7 @@ function makeSimulation() {
   return simulation;
 }
 
-export function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
+function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
   if (nodeMarkerType === "Circle") {
     return d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
   } else {
@@ -180,12 +180,16 @@ export function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType
   }
 }
 
-function nodeFill(node) {
-  const { attributes, colorClasses, nodeColors } = this;
-  if (attributes.nodeFill === "table") {
-    const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-    return nodeColors[index]
-  }
+function nodeFill(node, renderNested) {
+  if (renderNested) {
+    return "#DDDDDD"
+  } else {
+    const { attributes, colorClasses, nodeColors } = this;
+    if (attributes.nodeFill === "table") {
+      const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
+      return nodeColors[index]
+    }
+}
 }
 
 function showTooltip(data, delay = 200) {
@@ -210,7 +214,10 @@ function updateVis() {
     svg,
     visMargins,
     visDimensions,
+    renderNested
   } = this;
+
+  console.log(renderNested)
 
   let node = svg
     .select(".nodes")
@@ -261,7 +268,7 @@ function updateVis() {
     });
 
   node.select('.node')
-    .style("fill", d => this.nodeFill(d))
+    .style("fill", d => this.nodeFill(d, renderNested))
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
@@ -354,4 +361,5 @@ export {
   nodeFill,
   showTooltip,
   updateVis,
+  getForceRadii,
 };
