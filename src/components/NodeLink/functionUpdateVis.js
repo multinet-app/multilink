@@ -133,6 +133,7 @@ function makeSimulation() {
     graphStructure,
     nodeMarkerLength,
     nodeMarkerHeight,
+    nodeMarkerType,
   } = this;
 
   const simulation = d3
@@ -156,13 +157,9 @@ function makeSimulation() {
 
   simulation.on("tick", () => this.dragNode());
 
-  simulation.force("collision", d3.forceCollide()
-    .radius(() => {
-      return (
-        d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) *
-        1.5
-      );
-    })
+  simulation.force("collision", 
+    d3.forceCollide()
+    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType))
     .strength(0.7)
     .iterations(10)
   );
@@ -173,6 +170,14 @@ function makeSimulation() {
   simulation.alphaTarget(0.02).restart();
 
   return simulation;
+}
+
+export function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
+  if (nodeMarkerType === "Circle") {
+    return d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
+  } else {
+    return d3.max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
+  }
 }
 
 function nodeFill(node) {

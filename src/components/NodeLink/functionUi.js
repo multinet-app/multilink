@@ -1,3 +1,6 @@
+import * as d3 from "d3";
+import { getForceRadii } from "./functionUpdateVis";
+
 function clearSelections() {
   const { app, provenance } = this;
   let selected = [];
@@ -122,6 +125,14 @@ function releaseNodes() {
 }
 
 function startSimulation() {
+  // Update the force radii
+  this.simulation.force("collision", 
+    d3.forceCollide()
+    .radius(getForceRadii(this.nodeMarkerLength, this.nodeMarkerHeight, this.nodeMarkerType))
+    .strength(0.7)
+    .iterations(10)
+  );
+
   this.simulation.alpha(0.5);
   this.simulation.alphaTarget(0.02).restart();
 }

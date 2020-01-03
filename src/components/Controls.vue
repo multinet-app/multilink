@@ -36,6 +36,7 @@ export default {
       workspace: null,
       graph: null,
       selectNeighbors: true,
+      renderNested: false,
     };
   },
 
@@ -98,6 +99,8 @@ export default {
               <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
             </v-radio-group>
 
+            <v-divider class="mt-4" />
+
             <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
@@ -119,6 +122,17 @@ export default {
               inverse-label
               hide-details
             />
+
+            <v-divider class="mt-4" />
+
+            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+              Render Nested Elements
+              <v-switch
+                class="ma-0"
+                v-model="renderNested"
+                hide-details
+              />
+            </v-card-subtitle>
 
             <v-divider class="mt-4" />
 
@@ -166,6 +180,7 @@ export default {
               nodeMarkerType: nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
+              renderNested,
             }"
             @restart-simulation="hello()"
             />
