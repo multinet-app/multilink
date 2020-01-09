@@ -37,9 +37,24 @@ export default {
       selectNeighbors: true,
       labelVariable: "_key",
       colorVariable: "table",
-      variableList: [],
-      colorVariableList: [],
     };
+  },
+
+  computed: {
+    variableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]) 
+      } else {
+        return []
+      }
+    },
+    colorVariableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    }
   },
 
   /**
@@ -59,8 +74,9 @@ export default {
     this.provenance = provenance;
     this.workspace = workspace;
     this.graph = graph;
-    this.variableList = Object.keys(this.graphStructure.nodes[0]);
-    this.colorVariableList = Object.keys(this.graphStructure.nodes[0]).concat(["table"]);
+    console.log(this.properties)
+    // this.variableList = Object.keys(this.graphStructure.nodes[0]);
+    // this.colorVariableList = Object.keys(this.graphStructure.nodes[0]).concat(["table"]);
   },
 
   methods: {
