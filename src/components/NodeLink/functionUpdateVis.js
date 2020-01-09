@@ -198,13 +198,15 @@ function updateVis() {
     edgeColor,
     graphStructure,
     nodeFontSize,
-    nodeLabel,
+    labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
     svg,
     visMargins,
     visDimensions,
   } = this;
+
+  console.log(labelVariable)
 
   let node = svg
     .select(".nodes")
@@ -252,7 +254,7 @@ function updateVis() {
 
   node
     .select("text")
-    .text(d => d[nodeLabel])
+    .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
     .attr("dx", () => nodeMarkerLength / 2)
     .attr("dy", () => (nodeMarkerHeight / 2) + 2)

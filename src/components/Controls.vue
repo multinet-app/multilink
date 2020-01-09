@@ -35,6 +35,8 @@ export default {
       workspace: null,
       graph: null,
       selectNeighbors: true,
+      labelVariable: null,
+      variableList: [],
     };
   },
 
@@ -55,6 +57,7 @@ export default {
     this.provenance = provenance;
     this.workspace = workspace;
     this.graph = graph;
+    this.variableList = Object.keys(this.graphStructure.nodes[0]);
   },
 
   methods: {
@@ -111,6 +114,15 @@ export default {
               :label="String(nodeFontSize)"
               inverse-label
               hide-details
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="labelVariable"
+              label="Label Variable"
+              :items="variableList"
+              :options="variableList"
             />
 
             <v-divider class="mt-4" />

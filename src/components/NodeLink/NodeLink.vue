@@ -23,7 +23,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    nodeLabel: {
+    labelVariable: {
       type: String,
       default: "id"
     },
@@ -99,23 +99,23 @@ export default {
     properties() {
       const {
         graphStructure,
-        nodeLabel,
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
+        labelVariable,
       } = this;
       return {
         graphStructure,
-        nodeLabel,
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
+        labelVariable,
       };
     }
   },
