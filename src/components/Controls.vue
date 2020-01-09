@@ -36,7 +36,7 @@ export default {
       graph: null,
       selectNeighbors: true,
       labelVariable: "_key",
-      colorVariable: "_key",
+      colorVariable: "table",
       variableList: [],
       colorVariableList: [],
     };
