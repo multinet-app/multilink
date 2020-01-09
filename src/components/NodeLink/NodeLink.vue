@@ -25,7 +25,11 @@ export default {
     },
     labelVariable: {
       type: String,
-      default: "id"
+      default: "_key"
+    },
+    colorVariable: {
+      type: String,
+      default: "_key"
     },
     nodeFontSize: {
       type: Number,
@@ -55,7 +59,6 @@ export default {
       type: Object,
       default: () => ({
         edgeWidthKey: undefined,
-        nodeFill: "table"
       })
     },
   },
@@ -106,6 +109,7 @@ export default {
         isMultiEdge,
         attributes,
         labelVariable,
+        colorVariable,
       } = this;
       return {
         graphStructure,
@@ -116,6 +120,7 @@ export default {
         isMultiEdge,
         attributes,
         labelVariable,
+        colorVariable,
       };
     }
   },

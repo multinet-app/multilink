@@ -35,8 +35,10 @@ export default {
       workspace: null,
       graph: null,
       selectNeighbors: true,
-      labelVariable: null,
+      labelVariable: "_key",
+      colorVariable: "_key",
       variableList: [],
+      colorVariableList: [],
     };
   },
 
@@ -58,6 +60,7 @@ export default {
     this.workspace = workspace;
     this.graph = graph;
     this.variableList = Object.keys(this.graphStructure.nodes[0]);
+    this.colorVariableList = Object.keys(this.graphStructure.nodes[0]).concat(["table"]);
   },
 
   methods: {
@@ -127,6 +130,15 @@ export default {
 
             <v-divider class="mt-4" />
 
+            <v-select 
+              v-model="colorVariable"
+              label="Color Variable"
+              :items="colorVariableList"
+              :options="colorVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
             <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
               Autoselect neighbors
               <v-switch
@@ -170,6 +182,8 @@ export default {
               nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
               selectNeighbors,
+              labelVariable,
+              colorVariable,
             }"
             @restart-simulation="hello()"
             />

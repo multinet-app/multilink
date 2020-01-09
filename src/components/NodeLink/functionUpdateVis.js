@@ -175,11 +175,13 @@ function makeSimulation() {
   return simulation;
 }
 
-function nodeFill(node) {
-  const { attributes, colorClasses, nodeColors } = this;
-  if (attributes.nodeFill === "table") {
-    const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
+function nodeFill(node, nodeClasses) {
+  const { colorClasses, nodeColors, colorVariable } = this;
+  if (colorVariable === "table") {
+    const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % nodeColors.length
     return nodeColors[index]
+  } else {
+    return nodeColors[nodeClasses.findIndex(d => { return d === node[colorVariable]}) % nodeColors.length]
   }
 }
 
@@ -204,9 +206,8 @@ function updateVis() {
     svg,
     visMargins,
     visDimensions,
+    colorVariable,
   } = this;
-
-  console.log(labelVariable)
 
   let node = svg
     .select(".nodes")
@@ -244,8 +245,10 @@ function updateVis() {
     .attr("rx", () => nodeMarkerLength / 2)
     .attr("ry", () => nodeMarkerHeight / 2);
 
+  let nodeClasses = [...new Set(graphStructure.nodes.map(value => value[colorVariable]))];
+
   node.select('.node')
-    .style("fill", d => this.nodeFill(d))
+    .style("fill", d => this.nodeFill(d, nodeClasses))
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
