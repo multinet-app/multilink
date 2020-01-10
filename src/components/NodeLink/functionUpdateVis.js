@@ -187,7 +187,6 @@ function showTooltip(data, delay = 200) {
 function updateVis() {
   const {
     attributes,
-    edgeColor,
     graphStructure,
     nodeFontSize,
     labelVariable,
@@ -202,8 +201,6 @@ function updateVis() {
     linkWidthVariable,
     linkColorVariable,
   } = this;
-
-  console.log(linkWidthVariable, linkColorVariable)
 
   let node = svg
     .select(".nodes")
@@ -303,8 +300,6 @@ function updateVis() {
   link = linkEnter.merge(link);
 
   link.classed("muted", false);
-
-  console.log("drawing links")
   link
     .select("path")
     .style("stroke-width", d => {
