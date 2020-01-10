@@ -66,7 +66,6 @@ function isSelected(node) {
 
 //function that updates the state, and includes a flag for when this was done through a search
 function nodeClick(node, search = false) {
-  console.log("in nodeclick")
   const { app, provenance } = this;
 
   const currentState = app.currentState();
