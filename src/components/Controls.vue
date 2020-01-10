@@ -74,9 +74,6 @@ export default {
     this.provenance = provenance;
     this.workspace = workspace;
     this.graph = graph;
-    console.log(this.properties)
-    // this.variableList = Object.keys(this.graphStructure.nodes[0]);
-    // this.colorVariableList = Object.keys(this.graphStructure.nodes[0]).concat(["table"]);
   },
 
   methods: {

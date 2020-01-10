@@ -175,16 +175,6 @@ function makeSimulation() {
   return simulation;
 }
 
-function nodeFill(node, nodeClasses) {
-  const { colorClasses, nodeColors, colorVariable } = this;
-  if (colorVariable === "table") {
-    const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % nodeColors.length
-    return nodeColors[index]
-  } else {
-    return nodeColors[nodeClasses.findIndex(d => { return d === node[colorVariable]}) % nodeColors.length]
-  }
-}
-
 function showTooltip(data, delay = 200) {
   let tooltip = this.svg.select('.tooltip');
   tooltip.html(data)
@@ -207,6 +197,7 @@ function updateVis() {
     visMargins,
     visDimensions,
     colorVariable,
+    nodeColors,
   } = this;
 
   let node = svg
@@ -245,10 +236,15 @@ function updateVis() {
     .attr("rx", () => nodeMarkerLength / 2)
     .attr("ry", () => nodeMarkerHeight / 2);
 
-  let nodeClasses = [...new Set(graphStructure.nodes.map(value => value[colorVariable]))];
+  let nodeClasses = colorVariable === "table" ? [...new Set(graphStructure.nodes.map(value => value[colorVariable]))] : 
+    [...new Set(graphStructure.nodes.map(value => value["id"].split("/")[0]))];
+
+  let nodeColorScale = d3.scaleOrdinal()
+    .domain(nodeClasses)
+    .range(nodeColors);
 
   node.select('.node')
-    .style("fill", d => this.nodeFill(d, nodeClasses))
+    .style("fill", d => nodeColorScale(d[colorVariable]))
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
@@ -338,7 +334,6 @@ export {
   dragended,
   hideTooltip,
   makeSimulation,
-  nodeFill,
   showTooltip,
   updateVis,
 };
