@@ -115,6 +115,15 @@ export default {
 
             <v-divider class="mt-4" />
 
+            <v-select 
+              v-model="linkWidthVariable"
+              label="Label Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
             <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
               Autoselect neighbors
               <v-switch

@@ -27,6 +27,10 @@ export default {
       type: String,
       default: "id"
     },
+    linkWidthVariable: {
+      type: String,
+      default: null
+    },
     nodeFontSize: {
       type: Number,
       default: 14
@@ -106,6 +110,7 @@ export default {
         isDirected,
         isMultiEdge,
         attributes,
+        linkWidthVariable,
       } = this;
       return {
         graphStructure,
@@ -116,6 +121,7 @@ export default {
         isDirected,
         isMultiEdge,
         attributes,
+        linkWidthVariable,
       };
     }
   },
