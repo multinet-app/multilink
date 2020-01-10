@@ -198,6 +198,7 @@ function updateVis() {
     visDimensions,
     colorVariable,
     nodeColorScale,
+    linkWidthVariable,
   } = this;
 
   let node = svg
@@ -301,7 +302,13 @@ function updateVis() {
 
   link
     .select("path")
-    .style("stroke-width", 3)
+    .style("stroke-width", d => {
+      if (linkWidthVariable) {
+        return d[linkWidthVariable]
+      } else{
+        return 3
+      }
+    })
     .style("stroke", edgeColor)
     .attr("id", d => d._key)
     .attr("d", d => this.arcPath(1, d))

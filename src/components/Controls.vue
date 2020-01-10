@@ -37,6 +37,7 @@ export default {
       selectNeighbors: true,
       labelVariable: "_key",
       colorVariable: "table",
+      linkWidthVariable: null,
     };
   },
 
@@ -51,6 +52,13 @@ export default {
     colorVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    },
+    linkVariableList() {
+      if (typeof this.graphStructure.links[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.links[0]).concat(["table"]) 
       } else {
         return []
       }
@@ -136,7 +144,7 @@ export default {
 
             <v-select 
               v-model="linkWidthVariable"
-              label="Label Variable"
+              label="Link Width Variable"
               :items="linkVariableList"
               :options="linkVariableList"
               />
