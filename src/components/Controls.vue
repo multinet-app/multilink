@@ -97,11 +97,6 @@ export default {
       a.download = "graph.json";
       a.click();
     },
-
-    importGraph() {
-      // TODO add code here to import a graph
-      return
-    },
   },
 };
 </script>
@@ -181,10 +176,6 @@ export default {
 
           <v-card-actions>
             <v-btn small @click="exportGraph">Export Graph</v-btn>
-          </v-card-actions>
-
-          <v-card-actions>
-            <v-btn small @click="importGraph">Import Graph</v-btn>
           </v-card-actions>
         </v-card>
 
