@@ -29,7 +29,7 @@ export default {
     },
     colorVariable: {
       type: String,
-      default: "_key"
+      default: "table"
     },
     nodeFontSize: {
       type: Number,
