@@ -1,21 +1,15 @@
 <script>
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
+import Legend from '@/components/NodeLink/Legend.vue';
 
 import { setUpProvenance } from "@/lib/provenance";
 import { getUrlVars } from "@/lib/utils";
 import { loadData } from "@/lib/multinet";
 
-/**
- * Demo Controls.  This component is meant to demo
- * the capabilities of the NodeLink vis.
- *
- * You'll probably want the controls to look or
- * work differently in your app, so it's recommended that you
- * implement the controls yourself.
- */
 export default {
   components: {
     NodeLink,
+    Legend,
   },
 
   data() {
@@ -178,6 +172,12 @@ export default {
             <v-btn small @click="exportGraph">Export Graph</v-btn>
           </v-card-actions>
         </v-card>
+
+        <Legend 
+          class="mt-4" 
+          cols="3"
+          ref="legend"
+        />
 
       </v-col>
 
