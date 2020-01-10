@@ -91,11 +91,16 @@ export default {
 
     exportGraph() {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graph_structure)], {
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graphStructure)], {
         type: `text/json`
       }));
       a.download = "graph.json";
       a.click();
+    },
+
+    importGraph() {
+      // TODO add code here to import a graph
+      return
     },
   },
 };
@@ -176,6 +181,10 @@ export default {
 
           <v-card-actions>
             <v-btn small @click="exportGraph">Export Graph</v-btn>
+          </v-card-actions>
+
+          <v-card-actions>
+            <v-btn small @click="importGraph">Import Graph</v-btn>
           </v-card-actions>
         </v-card>
 
