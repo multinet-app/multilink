@@ -49,7 +49,6 @@ describe("Node-Link Utils", () => {
 
             // Act
             let arc = wrapper.vm.arcPath(true, link, false)
-            console.log(arc)
             
             // Assert
             expect(arc).toEqual(`M ${link.source.x + wrapper.vm.nodeMarkerLength / 2}, ${link.source.y + wrapper.vm.nodeMarkerHeight / 2} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${link.target.x + wrapper.vm.nodeMarkerLength / 2},${link.target.y + wrapper.vm.nodeMarkerHeight / 2}`)
