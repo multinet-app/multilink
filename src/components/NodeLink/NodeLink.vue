@@ -23,9 +23,13 @@ export default {
       type: Object,
       default: () => {}
     },
-    nodeLabel: {
+    labelVariable: {
       type: String,
-      default: "id"
+      default: "_key"
+    },
+    colorVariable: {
+      type: String,
+      default: "table"
     },
     linkWidthVariable: {
       type: String,
@@ -59,7 +63,6 @@ export default {
       type: Object,
       default: () => ({
         edgeWidthKey: undefined,
-        nodeFill: "table"
       })
     },
   },
@@ -96,6 +99,7 @@ export default {
       straightEdges: false,
       // distinguish a drag from a click
       wasDragged: false,
+      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
@@ -103,7 +107,6 @@ export default {
     properties() {
       const {
         graphStructure,
-        nodeLabel,
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
@@ -111,10 +114,11 @@ export default {
         isMultiEdge,
         attributes,
         linkWidthVariable,
+        labelVariable,
+        colorVariable,
       } = this;
       return {
         graphStructure,
-        nodeLabel,
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
@@ -122,6 +126,8 @@ export default {
         isMultiEdge,
         attributes,
         linkWidthVariable,
+        labelVariable,
+        colorVariable,
       };
     }
   },

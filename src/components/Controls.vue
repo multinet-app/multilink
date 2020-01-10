@@ -35,7 +35,26 @@ export default {
       workspace: null,
       graph: null,
       selectNeighbors: true,
+      labelVariable: "_key",
+      colorVariable: "table",
     };
+  },
+
+  computed: {
+    variableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]) 
+      } else {
+        return []
+      }
+    },
+    colorVariableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    }
   },
 
   /**
@@ -120,6 +139,24 @@ export default {
               label="Label Variable"
               :items="linkVariableList"
               :options="linkVariableList"
+              />
+
+            <v-divider class="mt-4" />
+
+            <v-select
+              v-model="labelVariable"
+              label="Label Variable"
+              :items="variableList"
+              :options="variableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="colorVariable"
+              label="Color Variable"
+              :items="colorVariableList"
+              :options="colorVariableList"
             />
 
             <v-divider class="mt-4" />
@@ -167,6 +204,9 @@ export default {
               nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
               selectNeighbors,
+              labelVariable,
+              colorVariable,
+              linkWidthVariable,
             }"
             @restart-simulation="hello()"
             />

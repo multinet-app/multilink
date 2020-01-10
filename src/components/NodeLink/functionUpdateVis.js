@@ -175,14 +175,6 @@ function makeSimulation() {
   return simulation;
 }
 
-function nodeFill(node) {
-  const { attributes, colorClasses, nodeColors } = this;
-  if (attributes.nodeFill === "table") {
-    const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-    return nodeColors[index]
-  }
-}
-
 function showTooltip(data, delay = 200) {
   let tooltip = this.svg.select('.tooltip');
   tooltip.html(data)
@@ -198,12 +190,14 @@ function updateVis() {
     edgeColor,
     graphStructure,
     nodeFontSize,
-    nodeLabel,
+    labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
     svg,
     visMargins,
     visDimensions,
+    colorVariable,
+    nodeColorScale,
   } = this;
 
   let node = svg
@@ -243,7 +237,14 @@ function updateVis() {
     .attr("ry", () => nodeMarkerHeight / 2);
 
   node.select('.node')
-    .style("fill", d => this.nodeFill(d))
+    .style("fill", d => {
+      if (colorVariable === "table") {
+        let table = d["id"].split("/")[0]
+        return nodeColorScale(table)
+      } else {
+        return nodeColorScale(d[colorVariable])
+      }
+    })
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
@@ -252,7 +253,7 @@ function updateVis() {
 
   node
     .select("text")
-    .text(d => d[nodeLabel])
+    .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
     .attr("dx", () => nodeMarkerLength / 2)
     .attr("dy", () => (nodeMarkerHeight / 2) + 2)
@@ -333,7 +334,6 @@ export {
   dragended,
   hideTooltip,
   makeSimulation,
-  nodeFill,
   showTooltip,
   updateVis,
 };
