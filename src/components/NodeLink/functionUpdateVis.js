@@ -237,7 +237,14 @@ function updateVis() {
     .attr("ry", () => nodeMarkerHeight / 2);
 
   node.select('.node')
-    .style("fill", d => nodeColorScale(d[colorVariable]))
+    .style("fill", d => {
+      if (colorVariable === "table") {
+        let table = d["id"].split("/")[0]
+        return nodeColorScale(table)
+      } else {
+        return nodeColorScale(d[colorVariable])
+      }
+    })
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);

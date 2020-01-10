@@ -8,12 +8,14 @@ async function _loadTables(workspace, graph, apiRoot) {
 
 async function _loadNodes(workspace, node_table, apiRoot) {
   const nodes_call = apiRoot + "/workspaces/" + workspace + "/tables/" + node_table + "?limit=1000"
-  return await d3.json(nodes_call);
+  let nodes_raw = await d3.json(nodes_call)
+  return nodes_raw["rows"];
 }
 
 async function _loadLinks(workspace, edge_table, apiRoot) {
   const links_call = apiRoot + "/workspaces/" + workspace + "/tables/" + edge_table + "?limit=1000"
-  return await d3.json(links_call); 
+  let links_raw = await d3.json(links_call)
+  return links_raw["rows"]; 
 }
 
 function _renameLinkVars(links) {
