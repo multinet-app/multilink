@@ -38,6 +38,7 @@ export default {
       labelVariable: "_key",
       colorVariable: "table",
       linkWidthVariable: null,
+      linkColorVariable: null,
     };
   },
 
@@ -147,7 +148,16 @@ export default {
               label="Link Width Variable"
               :items="linkVariableList"
               :options="linkVariableList"
-              />
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="linkColorVariable"
+              label="Link Color Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
 
             <v-divider class="mt-4" />
 
@@ -215,6 +225,7 @@ export default {
               labelVariable,
               colorVariable,
               linkWidthVariable,
+              linkColorVariable,
             }"
             @restart-simulation="hello()"
             />

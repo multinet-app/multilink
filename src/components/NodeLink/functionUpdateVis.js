@@ -198,8 +198,12 @@ function updateVis() {
     visDimensions,
     colorVariable,
     nodeColorScale,
+    linkColorScale,
     linkWidthVariable,
+    linkColorVariable,
   } = this;
+
+  console.log(linkWidthVariable, linkColorVariable)
 
   let node = svg
     .select(".nodes")
@@ -300,6 +304,7 @@ function updateVis() {
 
   link.classed("muted", false);
 
+  console.log("drawing links")
   link
     .select("path")
     .style("stroke-width", d => {
@@ -309,7 +314,13 @@ function updateVis() {
         return 3
       }
     })
-    .style("stroke", edgeColor)
+    .style("stroke", d => {
+      if (linkColorVariable !== null) {
+        return linkColorScale(d[linkColorVariable])
+      } else{
+        return "#888888"
+      }
+    })
     .attr("id", d => d._key)
     .attr("d", d => this.arcPath(1, d))
     .on("mouseover", (d) => {
