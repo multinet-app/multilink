@@ -95,6 +95,7 @@ export default {
       straightEdges: false,
       // distinguish a drag from a click
       wasDragged: false,
+      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 

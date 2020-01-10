@@ -197,7 +197,7 @@ function updateVis() {
     visMargins,
     visDimensions,
     colorVariable,
-    nodeColors,
+    nodeColorScale,
   } = this;
 
   let node = svg
@@ -235,13 +235,6 @@ function updateVis() {
     .attr("height", () => nodeMarkerHeight)
     .attr("rx", () => nodeMarkerLength / 2)
     .attr("ry", () => nodeMarkerHeight / 2);
-
-  let nodeClasses = colorVariable === "table" ? [...new Set(graphStructure.nodes.map(value => value[colorVariable]))] : 
-    [...new Set(graphStructure.nodes.map(value => value["id"].split("/")[0]))];
-
-  let nodeColorScale = d3.scaleOrdinal()
-    .domain(nodeClasses)
-    .range(nodeColors);
 
   node.select('.node')
     .style("fill", d => nodeColorScale(d[colorVariable]))
