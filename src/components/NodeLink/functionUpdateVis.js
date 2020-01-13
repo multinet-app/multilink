@@ -299,6 +299,10 @@ function updateVis() {
     .attr("width", () => nodeMarkerLength)
     .attr('height', "1em")
 
+  if (renderNested) {
+    drawNested(node, nodeMarkerHeight)
+  }
+
   node.call(
     d3
       .drag()
@@ -357,6 +361,33 @@ function updateVis() {
   })
 
   // drawLegend();
+}
+
+function drawNested(node, nodeMarkerHeight) {
+  // Append bar elements
+  node.append("rect")
+    .attr("class", "bar")
+    .attr("width", "20px")
+    .attr("height", `${nodeMarkerHeight - 26}px`)
+    .attr("y", `20px`)
+    .attr("x", `5px`)
+
+  // Append glyphs
+  node.append("rect")
+    .attr("class", "glyph")
+    .attr("width", "20px")
+    .attr("height", `20px`)
+    .attr("y", `20px`)
+    .attr("x", `50px`)
+
+    node.append("rect")
+    .attr("class", "glyph")
+    .attr("width", "20px")
+    .attr("height", `20px`)
+    .attr("y", `70px`)
+    .attr("x", `50px`)
+    .attr("ry", `10px`)
+    .attr("rx", `10px`)
 }
 
 
