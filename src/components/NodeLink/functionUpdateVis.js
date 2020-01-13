@@ -299,8 +299,9 @@ function updateVis() {
     .attr("width", () => nodeMarkerLength)
     .attr('height', "1em")
 
+  console.log(renderNested)
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength)
   }
 
   node.call(
@@ -363,31 +364,35 @@ function updateVis() {
   // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength) {
+  // Delete past renders
+  node.selectAll(".bar").remove()
+  node.selectAll(".glyph").remove()
+
   // Append bar elements
   node.append("rect")
     .attr("class", "bar")
-    .attr("width", "20px")
-    .attr("height", `${nodeMarkerHeight - 26}px`)
-    .attr("y", `20px`)
+    .attr("width", `${(nodeMarkerLength / 2) - 5 - 5}px`)
+    .attr("height", `${nodeMarkerHeight - 16 - 5 - 5}px`)
+    .attr("y", `${16 +  5}px`)
     .attr("x", `5px`)
 
   // Append glyphs
   node.append("rect")
     .attr("class", "glyph")
-    .attr("width", "20px")
-    .attr("height", `20px`)
-    .attr("y", `20px`)
-    .attr("x", `50px`)
+    .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
+    .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
+    .attr("y", `${16 +  5}px`)
+    .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
 
     node.append("rect")
     .attr("class", "glyph")
-    .attr("width", "20px")
-    .attr("height", `20px`)
-    .attr("y", `70px`)
-    .attr("x", `50px`)
-    .attr("ry", `10px`)
-    .attr("rx", `10px`)
+    .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
+    .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
+    .attr("y", `${16 +  5 + (nodeMarkerHeight / 2) - 5 - 5}px`)
+    .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
+    .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
+    .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
 }
 
 
