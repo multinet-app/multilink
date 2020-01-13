@@ -53,17 +53,6 @@ export function loadVis() {
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-  // Set up the colorClasses (names of the tables) so we can assign colors based on index later
-  for (const node of this.graphStructure.nodes) {
-    // Get the table name
-    const table = node.id.split("/")[0];
-
-    // If we haven't seen it, push it to the colorClasses array
-    if (!this.colorClasses.includes(table)) {
-      this.colorClasses.push(table);
-    }
-  }
-
   // Call update vis to append all the data to the svg
   this.updateVis(this.graphStructure);
 }

@@ -180,18 +180,6 @@ function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
   }
 }
 
-function nodeFill(node, renderNested) {
-  if (renderNested) {
-    return "#DDDDDD"
-  } else {
-    const { attributes, colorClasses, nodeColors } = this;
-    if (attributes.nodeFill === "table") {
-      const index = colorClasses.findIndex(d => { return d === node.id.split("/")[0] }) % 5
-      return nodeColors[index]
-    }
-}
-}
-
 function showTooltip(data, delay = 200) {
   let tooltip = this.svg.select('.tooltip');
   tooltip.html(data)
@@ -207,14 +195,16 @@ function updateVis() {
     edgeColor,
     graphStructure,
     nodeFontSize,
-    nodeLabel,
+    labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
     nodeMarkerType,
     svg,
     visMargins,
     visDimensions,
-    renderNested
+    renderNested,
+    colorVariable,
+    nodeColorScale,
   } = this;
 
   let node = svg
@@ -266,7 +256,16 @@ function updateVis() {
     });
 
   node.select('.node')
-    .style("fill", d => this.nodeFill(d, renderNested))
+    .style("fill", d => {
+      if (renderNested) {
+        return "#DDDDDD"
+      } else if (colorVariable === "table") {
+        let table = d["id"].split("/")[0]
+        return nodeColorScale(table)
+      } else {
+        return nodeColorScale(d[colorVariable])
+      }
+    })
     .on("click", (d) => this.nodeClick(d))
     .on("mouseover", (d) => {
       this.showTooltip(d.id);
@@ -275,7 +274,7 @@ function updateVis() {
 
   node
     .select("text")
-    .text(d => d[nodeLabel])
+    .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
     .attr("dx", () => {
       return nodeMarkerLength / 2
@@ -369,7 +368,6 @@ export {
   dragended,
   hideTooltip,
   makeSimulation,
-  nodeFill,
   showTooltip,
   updateVis,
   getForceRadii,

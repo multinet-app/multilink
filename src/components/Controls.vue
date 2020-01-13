@@ -37,7 +37,26 @@ export default {
       graph: null,
       selectNeighbors: true,
       renderNested: false,
+      labelVariable: "_key",
+      colorVariable: "table",
     };
+  },
+
+  computed: {
+    variableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]) 
+      } else {
+        return []
+      }
+    },
+    colorVariableList() {
+      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    }
   },
 
   /**
@@ -74,7 +93,7 @@ export default {
 
     exportGraph() {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graph_structure)], {
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graphStructure)], {
         type: `text/json`
       }));
       a.download = "graph.json";
@@ -121,6 +140,24 @@ export default {
               :label="String(nodeFontSize)"
               inverse-label
               hide-details
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="labelVariable"
+              label="Label Variable"
+              :items="variableList"
+              :options="variableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="colorVariable"
+              label="Color Variable"
+              :items="colorVariableList"
+              :options="colorVariableList"
             />
 
             <v-divider class="mt-4" />
@@ -182,6 +219,8 @@ export default {
               nodeFontSize,
               selectNeighbors,
               renderNested,
+              labelVariable,
+              colorVariable,
             }"
             @restart-simulation="hello()"
             />
