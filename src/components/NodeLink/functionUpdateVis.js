@@ -299,9 +299,11 @@ function updateVis() {
     .attr("width", () => nodeMarkerLength)
     .attr('height', "1em")
 
-  console.log(renderNested)
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale)
+  } else {
+    node.selectAll(".bar").remove()
+    node.selectAll(".glyph").remove()
   }
 
   node.call(
@@ -364,7 +366,7 @@ function updateVis() {
   // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
@@ -376,6 +378,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength) {
     .attr("height", `${nodeMarkerHeight - 16 - 5 - 5}px`)
     .attr("y", `${16 +  5}px`)
     .attr("x", `5px`)
+    .style("fill", d => nodeColorScale(0))
 
   // Append glyphs
   node.append("rect")
@@ -384,6 +387,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength) {
     .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
     .attr("y", `${16 +  5}px`)
     .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
+    .style("fill", d => nodeColorScale(1))
 
     node.append("rect")
     .attr("class", "glyph")
@@ -393,6 +397,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength) {
     .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
     .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
     .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
+    .style("fill", d => nodeColorScale(2))
 }
 
 

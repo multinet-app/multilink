@@ -37,6 +37,8 @@ export default {
       graph: null,
       selectNeighbors: true,
       renderNested: false,
+      nestedBarVariables: [],
+      nestedGlyphVariables: [],
       labelVariable: "_key",
       colorVariable: "table",
     };
@@ -172,6 +174,26 @@ export default {
               />
             </v-card-subtitle>
 
+            <v-select
+              v-model="nestedBarVariables"
+              :items="variableList"
+              label="Bar Variables"
+              multiple
+              chips
+              hint="Choose the variables you'd like to model as bars"
+              persistent-hint
+            />
+
+            <v-select
+              v-model="nestedGlyphVariables"
+              :items="variableList"
+              label="Glyph Variables"
+              multiple
+              chips
+              hint="Choose the variables you'd like to model as glyphs"
+              persistent-hint
+            />
+
             <v-divider class="mt-4" />
 
             <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
@@ -221,6 +243,8 @@ export default {
               renderNested,
               labelVariable,
               colorVariable,
+              nestedBarVariables,
+              nestedGlyphVariables,
             }"
             @restart-simulation="hello()"
             />
