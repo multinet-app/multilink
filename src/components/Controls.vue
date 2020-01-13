@@ -175,6 +175,7 @@ export default {
             </v-card-subtitle>
 
             <v-select
+              v-if="renderNested"
               v-model="nestedBarVariables"
               :items="variableList"
               label="Bar Variables"
@@ -185,6 +186,7 @@ export default {
             />
 
             <v-select
+              v-if="renderNested"
               v-model="nestedGlyphVariables"
               :items="variableList"
               label="Glyph Variables"

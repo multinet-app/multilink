@@ -205,7 +205,11 @@ function updateVis() {
     renderNested,
     colorVariable,
     nodeColorScale,
+    nestedBarVariables,
+    nestedGlyphVariables,
   } = this;
+
+  console.log("bar and glyph vars", nestedBarVariables, nestedGlyphVariables)
 
   let node = svg
     .select(".nodes")
@@ -300,7 +304,7 @@ function updateVis() {
     .attr('height', "1em")
 
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables,)
   } else {
     node.selectAll(".bar").remove()
     node.selectAll(".glyph").remove()
@@ -366,7 +370,7 @@ function updateVis() {
   // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
@@ -378,7 +382,15 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale) {
     .attr("height", `${nodeMarkerHeight - 16 - 5 - 5}px`)
     .attr("y", `${16 +  5}px`)
     .attr("x", `5px`)
-    .style("fill", d => nodeColorScale(0))
+    .style("fill", "#FFFFFF")
+
+  node.append("rect")
+    .attr("class", "bar")
+    .attr("width", `${(nodeMarkerLength / 2) - 5 - 5}px`)
+    .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[nestedBarVariables[0]]}px`)
+    .attr("y", `${16 +  5}px`)
+    .attr("x", `5px`)
+    .style("fill", d => nodeColorScale(nestedBarVariables[0]))
 
   // Append glyphs
   node.append("rect")
@@ -387,7 +399,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale) {
     .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
     .attr("y", `${16 +  5}px`)
     .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
-    .style("fill", d => nodeColorScale(1))
+    .style("fill", d => nodeColorScale(d[nestedGlyphVariables[0]]))
 
     node.append("rect")
     .attr("class", "glyph")
@@ -397,7 +409,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale) {
     .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
     .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
     .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-    .style("fill", d => nodeColorScale(2))
+    .style("fill", d => nodeColorScale(d[nestedGlyphVariables[1]]))
 }
 
 

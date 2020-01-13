@@ -69,6 +69,14 @@ export default {
       type: Boolean,
       default: false
     },
+    nestedBarVariables: {
+      type: Array[Object],
+      default: () => []
+    },
+    nestedGlyphVariables: {
+      type: Array[Object],
+      default: () => []
+    },
   },
 
   data() {
@@ -120,6 +128,8 @@ export default {
         renderNested,
         labelVariable,
         colorVariable,
+        nestedBarVariables,
+        nestedGlyphVariables,
       } = this;
       return {
         graphStructure,
@@ -133,6 +143,8 @@ export default {
         renderNested,
         labelVariable,
         colorVariable,
+        nestedBarVariables,
+        nestedGlyphVariables,
       };
     }
   },
