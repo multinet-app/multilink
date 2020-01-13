@@ -304,7 +304,7 @@ function updateVis() {
     .attr('height', "1em")
 
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables,)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure)
   } else {
     node.selectAll(".bar").remove()
     node.selectAll(".glyph").remove()
@@ -370,17 +370,21 @@ function updateVis() {
   // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
 
-  // Append bar elements
+  // Set some bar specific variables that we'll need for tracking position and sizes
   let i = 0;
   let barWidth = nestedGlyphVariables.length === 0 ? 
     nodeMarkerLength / nestedBarVariables.length : 
-    (nodeMarkerLength / 2) / nestedBarVariables.length / nestedBarVariables.length;
+    (nodeMarkerLength / 2) / nestedBarVariables.length;
+
   for (let barVar of nestedBarVariables) {
+    let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
+    console.log(maxValue)
+    // Draw white, background bar
     node.append("rect")
       .attr("class", "bar")
       .attr("width", `${barWidth - 10}px`)
@@ -389,11 +393,12 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
       .attr("x", `${5 + (i * barWidth)}px`)
       .style("fill", "#FFFFFF")
 
+    // Draw the color bar with height based on data
     node.append("rect")
       .attr("class", "bar")
       .attr("width", `${barWidth - 10}px`)
-      .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / 10}px`)
-      .attr("y", d => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / 10)}px`)
+      .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
+      .attr("y", d => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
       .attr("x", `${5 + (i * barWidth)}px`)
       .style("fill", d => nodeColorScale(barVar))
     
@@ -404,24 +409,18 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
   // Append glyphs
   i = 0;
   for (let glyphVar of nestedGlyphVariables) {
+    // Draw glyph
     node.append("rect")
       .attr("class", "glyph")
       .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
       .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr("y", `${16 +  5}px`)
-      .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
-      .style("fill", d => nodeColorScale(d[nestedGlyphVariables[0]]))
-
-    node.append("rect")
-      .attr("class", "glyph")
-      .attr("width", `${(nodeMarkerLength / 2)- 5 - 5 - 5}px`)
-      .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr("y", `${16 +  5 + (nodeMarkerHeight / 2) - 5 - 5}px`)
+      .attr("y", `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
       .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style("fill", d => nodeColorScale(d[nestedGlyphVariables[1]]))
+      .style("fill", d => nodeColorScale(d[glyphVar]))
     
+    // Update i
     i++
   }
 }
