@@ -91,7 +91,7 @@ export default {
 
     exportGraph() {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graph_structure)], {
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graphStructure)], {
         type: `text/json`
       }));
       a.download = "graph.json";
