@@ -143,7 +143,7 @@ export default {
             d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
           ]
         )
-        .range([0, 20])
+        .range([2, 20])
     },
   },
 
