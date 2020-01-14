@@ -58,7 +58,6 @@ function highlightSelectedNodes(state) {
       d => hasUserSelection && !state.userSelectedEdges.includes(d.id)
     )
     .select("path")
-    .style("stroke", this.edgeColor);
 }
 
 //function that checks the state to see if the node is selected

@@ -41,6 +41,8 @@ export default {
       nestedGlyphVariables: [],
       labelVariable: "_key",
       colorVariable: "table",
+      linkWidthVariable: null,
+      linkColorVariable: null,
     };
   },
 
@@ -55,6 +57,13 @@ export default {
     colorVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    },
+    linkVariableList() {
+      if (typeof this.graphStructure.links[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.links[0]).concat([null]).filter(d => d !== "source" && d !== "target")
       } else {
         return []
       }
@@ -147,6 +156,24 @@ export default {
             <v-divider class="mt-4" />
 
             <v-select 
+              v-model="linkWidthVariable"
+              label="Link Width Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="linkColorVariable"
+              label="Link Color Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select
               v-model="labelVariable"
               label="Label Variable"
               :items="variableList"
@@ -250,6 +277,8 @@ export default {
               colorVariable,
               nestedBarVariables,
               nestedGlyphVariables,
+              linkWidthVariable,
+              linkColorVariable,
             }"
             @restart-simulation="hello()"
             />

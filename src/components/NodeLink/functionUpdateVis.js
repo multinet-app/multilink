@@ -192,7 +192,6 @@ function showTooltip(data, delay = 200) {
 function updateVis() {
   const {
     attributes,
-    edgeColor,
     graphStructure,
     nodeFontSize,
     labelVariable,
@@ -207,6 +206,10 @@ function updateVis() {
     nodeColorScale,
     nestedBarVariables,
     nestedGlyphVariables,
+    linkColorScale,
+    linkWidthScale,
+    linkWidthVariable,
+    linkColorVariable,
   } = this;
 
   console.log("bar and glyph vars", nestedBarVariables, nestedGlyphVariables)
@@ -343,11 +346,22 @@ function updateVis() {
   link = linkEnter.merge(link);
 
   link.classed("muted", false);
-
   link
     .select("path")
-    .style("stroke-width", 3)
-    .style("stroke", edgeColor)
+    .style("stroke-width", d => {
+      if (linkWidthVariable) {
+        return linkWidthScale(d[linkWidthVariable])
+      } else{
+        return 3
+      }
+    })
+    .style("stroke", d => {
+      if (linkColorVariable !== null) {
+        return linkColorScale(d[linkColorVariable])
+      } else{
+        return "#888888"
+      }
+    })
     .attr("id", d => d._key)
     .attr("d", d => this.arcPath(1, d))
     .on("mouseover", (d) => {

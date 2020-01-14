@@ -31,6 +31,14 @@ export default {
       type: String,
       default: "table"
     },
+    linkWidthVariable: {
+      type: String,
+      default: null
+    },
+    linkColorVariable: {
+      type: String,
+      default: null
+    },
     nodeFontSize: {
       type: Number,
       default: 14
@@ -103,14 +111,13 @@ export default {
       edgeScale: d3.scaleLinear().domain([0, 1]),
       circleScale: d3.scaleLinear().domain([0, 1]),
       colorClasses: [],
-      nodeColors: ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854"],
-      edgeColor: "#888888",
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
       // distinguish a drag from a click
       wasDragged: false,
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
@@ -126,6 +133,8 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
+        linkWidthVariable,
+        linkColorVariable,
         labelVariable,
         colorVariable,
         nestedBarVariables,
@@ -141,12 +150,24 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
+        linkWidthVariable,
+        linkColorVariable,
         labelVariable,
         colorVariable,
         nestedBarVariables,
         nestedGlyphVariables,
       };
-    }
+    },
+    linkWidthScale() {
+      return d3.scaleLinear()
+        .domain(
+          [
+            d3.min(this.graphStructure.links.map(d => d[this.linkWidthVariable])),
+            d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
+          ]
+        )
+        .range([2, 20])
+    },
   },
 
   watch: {
