@@ -28,9 +28,7 @@ function setUpProvenance(nodes, order = 'noOrder') {
     selected: [], //set of nodes that have been 'soft selected'
     hardSelected: [], //set of nodes that have been 'hard selected'
     search: [], //field to store the id of a searched node;
-    startTime: new Date(), //time this provenance graph was created and the task initialized;
-    event: 'startedPvenance', //string describing what event triggered this state update; same as the label in provenance.applyAction
-    //  endTime:'', // time the submit button was pressed and the task ended;
+    event: 'startedProvenance', //string describing what event triggered this state update; same as the label in provenance.applyAction
     time: new Date() //timestamp for the current state of the graph;
   };
 

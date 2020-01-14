@@ -1,5 +1,6 @@
 <script>
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
+import Provenance from '@/components/Provenance.vue';
 
 import { setUpProvenance } from "@/lib/provenance";
 import { getUrlVars } from "@/lib/utils";
@@ -16,6 +17,7 @@ import { loadData } from "@/lib/multinet";
 export default {
   components: {
     NodeLink,
+    Provenance,
   },
 
   data() {
@@ -179,7 +181,11 @@ export default {
           </v-card-actions>
         </v-card>
 
+        <Provenance />
+
       </v-col>
+
+      
 
       <!-- node-link component -->
       <v-col>
