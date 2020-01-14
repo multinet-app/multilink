@@ -181,6 +181,7 @@ export default {
               label="Bar Variables"
               multiple
               chips
+              deletable-chips="true"
               hint="Choose the variables you'd like to model as bars"
               persistent-hint
             />

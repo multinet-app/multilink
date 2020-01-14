@@ -400,7 +400,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
       .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
       .attr("y", d => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
       .attr("x", `${5 + (i * barWidth)}px`)
-      .style("fill", d => nodeColorScale(barVar))
+      .style("fill", d => "#82b1ff")
     
     // Update i
     i++
