@@ -59,7 +59,7 @@ export default {
     },
     linkVariableList() {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.links[0]).concat(["table", null]) 
+        return Object.keys(this.graphStructure.links[0]).concat([null]).filter(d => d !== "source" && d !== "target")
       } else {
         return []
       }
