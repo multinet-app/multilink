@@ -198,6 +198,7 @@ function updateVis() {
     colorVariable,
     nodeColorScale,
     linkColorScale,
+    linkWidthScale,
     linkWidthVariable,
     linkColorVariable,
   } = this;
@@ -304,7 +305,7 @@ function updateVis() {
     .select("path")
     .style("stroke-width", d => {
       if (linkWidthVariable) {
-        return d[linkWidthVariable]
+        return linkWidthScale(d[linkWidthVariable])
       } else{
         return 3
       }
