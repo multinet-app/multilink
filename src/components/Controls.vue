@@ -191,7 +191,9 @@ export default {
               :items="variableList"
               label="Glyph Variables"
               multiple
+              counter=2
               chips
+              deletable-chips="true"
               hint="Choose the variables you'd like to model as glyphs"
               persistent-hint
             />

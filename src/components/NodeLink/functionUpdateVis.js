@@ -408,7 +408,11 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
 
   // Append glyphs
   i = 0;
-  for (let glyphVar of nestedGlyphVariables) {
+  while (i < 2) {
+    let glyphVar = nestedGlyphVariables[i]
+    if (glyphVar === undefined) {
+      break
+    }
     // Draw glyph
     node.append("rect")
       .attr("class", "glyph")
