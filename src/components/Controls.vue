@@ -116,7 +116,7 @@ export default {
           <v-card-text>
             <v-card-subtitle class="pb-0 pl-0">Marker Type</v-card-subtitle>
             <v-radio-group v-model="nodeMarkerType">
-              <v-radio name="active" label="Circle" value="Circle"></v-radio>
+              <v-radio name="active" label="Circle" value="Circle" @click="renderNested = false; nodeMarkerType = 'Circle'"></v-radio>
               <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
             </v-radio-group>
 
