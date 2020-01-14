@@ -212,8 +212,6 @@ function updateVis() {
     linkColorVariable,
   } = this;
 
-  console.log("bar and glyph vars", nestedBarVariables, nestedGlyphVariables)
-
   let node = svg
     .select(".nodes")
     .selectAll(".nodeGroup")
@@ -247,26 +245,12 @@ function updateVis() {
     .selectAll(".nodeBox")
     .attr("width", () => nodeMarkerLength)
     .attr("height", () => nodeMarkerHeight)
-    .attr("rx", () => { 
-      if (nodeMarkerType === "Circle") {
-        return nodeMarkerLength / 2 
-      } else {
-        return 0
-      }
-    })
-    .attr("ry", () => { 
-      if (nodeMarkerType === "Circle") {
-        return nodeMarkerLength / 2 
-      } else {
-        return 0
-      }
-    });
+    .attr("rx", nodeMarkerType === "Circle" ? nodeMarkerLength / 2 : 0)
+    .attr("ry", nodeMarkerType === "Circle" ? nodeMarkerHeight / 2 : 0)
 
   node.select('.node')
     .style("fill", d => {
-      if (renderNested) {
-        return "#DDDDDD"
-      } else if (colorVariable === "table") {
+      if (colorVariable === "table") {
         let table = d["id"].split("/")[0]
         return nodeColorScale(table)
       } else {
@@ -397,7 +381,6 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
 
   for (let barVar of nestedBarVariables) {
     let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
-    console.log(maxValue)
     // Draw white, background bar
     node.append("rect")
       .attr("class", "bar")
