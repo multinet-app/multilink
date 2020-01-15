@@ -269,7 +269,7 @@ export default {
               app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
-              nodeMarkerType: nodeMarkerType,
+              nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
               renderNested,
