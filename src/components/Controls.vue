@@ -208,7 +208,7 @@ export default {
               label="Bar Variables"
               multiple
               chips
-              deletable-chips="true"
+              deletable-chips
               hint="Choose the variables you'd like to model as bars"
               persistent-hint
             />
@@ -221,7 +221,7 @@ export default {
               multiple
               counter=2
               chips
-              deletable-chips="true"
+              deletable-chips
               hint="Choose the variables you'd like to model as glyphs"
               persistent-hint
             />

@@ -79,11 +79,13 @@ export default {
     },
     nestedBarVariables: {
       type: Array,
-      default: () => []
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
     nestedGlyphVariables: {
       type: Array,
-      default: () => []
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
   },
 
