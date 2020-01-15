@@ -78,11 +78,11 @@ export default {
       default: false
     },
     nestedBarVariables: {
-      type: Array[String],
+      type: Array,
       default: () => []
     },
     nestedGlyphVariables: {
-      type: Array[String],
+      type: Array,
       default: () => []
     },
   },
