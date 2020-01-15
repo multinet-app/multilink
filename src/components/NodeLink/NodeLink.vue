@@ -51,6 +51,10 @@ export default {
       type: Number,
       default: 50
     },
+    nodeMarkerType: {
+      type: String,
+      default: "Circle"
+    },
     selectNeighbors: {
       type: Boolean,
       default: true
@@ -68,6 +72,20 @@ export default {
       default: () => ({
         edgeWidthKey: undefined,
       })
+    },
+    renderNested: {
+      type: Boolean,
+      default: false
+    },
+    nestedBarVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    nestedGlyphVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
   },
 
@@ -96,7 +114,6 @@ export default {
       circleScale: d3.scaleLinear().domain([0, 1]),
       colorClasses: [],
       nodeSizeAttr: undefined,
-      drawBars: undefined,
       barPadding: 3,
       straightEdges: false,
       // distinguish a drag from a click
@@ -113,26 +130,34 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
+        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
+        renderNested,
         linkWidthVariable,
         linkColorVariable,
         labelVariable,
         colorVariable,
+        nestedBarVariables,
+        nestedGlyphVariables,
       } = this;
       return {
         graphStructure,
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
+        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
+        renderNested,
         linkWidthVariable,
         linkColorVariable,
         labelVariable,
         colorVariable,
+        nestedBarVariables,
+        nestedGlyphVariables,
       };
     },
     linkWidthScale() {

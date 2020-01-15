@@ -133,6 +133,7 @@ function makeSimulation() {
     graphStructure,
     nodeMarkerLength,
     nodeMarkerHeight,
+    nodeMarkerType,
   } = this;
 
   const simulation = d3
@@ -156,13 +157,9 @@ function makeSimulation() {
 
   simulation.on("tick", () => this.dragNode());
 
-  simulation.force("collision", d3.forceCollide()
-    .radius(() => {
-      return (
-        d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) *
-        1.5
-      );
-    })
+  simulation.force("collision", 
+    d3.forceCollide()
+    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType))
     .strength(0.7)
     .iterations(10)
   );
@@ -173,6 +170,14 @@ function makeSimulation() {
   simulation.alphaTarget(0.02).restart();
 
   return simulation;
+}
+
+function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
+  if (nodeMarkerType === "Circle") {
+    return d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
+  } else {
+    return d3.max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
+  }
 }
 
 function showTooltip(data, delay = 200) {
@@ -192,11 +197,15 @@ function updateVis() {
     labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
+    nodeMarkerType,
     svg,
     visMargins,
     visDimensions,
+    renderNested,
     colorVariable,
     nodeColorScale,
+    nestedBarVariables,
+    nestedGlyphVariables,
     linkColorScale,
     linkWidthScale,
     linkWidthVariable,
@@ -236,8 +245,8 @@ function updateVis() {
     .selectAll(".nodeBox")
     .attr("width", () => nodeMarkerLength)
     .attr("height", () => nodeMarkerHeight)
-    .attr("rx", () => nodeMarkerLength / 2)
-    .attr("ry", () => nodeMarkerHeight / 2);
+    .attr("rx", nodeMarkerType === "Circle" ? nodeMarkerLength / 2 : 0)
+    .attr("ry", nodeMarkerType === "Circle" ? nodeMarkerHeight / 2 : 0)
 
   node.select('.node')
     .style("fill", d => {
@@ -258,15 +267,35 @@ function updateVis() {
     .select("text")
     .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
-    .attr("dx", () => nodeMarkerLength / 2)
-    .attr("dy", () => (nodeMarkerHeight / 2) + 2)
+    .attr("dx", () => {
+      return nodeMarkerLength / 2
+    })
+    .attr("dy", () => {
+      if (nodeMarkerType === "Circle" || !renderNested) {
+        return (nodeMarkerHeight / 2) + 2
+      } else {
+        return 8
+      }
+    })
 
   node
     .select(".labelBackground")
-    .attr("y", () => nodeMarkerHeight / 2 - 8)
+    .attr("y", () => {
+      if (nodeMarkerType === "Circle" || !renderNested) {
+        return (nodeMarkerHeight / 2) - 8
+      } else {
+        return 0
+      }
+    })
     .attr("width", () => nodeMarkerLength)
-    .attr('height', //config.nodeLink.drawBars ? 16 : 
-      "1em")
+    .attr('height', "1em")
+
+  if (renderNested) {
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure)
+  } else {
+    node.selectAll(".bar").remove()
+    node.selectAll(".glyph").remove()
+  }
 
   node.call(
     d3
@@ -339,6 +368,64 @@ function updateVis() {
   // drawLegend();
 }
 
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure) {
+  // Delete past renders
+  node.selectAll(".bar").remove()
+  node.selectAll(".glyph").remove()
+
+  // Set some bar specific variables that we'll need for tracking position and sizes
+  let i = 0;
+  let barWidth = nestedGlyphVariables.length === 0 ? 
+    nodeMarkerLength / nestedBarVariables.length : 
+    (nodeMarkerLength / 2) / nestedBarVariables.length;
+
+  for (let barVar of nestedBarVariables) {
+    let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
+    // Draw white, background bar
+    node.append("rect")
+      .attr("class", "bar")
+      .attr("width", `${barWidth - 10}px`)
+      .attr("height", `${nodeMarkerHeight - 16 - 5 - 5}px`)
+      .attr("y", `${16 +  5}px`)
+      .attr("x", `${5 + (i * barWidth)}px`)
+      .style("fill", "#FFFFFF")
+
+    // Draw the color bar with height based on data
+    node.append("rect")
+      .attr("class", "bar")
+      .attr("width", `${barWidth - 10}px`)
+      .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
+      .attr("y", d => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
+      .attr("x", `${5 + (i * barWidth)}px`)
+      .style("fill", d => "#82b1ff")
+    
+    // Update i
+    i++
+  }
+
+  // Append glyphs
+  i = 0;
+  while (i < 2) {
+    let glyphVar = nestedGlyphVariables[i]
+    if (glyphVar === undefined) {
+      break
+    }
+    // Draw glyph
+    node.append("rect")
+      .attr("class", "glyph")
+      .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
+      .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
+      .attr("y", `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
+      .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
+      .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
+      .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
+      .style("fill", d => nodeColorScale(d[glyphVar]))
+    
+    // Update i
+    i++
+  }
+}
+
 
 export {
   arcPath,
@@ -350,4 +437,5 @@ export {
   makeSimulation,
   showTooltip,
   updateVis,
+  getForceRadii,
 };

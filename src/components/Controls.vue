@@ -31,10 +31,14 @@ export default {
         links: []
       },
       nodeMarkerSize: 50,
+      nodeMarkerType: "Circle",
       nodeFontSize: 14,
       workspace: null,
       graph: null,
       selectNeighbors: true,
+      renderNested: false,
+      nestedBarVariables: [],
+      nestedGlyphVariables: [],
       labelVariable: "_key",
       colorVariable: "table",
       linkWidthVariable: null,
@@ -119,6 +123,14 @@ export default {
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
+            <v-card-subtitle class="pb-0 pl-0">Marker Type</v-card-subtitle>
+            <v-radio-group v-model="nodeMarkerType">
+              <v-radio name="active" label="Circle" value="Circle" @click="renderNested = false; nodeMarkerType = 'Circle'"></v-radio>
+              <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
+            </v-radio-group>
+
+            <v-divider class="mt-4" />
+
             <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
@@ -180,6 +192,43 @@ export default {
             <v-divider class="mt-4" />
 
             <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+              Render Nested Elements
+              <v-switch
+                class="ma-0"
+                v-model="renderNested"
+                :disabled="nodeMarkerType === 'Circle'"
+                hide-details
+              />
+            </v-card-subtitle>
+
+            <v-select
+              v-if="renderNested"
+              v-model="nestedBarVariables"
+              :items="variableList"
+              label="Bar Variables"
+              multiple
+              chips
+              deletable-chips
+              hint="Choose the variables you'd like to model as bars"
+              persistent-hint
+            />
+
+            <v-select
+              v-if="renderNested"
+              v-model="nestedGlyphVariables"
+              :items="variableList"
+              label="Glyph Variables"
+              multiple
+              counter=2
+              chips
+              deletable-chips
+              hint="Choose the variables you'd like to model as glyphs"
+              persistent-hint
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
               Autoselect neighbors
               <v-switch
                 class="ma-0"
@@ -220,10 +269,14 @@ export default {
               app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
+              nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
+              renderNested,
               labelVariable,
               colorVariable,
+              nestedBarVariables,
+              nestedGlyphVariables,
               linkWidthVariable,
               linkColorVariable,
             }"
