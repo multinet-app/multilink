@@ -200,9 +200,7 @@ export default {
 </script>
 
 <template>
-  <div>
-    <svg ref="svg" width="800" height="900"/>
-  </div>
+  <svg ref="svg" width="800" height="900"/>
 </template>
 
 <style scoped>

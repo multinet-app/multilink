@@ -115,10 +115,10 @@ export default {
 </script>
 
 <template>
-  <v-container fluid>
+  <v-container fluid class="pt-0 pb-0">
     <v-row class="flex-nowrap">
       <!-- control panel content -->
-      <v-col class="mt-4" cols="3">
+      <v-col cols="3">
         <v-card>
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
@@ -287,3 +287,10 @@ export default {
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+  .v-card {
+    max-height: calc(100vh - 24px);
+    overflow-y: scroll
+  }
+</style>
