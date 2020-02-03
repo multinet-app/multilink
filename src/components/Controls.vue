@@ -25,12 +25,18 @@ export default {
         links: []
       },
       nodeMarkerSize: 50,
+      nodeMarkerType: "Circle",
       nodeFontSize: 14,
       workspace: null,
       graph: null,
       selectNeighbors: true,
+      renderNested: false,
+      nestedBarVariables: [],
+      nestedGlyphVariables: [],
       labelVariable: "_key",
       colorVariable: "table",
+      linkWidthVariable: null,
+      linkColorVariable: null,
     };
   },
 
@@ -45,6 +51,13 @@ export default {
     colorVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      } else {
+        return []
+      }
+    },
+    linkVariableList() {
+      if (typeof this.graphStructure.links[0] !== 'undefined') {
+        return Object.keys(this.graphStructure.links[0]).concat([null]).filter(d => d !== "source" && d !== "target")
       } else {
         return []
       }
@@ -85,7 +98,7 @@ export default {
 
     exportGraph() {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graph_structure)], {
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graphStructure)], {
         type: `text/json`
       }));
       a.download = "graph.json";
@@ -96,14 +109,22 @@ export default {
 </script>
 
 <template>
-  <v-container fluid>
+  <v-container fluid class="pt-0 pb-0">
     <v-row class="flex-nowrap">
       <!-- control panel content -->
-      <v-col class="mt-4" cols="3">
+      <v-col cols="3">
         <v-card>
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
+            <v-card-subtitle class="pb-0 pl-0">Marker Type</v-card-subtitle>
+            <v-radio-group v-model="nodeMarkerType">
+              <v-radio name="active" label="Circle" value="Circle" @click="renderNested = false; nodeMarkerType = 'Circle'"></v-radio>
+              <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
+            </v-radio-group>
+
+            <v-divider class="mt-4" />
+
             <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
@@ -129,6 +150,24 @@ export default {
             <v-divider class="mt-4" />
 
             <v-select 
+              v-model="linkWidthVariable"
+              label="Link Width Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select 
+              v-model="linkColorVariable"
+              label="Link Color Variable"
+              :items="linkVariableList"
+              :options="linkVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-select
               v-model="labelVariable"
               label="Label Variable"
               :items="variableList"
@@ -142,6 +181,43 @@ export default {
               label="Color Variable"
               :items="colorVariableList"
               :options="colorVariableList"
+            />
+
+            <v-divider class="mt-4" />
+
+            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+              Render Nested Elements
+              <v-switch
+                class="ma-0"
+                v-model="renderNested"
+                :disabled="nodeMarkerType === 'Circle'"
+                hide-details
+              />
+            </v-card-subtitle>
+
+            <v-select
+              v-if="renderNested"
+              v-model="nestedBarVariables"
+              :items="variableList"
+              label="Bar Variables"
+              multiple
+              chips
+              deletable-chips
+              hint="Choose the variables you'd like to model as bars"
+              persistent-hint
+            />
+
+            <v-select
+              v-if="renderNested"
+              v-model="nestedGlyphVariables"
+              :items="variableList"
+              label="Glyph Variables"
+              multiple
+              counter=2
+              chips
+              deletable-chips
+              hint="Choose the variables you'd like to model as glyphs"
+              persistent-hint
             />
 
             <v-divider class="mt-4" />
@@ -193,10 +269,16 @@ export default {
               app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
+              nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
+              renderNested,
               labelVariable,
               colorVariable,
+              nestedBarVariables,
+              nestedGlyphVariables,
+              linkWidthVariable,
+              linkColorVariable,
             }"
             @restart-simulation="hello()"
             />
@@ -205,3 +287,10 @@ export default {
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+  .v-card {
+    max-height: calc(100vh - 24px);
+    overflow-y: scroll
+  }
+</style>

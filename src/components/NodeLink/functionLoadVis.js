@@ -15,27 +15,7 @@ export function loadVis() {
 
   // Set dimensions of the node link
   this.visDimensions.width = this.browser.width * 0.75;
-  this.visDimensions.height = this.browser.height * 1;
-
-  // Set dimensions of panel
-  this.panelDimensions.width = this.browser.width * 0.25;
-  this.panelDimensions.height = this.browser.height * 1;
-
-  // Size panel
-  // d3.select("#visPanel").style("width", this.panelDimensions.width + "px");
-
-  // Get with of the content (panel width - margins) as dimensions for the legend
-  // let parentWidth = d3
-  //   .select("#visPanel")
-  //   .select(".content")
-  //   .node()
-  //   .getBoundingClientRect().width;
-
-  // Size the legend
-  // legend = d3
-  //   .select("#legend-svg")
-  //   .attr("width", parentWidth)
-  //   .attr("height", 270);
+  this.visDimensions.height = this.browser.height - 24;
 
   // Size the node link
   this.svg = d3
