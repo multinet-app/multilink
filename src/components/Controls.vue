@@ -290,7 +290,8 @@ export default {
 
 <style scoped>
   .v-card {
-    max-height: calc(100vh - 24px);
+    /* max-height: calc(100vh - 24px - 12px - 400px); */
+    max-height: 75vh;
     overflow-y: scroll
   }
 </style>

@@ -40,22 +40,18 @@ export default {
      */
     
   },
-
-  methods: {
-    // define many functions externally
-    // ...loadVisMethods,
-    // ...updateVisMethods,
-    // ...uiMethods,
-  },
 };
 </script>
 
 <template>
   <div>
-    <svg ref="svg" width="800" height="900"/>
+    <v-card>
+      <v-card-title>Legend</v-card-title>
+      <svg id="legend" class="col-12" ref="svg" height="200" style="background-color: black;"/>
+    </v-card>
   </div>
 </template>
 
 <style scoped>
-@import './NodeLink.css';
+
 </style>
