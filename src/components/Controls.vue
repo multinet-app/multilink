@@ -253,6 +253,20 @@ export default {
           class="mt-4" 
           cols="3"
           ref="legend"
+          v-bind="{
+              graphStructure,
+              provenance,
+              app,
+              nodeMarkerType,
+              selectNeighbors,
+              renderNested,
+              labelVariable,
+              colorVariable,
+              nestedBarVariables,
+              nestedGlyphVariables,
+              linkWidthVariable,
+              linkColorVariable,
+            }"
         />
 
       </v-col>
@@ -291,7 +305,7 @@ export default {
 <style scoped>
   .v-card {
     /* max-height: calc(100vh - 24px - 12px - 400px); */
-    max-height: 75vh;
+    max-height: calc(75vh - 12px);
     overflow-y: scroll
   }
 </style>

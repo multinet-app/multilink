@@ -7,7 +7,56 @@ export default {
      * props define properties that should be controlled by
      * the users or will need to be modified externally.
      */
-    
+    app: {
+      type: Object,
+      required: true
+    },
+    provenance: {
+      type: Object,
+      required: true
+    },
+    graphStructure: {
+      type: Object,
+      default: () => {}
+    },
+    labelVariable: {
+      type: String,
+      default: "_key"
+    },
+    colorVariable: {
+      type: String,
+      default: "table"
+    },
+    linkWidthVariable: {
+      type: String,
+      default: null
+    },
+    linkColorVariable: {
+      type: String,
+      default: null
+    },
+    nodeMarkerType: {
+      type: String,
+      default: "Circle"
+    },
+    selectNeighbors: {
+      type: Boolean,
+      default: true
+    },
+    renderNested: {
+      type: Boolean,
+      default: false
+    },
+    nestedBarVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    nestedGlyphVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
   },
 
   data() {
@@ -53,5 +102,9 @@ export default {
 </template>
 
 <style scoped>
-
+.v-card {
+    /* max-height: calc(100vh - 24px - 12px - 400px); */
+    max-height: calc(25vh - 24px);
+    overflow-y: scroll
+  }
 </style>
