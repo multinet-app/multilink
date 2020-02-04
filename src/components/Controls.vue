@@ -35,7 +35,7 @@ export default {
       nestedBarVariables: [],
       nestedGlyphVariables: [],
       labelVariable: "_key",
-      colorVariable: "table",
+      colorVariable: null,
       linkWidthVariable: null,
       linkColorVariable: null,
     };
@@ -44,14 +44,14 @@ export default {
   computed: {
     variableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]) 
+        return Object.keys(this.graphStructure.nodes[0]).concat([null]) 
       } else {
         return []
       }
     },
     colorVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+        return Object.keys(this.graphStructure.nodes[0]).concat(["table", null]) 
       } else {
         return []
       }

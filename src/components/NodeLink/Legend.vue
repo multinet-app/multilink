@@ -100,10 +100,22 @@ export default {
   },
 
   async mounted() {
+    this.setUpLegend()
     this.updateLegend()
   },
 
   methods: {
+    setUpLegend: function() {
+      const legend = d3.select(this.$refs.legend)
+
+      // Append groups for each type of information we'll need
+      legend.append('g').classed('nodeColors', true)
+      legend.append('g').classed('linkColors', true)
+      legend.append('g').classed('linkWidth', true)
+      legend.append('g').classed('nestedBars', true)
+      legend.append('g').classed('nestedGlyphs', true)
+    },
+
     updateLegend: function() {
       // available elements 
       console.log(
@@ -121,18 +133,32 @@ export default {
         this.linkColorVariable,
       )
 
+      const legend = d3.select(this.$refs.legend)
 
+      // If we have a node color variable add the options to the legend
+      if (this.colorVariable != null) {
 
-      legend = d3.select(this.$refs.legend)
+      }
 
-      // Append groups for each type of information we'll need
-      legend.append('g').classed('nodeColors', true)
-      legend.append('g').classed('linkColors', true)
-      legend.append('g').classed('linkWidth', true)
-      legend.append('g').classed('nestedBars', true)
-      legend.append('g').classed('nestedGlyphs', true) // TODO: This will break on update (shouldn't keep appending)
+      // If we have a link color variable add the options to the legend
+      if (this.linkColorVariable != null) {
+        
+      }
 
+      // If we have a link width variable add the scale to the legend
+      if (this.linkWidthVariable != null) {
+        
+      }
 
+      // If we have nested bar variables and nestedRender is on add the bars to the legend
+      if (this.nestedBarVariables != [] && this.renderNested) {
+        
+      }
+
+      // If we have nested glyph variables and nestedRender is on add the glyph to the legend
+      if (this.nestedGlyphVariables != [] && this.renderNested) {
+        
+      }
     }
   }
 };
