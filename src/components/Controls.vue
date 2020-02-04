@@ -14,8 +14,9 @@ export default {
 
   data() {
     /**
-     * State shared between the view (NodeLink graph)
-     * and the controller (dialog box or other UI).
+     * State shared between the view (NodeLink graph),
+     * the controller (dialog box or other UI),
+     * and the legend.
      */
     return {
       app: null,
@@ -64,10 +65,6 @@ export default {
     }
   },
 
-  /**
-   * This is the "entrypoint" into this application.
-   * Notice the v-if dependency in the template above.
-   */
   async mounted() {
     const { workspace, graph } = getUrlVars();
     if (!workspace || !graph) {
@@ -253,6 +250,7 @@ export default {
           class="mt-4" 
           cols="3"
           ref="legend"
+          v-if="workspace"
           v-bind="{
               graphStructure,
               provenance,
@@ -304,8 +302,7 @@ export default {
 
 <style scoped>
   .v-card {
-    /* max-height: calc(100vh - 24px - 12px - 400px); */
-    max-height: calc(75vh - 12px);
+    max-height: calc(75vh - 18px);
     overflow-y: scroll
   }
 </style>
