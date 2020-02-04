@@ -137,7 +137,14 @@ export default {
 
       // If we have a node color variable add the options to the legend
       if (this.colorVariable != null) {
+        // Calculate the classes
+        const classes = [...new Set(this.graphStructure.nodes.map(d => d[this.colorVariable]))]
+        console.log(classes)
 
+        // Set the vis elements
+        legend
+          .select('.nodeColors')
+          .data(classes)
       }
 
       // If we have a link color variable add the options to the legend
