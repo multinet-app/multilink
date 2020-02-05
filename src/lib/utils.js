@@ -1,9 +1,11 @@
 // Get the url querystring variables 
 function getUrlVars() {
+  const url = new URL(window.location.href);
   let vars = {};
-  window.location.href.replace(/[?&]+([^=&]+)=([^&*#]*)/gi, function(m, key, value) {
-      vars[key] = value;
-  });
+  for (const entry of url.searchParams.entries()) {
+    vars[entry[0]] = entry[1];
+  }
+
   return vars;
 }
 

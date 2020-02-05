@@ -75,13 +75,13 @@ export default {
    * Notice the v-if dependency in the template above.
    */
   async mounted() {
-    const { workspace, graph } = getUrlVars();
+    const { workspace, graph, host } = getUrlVars();
     if (!workspace || !graph) {
       throw new Error(
         `Workspace and graph must be set! workspace=${workspace} graph=${graph}`
       );
     }
-    this.graphStructure = await loadData(workspace, graph);
+    this.graphStructure = await loadData(workspace, graph, host);
     const { provenance, app } = setUpProvenance(this.graphStructure.nodes);
     this.app = app;
     this.provenance = provenance;
