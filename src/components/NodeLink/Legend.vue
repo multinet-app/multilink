@@ -100,14 +100,14 @@ export default {
           classes = [...new Set(this.graphStructure.nodes.map(d => d[this.colorVariable]))]
         }
       };
-      return classes;
+      return classes.sort((a, b) => a - b);
     },
     linkColorClasses() {
       let classes = [];
       if (this.linkColorVariable != null) {
           classes = [...new Set(this.graphStructure.links.map(d => d[this.linkColorVariable]))]
       };
-      return classes;
+      return classes.sort((a, b) => a - b);
     },
   },
 
@@ -146,28 +146,28 @@ export default {
         .append('text')
         .text('Link Colors')
         .attr('x', 0)
-        .attr('y', 45)
+        .attr('y', 55)
 
       legend
         .select('.linkWidth')
         .append('text')
         .text('Link Width')
         .attr('x', 0)
-        .attr('y', 75)
+        .attr('y', 85)
 
       legend
         .select('.nestedBars')
         .append('text')
         .text('Nested Bars')
         .attr('x', 0)
-        .attr('y', 105)
+        .attr('y', 115)
 
       legend
         .select('.nestedGlyphs')
         .append('text')
         .text('Nested Glyphs')
         .attr('x', 0)
-        .attr('y', 135)
+        .attr('y', 145)
     },
 
     updateLegend: function() {
@@ -198,16 +198,36 @@ export default {
         .enter()
         .append('rect')
         .attr('x', (d, i) => 15*i)
-        .attr('y', (d, i) => 20)
+        .attr('y', (d, i) => 30)
         .attr('width', 10)
         .attr('height', 10)
-        .attr('fill', '#AAA') // TODO: Make this match the actual node color
+        .attr('fill', '#AAA')
         .merge(nodeColors)
 
       nodeColors
         .exit()
         .remove()
 
+      console.log(this.nodeColorClasses)
+
+      let nodeColorsLabels = legend
+        .select('.nodeColors')
+        .selectAll('.label')
+        .data(this.nodeColorClasses)
+      
+      nodeColorsLabels
+        .enter()
+        .append('text')
+        .text(d => d)
+        .attr('x', (d, i) => (15*i) + 5)
+        .attr('y', (d, i) => 24)
+        .classed('label', true)
+        .merge(nodeColorsLabels)
+
+      nodeColorsLabels
+        .exit()
+        .remove()
+      
       // Set the link colors
       let linkColors = legend
           .select('.linkColors')
@@ -218,7 +238,7 @@ export default {
         .enter()
         .append('rect')
         .attr('x', (d, i) => 15*i)
-        .attr('y', (d, i) => 50)
+        .attr('y', (d, i) => 60)
         .attr('width', 10)
         .attr('height', 10)
         .attr('fill', '#AAA') // TODO: Make this match the actual link color
