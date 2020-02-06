@@ -90,7 +90,25 @@ export default {
         linkWidthVariable,
         linkColorVariable,
       };
-    }
+    },
+    nodeColorClasses() {
+      let classes = [];
+      if (this.colorVariable != null) {
+        if (this.colorVariable === "table") {
+          classes = [...new Set(this.graphStructure.nodes.map(d => d.id.split("/")[0]))]
+        } else {
+          classes = [...new Set(this.graphStructure.nodes.map(d => d[this.colorVariable]))]
+        }
+      };
+      return classes;
+    },
+    linkColorClasses() {
+      let classes = [];
+      if (this.linkColorVariable != null) {
+          classes = [...new Set(this.graphStructure.links.map(d => d[this.linkColorVariable]))]
+      };
+      return classes;
+    },
   },
 
   watch: {
@@ -114,43 +132,101 @@ export default {
       legend.append('g').classed('linkWidth', true)
       legend.append('g').classed('nestedBars', true)
       legend.append('g').classed('nestedGlyphs', true)
+
+      // Attach the legend headers
+      legend
+        .select('.nodeColors')
+        .append('text')
+        .text('Node Colors')
+        .attr('x', 0)
+        .attr('y', 15)
+
+      legend
+        .select('.linkColors')
+        .append('text')
+        .text('Link Colors')
+        .attr('x', 0)
+        .attr('y', 45)
+
+      legend
+        .select('.linkWidth')
+        .append('text')
+        .text('Link Width')
+        .attr('x', 0)
+        .attr('y', 75)
+
+      legend
+        .select('.nestedBars')
+        .append('text')
+        .text('Nested Bars')
+        .attr('x', 0)
+        .attr('y', 105)
+
+      legend
+        .select('.nestedGlyphs')
+        .append('text')
+        .text('Nested Glyphs')
+        .attr('x', 0)
+        .attr('y', 135)
     },
 
     updateLegend: function() {
       // available elements 
-      console.log(
-        this.graphStructure,
-        this.provenance,
-        this.app,
-        this.nodeMarkerType,
-        this.selectNeighbors,
-        this.renderNested,
-        this.labelVariable,
-        this.colorVariable,
-        this.nestedBarVariables,
-        this.nestedGlyphVariables,
-        this.linkWidthVariable,
-        this.linkColorVariable,
-      )
+      //   this.graphStructure,
+      //   this.provenance,
+      //   this.app,
+      //   this.nodeMarkerType,
+      //   this.selectNeighbors,
+      //   this.renderNested,
+      //   this.labelVariable,
+      //   this.colorVariable,
+      //   this.nestedBarVariables,
+      //   this.nestedGlyphVariables,
+      //   this.linkWidthVariable,
+      //   this.linkColorVariable,
 
+      // Get the legend element
       const legend = d3.select(this.$refs.legend)
 
-      // If we have a node color variable add the options to the legend
-      if (this.colorVariable != null) {
-        // Calculate the classes
-        const classes = [...new Set(this.graphStructure.nodes.map(d => d[this.colorVariable]))]
-        console.log(classes)
-
-        // Set the vis elements
-        legend
+      // Set the nodeColors
+      let nodeColors = legend
           .select('.nodeColors')
-          .data(classes)
-      }
+          .selectAll('rect')
+          .data(this.nodeColorClasses)
 
-      // If we have a link color variable add the options to the legend
-      if (this.linkColorVariable != null) {
-        
-      }
+      nodeColors
+        .enter()
+        .append('rect')
+        .attr('x', (d, i) => 15*i)
+        .attr('y', (d, i) => 20)
+        .attr('width', 10)
+        .attr('height', 10)
+        .attr('fill', '#AAA') // TODO: Make this match the actual node color
+        .merge(nodeColors)
+
+      nodeColors
+        .exit()
+        .remove()
+
+      // Set the link colors
+      let linkColors = legend
+          .select('.linkColors')
+          .selectAll('rect')
+          .data(this.linkColorClasses)
+
+      linkColors
+        .enter()
+        .append('rect')
+        .attr('x', (d, i) => 15*i)
+        .attr('y', (d, i) => 50)
+        .attr('width', 10)
+        .attr('height', 10)
+        .attr('fill', '#AAA') // TODO: Make this match the actual link color
+        .merge(linkColors)
+
+      linkColors
+        .exit()
+        .remove()
 
       // If we have a link width variable add the scale to the legend
       if (this.linkWidthVariable != null) {
@@ -175,14 +251,13 @@ export default {
   <div>
     <v-card>
       <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="150" style="background-color: black;"/>
+      <svg id="legend" class="col-12" ref="legend" height="165"/>
     </v-card>
   </div>
 </template>
 
 <style scoped>
 .v-card {
-    /* max-height: calc(100vh - 24px - 12px - 400px); */
     height: calc(25vh - 24px);
     overflow-y: scroll
   }
