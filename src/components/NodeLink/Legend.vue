@@ -195,18 +195,18 @@ export default {
           .data(this.nodeColorClasses)
 
       nodeColors
+        .exit()
+        .remove()
+
+      nodeColors
         .enter()
         .append('rect')
+        .merge(nodeColors)
         .attr('x', (d, i) => 15*i)
         .attr('y', (d, i) => 30)
         .attr('width', 10)
         .attr('height', 10)
         .attr('fill', '#AAA')
-        .merge(nodeColors)
-
-      nodeColors
-        .exit()
-        .remove()
 
       console.log(this.nodeColorClasses)
 
@@ -214,19 +214,19 @@ export default {
         .select('.nodeColors')
         .selectAll('.label')
         .data(this.nodeColorClasses)
-      
-      nodeColorsLabels
-        .enter()
-        .append('text')
-        .text(d => d)
-        .attr('x', (d, i) => (15*i) + 5)
-        .attr('y', (d, i) => 24)
-        .classed('label', true)
-        .merge(nodeColorsLabels)
 
       nodeColorsLabels
         .exit()
         .remove()
+      
+      nodeColorsLabels
+        .enter()
+        .append('text')
+        .merge(nodeColorsLabels)
+        .text(d => d)
+        .attr('x', (d, i) => (15*i) + 5)
+        .attr('y', (d, i) => 24)
+        .classed('label', true)
       
       // Set the link colors
       let linkColors = legend
