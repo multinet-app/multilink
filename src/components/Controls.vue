@@ -6,6 +6,8 @@ import { setUpProvenance } from "@/lib/provenance";
 import { getUrlVars } from "@/lib/utils";
 import { loadData } from "@/lib/multinet";
 
+import * as d3 from "d3";
+
 export default {
   components: {
     NodeLink,
@@ -38,6 +40,8 @@ export default {
       colorVariable: null,
       linkWidthVariable: null,
       linkColorVariable: null,
+      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
@@ -264,6 +268,8 @@ export default {
               nestedGlyphVariables,
               linkWidthVariable,
               linkColorVariable,
+              nodeColorScale,
+              linkColorScale,
             }"
         />
 
@@ -291,6 +297,8 @@ export default {
               nestedGlyphVariables,
               linkWidthVariable,
               linkColorVariable,
+              nodeColorScale,
+              linkColorScale,
             }"
             @restart-simulation="hello()"
             />

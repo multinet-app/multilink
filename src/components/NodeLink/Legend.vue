@@ -53,6 +53,14 @@ export default {
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
+    nodeColorScale: {
+      type: Object,
+      default: null
+    },
+    linkColorScale: {
+      type: Object,
+      default: null
+    },
   },
 
   data() {
@@ -197,7 +205,7 @@ export default {
         .attr('y', this.nodeColorBaseline + 15)
         .attr('width', 10)
         .attr('height', 10)
-        .attr('fill', '#AAA')
+        .attr('fill', (d) => this.nodeColorScale(d))
 
       let nodeColorsLabels = legend
         .select('.nodeColors')
@@ -236,7 +244,7 @@ export default {
         .attr('y', this.linkColorBaseline + 15)
         .attr('width', 10)
         .attr('height', 10)
-        .attr('fill', '#AAA')
+        .attr('fill', (d) => this.linkColorScale(d))
 
       let linkColorsLabels = legend
         .select('.linkColors')

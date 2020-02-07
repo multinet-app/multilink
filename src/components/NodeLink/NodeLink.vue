@@ -87,6 +87,14 @@ export default {
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
+    nodeColorScale: {
+      type: Object,
+      default: null
+    },
+    linkColorScale: {
+      type: Object,
+      default: null
+    },
   },
 
   data() {
@@ -118,8 +126,6 @@ export default {
       straightEdges: false,
       // distinguish a drag from a click
       wasDragged: false,
-      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
