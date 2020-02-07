@@ -88,11 +88,11 @@ export default {
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
     nodeColorScale: {
-      type: Object,
+      type: Function,
       default: null
     },
     linkColorScale: {
-      type: Object,
+      type: Function,
       default: null
     },
   },
