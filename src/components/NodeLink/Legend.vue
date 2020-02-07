@@ -57,6 +57,11 @@ export default {
 
   data() {
     return {
+      nodeColorBaseline: 15,
+      linkColorBaseline: 55,
+      linkWidthBaseline: 95,
+      nestedBarsBaseline: 135,
+      nestedGlyphsBaseline: 175,
     };
   },
 
@@ -139,52 +144,38 @@ export default {
         .append('text')
         .text('Node Colors')
         .attr('x', 0)
-        .attr('y', 15)
+        .attr('y', this.nodeColorBaseline)
 
       legend
         .select('.linkColors')
         .append('text')
         .text('Link Colors')
         .attr('x', 0)
-        .attr('y', 55)
+        .attr('y', this.linkColorBaseline)
 
       legend
         .select('.linkWidth')
         .append('text')
         .text('Link Width')
         .attr('x', 0)
-        .attr('y', 85)
+        .attr('y', this.linkWidthBaseline)
 
       legend
         .select('.nestedBars')
         .append('text')
         .text('Nested Bars')
         .attr('x', 0)
-        .attr('y', 115)
+        .attr('y', this.nestedBarsBaseline)
 
       legend
         .select('.nestedGlyphs')
         .append('text')
         .text('Nested Glyphs')
         .attr('x', 0)
-        .attr('y', 145)
+        .attr('y', this.nestedGlyphsBaseline)
     },
 
     updateLegend: function() {
-      // available elements 
-      //   this.graphStructure,
-      //   this.provenance,
-      //   this.app,
-      //   this.nodeMarkerType,
-      //   this.selectNeighbors,
-      //   this.renderNested,
-      //   this.labelVariable,
-      //   this.colorVariable,
-      //   this.nestedBarVariables,
-      //   this.nestedGlyphVariables,
-      //   this.linkWidthVariable,
-      //   this.linkColorVariable,
-
       // Get the legend element
       const legend = d3.select(this.$refs.legend)
 
@@ -203,12 +194,10 @@ export default {
         .append('rect')
         .merge(nodeColors)
         .attr('x', (d, i) => 15*i)
-        .attr('y', (d, i) => 30)
+        .attr('y', this.nodeColorBaseline + 15)
         .attr('width', 10)
         .attr('height', 10)
         .attr('fill', '#AAA')
-
-      console.log(this.nodeColorClasses)
 
       let nodeColorsLabels = legend
         .select('.nodeColors')
@@ -225,9 +214,10 @@ export default {
         .merge(nodeColorsLabels)
         .text(d => d)
         .attr('x', (d, i) => (15*i) + 5)
-        .attr('y', (d, i) => 24)
+        .attr('y', this.nodeColorBaseline + 9)
         .classed('label', true)
       
+
       // Set the link colors
       let linkColors = legend
           .select('.linkColors')
@@ -235,33 +225,45 @@ export default {
           .data(this.linkColorClasses)
 
       linkColors
-        .enter()
-        .append('rect')
-        .attr('x', (d, i) => 15*i)
-        .attr('y', (d, i) => 60)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', '#AAA') // TODO: Make this match the actual link color
-        .merge(linkColors)
-
-      linkColors
         .exit()
         .remove()
 
+      linkColors
+        .enter()
+        .append('rect')
+        .merge(linkColors)
+        .attr('x', (d, i) => 15*i)
+        .attr('y', this.linkColorBaseline + 15)
+        .attr('width', 10)
+        .attr('height', 10)
+        .attr('fill', '#AAA')
+
+      let linkColorsLabels = legend
+        .select('.linkColors')
+        .selectAll('.label')
+        .data(this.linkColorClasses)
+
+      linkColorsLabels
+        .exit()
+        .remove()
+      
+      linkColorsLabels
+        .enter()
+        .append('text')
+        .merge(linkColorsLabels)
+        .text(d => d)
+        .attr('x', (d, i) => (15*i) + 5)
+        .attr('y', (d, i) => this.linkColorBaseline + 9)
+        .classed('label', true)
+
       // If we have a link width variable add the scale to the legend
-      if (this.linkWidthVariable != null) {
-        
-      }
+      // TODO: make a numeric, width vis here, match the actual stroke widths (is this actually scaled properly)
 
       // If we have nested bar variables and nestedRender is on add the bars to the legend
-      if (this.nestedBarVariables != [] && this.renderNested) {
-        
-      }
+      // TODO: Make a bar representation here, a couple rects (is this scaled properly in the vis? Can we use that scale here)
 
       // If we have nested glyph variables and nestedRender is on add the glyph to the legend
-      if (this.nestedGlyphVariables != [] && this.renderNested) {
-        
-      }
+      // TODO: Make a glyph representation here
     }
   }
 };
@@ -271,7 +273,7 @@ export default {
   <div>
     <v-card>
       <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="165"/>
+      <svg id="legend" class="col-12" ref="legend" height="205"/>
     </v-card>
   </div>
 </template>
