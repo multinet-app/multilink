@@ -122,6 +122,16 @@ export default {
       };
       return classes.sort((a, b) => a - b);
     },
+    nestedGlyphClasses() {
+      let classes = {};
+      if (this.nestedGlyphVariables != null) {
+        for (let variable of this.nestedGlyphVariables){
+          classes[variable] = [...new Set(this.graphStructure.nodes.map(d => d[variable]))]
+          classes[variable] = classes[variable].sort((a, b) => a - b)
+        }
+      };
+      return classes;
+    },
   },
 
   watch: {
@@ -266,12 +276,64 @@ export default {
 
       // If we have a link width variable add the scale to the legend
       // TODO: make a numeric, width vis here, match the actual stroke widths (is this actually scaled properly)
+      // this.linkWidthVariable
 
       // If we have nested bar variables and nestedRender is on add the bars to the legend
       // TODO: Make a bar representation here, a couple rects (is this scaled properly in the vis? Can we use that scale here)
+      // this.nestedBarVariables
 
       // If we have nested glyph variables and nestedRender is on add the glyph to the legend
-      // TODO: Make a glyph representation here
+      // TODO: Fix the glyph color scale and make them render in 2 rows with a variable name to describe which is which 
+      legend
+        .select('.nestedGlyphs')
+        .selectAll('rect')
+        .remove()
+
+      legend
+        .select('.nestedGlyphs')
+        .selectAll('.label')
+        .remove()
+
+      for (let glyphClass in this.nestedGlyphClasses) {
+        let glyphColors = legend
+            .select('.nestedGlyphs')
+            .selectAll('rect')
+            .data(this.nestedGlyphClasses[glyphClass])
+
+        glyphColors
+          .exit()
+          .remove()
+
+        glyphColors
+          .enter()
+          .append('rect')
+          .merge(glyphColors)
+          .attr('x', (d, i) => 15*i)
+          .attr('y', this.nestedGlyphsBaseline + 15)
+          .attr('rx', 5)
+          .attr('ry', 5)
+          .attr('width', 10)
+          .attr('height', 10)
+          .attr('fill', (d) => this.linkColorScale(d))
+
+        let glyphColorsLabels = legend
+          .select('.nestedGlyphs')
+          .selectAll('.label')
+          .data(this.nestedGlyphClasses[glyphClass])
+
+        glyphColorsLabels
+          .exit()
+          .remove()
+        
+        glyphColorsLabels
+          .enter()
+          .append('text')
+          .merge(glyphColorsLabels)
+          .text(d => d)
+          .attr('x', (d, i) => (15*i) + 5)
+          .attr('y', (d, i) => this.nestedGlyphsBaseline + 9)
+          .classed('label', true)
+      }
     }
   }
 };
@@ -281,7 +343,7 @@ export default {
   <div>
     <v-card>
       <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="205"/>
+      <svg id="legend" class="col-12" ref="legend" height="235"/>
     </v-card>
   </div>
 </template>

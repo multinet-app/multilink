@@ -15,11 +15,6 @@ export default {
   },
 
   data() {
-    /**
-     * State shared between the view (NodeLink graph),
-     * the controller (dialog box or other UI),
-     * and the legend.
-     */
     return {
       app: null,
       provenance: null,

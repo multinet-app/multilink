@@ -7,10 +7,6 @@ import * as uiMethods from './functionUi';
 
 export default {
   props: {
-    /**
-     * props define properties that should be controlled by
-     * the users or will need to be modified externally.
-     */
     app: {
       type: Object,
       required: true
@@ -98,10 +94,6 @@ export default {
   },
 
   data() {
-    /**
-     * data defines internal state that no external sources
-     * should modify.
-     */
     return {
       browser: {
         height: 0,
@@ -124,7 +116,6 @@ export default {
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
-      // distinguish a drag from a click
       wasDragged: false,
     };
   },
@@ -185,9 +176,6 @@ export default {
   },
 
   async mounted() {
-    /**
-     * mounted hook runs after the component is injected into the DOM
-     */
     this.loadVis();
     this.provenance.addObserver("selected", state =>
       this.highlightSelectedNodes(state)
@@ -197,7 +185,6 @@ export default {
   },
 
   methods: {
-    // define many functions externally
     ...loadVisMethods,
     ...updateVisMethods,
     ...uiMethods,
