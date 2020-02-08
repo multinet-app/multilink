@@ -301,7 +301,9 @@ export default {
         .selectAll('.label')
         .remove()
 
+      let row = 0;
       for (let glyphClass in this.nestedGlyphClasses) {
+        console.log(row, glyphClass)
         let glyphColors = legend
             .select('.nestedGlyphs')
             .selectAll('rect')
@@ -315,8 +317,8 @@ export default {
           .enter()
           .append('rect')
           .merge(glyphColors)
-          .attr('x', (d, i) => 15*i)
-          .attr('y', this.nestedGlyphsBaseline + 15)
+          .attr('x', (d, i) => 15 * i)
+          .attr('y', this.nestedGlyphsBaseline + 15 + (row * 30))
           .attr('rx', 5)
           .attr('ry', 5)
           .attr('width', 10)
@@ -338,8 +340,11 @@ export default {
           .merge(glyphColorsLabels)
           .text(d => d)
           .attr('x', (d, i) => (15*i) + 5)
-          .attr('y', (d, i) => this.nestedGlyphsBaseline + 9)
-          .classed('label', true)
+          .attr('y', this.nestedGlyphsBaseline + 9 + (row * 30))
+          .classed('label', true);
+
+        console.log(row)
+        row++
       }
     }
   }
@@ -350,7 +355,7 @@ export default {
   <div>
     <v-card>
       <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="235"/>
+      <svg id="legend" class="col-12" ref="legend" height="265"/>
     </v-card>
   </div>
 </template>
