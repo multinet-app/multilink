@@ -306,7 +306,7 @@ export default {
         console.log(row, glyphClass)
         let glyphColors = legend
             .select('.nestedGlyphs')
-            .selectAll('rect')
+            .selectAll(`rect, .${glyphClass}`)
             .data(this.nestedGlyphClasses[glyphClass])
 
         glyphColors
@@ -324,12 +324,13 @@ export default {
           .attr('width', 10)
           .attr('height', 10)
           .attr('fill', (d) => this.linkColorScale(d))
+          .classed(glyphClass, true)
 
         let glyphColorsLabels = legend
           .select('.nestedGlyphs')
-          .selectAll('.label')
+          .selectAll(`.label, .${glyphClass}`)
           .data(this.nestedGlyphClasses[glyphClass])
-
+          
         glyphColorsLabels
           .exit()
           .remove()
@@ -341,7 +342,8 @@ export default {
           .text(d => d)
           .attr('x', (d, i) => (15*i) + 5)
           .attr('y', this.nestedGlyphsBaseline + 9 + (row * 30))
-          .classed('label', true);
+          .classed('label', true)
+          .classed(glyphClass, true);
 
         console.log(row)
         row++
