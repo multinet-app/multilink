@@ -61,6 +61,10 @@ export default {
       type: Function,
       default: null
     },
+    glyphColorScale: {
+      type: Function,
+      default: null
+    },
   },
 
   data() {
@@ -254,7 +258,7 @@ export default {
         .attr('y', this.linkColorBaseline + 15)
         .attr('width', 10)
         .attr('height', 10)
-        .attr('fill', (d) => this.linkColorScale(d))
+        .attr('fill', (d) => this.glyphColorScale(d))
 
       let linkColorsLabels = legend
         .select('.linkColors')
@@ -284,6 +288,9 @@ export default {
 
       // If we have nested glyph variables and nestedRender is on add the glyph to the legend
       // TODO: Fix the glyph color scale and make them render in 2 rows with a variable name to describe which is which 
+
+      // This is a hack to get the glyphs to not render when the vars have been deselected (causes full re-render on each update)
+      // I'm sure we can do something better here
       legend
         .select('.nestedGlyphs')
         .selectAll('rect')

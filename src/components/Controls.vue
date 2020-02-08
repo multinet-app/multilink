@@ -37,13 +37,17 @@ export default {
       linkColorVariable: null,
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
   computed: {
     variableList() {
+      return this.multiVariableList.concat([null]) 
+    },
+    multiVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]).concat([null]) 
+        return Object.keys(this.graphStructure.nodes[0]) 
       } else {
         return []
       }
@@ -194,7 +198,7 @@ export default {
             <v-select
               v-if="renderNested"
               v-model="nestedBarVariables"
-              :items="variableList"
+              :items="multiVariableList"
               label="Bar Variables"
               multiple
               chips
@@ -206,7 +210,7 @@ export default {
             <v-select
               v-if="renderNested"
               v-model="nestedGlyphVariables"
-              :items="variableList"
+              :items="multiVariableList"
               label="Glyph Variables"
               multiple
               counter=2
@@ -265,6 +269,7 @@ export default {
               linkColorVariable,
               nodeColorScale,
               linkColorScale,
+              glyphColorScale,
             }"
         />
 
@@ -294,6 +299,7 @@ export default {
               linkColorVariable,
               nodeColorScale,
               linkColorScale,
+              glyphColorScale,
             }"
             @restart-simulation="hello()"
             />
