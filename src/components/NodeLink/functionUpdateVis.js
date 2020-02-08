@@ -210,6 +210,7 @@ function updateVis() {
     linkWidthScale,
     linkWidthVariable,
     linkColorVariable,
+    glyphColorScale
   } = this;
 
   let node = svg
@@ -291,7 +292,7 @@ function updateVis() {
     .attr('height', "1em")
 
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure)
   } else {
     node.selectAll(".bar").remove()
     node.selectAll(".glyph").remove()
@@ -368,7 +369,7 @@ function updateVis() {
   // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
@@ -419,7 +420,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
       .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style("fill", d => nodeColorScale(d[glyphVar]))
+      .style("fill", d => glyphColorScale(d[glyphVar]))
     
     // Update i
     i++
