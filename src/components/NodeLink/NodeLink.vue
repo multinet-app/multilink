@@ -91,6 +91,10 @@ export default {
       type: Function,
       default: null
     },
+    glyphColorScale: {
+      type: Function,
+      default: null
+    },
   },
 
   data() {
