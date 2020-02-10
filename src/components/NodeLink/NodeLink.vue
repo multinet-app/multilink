@@ -95,6 +95,10 @@ export default {
       type: Function,
       default: null
     },
+    linkWidthScale: {
+      type: Function,
+      default: null
+    },
   },
 
   data() {
@@ -160,16 +164,6 @@ export default {
         nestedBarVariables,
         nestedGlyphVariables,
       };
-    },
-    linkWidthScale() {
-      return d3.scaleLinear()
-        .domain(
-          [
-            d3.min(this.graphStructure.links.map(d => d[this.linkWidthVariable])),
-            d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
-          ]
-        )
-        .range([2, 20])
     },
   },
 

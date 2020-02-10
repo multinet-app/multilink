@@ -65,7 +65,17 @@ export default {
       } else {
         return []
       }
-    }
+    },
+    linkWidthScale() {
+      return d3.scaleLinear()
+        .domain(
+          [
+            d3.min(this.graphStructure.links.map(d => d[this.linkWidthVariable])),
+            d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
+          ]
+        )
+        .range([2, 20])
+    },
   },
 
   async mounted() {
@@ -270,6 +280,7 @@ export default {
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
+              linkWidthScale
             }"
         />
 
@@ -300,6 +311,7 @@ export default {
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
+              linkWidthScale
             }"
             @restart-simulation="hello()"
             />

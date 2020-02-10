@@ -65,6 +65,10 @@ export default {
       type: Function,
       default: null
     },
+    linkWidthScale: {
+      type: Function,
+      default: null
+    },
   },
 
   data() {
@@ -285,9 +289,9 @@ export default {
       // If we have nested bar variables and nestedRender is on add the bars to the legend
       // TODO: Make a bar representation here, a couple rects (is this scaled properly in the vis? Can we use that scale here)
       // this.nestedBarVariables
-
-      // If we have nested glyph variables and nestedRender is on add the glyph to the legend
+ 
       // TODO: Add a variable name to describe which row is which variable
+      // Add the glyph classes
 
       // This is a hack to get the glyphs to not render when the vars have been deselected (causes full re-render on each update)
       // I'm sure we can do something better here
@@ -303,7 +307,6 @@ export default {
 
       let row = 0;
       for (let glyphClass in this.nestedGlyphClasses) {
-        console.log(row, glyphClass)
         let glyphColors = legend
             .select('.nestedGlyphs')
             .selectAll(`rect.${glyphClass}`)
