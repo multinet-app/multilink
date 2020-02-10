@@ -306,7 +306,7 @@ export default {
         console.log(row, glyphClass)
         let glyphColors = legend
             .select('.nestedGlyphs')
-            .selectAll(`rect, .${glyphClass}`)
+            .selectAll(`rect.${glyphClass}`)
             .data(this.nestedGlyphClasses[glyphClass])
 
         glyphColors
@@ -328,7 +328,7 @@ export default {
 
         let glyphColorsLabels = legend
           .select('.nestedGlyphs')
-          .selectAll(`.label, .${glyphClass}`)
+          .selectAll(`.label.${glyphClass}`)
           .data(this.nestedGlyphClasses[glyphClass])
           
         glyphColorsLabels
