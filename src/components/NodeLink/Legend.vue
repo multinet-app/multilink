@@ -77,7 +77,7 @@ export default {
       linkColorBaseline: 55,
       linkWidthBaseline: 95,
       nestedBarsBaseline: 135,
-      nestedGlyphsBaseline: 195,
+      nestedGlyphsBaseline: 205,
     };
   },
 
@@ -372,8 +372,8 @@ export default {
           .enter()
           .append('rect')
           .merge(nestedBars)
-          .attr('x', (d, i) => 15 * i)
-          .attr('y', this.nestedBarsBaseline + 8)
+          .attr('x', (d, i) => 45 * i)
+          .attr('y', this.nestedBarsBaseline + 8 + 10)
           .attr('width', 10)
           .attr('height', 35)
           .attr('fill', '#AAAAAA') // TODO: Make this white with a border
@@ -384,7 +384,7 @@ export default {
           .append('rect')
           .merge(nestedBars)
           .attr('x', (d, i) => 15 * i)
-          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][2])
+          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][2])
           .attr('width', 10)
           .attr('height', (d, i) => this.nestedBarClasses[d][2])
           .attr('fill', 'blue')
@@ -404,7 +404,7 @@ export default {
           .append('text')
           .merge(nestedBarsLabels)
           .text(d => d)
-          .attr('x', (d, i) => (15*i) + 20)
+          .attr('x', (d, i) => (30 * i) + 20)
           .attr('y', this.nestedBarsBaseline + 8)
           .classed('label', true)
           .classed(barVar, true);
@@ -415,7 +415,7 @@ export default {
           .merge(nestedBarsLabels)
           .text(0)
           .attr('x', (d, i) => (15*i) + 15)
-          .attr('y', d => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][0])
+          .attr('y', d => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][0])
           .classed('label', true)
           .classed(barVar, true);
 
