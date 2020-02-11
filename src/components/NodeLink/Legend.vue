@@ -148,7 +148,6 @@ export default {
           classes[variable] = [d3.min(data), Math.round(d3.mean(data)), d3.max(data)];
         }
       };
-      console.log(classes)
       return classes;
     },
     nestedGlyphClasses() {
@@ -347,6 +346,7 @@ export default {
       // this.nestedBarVariables
 
       // Add nested bars
+      // These remove steps are a hack, I'm sure we can do something better here
       legend
         .select('.nestedBars')
         .selectAll('rect')
@@ -384,16 +384,16 @@ export default {
           .append('rect')
           .merge(nestedBars)
           .attr('x', (d, i) => 15 * i)
-          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][2]) // TODO: fix the scale here
+          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][2])
           .attr('width', 10)
           .attr('height', (d, i) => this.nestedBarClasses[d][2])
           .attr('fill', 'blue')
           .classed(barVar, true)
 
         let nestedBarsLabels = legend // TODO: Fix this section to add some labels
-          .select('.nestedGlyphs')
+          .select('.nestedBars')
           .selectAll(`.label.${barVar}`)
-          .data(this.nestedBarClasses)
+          .data(Object.keys(this.nestedBarClasses))
           
         nestedBarsLabels
           .exit()
@@ -404,8 +404,18 @@ export default {
           .append('text')
           .merge(nestedBarsLabels)
           .text(d => d)
-          .attr('x', (d, i) => (15*i) + 5)
-          .attr('y', this.nestedBarsBaseline + 9 + (barNo * 30))
+          .attr('x', (d, i) => (15*i) + 20)
+          .attr('y', this.nestedBarsBaseline + 8)
+          .classed('label', true)
+          .classed(barVar, true);
+
+        nestedBarsLabels
+          .enter()
+          .append('text')
+          .merge(nestedBarsLabels)
+          .text(0)
+          .attr('x', (d, i) => (15*i) + 15)
+          .attr('y', d => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][0])
           .classed('label', true)
           .classed(barVar, true);
 
