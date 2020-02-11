@@ -333,13 +333,7 @@ function updateVis() {
   link.classed("muted", false);
   link
     .select("path")
-    .style("stroke-width", d => {
-      if (linkWidthVariable) {
-        return linkWidthScale(d[linkWidthVariable])
-      } else{
-        return 3
-      }
-    })
+    .style("stroke-width", d => linkWidthScale(d[linkWidthVariable]))
     .style("stroke", d => {
       if (linkColorVariable !== null) {
         return linkColorScale(d[linkColorVariable])

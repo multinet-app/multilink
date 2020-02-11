@@ -77,7 +77,7 @@ export default {
       linkColorBaseline: 55,
       linkWidthBaseline: 95,
       nestedBarsBaseline: 135,
-      nestedGlyphsBaseline: 175,
+      nestedGlyphsBaseline: 195,
     };
   },
 
@@ -129,6 +129,27 @@ export default {
           classes = [...new Set(this.graphStructure.links.map(d => d[this.linkColorVariable]))]
       };
       return classes.sort((a, b) => a - b);
+    },
+    linkWidthClasses() {
+      let classes = [];
+      if (this.linkWidthVariable !== null) {
+        let data = [...new Set(this.graphStructure.links.map(d => d[this.linkWidthVariable]))]
+        classes[0] = d3.min(data);
+        classes[1] = Math.round(d3.mean(data));
+        classes[2] = d3.max(data);
+      }
+      return classes;
+    },
+    nestedBarClasses() {
+      let classes = {};
+      if (this.nestedBarVariables != null) {
+        for (let variable of this.nestedBarVariables){
+          let data = [...new Set(this.graphStructure.nodes.map(d => d[variable]))]
+          classes[variable] = [d3.min(data), Math.round(d3.mean(data)), d3.max(data)];
+        }
+      };
+      console.log(classes)
+      return classes;
     },
     nestedGlyphClasses() {
       let classes = {};
@@ -207,9 +228,9 @@ export default {
 
       // Set the nodeColors
       let nodeColors = legend
-          .select('.nodeColors')
-          .selectAll('rect')
-          .data(this.nodeColorClasses)
+        .select('.nodeColors')
+        .selectAll('rect')
+        .data(this.nodeColorClasses)
 
       nodeColors
         .exit()
@@ -246,9 +267,9 @@ export default {
 
       // Set the link colors
       let linkColors = legend
-          .select('.linkColors')
-          .selectAll('rect')
-          .data(this.linkColorClasses)
+        .select('.linkColors')
+        .selectAll('rect')
+        .data(this.linkColorClasses)
 
       linkColors
         .exit()
@@ -262,7 +283,7 @@ export default {
         .attr('y', this.linkColorBaseline + 15)
         .attr('width', 10)
         .attr('height', 10)
-        .attr('fill', (d) => this.glyphColorScale(d))
+        .attr('fill', (d) => this.linkColorScale(d))
 
       let linkColorsLabels = legend
         .select('.linkColors')
@@ -282,13 +303,115 @@ export default {
         .attr('y', (d, i) => this.linkColorBaseline + 9)
         .classed('label', true)
 
-      // If we have a link width variable add the scale to the legend
-      // TODO: make a numeric, width vis here, match the actual stroke widths (is this actually scaled properly)
-      // this.linkWidthVariable
+      // Add link width variables
+      let linkWidths = legend
+        .select('.linkWidth')
+        .selectAll('rect')
+        .data(this.linkWidthClasses)
+
+      linkWidths
+        .exit()
+        .remove()
+
+      linkWidths
+        .enter()
+        .append('rect')
+        .merge(linkWidths)
+        .attr('x', (d, i) => 100*i)
+        .attr('y', this.linkWidthBaseline + 15)
+        .attr('width', d => this.linkWidthScale(d))
+        .attr('height', 10)
+        .attr('fill', '#888888')
+
+      let linkWidthsLabels = legend
+        .select('.linkWidth')
+        .selectAll('.label')
+        .data(this.linkWidthClasses)
+
+      linkWidthsLabels
+        .exit()
+        .remove()
+      
+      linkWidthsLabels
+        .enter()
+        .append('text')
+        .merge(linkWidthsLabels)
+        .text(d => d)
+        .attr('x', (d, i) => (100*i) + 5)
+        .attr('y', (d, i) => this.linkWidthBaseline + 9)
+        .classed('label', true)
+        
 
       // If we have nested bar variables and nestedRender is on add the bars to the legend
       // TODO: Make a bar representation here, a couple rects (is this scaled properly in the vis? Can we use that scale here)
       // this.nestedBarVariables
+
+      // Add nested bars
+      legend
+        .select('.nestedBars')
+        .selectAll('rect')
+        .remove()
+
+      legend
+        .select('.nestedBars')
+        .selectAll('.label')
+        .remove()
+
+      let barNo = 0;
+      for (let barVar in this.nestedBarClasses) {
+        let nestedBars = legend
+          .select('.nestedBars')
+          .selectAll(`rect.${barVar}`)
+          .data(Object.keys(this.nestedBarClasses))
+
+        nestedBars
+          .exit()
+          .remove()
+
+        nestedBars
+          .enter()
+          .append('rect')
+          .merge(nestedBars)
+          .attr('x', (d, i) => 15 * i)
+          .attr('y', this.nestedBarsBaseline + 8)
+          .attr('width', 10)
+          .attr('height', 35)
+          .attr('fill', '#AAAAAA') // TODO: Make this white with a border
+          .classed(barVar, true)
+
+        nestedBars
+          .enter()
+          .append('rect')
+          .merge(nestedBars)
+          .attr('x', (d, i) => 15 * i)
+          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 - this.nestedBarClasses[d][2]) // TODO: fix the scale here
+          .attr('width', 10)
+          .attr('height', (d, i) => this.nestedBarClasses[d][2])
+          .attr('fill', 'blue')
+          .classed(barVar, true)
+
+        let nestedBarsLabels = legend // TODO: Fix this section to add some labels
+          .select('.nestedGlyphs')
+          .selectAll(`.label.${barVar}`)
+          .data(this.nestedBarClasses)
+          
+        nestedBarsLabels
+          .exit()
+          .remove()
+        
+        nestedBarsLabels
+          .enter()
+          .append('text')
+          .merge(nestedBarsLabels)
+          .text(d => d)
+          .attr('x', (d, i) => (15*i) + 5)
+          .attr('y', this.nestedBarsBaseline + 9 + (barNo * 30))
+          .classed('label', true)
+          .classed(barVar, true);
+
+        barNo++
+      }
+      
  
       // TODO: Add a variable name to describe which row is which variable
       // Add the glyph classes
@@ -305,12 +428,12 @@ export default {
         .selectAll('.label')
         .remove()
 
-      let row = 0;
+      let glyphRow = 0;
       for (let glyphClass in this.nestedGlyphClasses) {
         let glyphColors = legend
-            .select('.nestedGlyphs')
-            .selectAll(`rect.${glyphClass}`)
-            .data(this.nestedGlyphClasses[glyphClass])
+          .select('.nestedGlyphs')
+          .selectAll(`rect.${glyphClass}`)
+          .data(this.nestedGlyphClasses[glyphClass])
 
         glyphColors
           .exit()
@@ -321,7 +444,7 @@ export default {
           .append('rect')
           .merge(glyphColors)
           .attr('x', (d, i) => 15 * i)
-          .attr('y', this.nestedGlyphsBaseline + 15 + (row * 30))
+          .attr('y', this.nestedGlyphsBaseline + 15 + (glyphRow * 30))
           .attr('rx', 5)
           .attr('ry', 5)
           .attr('width', 10)
@@ -344,12 +467,11 @@ export default {
           .merge(glyphColorsLabels)
           .text(d => d)
           .attr('x', (d, i) => (15*i) + 5)
-          .attr('y', this.nestedGlyphsBaseline + 9 + (row * 30))
+          .attr('y', this.nestedGlyphsBaseline + 9 + (glyphRow * 30))
           .classed('label', true)
           .classed(glyphClass, true);
 
-        console.log(row)
-        row++
+        glyphRow++
       }
     }
   }
@@ -360,7 +482,7 @@ export default {
   <div>
     <v-card>
       <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="265"/>
+      <svg id="legend" class="col-12" ref="legend" height="300"/>
     </v-card>
   </div>
 </template>
