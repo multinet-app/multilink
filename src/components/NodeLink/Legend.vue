@@ -247,7 +247,7 @@ export default {
 
       let nodeColorsLabels = legend
         .select('.nodeColors')
-        .selectAll('.label')
+        .selectAll('.legendLabel')
         .data(this.nodeColorClasses)
 
       nodeColorsLabels
@@ -261,7 +261,7 @@ export default {
         .text(d => d)
         .attr('x', (d, i) => (15*i) + 5)
         .attr('y', this.nodeColorBaseline + 9)
-        .classed('label', true)
+        .classed('legendLabel', true)
       
 
       // Set the link colors
@@ -286,7 +286,7 @@ export default {
 
       let linkColorsLabels = legend
         .select('.linkColors')
-        .selectAll('.label')
+        .selectAll('.legendLabel')
         .data(this.linkColorClasses)
 
       linkColorsLabels
@@ -300,7 +300,7 @@ export default {
         .text(d => d)
         .attr('x', (d, i) => (15*i) + 5)
         .attr('y', (d, i) => this.linkColorBaseline + 9)
-        .classed('label', true)
+        .classed('legendLabel', true)
 
       // Add link width variables
       let linkWidths = legend
@@ -324,7 +324,7 @@ export default {
 
       let linkWidthsLabels = legend
         .select('.linkWidth')
-        .selectAll('.label')
+        .selectAll('.legendLabel')
         .data(this.linkWidthClasses)
 
       linkWidthsLabels
@@ -338,7 +338,7 @@ export default {
         .text(d => d)
         .attr('x', (d, i) => (100*i) + 5)
         .attr('y', (d, i) => this.linkWidthBaseline + 9)
-        .classed('label', true)
+        .classed('legendLabel', true)
         
 
       // If we have nested bar variables and nestedRender is on add the bars to the legend
@@ -354,7 +354,7 @@ export default {
 
       legend
         .select('.nestedBars')
-        .selectAll('.label')
+        .selectAll('.legendLabel')
         .remove()
 
       let barNo = 0;
@@ -392,7 +392,7 @@ export default {
 
         let nestedBarsLabels = legend // TODO: Fix this section to add some labels
           .select('.nestedBars')
-          .selectAll(`.label.${barVar}`)
+          .selectAll(`.legendLabel.${barVar}`)
           .data(Object.keys(this.nestedBarClasses))
           
         nestedBarsLabels
@@ -404,20 +404,24 @@ export default {
           .append('text')
           .merge(nestedBarsLabels)
           .text(d => d)
-          .attr('x', (d, i) => (30 * i) + 20)
+          .attr('x', (d, i) => (30 * i) )
           .attr('y', this.nestedBarsBaseline + 8)
-          .classed('label', true)
+          .attr('alignment-baseline', 'bottom')
+          .attr('text-anchor', 'start')
+          .classed('legendLabel', true)
           .classed(barVar, true);
 
-        nestedBarsLabels
-          .enter()
-          .append('text')
-          .merge(nestedBarsLabels)
-          .text(0)
-          .attr('x', (d, i) => (15*i) + 15)
-          .attr('y', d => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][0])
-          .classed('label', true)
-          .classed(barVar, true);
+        // nestedBarsLabels
+        //   .enter()
+        //   .append('text')
+        //   .merge(nestedBarsLabels)
+        //   .text(0)
+        //   .attr('x', (d, i) => (30 * i) + 15)
+        //   .attr('y', d => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][0])
+        //   .attr('alignment-baseline', 'bottom')
+        //   .attr('text-anchor', 'start')
+        //   .classed('legendLabel', true)
+        //   .classed(barVar, true);
 
         barNo++
       }
@@ -435,7 +439,7 @@ export default {
 
       legend
         .select('.nestedGlyphs')
-        .selectAll('.label')
+        .selectAll('.legendLabel')
         .remove()
 
       let glyphRow = 0;
@@ -464,7 +468,7 @@ export default {
 
         let glyphColorsLabels = legend
           .select('.nestedGlyphs')
-          .selectAll(`.label.${glyphClass}`)
+          .selectAll(`.legendLabel.${glyphClass}`)
           .data(this.nestedGlyphClasses[glyphClass])
           
         glyphColorsLabels
@@ -478,7 +482,7 @@ export default {
           .text(d => d)
           .attr('x', (d, i) => (15*i) + 5)
           .attr('y', this.nestedGlyphsBaseline + 9 + (glyphRow * 30))
-          .classed('label', true)
+          .classed('legendLabel', true)
           .classed(glyphClass, true);
 
         glyphRow++
