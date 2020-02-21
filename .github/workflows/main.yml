@@ -20,7 +20,7 @@ jobs:
         node-version: '10.x'
 
     - uses: actions/cache@v1
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      id: yarn-cache
       with:
         path: /home/runner/work/view-nodelink/view-nodelink/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-cache
