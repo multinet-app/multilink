@@ -18,6 +18,17 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
-    - run: yarn install
-    - run: yarn test
-    
+
+    - uses: actions/cache@v1
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: /home/runner/work/view-nodelink/view-nodelink/node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-cache
+
+    - run: pwd
+
+    - name: Install yarn packages
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      run: yarn install
+
+    - run: yarn lint
