@@ -47,17 +47,17 @@ export default {
     },
     multiVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]) 
+        // Loop through all nodes, flatten the 2d array, and turn it into a set
+        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node))
+        allVars = [].concat.apply([], allVars);
+        allVars = [...new Set(allVars)]
+        return allVars
       } else {
         return []
       }
     },
     colorVariableList() {
-      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]).concat(["table", null]) 
-      } else {
-        return []
-      }
+      return this.multiVariableList.concat(["table", null]) 
     },
     linkVariableList() {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
@@ -123,7 +123,7 @@ export default {
     <v-row class="flex-nowrap">
       <!-- control panel content -->
       <v-col cols="3">
-        <v-card>
+        <v-card id="control">
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
@@ -322,7 +322,7 @@ export default {
 </template>
 
 <style scoped>
-  .v-card {
+  #control {
     max-height: calc(75vh - 18px);
     overflow-y: scroll
   }
