@@ -118,7 +118,7 @@ export default {
             .attr('y', (d) => yScale(bins[d]))
             .attr('height', (d, i, values) => this.svgHeight - yScale(bins[d]))
             .attr('width', xScale.bandwidth())
-            .attr('fill', this.isQuantitative(attr) ? this.nodeColorScale(d) : '#82B1FF');
+            .attr('fill', d => this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d));
 
           // Add the brush
           const brush = d3.brushX()
@@ -135,8 +135,9 @@ export default {
       }
     },
 
-    isQuantitative(attr) {
-      return false
+    isQuantitative(varName, type) {
+      const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((node) => parseFloat(node[varName])))];
+      return uniqueValues.length > 5;
     },
   }
 };
