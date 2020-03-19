@@ -121,16 +121,16 @@ export default {
             .attr('fill', this.isQuantitative(attr) ? this.nodeColorScale(d) : '#82B1FF');
 
           // Add the brush
+          const brush = d3.brushX()
+            .extent([[0, 0], [variableSvgWidth, this.svgHeight]])
+            .on("start brush", () => {
+              const extent = d3.event.selection;
+              variableSvgEnter
+                .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
+            })
           variableSvg
-            .call(
-              d3.brushX()
-                .extent([[0, 0], [variableSvgWidth, this.svgHeight]])
-                .on("start brush", () => {
-                  const extent = d3.event.selection;
-                  variableSvgEnter
-                    .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
-                })
-            );
+            .call(brush)
+            .call(brush.move, xScale.range());
         }
       }
     },
