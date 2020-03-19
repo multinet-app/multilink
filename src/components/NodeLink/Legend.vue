@@ -15,44 +15,6 @@ export default {
       type: Object,
       default: () => {}
     },
-    labelVariable: {
-      type: String,
-      default: "_key"
-    },
-    colorVariable: {
-      type: String,
-      default: "table"
-    },
-    linkWidthVariable: {
-      type: String,
-      default: null
-    },
-    linkColorVariable: {
-      type: String,
-      default: null
-    },
-    nodeMarkerType: {
-      type: String,
-      default: "Circle"
-    },
-    selectNeighbors: {
-      type: Boolean,
-      default: true
-    },
-    renderNested: {
-      type: Boolean,
-      default: false
-    },
-    nestedBarVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
-    nestedGlyphVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
     nodeColorScale: {
       type: Function,
       default: null
@@ -81,7 +43,8 @@ export default {
 
   data() {
     return {
-      svgHeight: 150
+      svgHeight: 150,
+      yAxisPadding: 10,
     };
   },
 
@@ -95,15 +58,6 @@ export default {
         graphStructure,
         provenance,
         app,
-        nodeMarkerType,
-        selectNeighbors,
-        renderNested,
-        labelVariable,
-        colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
-        linkWidthVariable,
-        linkColorVariable,
         multiVariableList,
         linkVariableList,
       } = this;
@@ -111,15 +65,6 @@ export default {
         graphStructure,
         provenance,
         app,
-        nodeMarkerType,
-        selectNeighbors,
-        renderNested,
-        labelVariable,
-        colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
-        linkWidthVariable,
-        linkColorVariable,
         multiVariableList,
         linkVariableList,
       };
@@ -149,18 +94,18 @@ export default {
             .domain([d3.min(binValues), d3.max(binValues)]);
 
           const xScale = d3.scaleBand()
-            .range([10, variableSvgWidth])
+            .range([this.yAxisPadding, variableSvgWidth])
             .domain(binLabels);
 
           // Add the axis scales onto the chart
           variableSvg
             .append('g')
-            .attr('transform', `translate(10,0)`)
+            .attr('transform', `translate(${this.yAxisPadding},0)`)
             .call(d3.axisLeft(yScale));
 
           variableSvg
             .append('g')
-            .attr('transform', `translate(10, ${this.svgHeight})`)
+            .attr('transform', `translate(0, ${this.svgHeight})`)
             .call(d3.axisBottom(xScale));
 
           // Add the bars
