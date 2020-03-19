@@ -280,7 +280,9 @@ export default {
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
-              linkWidthScale
+              linkWidthScale,
+              multiVariableList,
+              linkVariableList
             }"
         />
 
@@ -323,7 +325,7 @@ export default {
 
 <style scoped>
   #control {
-    max-height: calc(75vh - 18px);
+    max-height: calc(50vh - 18px);
     overflow-y: scroll
   }
 </style>

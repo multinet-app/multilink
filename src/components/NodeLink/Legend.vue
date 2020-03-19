@@ -69,16 +69,24 @@ export default {
       type: Function,
       default: null
     },
+    multiVariableList: {
+      type: Array,
+      default: () => [],
+    },
+    linkVariableList: {
+      type: Array,
+      default: () => [],
+    },
   },
 
   data() {
     return {
-      nodeColorBaseline: 15,
-      linkColorBaseline: 55,
-      linkWidthBaseline: 95,
-      nestedBarsBaseline: 135,
-      nestedGlyphsBaseline: 205,
+      svgHeight: 100
     };
+  },
+
+  mounted() {
+    this.setUpPanel()
   },
 
   computed: {
@@ -96,6 +104,8 @@ export default {
         nestedGlyphVariables,
         linkWidthVariable,
         linkColorVariable,
+        multiVariableList,
+        linkVariableList,
       } = this;
       return {
         graphStructure,
@@ -110,384 +120,74 @@ export default {
         nestedGlyphVariables,
         linkWidthVariable,
         linkColorVariable,
+        multiVariableList,
+        linkVariableList,
       };
     },
-    nodeColorClasses() {
-      let classes = [];
-      if (this.colorVariable != null) {
-        if (this.colorVariable === "table") {
-          classes = [...new Set(this.graphStructure.nodes.map(d => d.id.split("/")[0]))]
-        } else {
-          classes = [...new Set(this.graphStructure.nodes.map(d => d[this.colorVariable]))]
-        }
-      };
-      return classes.sort((a, b) => a - b);
-    },
-    linkColorClasses() {
-      let classes = [];
-      if (this.linkColorVariable != null) {
-          classes = [...new Set(this.graphStructure.links.map(d => d[this.linkColorVariable]))]
-      };
-      return classes.sort((a, b) => a - b);
-    },
-    linkWidthClasses() {
-      let classes = [];
-      if (this.linkWidthVariable !== null) {
-        let data = [...new Set(this.graphStructure.links.map(d => d[this.linkWidthVariable]))]
-        classes[0] = d3.min(data);
-        classes[1] = Math.round(d3.mean(data));
-        classes[2] = d3.max(data);
-      }
-      return classes;
-    },
-    nestedBarClasses() {
-      let classes = {};
-      if (this.nestedBarVariables != null) {
-        for (let variable of this.nestedBarVariables){
-          let data = [...new Set(this.graphStructure.nodes.map(d => d[variable]))]
-          classes[variable] = [d3.min(data), Math.round(d3.mean(data)), d3.max(data)];
-        }
-      };
-      return classes;
-    },
-    nestedGlyphClasses() {
-      let classes = {};
-      if (this.nestedGlyphVariables != null) {
-        for (let variable of this.nestedGlyphVariables){
-          classes[variable] = [...new Set(this.graphStructure.nodes.map(d => d[variable]))]
-          classes[variable] = classes[variable].sort((a, b) => a - b)
-        }
-      };
-      return classes;
-    },
-  },
-
-  watch: {
-    properties() {
-      this.updateLegend();
-    }
-  },
-
-  async mounted() {
-    this.setUpLegend()
-    this.updateLegend()
   },
 
   methods: {
-    setUpLegend: function() {
-      const legend = d3.select(this.$refs.legend)
+    setUpPanel() {
+      for (const nodeAttr of this.multiVariableList) {
+        // Get the SVG element and its width
+        const variableSvg = d3.select(`#node${nodeAttr}`)
+        const variableSvgWidth = variableSvg.node().getBoundingClientRect().width
 
-      // Append groups for each type of information we'll need
-      legend.append('g').classed('nodeColors', true)
-      legend.append('g').classed('linkColors', true)
-      legend.append('g').classed('linkWidth', true)
-      legend.append('g').classed('nestedBars', true)
-      legend.append('g').classed('nestedGlyphs', true)
+        // Get the data and generate the bins
+        const currentData = this.graphStructure.nodes.map(d => d[nodeAttr])
+        const bins = currentData.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {})
+        const binLabels = Object.entries(bins).map(d => d[0])
+        const binValues = Object.entries(bins).map(d => d[1])
 
-      // Attach the legend headers
-      legend
-        .select('.nodeColors')
-        .append('text')
-        .text('Node Colors')
-        .attr('x', 0)
-        .attr('y', this.nodeColorBaseline)
+        // Generate axis scales
+        const yScale = d3.scaleLinear()
+          .range([this.svgHeight, 0])
+          .domain([d3.min(binValues), d3.max(binValues)]);
 
-      legend
-        .select('.linkColors')
-        .append('text')
-        .text('Link Colors')
-        .attr('x', 0)
-        .attr('y', this.linkColorBaseline)
+        const xScale = d3.scaleBand()
+          .range([0, variableSvgWidth])
+          .domain(binLabels);
 
-      legend
-        .select('.linkWidth')
-        .append('text')
-        .text('Link Width')
-        .attr('x', 0)
-        .attr('y', this.linkWidthBaseline)
+        // Add the axis scales onto the chart
+        variableSvg
+          .append('g')
+          .call(d3.axisLeft(yScale));
 
-      legend
-        .select('.nestedBars')
-        .append('text')
-        .text('Nested Bars')
-        .attr('x', 0)
-        .attr('y', this.nestedBarsBaseline)
+        variableSvg
+          .append('g')
+          .attr('transform', `translate(0, ${this.svgHeight})`)
+          .call(d3.axisBottom(xScale));
 
-      legend
-        .select('.nestedGlyphs')
-        .append('text')
-        .text('Nested Glyphs')
-        .attr('x', 0)
-        .attr('y', this.nestedGlyphsBaseline)
+        // Add the bars
+        const variableSvgEnter = variableSvg
+          .selectAll()
+          .data(currentData)
+          .enter()
+          .append('rect')
+          .attr('x', (d) => xScale(d))
+          .attr('y', (d) => yScale(bins[d]))
+          .attr('height', (d, i, values) => this.svgHeight - yScale(bins[d]))
+          .attr('width', xScale.bandwidth())
+          .attr('fill', this.isQuantitative(nodeAttr) ? this.nodeColorScale(d) : '#82B1FF');
+
+        // Add the brush
+        variableSvg
+          .call(
+            d3.brushX()
+              .extent([[0, 0], [variableSvgWidth, this.svgHeight]])
+              .on("start brush", () => {
+                const extent = d3.event.selection;
+                console.log(extent)
+                variableSvgEnter
+                  .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
+              })
+          );
+      }
     },
 
-    updateLegend: function() {
-      // Get the legend element
-      const legend = d3.select(this.$refs.legend)
-
-      // Set the nodeColors
-      let nodeColors = legend
-        .select('.nodeColors')
-        .selectAll('rect')
-        .data(this.nodeColorClasses)
-
-      nodeColors
-        .exit()
-        .remove()
-
-      nodeColors
-        .enter()
-        .append('rect')
-        .merge(nodeColors)
-        .attr('x', (d, i) => 15 * i)
-        .attr('y', this.nodeColorBaseline + 15)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', (d) => this.nodeColorScale(d))
-
-      let nodeColorsLabels = legend
-        .select('.nodeColors')
-        .selectAll('.legendLabel')
-        .data(this.nodeColorClasses)
-
-      nodeColorsLabels
-        .exit()
-        .remove()
-      
-      nodeColorsLabels
-        .enter()
-        .append('text')
-        .merge(nodeColorsLabels)
-        .text(d => d)
-        .attr('x', (d, i) => 15 * i)
-        .attr('y', this.nodeColorBaseline + 14)
-        .classed('legendLabel', true)
-      
-
-      // Set the link colors
-      let linkColors = legend
-        .select('.linkColors')
-        .selectAll('rect')
-        .data(this.linkColorClasses)
-
-      linkColors
-        .exit()
-        .remove()
-
-      linkColors
-        .enter()
-        .append('rect')
-        .merge(linkColors)
-        .attr('x', (d, i) => 15 * i)
-        .attr('y', this.linkColorBaseline + 15)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', (d) => this.linkColorScale(d))
-
-      let linkColorsLabels = legend
-        .select('.linkColors')
-        .selectAll('.legendLabel')
-        .data(this.linkColorClasses)
-
-      linkColorsLabels
-        .exit()
-        .remove()
-      
-      linkColorsLabels
-        .enter()
-        .append('text')
-        .merge(linkColorsLabels)
-        .text(d => d)
-        .attr('x', (d, i) => 15 * i)
-        .attr('y', (d, i) => this.linkColorBaseline + 14)
-        .classed('legendLabel', true)
-
-      // Add link width variables
-      let linkWidths = legend
-        .select('.linkWidth')
-        .selectAll('rect')
-        .data(this.linkWidthClasses)
-
-      linkWidths
-        .exit()
-        .remove()
-
-      linkWidths
-        .enter()
-        .append('rect')
-        .merge(linkWidths)
-        .attr('x', (d, i) => 50 * i)
-        .attr('y', this.linkWidthBaseline + 15)
-        .attr('width', d => this.linkWidthScale(d))
-        .attr('height', 10)
-        .attr('fill', '#888888')
-
-      let linkWidthsLabels = legend
-        .select('.linkWidth')
-        .selectAll('.legendLabel')
-        .data(this.linkWidthClasses)
-
-      linkWidthsLabels
-        .exit()
-        .remove()
-      
-      linkWidthsLabels
-        .enter()
-        .append('text')
-        .merge(linkWidthsLabels)
-        .text(d => d)
-        .attr('x', (d, i) => 50 * i)
-        .attr('y', (d, i) => this.linkWidthBaseline + 14)
-        .classed('legendLabel', true)
-        
-
-      // If we have nested bar variables and nestedRender is on add the bars to the legend
-      // TODO: Make a bar representation here, a couple rects (is this scaled properly in the vis? Can we use that scale here)
-      // this.nestedBarVariables
-
-      // Add nested bars
-      // These remove steps are a hack, I'm sure we can do something better here
-      legend
-        .select('.nestedBars')
-        .selectAll('rect')
-        .remove()
-
-      legend
-        .select('.nestedBars')
-        .selectAll('.legendLabel')
-        .remove()
-
-      let barNo = 0;
-      for (let barVar in this.nestedBarClasses) {
-        let nestedBars = legend
-          .select('.nestedBars')
-          .selectAll(`rect.${barVar}`)
-          .data(Object.keys(this.nestedBarClasses))
-
-        nestedBars
-          .exit()
-          .remove()
-
-        nestedBars
-          .enter()
-          .append('rect')
-          .merge(nestedBars)
-          .attr('x', (d, i) => 45 * i)
-          .attr('y', this.nestedBarsBaseline + 8 + 10)
-          .attr('width', 10)
-          .attr('height', 35)
-          .attr('fill', '#AAAAAA') // TODO: Make this white with a border
-          .classed(barVar, true)
-
-        nestedBars
-          .enter()
-          .append('rect')
-          .merge(nestedBars)
-          .attr('x', (d, i) => 45 * i)
-          .attr('y', (d, i) => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][2])
-          .attr('width', 10)
-          .attr('height', (d, i) => this.nestedBarClasses[d][2])
-          .attr('fill', 'blue')
-          .classed(barVar, true)
-
-        let nestedBarsLabels = legend // TODO: Fix this section to add some labels
-          .select('.nestedBars')
-          .selectAll(`.legendLabel.${barVar}`)
-          .data(Object.keys(this.nestedBarClasses))
-          
-        nestedBarsLabels
-          .exit()
-          .remove()
-        
-        nestedBarsLabels
-          .enter()
-          .append('text')
-          .merge(nestedBarsLabels)
-          .text(d => d)
-          .attr('x', (d, i) => (45 * i) )
-          .attr('y', this.nestedBarsBaseline + 14)
-          .attr('alignment-baseline', 'bottom')
-          .attr('text-anchor', 'start')
-          .classed('legendLabel', true)
-          .classed(barVar, true);
-
-        // nestedBarsLabels
-        //   .enter()
-        //   .append('text')
-        //   .merge(nestedBarsLabels)
-        //   .text(0)
-        //   .attr('x', (d, i) => (30 * i) + 15)
-        //   .attr('y', d => this.nestedBarsBaseline + 35 + 8 + 10 - this.nestedBarClasses[d][0])
-        //   .attr('alignment-baseline', 'bottom')
-        //   .attr('text-anchor', 'start')
-        //   .classed('legendLabel', true)
-        //   .classed(barVar, true);
-
-        barNo++
-      }
-      
- 
-      // TODO: Add a variable name to describe which row is which variable
-      // Add the glyph classes
-
-      // This is a hack to get the glyphs to not render when the vars have been deselected (causes full re-render on each update)
-      // I'm sure we can do something better here
-      legend
-        .select('.nestedGlyphs')
-        .selectAll('rect')
-        .remove()
-
-      legend
-        .select('.nestedGlyphs')
-        .selectAll('.legendLabel')
-        .remove()
-
-      let glyphRow = 0;
-      for (let glyphClass in this.nestedGlyphClasses) {
-        let glyphColors = legend
-          .select('.nestedGlyphs')
-          .selectAll(`rect.${glyphClass}`)
-          .data(this.nestedGlyphClasses[glyphClass])
-
-        glyphColors
-          .exit()
-          .remove()
-
-        glyphColors
-          .enter()
-          .append('rect')
-          .merge(glyphColors)
-          .attr('x', (d, i) => 15 * i)
-          .attr('y', this.nestedGlyphsBaseline + 15 + (glyphRow * 30))
-          .attr('rx', 5)
-          .attr('ry', 5)
-          .attr('width', 10)
-          .attr('height', 10)
-          .attr('fill', (d) => this.glyphColorScale(d))
-          .classed(glyphClass, true)
-
-        let glyphColorsLabels = legend
-          .select('.nestedGlyphs')
-          .selectAll(`.legendLabel.${glyphClass}`)
-          .data(this.nestedGlyphClasses[glyphClass])
-          
-        glyphColorsLabels
-          .exit()
-          .remove()
-        
-        glyphColorsLabels
-          .enter()
-          .append('text')
-          .merge(glyphColorsLabels)
-          .text(d => d)
-          .attr('x', (d, i) => 15 * i)
-          .attr('y', this.nestedGlyphsBaseline + 14 + (glyphRow * 30))
-          .classed('legendLabel', true)
-          .classed(glyphClass, true);
-
-        glyphRow++
-      }
-    }
+    isQuantitative(attr) {
+      return false
+    },
   }
 };
 </script>
@@ -495,15 +195,48 @@ export default {
 <template>
   <div>
     <v-card>
-      <v-card-title>Legend</v-card-title>
-      <svg id="legend" class="col-12" ref="legend" height="300"/>
+      <v-list disabled>
+        <v-list-item-group>
+          <v-subheader>Node Attributes</v-subheader>
+          <v-list-item
+            v-for="(nodeAttr, index) of this.multiVariableList"
+            :key="'node' + nodeAttr"
+          >
+            <v-list-item-content>
+              <v-list-item-title v-text="nodeAttr + index"></v-list-item-title>
+              <br/>
+
+              <svg :id="'node' + nodeAttr" :height="svgHeight + 20"/>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-subheader>Link Attributes</v-subheader>
+          <v-list-item
+            v-for="(linkAttr, index) of this.linkVariableList"
+            :key="'link' + linkAttr"
+          >
+            <v-list-item-content>
+              <v-list-item-title v-text="linkAttr + index"></v-list-item-title>
+              <br/>
+              <svg :id="'link' + linkAttr" :height="svgHeight + 20"/>
+            </v-list-item-content>
+          </v-list-item>
+
+        </v-list-item-group>
+      </v-list>
     </v-card>
   </div>
 </template>
 
 <style scoped>
 .v-card {
-    height: calc(25vh - 24px);
+    height: calc(50vh - 24px);
     overflow-y: scroll
-  }
+}
+svg >>> text {
+  text-anchor: start;
+}
+svg >>> .selected{
+  stroke: "#000000";
+}
 </style>
