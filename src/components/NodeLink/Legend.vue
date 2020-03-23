@@ -45,6 +45,7 @@ export default {
     return {
       svgHeight: 150,
       yAxisPadding: 10,
+      varPadding: 10
     };
   },
 
@@ -80,7 +81,7 @@ export default {
           // Get the SVG element and its width
           const type = list === this.multiVariableList ? "node" : "link"
           const variableSvg = d3.select(`#${type}${attr}`)
-          const variableSvgWidth = variableSvg.node().getBoundingClientRect().width
+          const variableSvgWidth = variableSvg.node().getBoundingClientRect().width - this.yAxisPadding - this.varPadding
 
           // Get the data and generate the bins
           const currentData = this.graphStructure[`${type}s`].map(d => d[attr])
@@ -144,59 +145,81 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div id="legend">
     <v-card>
+      <!-- Sticky SVG to drag variables onto -->
       <svg class="sticky" height="33%" width="100%">
-        <!-- Main layout -->
         <rect width="100%" height="100%" fill="#DDDDDD" opacity="1"/>
+
+        <!-- Node elements -->
         <g id="nodeMapping">
+          <text font-size="16pt" y ="-132" dominant-baseline="hanging">Node Mapping</text>
           <circle r="100" fill="#82B1FF"/>
 
           <!-- Bar adding elements -->
           <g id="barElements">
             <rect width="10%" height="40%" fill="#EEEEEE"/>
-            <text font-size="10pt" dominant-baseline="hanging">Bars</text>
+            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Bars</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
 
           <!-- Glyph adding elements -->
           <g id="glyphElements">
             <rect width="10%" height="40%" fill="#EEEEEE"/>
-            <text font-size="10pt" dominant-baseline="hanging" >Glyphs</text>
+            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Glyphs</text>
+            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+          </g>
+        </g>
+        
+        <!-- Link elements -->
+        <g id="linkMapping">
+          <text font-size="16pt" y ="-132" dominant-baseline="hanging">Link Mapping</text>
+          <rect x="-100" y ="-100" width="200" height="200" fill="#82B1FF"/>
+
+
+          <g id="barElements">
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Width</text>
+            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+          </g>
+
+          <!-- Glyph adding elements -->
+          <g id="glyphElements">
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Color</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
         </g>
       </svg>
 
-      <v-list disabled>
-        <v-list-item-group disabled>
-          <v-subheader>Node Attributes</v-subheader>
-          <v-list-item
-            v-for="nodeAttr of this.multiVariableList"
-            :key="'node' + nodeAttr"
-          >
-            <v-list-item-content disabled>
-              <v-list-item-title v-text="nodeAttr"></v-list-item-title>
-              <br/>
+      <!-- Variables to brush and to drag onto the sticky SVG -->
+      <div :style="{'padding': `${this.varPadding}px`}">
+        <h2>Node Attributes</h2>
+        <br/>
+        <div
+          v-for="nodeAttr of this.multiVariableList"
+          :key="`node${nodeAttr}`"
+        >
+          <h3>{{nodeAttr}}</h3>
+          <svg :id="`node${nodeAttr}`" :height="svgHeight + 20" width="100%"/>
+          <br/>
+          <br/>
+        </div>
 
-              <svg :id="'node' + nodeAttr" :height="svgHeight + 20"/>
-            </v-list-item-content>
-          </v-list-item>
+        <br/>
+        <br/>
 
-          <v-subheader>Link Attributes</v-subheader>
-          <v-list-item
-            v-for="linkAttr of this.linkVariableList"
-            :key="'link' + linkAttr"
-          >
-            <v-list-item-content disabled>
-              <v-list-item-title v-text="linkAttr"></v-list-item-title>
-              <br/>
-              <svg :id="'link' + linkAttr" :height="svgHeight + 20"/>
-            </v-list-item-content>
-          </v-list-item>
-
-        </v-list-item-group>
-      </v-list>
+        <h2>Link Attributes</h2>
+        <br/>
+        <div
+          v-for="linkAttr of this.linkVariableList"
+          :key="`link${linkAttr}`"
+        >
+          <h3>{{linkAttr}}</h3>
+          <svg :id="`link${linkAttr}`" :height="svgHeight + 20" width="100%"/>
+          <br/>
+        </div>
+      </div>
     </v-card>
   </div>
 </template>
@@ -219,10 +242,15 @@ svg >>> .selected{
 }
 .sticky >>> text {
   text-anchor: middle;
+}
+.barLabel {
   transform: translate(5%, 0);
 }
 #nodeMapping {
-  transform: translate(50%, 50%);
+  transform: translate(20%, 50%);
+}
+#linkMapping {
+  transform: translate(80%, 50%);
 }
 #barElements { 
   transform: translate(-12%, -20%);

@@ -61,7 +61,11 @@ export default {
     },
     linkVariableList() {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.links[0]).concat([null]).filter(d => d !== "source" && d !== "target")
+        // Loop through all links, flatten the 2d array, and turn it into a set
+        let allVars = this.graphStructure.links.map((node) => Object.keys(node))
+        allVars = [].concat.apply([], allVars);
+        allVars = [...new Set(allVars)].filter(d => d !== "source" && d !== "target")
+        return allVars
       } else {
         return []
       }
