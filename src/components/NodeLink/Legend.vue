@@ -154,15 +154,15 @@ export default {
 
           <!-- Bar adding elements -->
           <g id="barElements">
-            <rect width="10%" height="60%" fill="#EEEEEE"/>
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text font-size="10pt" dominant-baseline="hanging">Bars</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
 
           <!-- Glyph adding elements -->
           <g id="glyphElements">
-            <rect width="10%" height="60%" fill="#EEEEEE"/>
-            <text font-size="10pt" dominant-baseline="hanging">Glyphs</text>
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <text font-size="10pt" dominant-baseline="hanging" >Glyphs</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
         </g>
@@ -217,17 +217,20 @@ svg >>> .selected{
    top: 0;
    z-index: 2;
 }
+.sticky >>> text {
+  text-anchor: middle;
+  transform: translate(5%, 0);
+}
 #nodeMapping {
   transform: translate(50%, 50%);
 }
 #barElements { 
-  transform: translate(-12%, -30%);
+  transform: translate(-12%, -20%);
 }
 #glyphElements {
-  transform: translate(2%, -30%);
+  transform: translate(2%, -20%);
 }
 .plus {
-  transform: translate(5%, 30%);
+  transform: translate(5%, 20%);
 }
-
 </style>
