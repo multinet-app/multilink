@@ -316,7 +316,7 @@ export default {
 
 <style scoped>
   #control {
-    max-height: calc(50vh - 18px);
+    max-height: calc(33vh - 18px);
     overflow-y: scroll
   }
 </style>

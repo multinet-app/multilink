@@ -122,7 +122,7 @@ export default {
 
           // Add the brush
           const brush = d3.brushX()
-            .extent([[0, 0], [variableSvgWidth, this.svgHeight]])
+            .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
             .on("start brush", () => {
               const extent = d3.event.selection;
               variableSvgEnter
@@ -146,6 +146,28 @@ export default {
 <template>
   <div>
     <v-card>
+      <svg class="sticky" height="33%" width="100%">
+        <!-- Main layout -->
+        <rect width="100%" height="100%" fill="#DDDDDD" opacity="1"/>
+        <g id="nodeMapping">
+          <circle r="100" fill="#82B1FF"/>
+
+          <!-- Bar adding elements -->
+          <g id="barElements">
+            <rect width="10%" height="60%" fill="#EEEEEE"/>
+            <text font-size="10pt" dominant-baseline="hanging">Bars</text>
+            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+          </g>
+
+          <!-- Glyph adding elements -->
+          <g id="glyphElements">
+            <rect width="10%" height="60%" fill="#EEEEEE"/>
+            <text font-size="10pt" dominant-baseline="hanging">Glyphs</text>
+            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+          </g>
+        </g>
+      </svg>
+
       <v-list disabled>
         <v-list-item-group disabled>
           <v-subheader>Node Attributes</v-subheader>
@@ -181,7 +203,7 @@ export default {
 
 <style scoped>
 .v-card {
-    height: calc(50vh - 24px);
+    height: calc(66vh - 24px);
     overflow-y: scroll
 }
 svg >>> text {
@@ -190,4 +212,22 @@ svg >>> text {
 svg >>> .selected{
   stroke: "#000000";
 }
+.sticky {
+   position: sticky;
+   top: 0;
+   z-index: 2;
+}
+#nodeMapping {
+  transform: translate(50%, 50%);
+}
+#barElements { 
+  transform: translate(-12%, -30%);
+}
+#glyphElements {
+  transform: translate(2%, -30%);
+}
+.plus {
+  transform: translate(5%, 30%);
+}
+
 </style>
