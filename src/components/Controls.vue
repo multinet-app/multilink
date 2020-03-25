@@ -38,6 +38,7 @@ export default {
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      nodeAttrScales: {},
     };
   },
 
@@ -277,7 +278,8 @@ export default {
               glyphColorScale,
               linkWidthScale,
               multiVariableList,
-              linkVariableList
+              linkVariableList,
+              nodeAttrScales
             }"
         />
 

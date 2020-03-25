@@ -2,6 +2,9 @@
 import * as d3 from "d3";
 
 export default {
+  components: {
+  },
+
   props: {
     app: {
       type: Object,
@@ -129,6 +132,7 @@ export default {
               variableSvgEnter
                 .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
             })
+
           variableSvg
             .call(brush)
             .call(brush.move, xScale.range());
@@ -140,6 +144,15 @@ export default {
       const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((node) => parseFloat(node[varName])))];
       return uniqueValues.length > 5;
     },
+
+    rectDrop(event) {
+      const droppedEl = event.dataTransfer.getData('attr_id')
+      console.log(droppedEl)
+    },
+
+    dragStart(event) {
+      event.dataTransfer.setData('attr_id', event.target.id)
+    }
   }
 };
 </script>
@@ -158,14 +171,22 @@ export default {
 
           <!-- Bar adding elements -->
           <g id="barElements">
-            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <rect width="10%" height="40%" fill="#EEEEEE" 
+              @dragenter="(e) => e.preventDefault()" 
+              @dragover="(e) => e.preventDefault()" 
+              @drop="rectDrop"
+            />
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Bars</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
 
           <!-- Glyph adding elements -->
           <g id="glyphElements">
-            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <rect width="10%" height="40%" fill="#EEEEEE" 
+              @dragenter="(e) => e.preventDefault()" 
+              @dragover="(e) => e.preventDefault()" 
+              @drop="rectDrop"
+            />
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Glyphs</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
@@ -176,16 +197,24 @@ export default {
           <text font-size="16pt" y ="-132" dominant-baseline="hanging">Link Mapping</text>
           <rect x="-100" y ="-100" width="200" height="200" fill="#82B1FF"/>
 
-
+          <!-- Color adding elements -->
           <g id="barElements">
-            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <rect width="10%" height="40%" fill="#EEEEEE" 
+              @dragenter="(e) => e.preventDefault()" 
+              @dragover="(e) => e.preventDefault()" 
+              @drop="rectDrop"
+            />
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Width</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
 
-          <!-- Glyph adding elements -->
+          <!-- Width adding elements -->
           <g id="glyphElements">
-            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <rect width="10%" height="40%" fill="#EEEEEE" 
+              @dragenter="(e) => e.preventDefault()" 
+              @dragover="(e) => e.preventDefault()" 
+              @drop="rectDrop"
+            />
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Color</text>
             <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
@@ -199,6 +228,9 @@ export default {
         <div
           v-for="nodeAttr of this.multiVariableList"
           :key="`node${nodeAttr}`"
+          :id="`node${nodeAttr}div`"
+          draggable="true"
+          @dragstart="dragStart"
         >
           <h3>{{nodeAttr}}</h3>
           <svg :id="`node${nodeAttr}`" :height="svgHeight + 20" width="100%"/>
@@ -214,6 +246,9 @@ export default {
         <div
           v-for="linkAttr of this.linkVariableList"
           :key="`link${linkAttr}`"
+          :id="`link${linkAttr}div`"
+          draggable="true"
+          @dragstart="dragStart"
         >
           <h3>{{linkAttr}}</h3>
           <svg :id="`link${linkAttr}`" :height="svgHeight + 20" width="100%"/>
