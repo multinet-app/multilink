@@ -146,8 +146,14 @@ export default {
     },
 
     rectDrop(event) {
-      const droppedEl = event.dataTransfer.getData('attr_id')
-      console.log(droppedEl)
+      const droppedEl = event.dataTransfer.getData('attr_id');
+      const type = droppedEl.substring(0,4) === 'node' ? 'node' : 'link';
+      const targetEl = event.target.parentNode.id
+
+      const droppedElText = droppedEl.replace(type, '').replace('div', '');
+      d3.select(`#${targetEl}`)
+        .append('text')
+        .text(droppedElText)
     },
 
     dragStart(event) {
@@ -166,57 +172,57 @@ export default {
 
         <!-- Node elements -->
         <g id="nodeMapping">
-          <text font-size="16pt" y ="-132" dominant-baseline="hanging">Node Mapping</text>
-          <circle r="100" fill="#82B1FF"/>
+          <text font-size="16pt" y ="-102" dominant-baseline="hanging">Node Mapping</text>
+          <circle r="70" fill="#82B1FF"/>
 
           <!-- Bar adding elements -->
-          <g id="barElements">
-            <rect width="10%" height="40%" fill="#EEEEEE" 
-              @dragenter="(e) => e.preventDefault()" 
-              @dragover="(e) => e.preventDefault()" 
-              @drop="rectDrop"
-            />
+          <g id="barElements"
+            @dragenter="(e) => e.preventDefault()" 
+            @dragover="(e) => e.preventDefault()" 
+            @drop="rectDrop"
+          >
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Bars</text>
-            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
 
           <!-- Glyph adding elements -->
-          <g id="glyphElements">
-            <rect width="10%" height="40%" fill="#EEEEEE" 
-              @dragenter="(e) => e.preventDefault()" 
-              @dragover="(e) => e.preventDefault()" 
-              @drop="rectDrop"
-            />
+          <g id="glyphElements"
+            @dragenter="(e) => e.preventDefault()" 
+            @dragover="(e) => e.preventDefault()" 
+            @drop="rectDrop"
+          >
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Glyphs</text>
-            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
         </g>
         
         <!-- Link elements -->
         <g id="linkMapping">
-          <text font-size="16pt" y ="-132" dominant-baseline="hanging">Link Mapping</text>
-          <rect x="-100" y ="-100" width="200" height="200" fill="#82B1FF"/>
-
-          <!-- Color adding elements -->
-          <g id="barElements">
-            <rect width="10%" height="40%" fill="#EEEEEE" 
-              @dragenter="(e) => e.preventDefault()" 
-              @dragover="(e) => e.preventDefault()" 
-              @drop="rectDrop"
-            />
-            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Width</text>
-            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
-          </g>
+          <text font-size="16pt" y ="-102" dominant-baseline="hanging">Link Mapping</text>
+          <rect x="-70" y ="-70" width="140" height="140" fill="#82B1FF"/>
 
           <!-- Width adding elements -->
-          <g id="glyphElements">
-            <rect width="10%" height="40%" fill="#EEEEEE" 
-              @dragenter="(e) => e.preventDefault()" 
-              @dragover="(e) => e.preventDefault()" 
-              @drop="rectDrop"
-            />
+          <g id="widthElements"
+            @dragenter="(e) => e.preventDefault()" 
+            @dragover="(e) => e.preventDefault()" 
+            @drop="rectDrop"
+          >
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
+            <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Width</text>
+            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+          </g>
+
+          <!-- Coloe adding elements -->
+          <g id="colorElements"
+            @dragenter="(e) => e.preventDefault()" 
+            @dragover="(e) => e.preventDefault()" 
+            @drop="rectDrop"
+          >
+            <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Color</text>
-            <path class="plus" width="5%" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
           </g>
         </g>
       </svg>
@@ -229,6 +235,7 @@ export default {
           v-for="nodeAttr of this.multiVariableList"
           :key="`node${nodeAttr}`"
           :id="`node${nodeAttr}div`"
+          class="draggable"
           draggable="true"
           @dragstart="dragStart"
         >
@@ -247,6 +254,7 @@ export default {
           v-for="linkAttr of this.linkVariableList"
           :key="`link${linkAttr}`"
           :id="`link${linkAttr}div`"
+          class="draggable"
           draggable="true"
           @dragstart="dragStart"
         >
@@ -287,13 +295,17 @@ svg >>> .selected{
 #linkMapping {
   transform: translate(80%, 50%);
 }
-#barElements { 
+#barElements, #widthElements { 
   transform: translate(-12%, -20%);
 }
-#glyphElements {
+#glyphElements, #colorElements {
   transform: translate(2%, -20%);
 }
 .plus {
   transform: translate(5%, 20%);
+  width: 5%;
+}
+.draggable {
+  cursor: pointer;
 }
 </style>
