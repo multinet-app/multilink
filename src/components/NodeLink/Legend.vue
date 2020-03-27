@@ -75,9 +75,10 @@ export default {
   computed: {
     properties() {
       const {
-        graphStructure,
-        provenance,
         app,
+        provenance,
+        graphStructure,
+        linkWidthScale,
         multiVariableList,
         linkVariableList,
         barVariables,
@@ -86,9 +87,10 @@ export default {
         colorVariables,
       } = this;
       return {
-        graphStructure,
-        provenance,
         app,
+        provenance,
+        graphStructure,
+        linkWidthScale,
         multiVariableList,
         linkVariableList,
         barVariables,
@@ -118,12 +120,12 @@ export default {
 
           // Generate axis scales
           const yScale = d3.scaleLinear()
-            .range([this.svgHeight, 0])
-            .domain([d3.min(binValues), d3.max(binValues)]);
+            .domain([d3.min(binValues), d3.max(binValues)])
+            .range([this.svgHeight, 0]);
 
           const xScale = d3.scaleBand()
-            .range([this.yAxisPadding, variableSvgWidth])
-            .domain(binLabels);
+            .domain(binLabels)
+            .range([this.yAxisPadding, variableSvgWidth]);
 
           // Add the axis scales onto the chart
           variableSvg
@@ -153,8 +155,22 @@ export default {
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
             .on("start brush", () => {
               const extent = d3.event.selection;
+
+              // Set the brush highlighting on the legend svg
               variableSvgEnter
                 .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
+                
+              // Update the link width domain
+              if (attr === this.widthVariables[0]) {
+                const new_domain = [
+                  this.ordinalInvert(extent[0], xScale, binLabels)[0],
+                  this.ordinalInvert(extent[1], xScale, binLabels)[0]
+                ]
+                this.linkWidthScale.domain(new_domain).range([2,20])
+              }
+
+              // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
+              this.$root.$emit('brushing');
             })
 
           variableSvg
@@ -167,6 +183,18 @@ export default {
     isQuantitative(varName, type) {
       const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((node) => parseFloat(node[varName])))];
       return uniqueValues.length > 5;
+    },
+
+    ordinalInvert(pos, scale, binLabels) {
+        let previous = null
+        const domain = scale.domain()
+        for(const idx in domain) {
+            if(scale(binLabels[idx]) > pos) {
+                return [previous, binLabels[idx]];
+            }
+            previous = binLabels[idx];
+        }
+        return [previous, null];
     },
 
     rectDrop(event) {

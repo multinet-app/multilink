@@ -148,6 +148,7 @@ export default {
         glyphVariables,
         widthVariables,
         colorVariables,
+        linkWidthScale,
       } = this;
       return {
         graphStructure,
@@ -165,12 +166,14 @@ export default {
         glyphVariables,
         widthVariables,
         colorVariables,
+        linkWidthScale,
       };
     },
   },
 
   watch: {
     properties() {
+      console.log('updating vis')
       this.updateVis();
     }
   },
@@ -182,6 +185,11 @@ export default {
     );
 
     this.simulation = this.makeSimulation()
+
+    // Required to update when brushing the legend
+    this.$root.$on('brushing', () => {
+      this.updateVis()
+    });
   },
 
   methods: {

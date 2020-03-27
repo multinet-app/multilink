@@ -39,6 +39,7 @@ export default {
       glyphVariables: [],
       widthVariables: [],
       colorVariables: [],
+      linkWidthScale: d3.scaleLinear(),
     };
   },
 
@@ -70,16 +71,6 @@ export default {
       } else {
         return []
       }
-    },
-    linkWidthScale() {
-      return d3.scaleLinear()
-        .domain(
-          [
-            d3.min(this.graphStructure.links.map(d => d[this.widthVariables[0]])),
-            d3.max(this.graphStructure.links.map(d => d[this.widthVariables[0]]))
-          ]
-        )
-        .range([2, 20])
     },
   },
 
