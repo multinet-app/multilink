@@ -27,14 +27,6 @@ export default {
       type: String,
       default: "table"
     },
-    linkWidthVariable: {
-      type: String,
-      default: null
-    },
-    linkColorVariable: {
-      type: String,
-      default: null
-    },
     nodeFontSize: {
       type: Number,
       default: 14
@@ -73,12 +65,22 @@ export default {
       type: Boolean,
       default: false
     },
-    nestedBarVariables: {
+    barVariables: {
       type: Array,
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
-    nestedGlyphVariables: {
+    glyphVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    widthVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    colorVariables: {
       type: Array,
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
@@ -140,12 +142,12 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
-        linkWidthVariable,
-        linkColorVariable,
         labelVariable,
         colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
       } = this;
       return {
         graphStructure,
@@ -157,12 +159,12 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
-        linkWidthVariable,
-        linkColorVariable,
         labelVariable,
         colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
       };
     },
   },

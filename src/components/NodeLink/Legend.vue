@@ -42,13 +42,29 @@ export default {
       type: Array,
       default: () => [],
     },
+    barVariables: {
+      type: Array,
+      default: () => [],
+    },
+    glyphVariables: {
+      type: Array,
+      default: () => [],
+    },
+    widthVariables: {
+      type: Array,
+      default: () => [],
+    },
+    colorVariables: {
+      type: Array,
+      default: () => [],
+    },
   },
 
   data() {
     return {
       svgHeight: 150,
       yAxisPadding: 10,
-      varPadding: 10
+      varPadding: 10,
     };
   },
 
@@ -64,6 +80,10 @@ export default {
         app,
         multiVariableList,
         linkVariableList,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
       } = this;
       return {
         graphStructure,
@@ -71,6 +91,10 @@ export default {
         app,
         multiVariableList,
         linkVariableList,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
       };
     },
   },
@@ -149,11 +173,17 @@ export default {
       const droppedEl = event.dataTransfer.getData('attr_id');
       const type = droppedEl.substring(0,4) === 'node' ? 'node' : 'link';
       const targetEl = event.target.parentNode.id
-
       const droppedElText = droppedEl.replace(type, '').replace('div', '');
-      d3.select(`#${targetEl}`)
-        .append('text')
-        .text(droppedElText)
+      
+      if (type === 'node' && targetEl === 'barElements') {
+        this.barVariables.push(droppedElText)
+      } else if (type === 'node' && targetEl === 'glyphElements') {
+        this.glyphVariables.push(droppedElText)
+      } else if (type === 'link' && targetEl === 'widthElements') {
+        this.widthVariables.push(droppedElText)
+      } else if (type === 'link' && targetEl === 'colorElements') {
+        this.colorVariables.push(droppedElText)
+      } 
     },
 
     dragStart(event) {
@@ -183,7 +213,15 @@ export default {
           >
             <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Bars</text>
-            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path v-if="barVariables.length === 0" class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <text 
+              v-for="(barVar, i) of barVariables" 
+              :key="barVar"
+              :transform="`translate(0,${i * 15 + 15})`"
+              dominant-baseline="hanging"
+              style="text-anchor: start;"
+              font-size="9pt"
+            >{{ barVar }}</text>
           </g>
 
           <!-- Glyph adding elements -->
@@ -194,7 +232,15 @@ export default {
           >
             <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Glyphs</text>
-            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path v-if="glyphVariables.length === 0" class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <text 
+              v-for="(glyphVar, i) of glyphVariables" 
+              :key="glyphVar"
+              :transform="`translate(0,${i * 15 + 15})`"
+              dominant-baseline="hanging"
+              style="text-anchor: start;"
+              font-size="9pt"
+            >{{ glyphVar }}</text>
           </g>
         </g>
         
@@ -211,10 +257,18 @@ export default {
           >
             <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Width</text>
-            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path v-if="widthVariables.length === 0" class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <text 
+              v-for="(widthVar, i) of widthVariables" 
+              :key="widthVar"
+              :transform="`translate(0,${i * 15 + 15})`"
+              dominant-baseline="hanging"
+              style="text-anchor: start;"
+              font-size="9pt"
+            >{{ widthVar }}</text>
           </g>
 
-          <!-- Coloe adding elements -->
+          <!-- Color adding elements -->
           <g id="colorElements"
             @dragenter="(e) => e.preventDefault()" 
             @dragover="(e) => e.preventDefault()" 
@@ -222,7 +276,15 @@ export default {
           >
             <rect width="10%" height="40%" fill="#EEEEEE"/>
             <text class="barLabel" font-size="10pt" dominant-baseline="hanging">Color</text>
-            <path class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <path v-if="colorVariables.length === 0" class="plus" d='M0,-10 V10 M-10,0 H10' stroke="black" stroke-width="3px"/>
+            <text 
+              v-for="(colorVar, i) of colorVariables" 
+              :key="colorVar"
+              :transform="`translate(0,${i * 15 + 15})`"
+              dominant-baseline="hanging"
+              style="text-anchor: start;"
+              font-size="9pt"
+            >{{ colorVar }}</text>
           </g>
         </g>
       </svg>

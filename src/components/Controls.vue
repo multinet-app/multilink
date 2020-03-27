@@ -29,16 +29,16 @@ export default {
       graph: null,
       selectNeighbors: true,
       renderNested: false,
-      nestedBarVariables: [],
-      nestedGlyphVariables: [],
       labelVariable: "_key",
       colorVariable: null,
-      linkWidthVariable: null,
-      linkColorVariable: null,
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       nodeAttrScales: {},
+      barVariables: [],
+      glyphVariables: [],
+      widthVariables: [],
+      colorVariables: [],
     };
   },
 
@@ -75,8 +75,8 @@ export default {
       return d3.scaleLinear()
         .domain(
           [
-            d3.min(this.graphStructure.links.map(d => d[this.linkWidthVariable])),
-            d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
+            d3.min(this.graphStructure.links.map(d => d[this.widthVariables[0]])),
+            d3.max(this.graphStructure.links.map(d => d[this.widthVariables[0]]))
           ]
         )
         .range([2, 20])
@@ -164,24 +164,6 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-select 
-              v-model="linkWidthVariable"
-              label="Link Width Variable"
-              :items="linkVariableList"
-              :options="linkVariableList"
-            />
-
-            <v-divider class="mt-4" />
-
-            <v-select 
-              v-model="linkColorVariable"
-              label="Link Color Variable"
-              :items="linkVariableList"
-              :options="linkVariableList"
-            />
-
-            <v-divider class="mt-4" />
-
             <v-select
               v-model="labelVariable"
               label="Label Variable"
@@ -209,31 +191,6 @@ export default {
                 hide-details
               />
             </v-card-subtitle>
-
-            <v-select
-              v-if="renderNested"
-              v-model="nestedBarVariables"
-              :items="multiVariableList"
-              label="Bar Variables"
-              multiple
-              chips
-              deletable-chips
-              hint="Choose the variables you'd like to model as bars"
-              persistent-hint
-            />
-
-            <v-select
-              v-if="renderNested"
-              v-model="nestedGlyphVariables"
-              :items="multiVariableList"
-              label="Glyph Variables"
-              multiple
-              counter=2
-              chips
-              deletable-chips
-              hint="Choose the variables you'd like to model as glyphs"
-              persistent-hint
-            />
 
             <v-divider class="mt-4" />
 
@@ -279,7 +236,11 @@ export default {
               linkWidthScale,
               multiVariableList,
               linkVariableList,
-              nodeAttrScales
+              nodeAttrScales,
+              barVariables,
+              glyphVariables,
+              widthVariables,
+              colorVariables,
             }"
         />
 
@@ -303,10 +264,10 @@ export default {
               renderNested,
               labelVariable,
               colorVariable,
-              nestedBarVariables,
-              nestedGlyphVariables,
-              linkWidthVariable,
-              linkColorVariable,
+              barVariables,
+              glyphVariables,
+              widthVariables,
+              colorVariables,
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
