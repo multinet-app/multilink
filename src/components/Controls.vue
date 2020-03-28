@@ -32,14 +32,14 @@ export default {
       labelVariable: "_key",
       colorVariable: null,
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      linkColorScale: d3.scaleOrdinal().range(d3.schemeCategory10),
       glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       nodeAttrScales: {},
       barVariables: [],
       glyphVariables: [],
       widthVariables: [],
       colorVariables: [],
-      linkWidthScale: d3.scaleLinear(),
+      linkWidthScale: d3.scaleLinear().domain([0, 10]).range([2, 20]),
     };
   },
 

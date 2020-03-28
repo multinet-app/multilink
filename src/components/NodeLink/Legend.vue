@@ -160,13 +160,40 @@ export default {
               variableSvgEnter
                 .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
                 
+              // TODO: Update the nested bars domain
+              // if (attr === this.barVariables[0]) {
+              //   const new_domain = [
+              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
+              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
+              //   ]
+              //   this.linkWidthScale.domain(new_domain).range([2,20])
+              // }
+
+              // TODO: Update the nested glyph domain
+              // if (attr === this.barVariables[0]) {
+              //   const new_domain = [
+              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
+              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
+              //   ]
+              //   this.linkWidthScale.domain(new_domain).range([2,20])
+              // }
+              
               // Update the link width domain
               if (attr === this.widthVariables[0]) {
                 const new_domain = [
-                  this.ordinalInvert(extent[0], xScale, binLabels)[0],
-                  this.ordinalInvert(extent[1], xScale, binLabels)[0]
+                  this.ordinalInvert(extent[0], xScale, binLabels),
+                  this.ordinalInvert(extent[1], xScale, binLabels)
                 ]
                 this.linkWidthScale.domain(new_domain).range([2,20])
+              }
+
+              // Update the link color domain
+              if (attr === this.colorVariables[0]) {
+                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels))
+                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels))
+                const new_domain = binLabels.slice(start, end)
+
+                this.linkColorScale.domain(new_domain)
               }
 
               // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
@@ -190,11 +217,11 @@ export default {
         const domain = scale.domain()
         for(const idx in domain) {
             if(scale(binLabels[idx]) > pos) {
-                return [previous, binLabels[idx]];
+                return previous;
             }
             previous = binLabels[idx];
         }
-        return [previous, null];
+        return previous;
     },
 
     rectDrop(event) {

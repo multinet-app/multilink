@@ -173,7 +173,6 @@ export default {
 
   watch: {
     properties() {
-      console.log('updating vis')
       this.updateVis();
     }
   },

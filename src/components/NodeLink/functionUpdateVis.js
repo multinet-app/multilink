@@ -333,9 +333,12 @@ function updateVis() {
   link.classed("muted", false);
   link
     .select("path")
-    .style("stroke-width", d => linkWidthScale(d[widthVariables[0]]) > 0 ? linkWidthScale(d[widthVariables[0]]) : 0)
+    .style("stroke-width", d => 
+      linkWidthScale(d[widthVariables[0]]) > 0 && linkWidthScale(d[widthVariables[0]]) < 20 ? 
+        linkWidthScale(d[widthVariables[0]]) : 10
+    )
     .style("stroke", d => {
-      if (colorVariables[0] !== null) {
+      if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
         return linkColorScale(d[colorVariables[0]])
       } else{
         return "#888888"
