@@ -335,7 +335,7 @@ function updateVis() {
     .select("path")
     .style("stroke-width", d => 
       linkWidthScale(d[widthVariables[0]]) > 0 && linkWidthScale(d[widthVariables[0]]) < 20 ? 
-        linkWidthScale(d[widthVariables[0]]) : 10
+        linkWidthScale(d[widthVariables[0]]) : 1
     )
     .style("stroke", d => {
       if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
@@ -362,8 +362,6 @@ function updateVis() {
   node.on("mouseout", () => {
     this.hideTooltip();
   })
-
-  // drawLegend();
 }
 
 function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, barVariables, glyphVariables, graphStructure) {

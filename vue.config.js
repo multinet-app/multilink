@@ -7,8 +7,4 @@ module.exports = {
     "vuetify"
   ],
   publicPath: process.env.NODE_ENV === 'production' ? publicPath : '/',
-  devServer: {
-    compress: true,
-    disableHostCheck: true,   // That solved it
-  },
 };
