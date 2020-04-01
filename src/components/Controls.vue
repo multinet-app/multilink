@@ -1,28 +1,20 @@
 <script>
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
+import Legend from '@/components/NodeLink/Legend.vue';
 
 import { setUpProvenance } from "@/lib/provenance";
 import { getUrlVars } from "@/lib/utils";
 import { loadData } from "@/lib/multinet";
 
-/**
- * Demo Controls.  This component is meant to demo
- * the capabilities of the NodeLink vis.
- *
- * You'll probably want the controls to look or
- * work differently in your app, so it's recommended that you
- * implement the controls yourself.
- */
+import * as d3 from "d3";
+
 export default {
   components: {
     NodeLink,
+    Legend,
   },
 
   data() {
-    /**
-     * State shared between the view (NodeLink graph)
-     * and the controller (dialog box or other UI).
-     */
     return {
       app: null,
       provenance: null,
@@ -37,43 +29,51 @@ export default {
       graph: null,
       selectNeighbors: true,
       renderNested: false,
-      nestedBarVariables: [],
-      nestedGlyphVariables: [],
       labelVariable: "_key",
-      colorVariable: "table",
-      linkWidthVariable: null,
-      linkColorVariable: null,
+      colorVariable: null,
+      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      linkColorScale: d3.scaleOrdinal().range(d3.schemeCategory10),
+      glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      nodeAttrScales: {},
+      barVariables: [],
+      glyphVariables: [],
+      widthVariables: [],
+      colorVariables: [],
+      linkWidthScale: d3.scaleLinear().domain([0, 10]).range([2, 20]),
     };
   },
 
   computed: {
     variableList() {
+      return this.multiVariableList.concat([null]) 
+    },
+    multiVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]) 
+        // Loop through all nodes, flatten the 2d array, and turn it into a set
+        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node))
+        allVars = [].concat.apply([], allVars);
+        allVars = [...new Set(allVars)]
+        return allVars
       } else {
         return []
       }
     },
     colorVariableList() {
-      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.nodes[0]).concat(["table"]) 
+      return this.multiVariableList.concat(["table", null]) 
+    },
+    linkVariableList() {
+      if (typeof this.graphStructure.links[0] !== 'undefined') {
+        // Loop through all links, flatten the 2d array, and turn it into a set
+        let allVars = this.graphStructure.links.map((node) => Object.keys(node))
+        allVars = [].concat.apply([], allVars);
+        allVars = [...new Set(allVars)].filter(d => d !== "source" && d !== "target")
+        return allVars
       } else {
         return []
       }
     },
-    linkVariableList() {
-      if (typeof this.graphStructure.links[0] !== 'undefined') {
-        return Object.keys(this.graphStructure.links[0]).concat([null]).filter(d => d !== "source" && d !== "target")
-      } else {
-        return []
-      }
-    }
   },
 
-  /**
-   * This is the "entrypoint" into this application.
-   * Notice the v-if dependency in the template above.
-   */
   async mounted() {
     const { workspace, graph, host } = getUrlVars();
     if (!workspace || !graph) {
@@ -119,7 +119,7 @@ export default {
     <v-row class="flex-nowrap">
       <!-- control panel content -->
       <v-col cols="3">
-        <v-card>
+        <v-card id="control">
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
@@ -155,24 +155,6 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-select 
-              v-model="linkWidthVariable"
-              label="Link Width Variable"
-              :items="linkVariableList"
-              :options="linkVariableList"
-            />
-
-            <v-divider class="mt-4" />
-
-            <v-select 
-              v-model="linkColorVariable"
-              label="Link Color Variable"
-              :items="linkVariableList"
-              :options="linkVariableList"
-            />
-
-            <v-divider class="mt-4" />
-
             <v-select
               v-model="labelVariable"
               label="Label Variable"
@@ -200,31 +182,6 @@ export default {
                 hide-details
               />
             </v-card-subtitle>
-
-            <v-select
-              v-if="renderNested"
-              v-model="nestedBarVariables"
-              :items="variableList"
-              label="Bar Variables"
-              multiple
-              chips
-              deletable-chips
-              hint="Choose the variables you'd like to model as bars"
-              persistent-hint
-            />
-
-            <v-select
-              v-if="renderNested"
-              v-model="nestedGlyphVariables"
-              :items="variableList"
-              label="Glyph Variables"
-              multiple
-              counter=2
-              chips
-              deletable-chips
-              hint="Choose the variables you'd like to model as glyphs"
-              persistent-hint
-            />
 
             <v-divider class="mt-4" />
 
@@ -255,6 +212,29 @@ export default {
           </v-card-actions>
         </v-card>
 
+        <Legend 
+          class="mt-4" 
+          cols="3"
+          ref="legend"
+          v-if="workspace"
+          v-bind="{
+              graphStructure,
+              provenance,
+              app,
+              nodeColorScale,
+              linkColorScale,
+              glyphColorScale,
+              linkWidthScale,
+              multiVariableList,
+              linkVariableList,
+              nodeAttrScales,
+              barVariables,
+              glyphVariables,
+              widthVariables,
+              colorVariables,
+            }"
+        />
+
       </v-col>
 
       <!-- node-link component -->
@@ -275,10 +255,14 @@ export default {
               renderNested,
               labelVariable,
               colorVariable,
-              nestedBarVariables,
-              nestedGlyphVariables,
-              linkWidthVariable,
-              linkColorVariable,
+              barVariables,
+              glyphVariables,
+              widthVariables,
+              colorVariables,
+              nodeColorScale,
+              linkColorScale,
+              glyphColorScale,
+              linkWidthScale
             }"
             @restart-simulation="hello()"
             />
@@ -289,8 +273,8 @@ export default {
 </template>
 
 <style scoped>
-  .v-card {
-    max-height: calc(100vh - 24px);
+  #control {
+    max-height: calc(33vh - 18px);
     overflow-y: scroll
   }
 </style>

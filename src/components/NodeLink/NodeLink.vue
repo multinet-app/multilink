@@ -7,10 +7,6 @@ import * as uiMethods from './functionUi';
 
 export default {
   props: {
-    /**
-     * props define properties that should be controlled by
-     * the users or will need to be modified externally.
-     */
     app: {
       type: Object,
       required: true
@@ -30,14 +26,6 @@ export default {
     colorVariable: {
       type: String,
       default: "table"
-    },
-    linkWidthVariable: {
-      type: String,
-      default: null
-    },
-    linkColorVariable: {
-      type: String,
-      default: null
     },
     nodeFontSize: {
       type: Number,
@@ -77,23 +65,45 @@ export default {
       type: Boolean,
       default: false
     },
-    nestedBarVariables: {
+    barVariables: {
       type: Array,
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
-    nestedGlyphVariables: {
+    glyphVariables: {
       type: Array,
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    widthVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    colorVariables: {
+      type: Array,
+      default: () => [],
+      validator: (prop) => prop.every((item) => typeof item === 'string'),
+    },
+    nodeColorScale: {
+      type: Function,
+      default: null
+    },
+    linkColorScale: {
+      type: Function,
+      default: null
+    },
+    glyphColorScale: {
+      type: Function,
+      default: null
+    },
+    linkWidthScale: {
+      type: Function,
+      default: null
     },
   },
 
   data() {
-    /**
-     * data defines internal state that no external sources
-     * should modify.
-     */
     return {
       browser: {
         height: 0,
@@ -116,10 +126,7 @@ export default {
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
-      // distinguish a drag from a click
       wasDragged: false,
-      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
     };
   },
 
@@ -135,12 +142,13 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
-        linkWidthVariable,
-        linkColorVariable,
         labelVariable,
         colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
+        linkWidthScale,
       } = this;
       return {
         graphStructure,
@@ -152,23 +160,14 @@ export default {
         isMultiEdge,
         attributes,
         renderNested,
-        linkWidthVariable,
-        linkColorVariable,
         labelVariable,
         colorVariable,
-        nestedBarVariables,
-        nestedGlyphVariables,
+        barVariables,
+        glyphVariables,
+        widthVariables,
+        colorVariables,
+        linkWidthScale,
       };
-    },
-    linkWidthScale() {
-      return d3.scaleLinear()
-        .domain(
-          [
-            d3.min(this.graphStructure.links.map(d => d[this.linkWidthVariable])),
-            d3.max(this.graphStructure.links.map(d => d[this.linkWidthVariable]))
-          ]
-        )
-        .range([2, 20])
     },
   },
 
@@ -179,19 +178,20 @@ export default {
   },
 
   async mounted() {
-    /**
-     * mounted hook runs after the component is injected into the DOM
-     */
     this.loadVis();
     this.provenance.addObserver("selected", state =>
       this.highlightSelectedNodes(state)
     );
 
     this.simulation = this.makeSimulation()
+
+    // Required to update when brushing the legend
+    this.$root.$on('brushing', () => {
+      this.updateVis()
+    });
   },
 
   methods: {
-    // define many functions externally
     ...loadVisMethods,
     ...updateVisMethods,
     ...uiMethods,

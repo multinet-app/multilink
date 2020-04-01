@@ -2,22 +2,20 @@ import * as d3 from "d3";
 
 // Setup function that does initial sizing and setting up of elements for node-link diagram.
 export function loadVis() {
-  // Set total dimensions
-  // let targetDiv = d3.select("#targetSize");
-  this.browser.width = d3
-    .select("body")
-    .style("width")
-    .replace("px", "");
-  this.browser.height = d3
-    .select("body")
-    .style("height")
-    .replace("px", "");
+  // Get the browser width and height
+  this.browser.width = window.innerWidth
+  || document.documentElement.clientWidth
+  || document.body.clientWidth;
 
-  // Set dimensions of the node link
+  this.browser.height = window.innerHeight
+  || document.documentElement.clientHeight
+  || document.body.clientHeight;
+
+  // Set dimensions of the nodelink
   this.visDimensions.width = this.browser.width * 0.75;
   this.visDimensions.height = this.browser.height - 24;
 
-  // Size the node link
+  // Apply the size to the nodelink svg
   this.svg = d3
     .select(this.$refs.svg)
     .attr("width", this.visDimensions.width)

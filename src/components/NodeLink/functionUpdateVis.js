@@ -204,12 +204,13 @@ function updateVis() {
     renderNested,
     colorVariable,
     nodeColorScale,
-    nestedBarVariables,
-    nestedGlyphVariables,
+    barVariables,
+    glyphVariables,
     linkColorScale,
     linkWidthScale,
-    linkWidthVariable,
-    linkColorVariable,
+    widthVariables,
+    colorVariables,
+    glyphColorScale
   } = this;
 
   let node = svg
@@ -291,7 +292,7 @@ function updateVis() {
     .attr('height', "1em")
 
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, barVariables, glyphVariables, graphStructure)
   } else {
     node.selectAll(".bar").remove()
     node.selectAll(".glyph").remove()
@@ -332,16 +333,13 @@ function updateVis() {
   link.classed("muted", false);
   link
     .select("path")
-    .style("stroke-width", d => {
-      if (linkWidthVariable) {
-        return linkWidthScale(d[linkWidthVariable])
-      } else{
-        return 3
-      }
-    })
+    .style("stroke-width", d => 
+      linkWidthScale(d[widthVariables[0]]) > 0 && linkWidthScale(d[widthVariables[0]]) < 20 ? 
+        linkWidthScale(d[widthVariables[0]]) : 1
+    )
     .style("stroke", d => {
-      if (linkColorVariable !== null) {
-        return linkColorScale(d[linkColorVariable])
+      if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
+        return linkColorScale(d[colorVariables[0]])
       } else{
         return "#888888"
       }
@@ -364,22 +362,20 @@ function updateVis() {
   node.on("mouseout", () => {
     this.hideTooltip();
   })
-
-  // drawLegend();
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, nestedBarVariables, nestedGlyphVariables, graphStructure) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, barVariables, glyphVariables, graphStructure) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
 
   // Set some bar specific variables that we'll need for tracking position and sizes
   let i = 0;
-  let barWidth = nestedGlyphVariables.length === 0 ? 
-    nodeMarkerLength / nestedBarVariables.length : 
-    (nodeMarkerLength / 2) / nestedBarVariables.length;
+  let barWidth = glyphVariables.length === 0 ? 
+    nodeMarkerLength / barVariables.length : 
+    (nodeMarkerLength / 2) / barVariables.length;
 
-  for (let barVar of nestedBarVariables) {
+  for (let barVar of barVariables) {
     let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
     // Draw white, background bar
     node.append("rect")
@@ -406,7 +402,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
   // Append glyphs
   i = 0;
   while (i < 2) {
-    let glyphVar = nestedGlyphVariables[i]
+    let glyphVar = glyphVariables[i]
     if (glyphVar === undefined) {
       break
     }
@@ -419,7 +415,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, nodeColorScale, ne
       .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style("fill", d => nodeColorScale(d[glyphVar]))
+      .style("fill", d => glyphColorScale(d[glyphVar]))
     
     // Update i
     i++
