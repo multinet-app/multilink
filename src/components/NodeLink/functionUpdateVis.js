@@ -415,7 +415,15 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, b
       .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style("fill", d => glyphColorScale(d[glyphVar]))
+      .style("fill", d => {
+        if (glyphVar !== undefined && glyphColorScale.domain().indexOf(d[glyphVar].toString()) > -1) {
+          return glyphColorScale(d[glyphVar])
+        } else{
+          return "#888888"
+        }
+      })
+      
+      
     
     // Update i
     i++

@@ -169,14 +169,14 @@ export default {
               //   this.linkWidthScale.domain(new_domain).range([2,20])
               // }
 
-              // TODO: Update the nested glyph domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
+              // Update the nested glyph domain
+              if (attr === this.glyphVariables[0]) {
+                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels))
+                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels))
+                const new_domain = binLabels.slice(start, end)
+
+                this.glyphColorScale.domain(new_domain)
+              }
               
               // Update the link width domain
               if (attr === this.widthVariables[0]) {
