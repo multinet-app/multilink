@@ -6,7 +6,8 @@ import { setUpProvenance } from "@/lib/provenance";
 import { getUrlVars } from "@/lib/utils";
 import { loadData } from "@/lib/multinet";
 
-import * as d3 from "d3";
+import { scaleLinear, scaleOrdinal } from "d3-scale";
+import { schemeCategory10 } from "d3-scale-chromatic";
 
 export default {
   components: {
@@ -31,15 +32,15 @@ export default {
       renderNested: false,
       labelVariable: "_key",
       colorVariable: null,
-      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal().range(d3.schemeCategory10),
-      glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      nodeColorScale: scaleOrdinal(schemeCategory10),
+      linkColorScale: scaleOrdinal().range(schemeCategory10),
+      glyphColorScale: scaleOrdinal(schemeCategory10),
       nodeAttrScales: {},
       barVariables: [],
       glyphVariables: [],
       widthVariables: [],
       colorVariables: [],
-      linkWidthScale: d3.scaleLinear().domain([0, 10]).range([2, 20]),
+      linkWidthScale: scaleLinear().domain([0, 10]).range([2, 20]),
     };
   },
 
