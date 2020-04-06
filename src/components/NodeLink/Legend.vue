@@ -1,5 +1,9 @@
 <script>
-import * as d3 from "d3";
+import { min, max } from 'd3-array';
+import { select, event } from 'd3-selection';
+import { scaleLinear, scaleBand } from 'd3-scale';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { brushX } from 'd3-brush';
 
 export default {
   components: {
@@ -109,7 +113,7 @@ export default {
         for (const attr of list) {
           // Get the SVG element and its width
           const type = list === this.multiVariableList ? "node" : "link"
-          const variableSvg = d3.select(`#${type}${attr}`)
+          const variableSvg = select(`#${type}${attr}`)
           const variableSvgWidth = variableSvg.node().getBoundingClientRect().width - this.yAxisPadding - this.varPadding
 
           // Get the data and generate the bins
@@ -119,11 +123,11 @@ export default {
           const binValues = Object.entries(bins).map(d => d[1])
 
           // Generate axis scales
-          const yScale = d3.scaleLinear()
-            .domain([d3.min(binValues), d3.max(binValues)])
+          const yScale = scaleLinear()
+            .domain([min(binValues), max(binValues)])
             .range([this.svgHeight, 0]);
 
-          const xScale = d3.scaleBand()
+          const xScale = scaleBand()
             .domain(binLabels)
             .range([this.yAxisPadding, variableSvgWidth]);
 
@@ -131,12 +135,12 @@ export default {
           variableSvg
             .append('g')
             .attr('transform', `translate(${this.yAxisPadding},0)`)
-            .call(d3.axisLeft(yScale));
+            .call(axisLeft(yScale));
 
           variableSvg
             .append('g')
             .attr('transform', `translate(0, ${this.svgHeight})`)
-            .call(d3.axisBottom(xScale));
+            .call(axisBottom(xScale));
 
           // Add the bars
           const variableSvgEnter = variableSvg
@@ -151,10 +155,10 @@ export default {
             .attr('fill', d => this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d));
 
           // Add the brush
-          const brush = d3.brushX()
+          const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
             .on("start brush", () => {
-              const extent = d3.event.selection;
+              const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
               variableSvgEnter

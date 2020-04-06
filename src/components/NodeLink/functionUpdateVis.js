@@ -2,7 +2,10 @@
  * updateVis and its child functions
  */
 
-import * as d3 from "d3";
+import { event, select } from 'd3-selection';
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force';
+import { max } from 'd3-array';
+import { drag } from 'd3-drag';
 
 function arcPath(leftHand, d, state = false) {
   const {
@@ -60,10 +63,10 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-  d.x = d3.event.x;
-  d.y = d3.event.y;
+  d.fx = event.x;
+  d.fy = event.y;
+  d.x = event.x;
+  d.y = event.y;
   this.dragNode();
 }
 
@@ -136,13 +139,12 @@ function makeSimulation() {
     nodeMarkerType,
   } = this;
 
-  const simulation = d3
-    .forceSimulation()
-    .force("link", d3.forceLink().id(d => d.id))
-    .force("charge", d3.forceManyBody().strength(-300))
+  const simulation = forceSimulation()
+    .force("link", forceLink().id(d => d.id))
+    .force("charge", forceManyBody().strength(-300))
     .force(
       "center",
-      d3.forceCenter(
+      forceCenter(
         visDimensions.width / 2,
         visDimensions.height / 2
       )
@@ -158,7 +160,7 @@ function makeSimulation() {
   simulation.on("tick", () => this.dragNode());
 
   simulation.force("collision", 
-    d3.forceCollide()
+    forceCollide()
     .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType))
     .strength(0.7)
     .iterations(10)
@@ -174,17 +176,17 @@ function makeSimulation() {
 
 function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
   if (nodeMarkerType === "Circle") {
-    return d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
+    return max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
   } else {
-    return d3.max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
+    return max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
   }
 }
 
 function showTooltip(data, delay = 200) {
   let tooltip = this.svg.select('.tooltip');
   tooltip.html(data)
-    .style("left", (d3.event.clientX + 10) + "px")
-    .style("top", (d3.event.clientY - 20) + "px");
+    .style("left", (event.clientX + 10) + "px")
+    .style("top", (event.clientY - 20) + "px");
   tooltip.transition().duration(delay).style("opacity", .9);
 }
 
@@ -299,16 +301,14 @@ function updateVis() {
   }
 
   node.call(
-    d3
-      .drag()
+    drag()
       .on("start", (d) => this.dragstarted(d))
       .on("drag", (d) => this.dragged(d))
       .on("end", () => this.dragended())
   );
 
   //Draw Links
-  let link = d3
-    .select(".links")
+  let link = select(".links")
     .selectAll(".linkGroup")
     .data(graphStructure.links);
 
@@ -376,7 +376,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, b
     (nodeMarkerLength / 2) / barVariables.length;
 
   for (let barVar of barVariables) {
-    let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
+    let maxValue = max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
     // Draw white, background bar
     node.append("rect")
       .attr("class", "bar")

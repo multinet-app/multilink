@@ -1,20 +1,20 @@
 /* Multinet data importer */
-import * as d3 from "d3";
+import { json } from 'd3-fetch';
 
 async function _loadTables(workspace, graph, apiRoot) {
   const tables_call = apiRoot + "/workspaces/" + workspace + "/graphs/" + graph
-  return await d3.json(tables_call);
+  return await json(tables_call);
 }
 
 async function _loadNodes(workspace, node_table, apiRoot) {
   const nodes_call = apiRoot + "/workspaces/" + workspace + "/tables/" + node_table + "?limit=1000"
-  let nodes_raw = await d3.json(nodes_call)
+  let nodes_raw = await json(nodes_call)
   return nodes_raw["rows"];
 }
 
 async function _loadLinks(workspace, edge_table, apiRoot) {
   const links_call = apiRoot + "/workspaces/" + workspace + "/tables/" + edge_table + "?limit=1000"
-  let links_raw = await d3.json(links_call)
+  let links_raw = await json(links_call)
   return links_raw["rows"]; 
 }
 
