@@ -39,10 +39,6 @@ export default {
       type: Number,
       default: 50
     },
-    nodeMarkerType: {
-      type: String,
-      default: "Circle"
-    },
     selectNeighbors: {
       type: Boolean,
       default: true
@@ -121,7 +117,6 @@ export default {
       simulation: undefined,
       scales: {},
       edgeScale: scaleLinear().domain([0, 1]),
-      circleScale: scaleLinear().domain([0, 1]),
       colorClasses: [],
       nodeSizeAttr: undefined,
       barPadding: 3,
@@ -137,7 +132,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
@@ -155,7 +149,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,

@@ -127,7 +127,7 @@ function startSimulation() {
   // Update the force radii
   this.simulation.force("collision", 
     forceCollide()
-    .radius(getForceRadii(this.nodeMarkerLength, this.nodeMarkerHeight, this.nodeMarkerType))
+    .radius(getForceRadii(this.nodeMarkerLength, this.nodeMarkerHeight, this.renderNested))
     .strength(0.7)
     .iterations(10)
   );
