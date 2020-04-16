@@ -93,8 +93,8 @@ export default {
       type: Function,
       default: null
     },
-    glyphColorScale: {
-      type: Function,
+    glyphColorScales: {
+      type: Object,
       default: null
     },
     linkWidthScale: {

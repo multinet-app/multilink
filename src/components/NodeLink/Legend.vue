@@ -26,8 +26,8 @@ export default {
       type: Function,
       default: null
     },
-    glyphColorScale: {
-      type: Function,
+    glyphColorScales: {
+      type: Object,
       default: null
     },
     linkWidthScale: {
@@ -175,7 +175,7 @@ export default {
                 const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels))
                 const new_domain = binLabels.slice(start, end)
 
-                this.glyphColorScale.domain(new_domain)
+                this.glyphColorScales[attr].domain(new_domain)
               }
               
               // Update the link width domain

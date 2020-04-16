@@ -32,8 +32,7 @@ export default {
       labelVariable: "_key",
       colorVariable: null,
       nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal().range(d3.schemeCategory10),
-      glyphColorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
       nodeAttrScales: {},
       barVariables: [],
       glyphVariables: [],
@@ -71,6 +70,11 @@ export default {
       } else {
         return []
       }
+    },
+    glyphColorScales() {
+      const scales = {}
+      this.multiVariableList.map((d) => scales[d] = d3.scaleOrdinal(d3.schemeCategory10))
+      return scales
     },
   },
 
@@ -223,7 +227,7 @@ export default {
               app,
               nodeColorScale,
               linkColorScale,
-              glyphColorScale,
+              glyphColorScales,
               linkWidthScale,
               multiVariableList,
               linkVariableList,
@@ -261,7 +265,7 @@ export default {
               colorVariables,
               nodeColorScale,
               linkColorScale,
-              glyphColorScale,
+              glyphColorScales,
               linkWidthScale
             }"
             @restart-simulation="hello()"
