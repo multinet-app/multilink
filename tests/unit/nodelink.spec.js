@@ -30,7 +30,7 @@ describe("Node-Link Utils", () => {
             let link = wrapper.vm.graphStructure.links[0]
 
             // Act
-            let arc = wrapper.vm.arcPath(true, link, false)
+            let arc = wrapper.vm.arcPath(link)
             
             // Assert
             expect(arc).toEqual(`M ${link.source.x + wrapper.vm.nodeMarkerLength / 2} ${link.source.y + wrapper.vm.nodeMarkerHeight / 2} L ${link.target.x + wrapper.vm.nodeMarkerLength / 2} ${link.target.y + wrapper.vm.nodeMarkerHeight / 2}`)
@@ -48,7 +48,7 @@ describe("Node-Link Utils", () => {
             const sweep = 1
 
             // Act
-            let arc = wrapper.vm.arcPath(true, link, false)
+            let arc = wrapper.vm.arcPath(link)
             
             // Assert
             expect(arc).toEqual(`M ${link.source.x + wrapper.vm.nodeMarkerLength / 2}, ${link.source.y + wrapper.vm.nodeMarkerHeight / 2} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${link.target.x + wrapper.vm.nodeMarkerLength / 2},${link.target.y + wrapper.vm.nodeMarkerHeight / 2}`)

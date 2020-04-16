@@ -85,21 +85,13 @@ export default {
       default: () => [],
       validator: (prop) => prop.every((item) => typeof item === 'string'),
     },
-    nodeColorScale: {
-      type: Function,
-      default: null
-    },
-    linkColorScale: {
-      type: Function,
-      default: null
-    },
-    glyphColorScales: {
+    nodeAttrScales: {
       type: Object,
-      default: null
+      default: () => {}
     },
-    linkWidthScale: {
-      type: Function,
-      default: null
+    linkAttrScales: {
+      type: Object,
+      default: () => {}
     },
   },
 

@@ -47,13 +47,16 @@ export default {
       return this.getAttrNames("link")
     },
 
-    linkAttrScales() {
-      scales['width'] = d3.scaleLinear().domain([0, 10]).range([2, 20])
-      return this.getAttrScales("node")
+    nodeAttrScales() {
+      const scales = this.getAttrScales("node");
+      scales['table'] = d3.scaleOrdinal(d3.schemeCategory10);
+      return scales;
     },
 
-    nodeAttrScales() {
-      return this.getAttrScales("link")
+    linkAttrScales() {
+      const scales = this.getAttrScales("link");
+      scales['width'] = d3.scaleLinear().domain([0, 10]).range([2, 20]);
+      return scales;
     },
   },
 
@@ -111,7 +114,7 @@ export default {
       const scales = {};
 
       // Iterate through attrs making linear or ordinal scales based on variable type
-      for (const attr of eval(`${type}Attrs`)) {
+      for (const attr of eval(`this.${type}Attrs`)) {
         scales[attr] = this.isQuantitative(attr, type) ? 
           d3.scaleLinear().domain([0, 10]).range([2, 20]) :
           d3.scaleOrdinal(d3.schemeCategory10) ;
@@ -172,8 +175,8 @@ export default {
             <v-select
               v-model="labelVariable"
               label="Label Variable"
-              :items="variableList.concat([null]) "
-              :options="variableList.concat([null]) "
+              :items="nodeAttrs.concat([null]) "
+              :options="nodeAttrs.concat([null]) "
             />
 
             <v-divider class="mt-4" />
@@ -181,8 +184,8 @@ export default {
             <v-select 
               v-model="colorVariable"
               label="Color Variable"
-              :items="variableList.concat(['table', null]) "
-              :options="variableList.concat(['table', null]) "
+              :items="nodeAttrs.concat(['table', null]) "
+              :options="nodeAttrs.concat(['table', null]) "
             />
 
             <v-divider class="mt-4" />
@@ -235,13 +238,10 @@ export default {
               graphStructure,
               provenance,
               app,
-              nodeColorScale,
-              linkColorScale,
-              glyphColorScales,
-              linkWidthScale,
-              multiVariableList,
-              linkVariableList,
               nodeAttrScales,
+              linkAttrScales,
+              labelVariable,
+              colorVariable,
               barVariables,
               glyphVariables,
               widthVariables,
@@ -273,12 +273,9 @@ export default {
               glyphVariables,
               widthVariables,
               colorVariables,
-              nodeColorScale,
-              linkColorScale,
-              glyphColorScales,
-              linkWidthScale
+              nodeAttrScales,
+              linkAttrScales,
             }"
-            @restart-simulation="hello()"
             />
         </v-row>
       </v-col>

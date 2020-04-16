@@ -4,31 +4,19 @@
 
 import * as d3 from "d3";
 
-function arcPath(leftHand, d, state = false) {
+function arcPath(d) {
   const {
-    graphStructure,
     nodeMarkerLength,
     nodeMarkerHeight,
     visMargins,
     visDimensions,
     straightEdges,
-    reloaded,
   } = this;
 
-  let source = state ? { x: state.nodePos[d.source.id].x, y: state.nodePos[d.source.id].y } :
-    d.source;
-  let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
-    d.target;
-
-  if (reloaded) {
-    source = graphStructure.nodes.find(x => x.id === source.id)
-    target = graphStructure.nodes.find(x => x.id === target.id)
-  }
-
-  let x1 = leftHand ? parseFloat(source.x) + nodeMarkerLength / 2 : target.x,
-    y1 = leftHand ? parseFloat(source.y) + nodeMarkerHeight / 2 : target.y,
-    x2 = leftHand ? parseFloat(target.x) + nodeMarkerLength / 2 : source.x,
-    y2 = leftHand ? parseFloat(target.y) + nodeMarkerHeight / 2 : source.y;
+  let x1 = parseFloat(d.source.x) + nodeMarkerLength / 2;
+  let y1 = parseFloat(d.source.y) + nodeMarkerHeight / 2;
+  let x2 = parseFloat(d.target.x) + nodeMarkerLength / 2;
+  let y2 = parseFloat(d.target.y) + nodeMarkerHeight / 2;
 
   const horizontalSpace = visDimensions.width - visMargins.left - visMargins.right - nodeMarkerLength;
   const verticalSpace = visDimensions.height - visMargins.bottom - visMargins.top - nodeMarkerHeight;
@@ -37,23 +25,16 @@ function arcPath(leftHand, d, state = false) {
   x2 = Math.max(visMargins.left + nodeMarkerLength / 2, Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x2));
   y2 = Math.max(visMargins.top + nodeMarkerHeight / 2, Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y2));
 
-  const dx = x2 - x1
-  const dy = y2 - y1
-  const dr = Math.sqrt(dx * dx + dy * dy)
-  const drx = dr
-  const dry = dr
-  const sweep = 1
-  const xRotation = 0
-  const largeArc = 0
+  const dr = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
   if (straightEdges) {
     return (`M ${x1} ${y1} L ${x2} ${y2}`);
   } else {
-    return (`M ${x1}, ${y1} A ${drx}, ${dry} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+    return (`M ${x1}, ${y1} A ${dr}, ${dr} 0, 0, 1 ${x2},${y2}`);
   }
 }
 
-function dragstarted(d) {
+function dragStarted(d) {
   d.fx = d.x;
   d.fy = d.y;
   this.wasDragged = true;
@@ -67,7 +48,7 @@ function dragged(d) {
   this.dragNode();
 }
 
-function dragended() {
+function dragEnded() {
   const { wasDragged, app, graphStructure, provenance } = this;
   if (wasDragged) {
     //update node position in state graph;
@@ -106,7 +87,7 @@ function dragNode() {
   svg
     .selectAll(".linkGroup")
     .select("path")
-    .attr("d", d => this.arcPath(1, d, false));
+    .attr("d", d => this.arcPath(d));
 
   // Get the total space available on the svg
   let horizontalSpace =
@@ -119,7 +100,7 @@ function dragNode() {
     .selectAll(".nodeGroup").attr("transform", d => {
       d.x = Math.max(visMargins.left, Math.min(horizontalSpace, d.x));
       d.y = Math.max(visMargins.top, Math.min(verticalSpace, d.y));
-      return "translate(" + d.x + "," + d.y + ")";
+      return `translate(${d.x},${d.y})`;
     });
 }
 
@@ -203,14 +184,12 @@ function updateVis() {
     visDimensions,
     renderNested,
     colorVariable,
-    nodeColorScale,
     barVariables,
     glyphVariables,
-    linkColorScale,
-    linkWidthScale,
     widthVariables,
     colorVariables,
-    glyphColorScales
+    nodeAttrScales,
+    linkAttrScales,
   } = this;
 
   let node = svg
@@ -253,9 +232,11 @@ function updateVis() {
     .style("fill", d => {
       if (colorVariable === "table") {
         let table = d["id"].split("/")[0]
-        return nodeColorScale(table)
+        return nodeAttrScales["table"](table)
+      } else if (colorVariable) {
+        return nodeAttrScales[colorVariable](d[colorVariable])
       } else {
-        return nodeColorScale(d[colorVariable])
+        return '#888888'
       }
     })
     .on("click", (d) => this.nodeClick(d))
@@ -301,9 +282,9 @@ function updateVis() {
   node.call(
     d3
       .drag()
-      .on("start", (d) => this.dragstarted(d))
+      .on("start", (d) => this.dragStarted(d))
       .on("drag", (d) => this.dragged(d))
-      .on("end", () => this.dragended())
+      .on("end", () => this.dragEnded())
   );
 
   //Draw Links
@@ -334,8 +315,8 @@ function updateVis() {
   link
     .select("path")
     .style("stroke-width", d => 
-      linkWidthScale(d[widthVariables[0]]) > 0 && linkWidthScale(d[widthVariables[0]]) < 20 ? 
-        linkWidthScale(d[widthVariables[0]]) : 1
+      linkAttrScales["width"](d[widthVariables[0]]) > 0 && linkAttrScales["width"](d[widthVariables[0]]) < 20 ? 
+        linkAttrScales["width"](d[widthVariables[0]]) : 1
     )
     .style("stroke", d => {
       if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
@@ -345,7 +326,7 @@ function updateVis() {
       }
     })
     .attr("id", d => d._key)
-    .attr("d", d => this.arcPath(1, d))
+    .attr("d", d => this.arcPath(d))
     .on("mouseover", (d) => {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
@@ -436,8 +417,8 @@ export {
   arcPath,
   dragNode,
   dragged,
-  dragstarted,
-  dragended,
+  dragStarted,
+  dragEnded,
   hideTooltip,
   makeSimulation,
   showTooltip,
