@@ -31,50 +31,29 @@ export default {
       renderNested: false,
       labelVariable: "_key",
       colorVariable: null,
-      nodeColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      linkColorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      nodeAttrScales: {},
       barVariables: [],
       glyphVariables: [],
       widthVariables: [],
       colorVariables: [],
-      linkWidthScale: d3.scaleLinear().domain([0, 10]).range([2, 20]),
     };
   },
 
   computed: {
-    variableList() {
-      return this.multiVariableList.concat([null]) 
+    nodeAttrs() {
+      return this.getAttrNames("node")
     },
-    multiVariableList() {
-      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
-        // Loop through all nodes, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node))
-        allVars = [].concat.apply([], allVars);
-        allVars = [...new Set(allVars)]
-        return allVars
-      } else {
-        return []
-      }
+
+    linkAttrs() {
+      return this.getAttrNames("link")
     },
-    colorVariableList() {
-      return this.multiVariableList.concat(["table", null]) 
+
+    linkAttrScales() {
+      scales['width'] = d3.scaleLinear().domain([0, 10]).range([2, 20])
+      return this.getAttrScales("node")
     },
-    linkVariableList() {
-      if (typeof this.graphStructure.links[0] !== 'undefined') {
-        // Loop through all links, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.links.map((node) => Object.keys(node))
-        allVars = [].concat.apply([], allVars);
-        allVars = [...new Set(allVars)].filter(d => d !== "source" && d !== "target")
-        return allVars
-      } else {
-        return []
-      }
-    },
-    glyphColorScales() {
-      const scales = {}
-      this.multiVariableList.map((d) => scales[d] = d3.scaleOrdinal(d3.schemeCategory10))
-      return scales
+
+    nodeAttrScales() {
+      return this.getAttrScales("link")
     },
   },
 
@@ -114,6 +93,37 @@ export default {
       a.download = "graph.json";
       a.click();
     },
+
+    getAttrNames(type) {
+      if (this.graphStructure[`${type}s`].length > 0) {
+        // Loop through all nodes, flatten the 2d array of keys for each node, and turn it into a set
+        let allVars = this.graphStructure[`${type}s`].map((d) => Object.keys(d))
+        allVars = [].concat.apply([], allVars);
+        allVars = [...new Set(allVars)]
+        return allVars
+      } else {
+        return []
+      }
+    },
+
+    getAttrScales(type) {
+      // Set up the scales dict and add width and color scales
+      const scales = {};
+
+      // Iterate through attrs making linear or ordinal scales based on variable type
+      for (const attr of eval(`${type}Attrs`)) {
+        scales[attr] = this.isQuantitative(attr, type) ? 
+          d3.scaleLinear().domain([0, 10]).range([2, 20]) :
+          d3.scaleOrdinal(d3.schemeCategory10) ;
+      }
+
+      return scales
+    },
+
+    isQuantitative(attr, type) {
+      const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((d) => parseFloat(d[attr])))];
+      return uniqueValues.length > 5;
+    }
   },
 };
 </script>
@@ -162,8 +172,8 @@ export default {
             <v-select
               v-model="labelVariable"
               label="Label Variable"
-              :items="variableList"
-              :options="variableList"
+              :items="variableList.concat([null]) "
+              :options="variableList.concat([null]) "
             />
 
             <v-divider class="mt-4" />
@@ -171,8 +181,8 @@ export default {
             <v-select 
               v-model="colorVariable"
               label="Color Variable"
-              :items="colorVariableList"
-              :options="colorVariableList"
+              :items="variableList.concat(['table', null]) "
+              :options="variableList.concat(['table', null]) "
             />
 
             <v-divider class="mt-4" />
