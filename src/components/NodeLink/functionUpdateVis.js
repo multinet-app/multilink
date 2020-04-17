@@ -353,11 +353,11 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
   // Set some bar specific variables that we'll need for tracking position and sizes
   let i = 0;
   let barWidth = glyphVariables.length === 0 ? 
-    nodeMarkerLength / barVariables.length : 
-    (nodeMarkerLength / 2) / barVariables.length;
+  nodeMarkerLength / barVariables.length : 
+  (nodeMarkerLength / 2) / barVariables.length;
 
   for (let barVar of barVariables) {
-    let maxValue = d3.max(graphStructure.nodes.map(o => parseFloat(o[barVar])));
+    let maxValue = d3.max(graphStructure.nodes.map(d => parseFloat(d[barVar])));
     // Draw white, background bar
     node.append("rect")
       .attr("class", "bar")
@@ -371,8 +371,8 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
     node.append("rect")
       .attr("class", "bar")
       .attr("width", `${barWidth - 10}px`)
-      .attr("height", d => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
-      .attr("y", d => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
+      .attr("height", d => `${nodeAttrScales[barVar](d[barVar])}px`)
+      .attr("y", d => `${nodeMarkerHeight - 5 - nodeAttrScales[barVar](d[barVar])}px`)
       .attr("x", `${5 + (i * barWidth)}px`)
       .style("fill", d => "#82b1ff")
     
@@ -382,18 +382,13 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
 
   // Append glyphs
   if (glyphVariables.length > 0) {
-    i = 0;
-    while (i < glyphVariables.length) {
-      let glyphVar = glyphVariables[i]
-      if (glyphVar === undefined) {
-        break
-      }
+    for (const [index, glyphVar] of glyphVariables.entries()) {
       // Draw glyph
       node.append("rect")
         .attr("class", "glyph")
         .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
         .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-        .attr("y", `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
+        .attr("y", `${16 +  5 + (index * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(index)}px`)
         .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
         .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
         .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
@@ -404,11 +399,6 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
             return "#BBBBBB"
           }
         })
-        
-        
-      
-      // Update i
-      i++
     }
   }
 }

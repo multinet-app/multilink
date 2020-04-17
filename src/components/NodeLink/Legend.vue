@@ -146,14 +146,17 @@ export default {
               variableSvgEnter
                 .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
                 
-              // TODO: Update the nested bars domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
+              // Update the nested bars domain
+              console.log(attr, this.barVariables, this.barVariables.indexOf(attr) > -1)
+              if (this.barVariables.indexOf(attr) > -1) {
+                const new_domain = [
+                  this.ordinalInvert(extent[0], xScale, binLabels),
+                  this.ordinalInvert(extent[1], xScale, binLabels)
+                ]
+                console.log(attr, new_domain)
+
+                this.nodeAttrScales[attr].domain(new_domain)
+              }
 
               // Update the nested glyph domain
               if (attr === this.glyphVariables[0]) {

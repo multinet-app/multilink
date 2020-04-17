@@ -112,11 +112,12 @@ export default {
     getAttrScales(type) {
       // Set up the scales dict and add width and color scales
       const scales = {};
+      console.log(this.nodeMarkerSize, this)
 
       // Iterate through attrs making linear or ordinal scales based on variable type
       for (const attr of this[`${type}Attrs`]) {
         scales[attr] = this.isQuantitative(attr, type) ? 
-          d3.scaleLinear().domain([0, 10]).range([2, 20]) :
+          d3.scaleLinear().domain([0, 10]).range([0, this.nodeMarkerSize - 16 - 5 - 5]) :
           d3.scaleOrdinal(d3.schemeCategory10) ;
       }
 
