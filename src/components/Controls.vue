@@ -124,7 +124,7 @@ export default {
 
           <v-card-text>
             <v-card-subtitle class="pb-0 pl-0" style="display: flex; align-items: center; justify-content: space-between">
-              Render Nested
+              Display charts
               <v-switch
                   class="ma-0"
                   v-model="renderNested"
