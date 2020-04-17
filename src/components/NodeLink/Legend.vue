@@ -18,27 +18,19 @@ export default {
       type: Object,
       default: () => {}
     },
-    nodeColorScale: {
-      type: Function,
-      default: null
-    },
-    linkColorScale: {
-      type: Function,
-      default: null
-    },
-    glyphColorScales: {
+    nodeAttrScales: {
       type: Object,
-      default: null
+      default: () => {}
     },
-    linkWidthScale: {
-      type: Function,
-      default: null
+    linkAttrScales: {
+      type: Object,
+      default: () => {}
     },
-    multiVariableList: {
+    nodeAttrs: {
       type: Array,
       default: () => [],
     },
-    linkVariableList: {
+    linkAttrs: {
       type: Array,
       default: () => [],
     },
@@ -78,9 +70,6 @@ export default {
         app,
         provenance,
         graphStructure,
-        linkWidthScale,
-        multiVariableList,
-        linkVariableList,
         barVariables,
         glyphVariables,
         widthVariables,
@@ -90,9 +79,6 @@ export default {
         app,
         provenance,
         graphStructure,
-        linkWidthScale,
-        multiVariableList,
-        linkVariableList,
         barVariables,
         glyphVariables,
         widthVariables,
@@ -104,15 +90,15 @@ export default {
   methods: {
     setUpPanel() {
       // For node and link variables
-      for (const list of [this.multiVariableList, this.linkVariableList]) {
+      for (const list of [this.nodeAttrs, this.linkAttrs]) {
         // For each attribute
         for (const attr of list) {
           // Get the SVG element and its width
-          const type = list === this.multiVariableList ? "node" : "link"
-          const variableSvg = d3.select(`#${type}${attr}`)
-          const variableSvgWidth = variableSvg.node().getBoundingClientRect().width - this.yAxisPadding - this.varPadding
+          const type = list === this.nodeAttrs ? "node" : "link";
+          const variableSvg = d3.select(`#${type}${attr}`);
+          const variableSvgWidth = variableSvg.node().getBoundingClientRect().width - this.yAxisPadding - this.varPadding;
 
-          // Get the data and generate the bins
+          // Get the data and generate the bins (currently just gets the discrete count)
           const currentData = this.graphStructure[`${type}s`].map(d => d[attr])
           const bins = currentData.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {})
           const binLabels = Object.entries(bins).map(d => d[0])
@@ -148,7 +134,7 @@ export default {
             .attr('y', (d) => yScale(bins[d]))
             .attr('height', (d, i, values) => this.svgHeight - yScale(bins[d]))
             .attr('width', xScale.bandwidth())
-            .attr('fill', d => this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d));
+            .attr('fill', d => this.isQuantitative(attr, type) ? '#82B1FF' : this[`${type}AttrScales`][attr](d));
 
           // Add the brush
           const brush = d3.brushX()
@@ -175,7 +161,7 @@ export default {
                 const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels))
                 const new_domain = binLabels.slice(start, end)
 
-                this.glyphColorScales[attr].domain(new_domain)
+                this.nodeAttrScales[attr].domain(new_domain)
               }
               
               // Update the link width domain
@@ -349,7 +335,7 @@ export default {
         <h2>Node Attributes</h2>
         <br/>
         <div
-          v-for="nodeAttr of this.multiVariableList"
+          v-for="nodeAttr of this.nodeAttrs"
           :key="`node${nodeAttr}`"
           :id="`node${nodeAttr}div`"
           class="draggable"
@@ -368,7 +354,7 @@ export default {
         <h2>Link Attributes</h2>
         <br/>
         <div
-          v-for="linkAttr of this.linkVariableList"
+          v-for="linkAttr of this.linkAttrs"
           :key="`link${linkAttr}`"
           :id="`link${linkAttr}div`"
           class="draggable"

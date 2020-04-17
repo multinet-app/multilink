@@ -114,7 +114,7 @@ export default {
       const scales = {};
 
       // Iterate through attrs making linear or ordinal scales based on variable type
-      for (const attr of eval(`this.${type}Attrs`)) {
+      for (const attr of this[`${type}Attrs`]) {
         scales[attr] = this.isQuantitative(attr, type) ? 
           d3.scaleLinear().domain([0, 10]).range([2, 20]) :
           d3.scaleOrdinal(d3.schemeCategory10) ;
@@ -238,6 +238,8 @@ export default {
               graphStructure,
               provenance,
               app,
+              nodeAttrs,
+              linkAttrs,
               nodeAttrScales,
               linkAttrScales,
               labelVariable,

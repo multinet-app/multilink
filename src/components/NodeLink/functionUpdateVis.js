@@ -273,7 +273,7 @@ function updateVis() {
     .attr('height', "1em")
 
   if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScales, barVariables, glyphVariables, graphStructure)
+    drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyphVariables, graphStructure, nodeAttrScales)
   } else {
     node.selectAll(".bar").remove()
     node.selectAll(".glyph").remove()
@@ -319,8 +319,8 @@ function updateVis() {
         linkAttrScales["width"](d[widthVariables[0]]) : 1
     )
     .style("stroke", d => {
-      if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
-        return linkColorScale(d[colorVariables[0]])
+      if (colorVariables[0] !== undefined && linkAttrScales[colorVariables[0]].domain().indexOf(d[colorVariables[0]].toString()) > -1) {
+        return linkAttrScales[colorVariables[0]](d[colorVariables[0]])
       } else{
         return "#888888"
       }
@@ -345,7 +345,7 @@ function updateVis() {
   })
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScales, barVariables, glyphVariables, graphStructure) {
+function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyphVariables, graphStructure, nodeAttrScales) {
   // Delete past renders
   node.selectAll(".bar").remove()
   node.selectAll(".glyph").remove()
@@ -381,34 +381,35 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScales, 
   }
 
   // Append glyphs
-  i = 0;
-  while (i < 2) {
-    let glyphVar = glyphVariables[i]
-    console.log(glyphVar, glyphColorScales[glyphVar].domain())
-    if (glyphVar === undefined) {
-      break
+  if (glyphVariables.length > 0) {
+    i = 0;
+    while (i < glyphVariables.length) {
+      let glyphVar = glyphVariables[i]
+      if (glyphVar === undefined) {
+        break
+      }
+      // Draw glyph
+      node.append("rect")
+        .attr("class", "glyph")
+        .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
+        .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
+        .attr("y", `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
+        .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
+        .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
+        .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
+        .style("fill", d => {
+          if (glyphVar !== undefined && nodeAttrScales[glyphVar].domain().indexOf(d[glyphVar].toString()) > -1) {
+            return nodeAttrScales[glyphVar](d[glyphVar])
+          } else{
+            return "#BBBBBB"
+          }
+        })
+        
+        
+      
+      // Update i
+      i++
     }
-    // Draw glyph
-    node.append("rect")
-      .attr("class", "glyph")
-      .attr("width", `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
-      .attr("height", `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr("y", `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
-      .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
-      .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
-      .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style("fill", d => {
-        if (glyphVar !== undefined && glyphColorScales[glyphVar].domain().indexOf(d[glyphVar].toString()) > -1) {
-          return glyphColorScales[glyphVar](d[glyphVar])
-        } else{
-          return "#888888"
-        }
-      })
-      
-      
-    
-    // Update i
-    i++
   }
 }
 
