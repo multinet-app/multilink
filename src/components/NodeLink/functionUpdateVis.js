@@ -371,8 +371,8 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
     node.append("rect")
       .attr("class", "bar")
       .attr("width", `${barWidth - 10}px`)
-      .attr("height", d => `${nodeAttrScales[barVar](d[barVar])}px`)
-      .attr("y", d => `${nodeMarkerHeight - 5 - nodeAttrScales[barVar](d[barVar])}px`)
+      .attr("height", d => `${domain_safe_mapping(d[barVar], nodeAttrScales[barVar])}px`)
+      .attr("y", d => `${nodeMarkerHeight - 5 - domain_safe_mapping(d[barVar], nodeAttrScales[barVar])}px`)
       .attr("x", `${5 + (i * barWidth)}px`)
       .style("fill", d => "#82b1ff")
     
@@ -392,17 +392,27 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
         .attr("x", `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
         .attr("ry", `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
         .attr("rx", `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-        .style("fill", d => {
-          if (glyphVar !== undefined && nodeAttrScales[glyphVar].domain().indexOf(d[glyphVar].toString()) > -1) {
-            return nodeAttrScales[glyphVar](d[glyphVar])
-          } else{
-            return "#BBBBBB"
-          }
-        })
+        .style("fill", d => domain_safe_mapping(d[glyphVar], nodeAttrScales[glyphVar]))
     }
   }
 }
 
+  
+  // Takes a scale and a value and only maps the value if the value is in the domain
+function domain_safe_mapping(value, scale) {
+  let inDomain = false;
+
+  if (scale.interpolate !== undefined) {
+    // if the scale is numeric
+    inDomain = value >= scale.domain()[0] && value <= scale.domain()[1]
+  return inDomain ? scale(value) : 0;
+  } else {
+    // if the scale is categorical
+    inDomain = scale.domain().indexOf(value) > -1
+    return inDomain ? scale(value) : "";
+  }
+
+}
 
 export {
   arcPath,
