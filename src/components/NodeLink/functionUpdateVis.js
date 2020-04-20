@@ -2,7 +2,10 @@
  * updateVis and its child functions
  */
 
-import * as d3 from "d3";
+import { event, select } from 'd3-selection';
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force';
+import { max } from 'd3-array';
+import { drag } from 'd3-drag';
 
 function arcPath(d) {
   const {
@@ -41,10 +44,10 @@ function dragStarted(d) {
 }
 
 function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-  d.x = d3.event.x;
-  d.y = d3.event.y;
+  d.fx = event.x;
+  d.fy = event.y;
+  d.x = event.x;
+  d.y = event.y;
   this.dragNode();
 }
 
@@ -114,16 +117,15 @@ function makeSimulation() {
     graphStructure,
     nodeMarkerLength,
     nodeMarkerHeight,
-    nodeMarkerType,
+    renderNested
   } = this;
 
-  const simulation = d3
-    .forceSimulation()
-    .force("link", d3.forceLink().id(d => d.id))
-    .force("charge", d3.forceManyBody().strength(-300))
+  const simulation = forceSimulation()
+    .force("link", forceLink().id(d => d.id))
+    .force("charge", forceManyBody().strength(-300))
     .force(
       "center",
-      d3.forceCenter(
+      forceCenter(
         visDimensions.width / 2,
         visDimensions.height / 2
       )
@@ -139,8 +141,8 @@ function makeSimulation() {
   simulation.on("tick", () => this.dragNode());
 
   simulation.force("collision", 
-    d3.forceCollide()
-    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType))
+    forceCollide()
+    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested))
     .strength(0.7)
     .iterations(10)
   );
@@ -153,19 +155,19 @@ function makeSimulation() {
   return simulation;
 }
 
-function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
-  if (nodeMarkerType === "Circle") {
-    return d3.max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
+function getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested) {
+  if (renderNested) {
+    return max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
   } else {
-    return d3.max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
+    return max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
   }
 }
 
 function showTooltip(data, delay = 200) {
   let tooltip = this.svg.select('.tooltip');
   tooltip.html(data)
-    .style("left", (d3.event.clientX + 10) + "px")
-    .style("top", (d3.event.clientY - 20) + "px");
+    .style("left", (event.clientX + 10) + "px")
+    .style("top", (event.clientY - 20) + "px");
   tooltip.transition().duration(delay).style("opacity", .9);
 }
 
@@ -178,7 +180,6 @@ function updateVis() {
     labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
-    nodeMarkerType,
     svg,
     visMargins,
     visDimensions,
@@ -225,8 +226,8 @@ function updateVis() {
     .selectAll(".nodeBox")
     .attr("width", () => nodeMarkerLength)
     .attr("height", () => nodeMarkerHeight)
-    .attr("rx", nodeMarkerType === "Circle" ? nodeMarkerLength / 2 : 0)
-    .attr("ry", nodeMarkerType === "Circle" ? nodeMarkerHeight / 2 : 0)
+    .attr("rx", renderNested ? 0 : nodeMarkerLength / 2)
+    .attr("ry", renderNested ? 0 : nodeMarkerHeight / 2)
 
   node.select('.node')
     .style("fill", d => {
@@ -249,26 +250,12 @@ function updateVis() {
     .select("text")
     .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
-    .attr("dx", () => {
-      return nodeMarkerLength / 2
-    })
-    .attr("dy", () => {
-      if (nodeMarkerType === "Circle" || !renderNested) {
-        return (nodeMarkerHeight / 2) + 2
-      } else {
-        return 8
-      }
-    })
+    .attr("dx", nodeMarkerLength / 2)
+    .attr("dy", renderNested ? 8 : (nodeMarkerHeight / 2) + 2)
 
   node
     .select(".labelBackground")
-    .attr("y", () => {
-      if (nodeMarkerType === "Circle" || !renderNested) {
-        return (nodeMarkerHeight / 2) - 8
-      } else {
-        return 0
-      }
-    })
+    .attr("y", () => renderNested ? 0: (nodeMarkerHeight / 2) - 8)
     .attr("width", () => nodeMarkerLength)
     .attr('height', "1em")
 
@@ -280,16 +267,14 @@ function updateVis() {
   }
 
   node.call(
-    d3
-      .drag()
-      .on("start", (d) => this.dragStarted(d))
+    drag()
+      .on("start", (d) => this.dragstarted(d))
       .on("drag", (d) => this.dragged(d))
       .on("end", () => this.dragEnded())
   );
 
   //Draw Links
-  let link = d3
-    .select(".links")
+  let link = select(".links")
     .selectAll(".linkGroup")
     .data(graphStructure.links);
 
@@ -357,7 +342,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, barVariables, glyp
   (nodeMarkerLength / 2) / barVariables.length;
 
   for (let barVar of barVariables) {
-    let maxValue = d3.max(graphStructure.nodes.map(d => parseFloat(d[barVar])));
+    let maxValue = max(graphStructure.nodes.map(d => parseFloat(d[barVar])));
     // Draw white, background bar
     node.append("rect")
       .attr("class", "bar")

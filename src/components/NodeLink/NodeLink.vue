@@ -1,7 +1,7 @@
 <script>
-import * as d3 from "d3";
+import { scaleLinear } from "d3-scale";
+import { select } from 'd3-selection';
 
-import * as loadVisMethods from './functionLoadVis';
 import * as updateVisMethods from './functionUpdateVis';
 import * as uiMethods from './functionUi';
 
@@ -38,10 +38,6 @@ export default {
     nodeMarkerHeight: {
       type: Number,
       default: 50
-    },
-    nodeMarkerType: {
-      type: String,
-      default: "Circle"
     },
     selectNeighbors: {
       type: Boolean,
@@ -112,8 +108,7 @@ export default {
       svg: undefined,
       simulation: undefined,
       scales: {},
-      edgeScale: d3.scaleLinear().domain([0, 1]),
-      circleScale: d3.scaleLinear().domain([0, 1]),
+      edgeScale: scaleLinear().domain([0, 1]),
       colorClasses: [],
       nodeSizeAttr: undefined,
       barPadding: 3,
@@ -129,7 +124,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
@@ -147,7 +141,6 @@ export default {
         nodeFontSize,
         nodeMarkerLength,
         nodeMarkerHeight,
-        nodeMarkerType,
         isDirected,
         isMultiEdge,
         attributes,
@@ -184,9 +177,41 @@ export default {
   },
 
   methods: {
-    ...loadVisMethods,
     ...updateVisMethods,
     ...uiMethods,
+
+    loadVis() {
+      // Get the browser width and height
+      this.browser.width = window.innerWidth
+      || document.documentElement.clientWidth
+      || document.body.clientWidth;
+
+      this.browser.height = window.innerHeight
+      || document.documentElement.clientHeight
+      || document.body.clientHeight;
+
+      // Set dimensions of the nodelink
+      this.visDimensions.width = this.browser.width * 0.75;
+      this.visDimensions.height = this.browser.height - 24;
+
+      // Apply the size to the nodelink svg
+      this.svg = select(this.$refs.svg)
+        .attr("width", this.visDimensions.width)
+        .attr("height", this.visDimensions.height);
+
+      // Set up groups for nodes/links
+      this.svg.append("g").attr("class", "links");
+      this.svg.append("g").attr("class", "nodes");
+
+      // Add tooltip
+      select(this.$el)
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+      // Call update vis to append all the data to the svg
+      this.updateVis(this.graphStructure);
+    },
   },
 };
 </script>

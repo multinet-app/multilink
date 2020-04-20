@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { forceCollide } from 'd3-force';
 import { getForceRadii } from "./functionUpdateVis";
 
 function clearSelections() {
@@ -126,8 +126,8 @@ function releaseNodes() {
 function startSimulation() {
   // Update the force radii
   this.simulation.force("collision", 
-    d3.forceCollide()
-    .radius(getForceRadii(this.nodeMarkerLength, this.nodeMarkerHeight, this.nodeMarkerType))
+    forceCollide()
+    .radius(getForceRadii(this.nodeMarkerLength, this.nodeMarkerHeight, this.renderNested))
     .strength(0.7)
     .iterations(10)
   );
