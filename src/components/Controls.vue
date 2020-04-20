@@ -24,7 +24,6 @@ export default {
         links: []
       },
       nodeMarkerSize: 50,
-      nodeMarkerType: "Circle",
       nodeFontSize: 14,
       workspace: null,
       graph: null,
@@ -124,11 +123,14 @@ export default {
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
-            <v-card-subtitle class="pb-0 pl-0">Marker Type</v-card-subtitle>
-            <v-radio-group v-model="nodeMarkerType">
-              <v-radio name="active" label="Circle" value="Circle" @click="renderNested = false; nodeMarkerType = 'Circle'"></v-radio>
-              <v-radio name="active" label="Rectangle" value="Rectangle"></v-radio>                
-            </v-radio-group>
+            <v-card-subtitle class="pb-0 pl-0" style="display: flex; align-items: center; justify-content: space-between">
+              Display charts
+              <v-switch
+                  class="ma-0"
+                  v-model="renderNested"
+                  hide-details
+                />
+            </v-card-subtitle>
 
             <v-divider class="mt-4" />
 
@@ -171,18 +173,6 @@ export default {
               :items="colorVariableList"
               :options="colorVariableList"
             />
-
-            <v-divider class="mt-4" />
-
-            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
-              Render Nested Elements
-              <v-switch
-                class="ma-0"
-                v-model="renderNested"
-                :disabled="nodeMarkerType === 'Circle'"
-                hide-details
-              />
-            </v-card-subtitle>
 
             <v-divider class="mt-4" />
 
@@ -250,7 +240,6 @@ export default {
               app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
-              nodeMarkerType,
               nodeFontSize,
               selectNeighbors,
               renderNested,

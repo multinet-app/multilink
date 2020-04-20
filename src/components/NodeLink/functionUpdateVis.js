@@ -136,7 +136,7 @@ function makeSimulation() {
     graphStructure,
     nodeMarkerLength,
     nodeMarkerHeight,
-    nodeMarkerType,
+    renderNested
   } = this;
 
   const simulation = forceSimulation()
@@ -161,7 +161,7 @@ function makeSimulation() {
 
   simulation.force("collision", 
     forceCollide()
-    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType))
+    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested))
     .strength(0.7)
     .iterations(10)
   );
@@ -174,11 +174,11 @@ function makeSimulation() {
   return simulation;
 }
 
-function getForceRadii(nodeMarkerLength, nodeMarkerHeight, nodeMarkerType) {
-  if (nodeMarkerType === "Circle") {
-    return max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
-  } else {
+function getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested) {
+  if (renderNested) {
     return max([nodeMarkerLength , nodeMarkerHeight]) * 0.8
+  } else {
+    return max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5
   }
 }
 
@@ -199,7 +199,6 @@ function updateVis() {
     labelVariable,
     nodeMarkerLength,
     nodeMarkerHeight,
-    nodeMarkerType,
     svg,
     visMargins,
     visDimensions,
@@ -248,8 +247,8 @@ function updateVis() {
     .selectAll(".nodeBox")
     .attr("width", () => nodeMarkerLength)
     .attr("height", () => nodeMarkerHeight)
-    .attr("rx", nodeMarkerType === "Circle" ? nodeMarkerLength / 2 : 0)
-    .attr("ry", nodeMarkerType === "Circle" ? nodeMarkerHeight / 2 : 0)
+    .attr("rx", renderNested ? 0 : nodeMarkerLength / 2)
+    .attr("ry", renderNested ? 0 : nodeMarkerHeight / 2)
 
   node.select('.node')
     .style("fill", d => {
@@ -270,26 +269,12 @@ function updateVis() {
     .select("text")
     .text(d => d[labelVariable])
     .style("font-size", nodeFontSize + "pt")
-    .attr("dx", () => {
-      return nodeMarkerLength / 2
-    })
-    .attr("dy", () => {
-      if (nodeMarkerType === "Circle" || !renderNested) {
-        return (nodeMarkerHeight / 2) + 2
-      } else {
-        return 8
-      }
-    })
+    .attr("dx", nodeMarkerLength / 2)
+    .attr("dy", renderNested ? 8 : (nodeMarkerHeight / 2) + 2)
 
   node
     .select(".labelBackground")
-    .attr("y", () => {
-      if (nodeMarkerType === "Circle" || !renderNested) {
-        return (nodeMarkerHeight / 2) - 8
-      } else {
-        return 0
-      }
-    })
+    .attr("y", () => renderNested ? 0: (nodeMarkerHeight / 2) - 8)
     .attr("width", () => nodeMarkerLength)
     .attr('height', "1em")
 
