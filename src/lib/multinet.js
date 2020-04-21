@@ -39,7 +39,7 @@ function _renameNodeVars(nodes) {
   return nodes;
 }
 
-async function loadData(workspace, graph, apiRoot = "https://multinet.app/api") {
+async function loadData(workspace, graph, apiRoot = "https://api.multinet.app/api") {
   // Define local variables that will store the api url and the responses from the database
   let multinet = {
     "tables": {},
