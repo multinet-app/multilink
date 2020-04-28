@@ -49,13 +49,13 @@ export default {
 
     nodeAttrScales() {
       const scales = this.getAttrScales("node");
-      scales['table'] = d3.scaleOrdinal(d3.schemeCategory10);
+      scales['table'] = scaleOrdinal(schemeCategory10);
       return scales;
     },
 
     linkAttrScales() {
       const scales = this.getAttrScales("link");
-      scales['width'] = d3.scaleLinear().domain([0, 10]).range([2, 20]);
+      scales['width'] = scaleLinear().domain([0, 10]).range([2, 20]);
       return scales;
     },
   },
@@ -116,8 +116,8 @@ export default {
       // Iterate through attrs making linear or ordinal scales based on variable type
       for (const attr of this[`${type}Attrs`]) {
         scales[attr] = this.isQuantitative(attr, type) ? 
-          d3.scaleLinear().domain([0, 10]).range([0, this.nodeMarkerSize - 16 - 5 - 5]) :
-          d3.scaleOrdinal(d3.schemeCategory10);
+          scaleLinear().domain([0, 10]).range([0, this.nodeMarkerSize - 16 - 5 - 5]) :
+          scaleOrdinal(schemeCategory10);
       }
 
       return scales
