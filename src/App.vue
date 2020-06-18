@@ -4,13 +4,13 @@
  * you'll want to implement this "state container" component
  * yourself and wire it up to your control board on your own.
  */
-import Controls from "./components/Controls.vue";
+import Controls from './components/Controls.vue';
 
 export default {
-  name: "app",
+  name: 'app',
 
   components: {
-    Controls
+    Controls,
   },
 };
 </script>

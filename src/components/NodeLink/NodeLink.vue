@@ -1,65 +1,66 @@
 <script>
-import { scaleLinear } from "d3-scale";
+import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import * as updateVisMethods from './functionUpdateVis';
 import * as uiMethods from './functionUi';
+import { Network } from '@/types';
 
 export default {
   props: {
     app: {
       type: Object,
-      required: true
+      required: true,
     },
     provenance: {
       type: Object,
-      required: true
+      required: true,
     },
     graphStructure: {
-      type: Object,
-      default: () => {}
+      type: Network,
+      default: null,
     },
     labelVariable: {
       type: String,
-      default: "_key"
+      default: '_key',
     },
     colorVariable: {
       type: String,
-      default: "table"
+      default: 'table',
     },
     nodeFontSize: {
       type: Number,
-      default: 14
+      default: 14,
     },
     nodeMarkerLength: {
       type: Number,
-      default: 50
+      default: 50,
     },
     nodeMarkerHeight: {
       type: Number,
-      default: 50
+      default: 50,
     },
     selectNeighbors: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isDirected: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isMultiEdge: {
       type: Boolean,
-      default: false
+      default: false,
     },
     attributes: {
       type: Object,
       default: () => ({
         edgeWidthKey: undefined,
-      })
+      }),
     },
     renderNested: {
       type: Boolean,
-      default: false
+      default: false,
     },
     barVariables: {
       type: Array,
@@ -83,19 +84,19 @@ export default {
     },
     nodeColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     linkColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     glyphColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     linkWidthScale: {
       type: Function,
-      default: null
+      default: null,
     },
   },
 
@@ -103,7 +104,7 @@ export default {
     return {
       browser: {
         height: 0,
-        width: 0
+        width: 0,
       },
       panelDimensions: { width: 0, height: 0 },
       visDimensions: { width: 0, height: 0 },
@@ -111,7 +112,7 @@ export default {
         left: 25,
         right: 25,
         top: 25,
-        bottom: 25
+        bottom: 25,
       },
       svg: undefined,
       simulation: undefined,
@@ -167,20 +168,20 @@ export default {
   watch: {
     properties() {
       this.updateVis();
-    }
+    },
   },
 
   async mounted() {
     this.loadVis();
-    this.provenance.addObserver("selected", state =>
-      this.highlightSelectedNodes(state)
+    this.provenance.addObserver('selected', (state) =>
+      this.highlightSelectedNodes(state),
     );
 
-    this.simulation = this.makeSimulation()
+    this.simulation = this.makeSimulation();
 
     // Required to update when brushing the legend
     this.$root.$on('brushing', () => {
-      this.updateVis()
+      this.updateVis();
     });
   },
 
@@ -204,18 +205,18 @@ export default {
 
       // Apply the size to the nodelink svg
       this.svg = select(this.$refs.svg)
-        .attr("width", this.visDimensions.width)
-        .attr("height", this.visDimensions.height);
+        .attr('width', this.visDimensions.width)
+        .attr('height', this.visDimensions.height);
 
       // Set up groups for nodes/links
-      this.svg.append("g").attr("class", "links");
-      this.svg.append("g").attr("class", "nodes");
+      this.svg.append('g').attr('class', 'links');
+      this.svg.append('g').attr('class', 'nodes');
 
       // Add tooltip
       select(this.$el)
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
 
       // Call update vis to append all the data to the svg
       this.updateVis(this.graphStructure);

@@ -5,6 +5,8 @@ import { scaleLinear, scaleBand } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
 
+import { Network } from '@/types';
+
 export default {
   components: {
   },
@@ -12,31 +14,31 @@ export default {
   props: {
     app: {
       type: Object,
-      required: true
+      required: true,
     },
     provenance: {
       type: Object,
-      required: true
+      required: true,
     },
     graphStructure: {
-      type: Object,
-      default: () => {}
+      type: Network,
+      default: null,
     },
     nodeColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     linkColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     glyphColorScale: {
       type: Function,
-      default: null
+      default: null,
     },
     linkWidthScale: {
       type: Function,
-      default: null
+      default: null,
     },
     multiVariableList: {
       type: Array,
@@ -73,7 +75,7 @@ export default {
   },
 
   mounted() {
-    this.setUpPanel()
+    this.setUpPanel();
   },
 
   computed: {
@@ -112,15 +114,18 @@ export default {
         // For each attribute
         for (const attr of list) {
           // Get the SVG element and its width
-          const type = list === this.multiVariableList ? "node" : "link"
-          const variableSvg = select(`#${type}${attr}`)
-          const variableSvgWidth = variableSvg.node().getBoundingClientRect().width - this.yAxisPadding - this.varPadding
+          const type = list === this.multiVariableList ? 'node' : 'link';
+          const variableSvg = select(`#${type}${attr}`);
+          const variableSvgWidth = variableSvg
+            .node()
+            .getBoundingClientRect()
+            .width - this.yAxisPadding - this.varPadding;
 
           // Get the data and generate the bins
-          const currentData = this.graphStructure[`${type}s`].map(d => d[attr])
-          const bins = currentData.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {})
-          const binLabels = Object.entries(bins).map(d => d[0])
-          const binValues = Object.entries(bins).map(d => d[1])
+          const currentData = this.graphStructure[`${type}s`].map((d) => d[attr]);
+          const bins = currentData.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
+          const binLabels = Object.entries(bins).map((d) => d[0]);
+          const binValues = Object.entries(bins).map((d) => d[1]);
 
           // Generate axis scales
           const yScale = scaleLinear()
@@ -152,18 +157,20 @@ export default {
             .attr('y', (d) => yScale(bins[d]))
             .attr('height', (d, i, values) => this.svgHeight - yScale(bins[d]))
             .attr('width', xScale.bandwidth())
-            .attr('fill', d => this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d));
+            .attr('fill', (d) => this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d));
 
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            .on("start brush", () => {
+            .on('start brush', () => {
               const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
               variableSvgEnter
-                .attr("stroke", d => xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? "#000000" : "")
-                
+                .attr('stroke', (d) =>
+                  xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? '#000000' : '',
+                );
+
               // TODO: Update the nested bars domain
               // if (attr === this.barVariables[0]) {
               //   const new_domain = [
@@ -181,28 +188,28 @@ export default {
               //   ]
               //   this.linkWidthScale.domain(new_domain).range([2,20])
               // }
-              
+
               // Update the link width domain
               if (attr === this.widthVariables[0]) {
-                const new_domain = [
+                const newDomain = [
                   this.ordinalInvert(extent[0], xScale, binLabels),
-                  this.ordinalInvert(extent[1], xScale, binLabels)
-                ]
-                this.linkWidthScale.domain(new_domain).range([2,20])
+                  this.ordinalInvert(extent[1], xScale, binLabels),
+                ];
+                this.linkWidthScale.domain(newDomain).range([2, 20]);
               }
 
               // Update the link color domain
               if (attr === this.colorVariables[0]) {
-                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels))
-                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels))
-                const new_domain = binLabels.slice(start, end)
+                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels));
+                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels));
+                const newDomain = binLabels.slice(start, end);
 
-                this.linkColorScale.domain(new_domain)
+                this.linkColorScale.domain(newDomain);
               }
 
               // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
               this.$root.$emit('brushing');
-            })
+            });
 
           variableSvg
             .call(brush)
@@ -217,38 +224,40 @@ export default {
     },
 
     ordinalInvert(pos, scale, binLabels) {
-        let previous = null
-        const domain = scale.domain()
-        for(const idx in domain) {
-            if(scale(binLabels[idx]) > pos) {
+        let previous = null;
+        const domain = scale.domain();
+        for (const idx in domain) {
+          if (idx !== null) {
+            if (scale(binLabels[idx]) > pos) {
                 return previous;
             }
             previous = binLabels[idx];
+          }
         }
         return previous;
     },
 
-    rectDrop(event) {
-      const droppedEl = event.dataTransfer.getData('attr_id');
-      const type = droppedEl.substring(0,4) === 'node' ? 'node' : 'link';
-      const targetEl = event.target.parentNode.id
+    rectDrop(newEvent) {
+      const droppedEl = newEvent.dataTransfer.getData('attr_id');
+      const type = droppedEl.substring(0, 4) === 'node' ? 'node' : 'link';
+      const targetEl = newEvent.target.parentNode.id;
       const droppedElText = droppedEl.replace(type, '').replace('div', '');
-      
+
       if (type === 'node' && targetEl === 'barElements') {
-        this.barVariables.push(droppedElText)
+        this.barVariables.push(droppedElText);
       } else if (type === 'node' && targetEl === 'glyphElements') {
-        this.glyphVariables.push(droppedElText)
+        this.glyphVariables.push(droppedElText);
       } else if (type === 'link' && targetEl === 'widthElements') {
-        this.widthVariables.push(droppedElText)
+        this.widthVariables.push(droppedElText);
       } else if (type === 'link' && targetEl === 'colorElements') {
-        this.colorVariables.push(droppedElText)
-      } 
+        this.colorVariables.push(droppedElText);
+      }
     },
 
-    dragStart(event) {
-      event.dataTransfer.setData('attr_id', event.target.id)
-    }
-  }
+    dragStart(newEvent) {
+      newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
+    },
+  },
 };
 </script>
 
