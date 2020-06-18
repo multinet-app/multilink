@@ -12,6 +12,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@types/d3": "^5.7.2",
     "core-js": "^3.4.3",
     "d3": "^5.14.2",
     "provenance-lib-core": "^6.0.0",
@@ -20,7 +21,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
-    "@vue/cli-plugin-eslint": "^4.1.0",
+    "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-plugin-unit-jest": "^4.1.1",
     "@vue/cli-service": "^4.1.0",
     "@vue/test-utils": "^1.0.0-beta.30",
@@ -31,6 +32,7 @@
     "jest": "^24.9.0",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
+    "typescript": "^3.6.3",
     "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.10",
