@@ -2,12 +2,12 @@
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
 import Legend from '@/components/NodeLink/Legend.vue';
 
-import { setUpProvenance } from "@/lib/provenance";
-import { getUrlVars } from "@/lib/utils";
-import { loadData } from "@/lib/multinet";
+import { setUpProvenance } from '@/lib/provenance';
+import { getUrlVars } from '@/lib/utils';
+import { loadData } from '@/lib/multinet';
 
-import { scaleLinear, scaleOrdinal } from "d3-scale";
-import { schemeCategory10 } from "d3-scale-chromatic";
+import { scaleLinear, scaleOrdinal } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 
 export default {
   components: {
@@ -21,7 +21,7 @@ export default {
       provenance: null,
       graphStructure: {
         nodes: [],
-        links: []
+        links: [],
       },
       nodeMarkerSize: 50,
       nodeFontSize: 14,
@@ -29,7 +29,7 @@ export default {
       graph: null,
       selectNeighbors: true,
       renderNested: false,
-      labelVariable: "_key",
+      labelVariable: '_key',
       colorVariable: null,
       nodeColorScale: scaleOrdinal(schemeCategory10),
       linkColorScale: scaleOrdinal().range(schemeCategory10),
@@ -45,31 +45,31 @@ export default {
 
   computed: {
     variableList() {
-      return this.multiVariableList.concat([null]) 
+      return this.multiVariableList.concat([null]);
     },
     multiVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node))
+        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node));
         allVars = [].concat.apply([], allVars);
-        allVars = [...new Set(allVars)]
-        return allVars
+        allVars = [...new Set(allVars)];
+        return allVars;
       } else {
-        return []
+        return [];
       }
     },
     colorVariableList() {
-      return this.multiVariableList.concat(["table", null]) 
+      return this.multiVariableList.concat(['table', null]);
     },
     linkVariableList() {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
         // Loop through all links, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.links.map((node) => Object.keys(node))
+        let allVars = this.graphStructure.links.map((node) => Object.keys(node));
         allVars = [].concat.apply([], allVars);
-        allVars = [...new Set(allVars)].filter(d => d !== "source" && d !== "target")
-        return allVars
+        allVars = [...new Set(allVars)].filter((d) => d !== 'source' && d !== 'target');
+        return allVars;
       } else {
-        return []
+        return [];
       }
     },
   },
@@ -78,7 +78,7 @@ export default {
     const { workspace, graph, host } = getUrlVars();
     if (!workspace || !graph) {
       throw new Error(
-        `Workspace and graph must be set! workspace=${workspace} graph=${graph}`
+        `Workspace and graph must be set! workspace=${workspace} graph=${graph}`,
       );
     }
     this.graphStructure = await loadData(workspace, graph, host);
@@ -104,10 +104,13 @@ export default {
 
     exportGraph() {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(this.graphStructure)], {
-        type: `text/json`
-      }));
-      a.download = "graph.json";
+      a.href = URL.createObjectURL(
+        new Blob(
+          [JSON.stringify(this.graphStructure)],
+          { type: 'text/json' },
+        ),
+      );
+      a.download = 'graph.json';
       a.click();
     },
   },
