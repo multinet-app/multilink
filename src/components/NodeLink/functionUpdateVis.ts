@@ -35,10 +35,22 @@ export function arcPath(leftHand, d, state = false) {
 
   const horizontalSpace = visDimensions.width - visMargins.left - visMargins.right - nodeMarkerLength;
   const verticalSpace = visDimensions.height - visMargins.bottom - visMargins.top - nodeMarkerHeight;
-  x1 = Math.max(visMargins.left + nodeMarkerLength / 2, Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x1));
-  y1 = Math.max(visMargins.top + nodeMarkerHeight / 2, Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y1));
-  x2 = Math.max(visMargins.left + nodeMarkerLength / 2, Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x2));
-  y2 = Math.max(visMargins.top + nodeMarkerHeight / 2, Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y2));
+  x1 = Math.max(
+    visMargins.left + nodeMarkerLength / 2,
+    Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x1),
+  );
+  y1 = Math.max(
+    visMargins.top + nodeMarkerHeight / 2,
+    Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y1),
+  );
+  x2 = Math.max(
+    visMargins.left + nodeMarkerLength / 2,
+    Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x2),
+  );
+  y2 = Math.max(
+    visMargins.top + nodeMarkerHeight / 2,
+    Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y2),
+  );
 
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -237,8 +249,10 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
       const horizontalSpace = visDimensions.width - visMargins.left - visMargins.right - (2 * nodeMarkerLength);
       const verticalSpace = visDimensions.height - visMargins.bottom - visMargins.top - (2 * nodeMarkerHeight);
       // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-      d.x = d.x === undefined ? (Math.random() * horizontalSpace) + visMargins.left : Math.max(visMargins.left, Math.min(visDimensions.width - nodeMarkerLength - visMargins.right, d.x));
-      d.y = d.y === undefined ? (Math.random() * verticalSpace) + visMargins.top : Math.max(visMargins.top, Math.min(visDimensions.height - nodeMarkerHeight - visMargins.bottom, d.y));
+      d.x = d.x === undefined ? (Math.random() * horizontalSpace) + visMargins.left :
+        Math.max(visMargins.left, Math.min(visDimensions.width - nodeMarkerLength - visMargins.right, d.x));
+      d.y = d.y === undefined ? (Math.random() * verticalSpace) + visMargins.top :
+        Math.max(visMargins.top, Math.min(visDimensions.height - nodeMarkerHeight - visMargins.bottom, d.y));
       return 'translate(' + d.x + ',' + d.y + ')';
     });
 
@@ -252,14 +266,14 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
   node.select('.node')
     .style('fill', (d) => {
       if (colorVariable === 'table') {
-        const table = d['id'].split('/')[0];
+        const table = d.id.split('/')[0];
         return nodeColorScale(table);
       } else {
         return nodeColorScale(d[colorVariable]);
       }
     })
     .on('click', (n: Node) => selectNode(n, provenance))
-    .on('mouseover', (d) => {
+    .on('mouseover', (d: Node) => {
       this.showTooltip(d.id);
     });
 
@@ -273,7 +287,7 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
 
   node
     .select('.labelBackground')
-    .attr('y', () => renderNested ? 0: (nodeMarkerHeight / 2) - 8)
+    .attr('y', () => renderNested ? 0 : (nodeMarkerHeight / 2) - 8)
     .attr('width', () => nodeMarkerLength)
     .attr('height', '1em');
 
@@ -324,7 +338,7 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
     .style('stroke', (d) => {
       if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
         return linkColorScale(d[colorVariables[0]]);
-      } else{
+      } else {
         return '#888888';
       }
     })
@@ -348,7 +362,15 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
   });
 }
 
-function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, barVariables, glyphVariables, graphStructure) {
+function drawNested(
+  node,
+  nodeMarkerHeight,
+  nodeMarkerLength,
+  glyphColorScale,
+  barVariables,
+  glyphVariables,
+  graphStructure,
+) {
   // Delete past renders
   node.selectAll('.bar').remove();
   node.selectAll('.glyph').remove();
@@ -395,7 +417,7 @@ function drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, b
       .attr('class', 'glyph')
       .attr('width', `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
       .attr('height', `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr('y', `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5*(i)}px`)
+      .attr('y', `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5 * (i)}px`)
       .attr('x', `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr('ry', `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
