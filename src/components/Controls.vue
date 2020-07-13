@@ -17,7 +17,6 @@ export default {
 
   data() {
     return {
-      app: null,
       provenance: null,
       graphStructure: {
         nodes: [],
@@ -82,9 +81,7 @@ export default {
       );
     }
     this.graphStructure = await loadData(workspace, graph, host);
-    const { provenance, app } = setUpProvenance(this.graphStructure.nodes);
-    this.app = app;
-    this.provenance = provenance;
+    this.provenance = setUpProvenance(this.graphStructure);
     this.workspace = workspace;
     this.graph = graph;
   },
@@ -214,7 +211,6 @@ export default {
           v-bind="{
               graphStructure,
               provenance,
-              app,
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
@@ -240,7 +236,6 @@ export default {
             v-bind="{
               graphStructure,
               provenance,
-              app,
               nodeMarkerHeight: nodeMarkerSize,
               nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,

@@ -12,10 +12,6 @@ export default {
   },
 
   props: {
-    app: {
-      type: Object,
-      required: true,
-    },
     provenance: {
       type: Object,
       required: true,
@@ -81,7 +77,6 @@ export default {
   computed: {
     properties() {
       const {
-        app,
         provenance,
         graphStructure,
         linkWidthScale,
@@ -93,7 +88,6 @@ export default {
         colorVariables,
       } = this;
       return {
-        app,
         provenance,
         graphStructure,
         linkWidthScale,

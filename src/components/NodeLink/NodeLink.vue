@@ -5,15 +5,12 @@ import { select } from 'd3-selection';
 import * as updateVisMethods from './functionUpdateVis';
 import * as uiMethods from './functionUi';
 import { Network } from '@/types';
+import { Provenance } from '@visdesignlab/provenance-lib-core';
 
 export default {
   props: {
-    app: {
-      type: Object,
-      required: true,
-    },
     provenance: {
-      type: Object,
+      type: Provenance,
       required: true,
     },
     graphStructure: {
@@ -167,21 +164,18 @@ export default {
 
   watch: {
     properties() {
-      this.updateVis();
+      this.updateVis(this.provenance);
     },
   },
 
   async mounted() {
     this.loadVis();
-    this.provenance.addObserver('selected', (state) =>
-      this.highlightSelectedNodes(state),
-    );
 
     this.simulation = this.makeSimulation();
 
     // Required to update when brushing the legend
     this.$root.$on('brushing', () => {
-      this.updateVis();
+      this.updateVis(this.provenance);
     });
   },
 
@@ -219,7 +213,7 @@ export default {
         .style('opacity', 0);
 
       // Call update vis to append all the data to the svg
-      this.updateVis(this.graphStructure);
+      this.updateVis(this.provenance);
     },
   },
 };

@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@types/d3": "^5.7.2",
+    "@visdesignlab/provenance-lib-core": "^5.0.0",
     "core-js": "^3.4.3",
     "d3": "^5.14.2",
-    "provenance-lib-core": "^6.0.0",
     "vue": "^2.6.10",
     "vuetify": "^2.1.0"
   },
