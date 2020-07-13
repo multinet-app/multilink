@@ -33,3 +33,27 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
 
   return provenance;
 }
+
+// Check the state to see if the node is selected
+export function isSelected(node: Node, currentState: State) {
+  return Object.keys(currentState.selected).includes(node.id);
+}
+
+export function selectNode(node: Node, provenance: Provenance<State, any, any>): void {
+  const action = provenance.addAction(
+    'select node',
+    (currentState: State) => {
+      if (isSelected(node, currentState)) {
+        delete currentState.selected[node.id];
+      } else {
+        currentState.selected[node.id] = node.neighbors;
+      }
+      return currentState;
+    },
+  );
+
+  action
+    .addEventType('selection')
+    .alwaysStoreState(true)
+    .applyAction();
+}
