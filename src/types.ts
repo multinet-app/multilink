@@ -6,8 +6,8 @@ export interface Dimensions {
 export interface Link {
   _key: string;
   id: string;
-  source: string;
-  target: string;
+  source: Node;
+  target: Node;
   [propName: string]: any;
 }
 
@@ -34,23 +34,11 @@ export interface Cell {
 }
 
 export interface State {
-  workerID: number;
-  nodes: string;
-  search: string;
-  startTime: number;
-  endTime: string;
-  time: number;
+  network: Network;
+  order: number[];
+  userSelectedEdges: [];
+  selected: { [nodeID: string]: string[] };
+  hardSelected: [];
+  search: [];
   event: string;
-  count: number;
-  clicked: never[];
-  sortKey: string;
-  selections: {
-    attrRow: { [key: string]: any },
-    rowLabel: { [key: string]: any },
-    colLabel: { [key: string]: any },
-    neighborSelect: { [key: string]: any },
-    cellCol: { [key: string]: any },
-    cellRow: { [key: string]: any },
-    search: { [key: string]: any },
-  };
 }
