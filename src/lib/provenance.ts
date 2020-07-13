@@ -18,7 +18,7 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     event: 'startedProvenance',
   };
 
-  const provenance =  initProvenance(initialState);
+  const provenance =  initProvenance(initialState, false);
 
   provenance.addObserver(['selected'], function _func(state: State | undefined) {
     if (state) {
@@ -56,4 +56,16 @@ export function selectNode(node: Node, provenance: Provenance<State, any, any>):
     .addEventType('selection')
     .alwaysStoreState(true)
     .applyAction();
+}
+
+export function redo(provenance: Provenance<State, any, any>): void {
+  if (provenance.current().children.length > 0) {
+    provenance.goForwardOneStep();
+  }
+}
+
+export function undo(provenance: Provenance<State, any, any>): void {
+  if ('parent' in provenance.current()) {
+    provenance.goBackOneStep();
+  }
 }

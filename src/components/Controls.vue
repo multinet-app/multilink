@@ -2,7 +2,7 @@
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
 import Legend from '@/components/NodeLink/Legend.vue';
 
-import { setUpProvenance } from '@/lib/provenance';
+import { setUpProvenance, undo, redo } from '@/lib/provenance';
 import { getUrlVars } from '@/lib/utils';
 import { loadData } from '@/lib/multinet';
 
@@ -84,6 +84,8 @@ export default {
     this.provenance = setUpProvenance(this.graphStructure);
     this.workspace = workspace;
     this.graph = graph;
+
+    document.addEventListener('keydown', this.keyDownHandler)
   },
 
   methods: {
@@ -109,6 +111,15 @@ export default {
       );
       a.download = 'graph.json';
       a.click();
+    },
+
+    keyDownHandler (event) {
+      if (event.ctrlKey && event.code === 'KeyZ') {
+        undo(this.provenance)
+      }
+      else if (event.ctrlKey && event.code === 'KeyY') {
+        redo(this.provenance)
+      }
     },
   },
 };
