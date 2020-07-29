@@ -3,7 +3,6 @@ import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import * as updateVisMethods from './functionUpdateVis';
-import * as uiMethods from './functionUi';
 import { Network } from '@/types';
 import { Provenance } from '@visdesignlab/provenance-lib-core';
 
@@ -181,7 +180,6 @@ export default {
 
   methods: {
     ...updateVisMethods,
-    ...uiMethods,
 
     loadVis() {
       // Get the browser width and height

@@ -4,7 +4,7 @@
  */
 import { initProvenance, Provenance } from '@visdesignlab/provenance-lib-core';
 import { Node, State, Network } from '@/types';
-import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUi';
+import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
 
 
 export function setUpProvenance(network: Network): Provenance<State, any, any> {

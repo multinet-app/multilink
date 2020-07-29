@@ -427,3 +427,70 @@ function drawNested(
     i++;
   }
 }
+
+export function highlightSelectedNodes(state: State): void {
+  // Set the class of everything to 'muted', except for the selected node and it's neighbors
+  select('.nodes')
+    .selectAll('.nodeGroup')
+    .classed('muted', (n: any) => {
+      n = n as Node;
+      return (
+        Object.keys(state.selected).length > 0 &&
+        !Object.keys(state.selected).includes(n.id) &&
+        !Array<string>().concat(...Object.values(state.selected)).includes(n.id)
+      );
+    });
+
+  // Set the class of a clicked node to clicked
+  select('.nodes')
+    .selectAll('.node')
+    .classed('clicked', (n: any) => {
+      n = n as Node;
+      return Object.keys(state.selected).includes(n.id);
+    });
+}
+
+export function highlightLinks(state: State): void {
+  const linksToHighlight = state.network.links.map((l: Link) => {
+    if (l.source.id in state.selected || l.target.id in state.selected) {
+      return l.id;
+    }
+  });
+
+  select('.links')
+    .selectAll('.linkGroup')
+    .classed('muted', (l: any) => {
+      l = l as Link;
+      return Object.keys(state.selected).length > 0 && !linksToHighlight.includes(l.id);
+    });
+}
+
+export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
+  // Release the pinned nodes
+  network.nodes.map((n: Node) => {
+    n.fx = null;
+    n.fy = null;
+  });
+  startSimulation(simulation);
+}
+
+export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
+  // Update the force radii
+  simulation.force('collision',
+    forceCollide()
+    .radius(getForceRadius(this.nodeMarkerLength, this.nodeMarkerHeight, this.renderNested))
+    .strength(0.7)
+    .iterations(10),
+  );
+
+  simulation.alpha(0.5);
+  // simulation.alphaTarget(0.02).restart();
+}
+
+export function stopSimulation(network: Network, simulation: Simulation<Node, Link>) {
+  simulation.stop();
+  network.nodes.map((n: Node) => {
+    n.savedX = n.x;
+    n.savedY = n.y;
+  });
+}
