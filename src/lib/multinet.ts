@@ -1,24 +1,32 @@
 /* Multinet data importer */
-import { json } from 'd3-fetch';
+import { multinetApi } from 'multinet';
+import { Node, Network, Link } from '@/types';
 
-async function _loadTables(workspace: string, networkName: string, apiRoot: string) {
-  const tablesCall = apiRoot + '/workspaces/' + workspace + '/graphs/' + networkName;
-  return await json(tablesCall);
+async function _downloadAllRows(api: any, workspace: string, tableName: string, tableType: 'node' | 'link') {
+  let table = await api.table(workspace, tableName, { offset: 0, limit: 100 });
+
+  // If the table is large, don't download the data
+  if (
+    (table.count > 100 && tableType === 'node') ||
+    (table.count > 2000 && tableType === 'link')
+  ) {
+    throw new Error(`The table called ${tableName} is too large, not downloading.`);
+  }
+
+  // Else if the table is small enough, grab the previously
+  // acquired data and make requests for the remaining data
+  let output: any[] = [];
+  output = output.concat(table.rows);
+
+  while (output.length < table.count) {
+    table  = await api.table(workspace, tableName, { offset: output.length, limit: 100 });
+    output = output.concat(table.rows);
+  }
+
+  return output;
 }
 
-async function _loadNodes(workspace: string, nodeTable: string, apiRoot: string) {
-  const nodesCall = apiRoot + '/workspaces/' + workspace + '/tables/' + nodeTable + '?limit=1000';
-  const nodesRaw = await json(nodesCall);
-  return nodesRaw.rows;
-}
-
-async function _loadLinks(workspace: string, edgeTable: string, apiRoot: string) {
-  const linksCall = apiRoot + '/workspaces/' + workspace + '/tables/' + edgeTable + '?limit=1000';
-  const linksRaw = await json(linksCall);
-  return linksRaw.rows;
-}
-
-function _renameLinkVars(links: any[]) {
+function _renameLinkVars(links: any[]): Link[] {
   for (const row of links) {
     row.id = row._id;
     row.source = row._from;
@@ -31,7 +39,7 @@ function _renameLinkVars(links: any[]) {
   return links;
 }
 
-function _renameNodeVars(nodes: any[]) {
+function _renameNodeVars(nodes: any[]): Node[] {
   for (const row of nodes) {
     row.id = row._id;
     delete row._id;
@@ -42,8 +50,8 @@ function _renameNodeVars(nodes: any[]) {
 function _defineNeighbors(nodes: any[], links: any[]) {
   nodes.map((d: { neighbors: string[]; }) => d.neighbors = []);
   for (const link of links) {
-    nodes.filter((d: { _id: any; }) => d._id === link._from)[0].neighbors.push(link._to);
-    nodes.filter((d: { _id: any; }) => d._id === link._to)[0].neighbors.push(link._from);
+    nodes.filter((d: Node) => d._id === link._from)[0].neighbors.push(link._to);
+    nodes.filter((d: Node) => d._id === link._to)[0].neighbors.push(link._from);
   }
   return nodes;
 }
@@ -52,29 +60,27 @@ export async function loadData(
   workspace: string,
   networkName: string,
   apiRoot: string = 'https://api.multinet.app/api',
-) {
+): Promise<Network> {
   // Define local variables that will store the api url and the responses from the database
-  const multinet: {tables: any, nodes: any[], links: any[], network: any} = {
+  const multinet: {tables: { nodeTables: string[], edgeTable: string}, nodes: any[], links: any[], network: Network} = {
     tables: {nodeTables: [], edgeTable: ''},
     nodes: Array(),
     links: [],
-    network: {},
+    network: {nodes: [], links: []},
   };
 
-  // Fetch the names of all the node and edge tables
-  multinet.tables = await _loadTables(workspace, networkName, apiRoot);
+  const api = multinetApi(apiRoot);
 
-  // Loop through each node tables and fetch the nodes to global variables
-  for (const nodeTable of multinet.tables.nodeTables) {
-    const ntable = await _loadNodes(workspace, nodeTable, apiRoot);
-    multinet.nodes = multinet.nodes.concat(ntable);
+  // Fetch the names of all the node and edge tables
+  multinet.tables = await api.graph(workspace, networkName);
+
+  // Loop through each node tables and fetch the nodes
+  for (const tableName of multinet.tables.nodeTables) {
+    multinet.nodes = multinet.nodes.concat(await _downloadAllRows(api, workspace, tableName, 'node'));
   }
 
-  // Load the edge table (ONLY ONE BECAUSE OF ARANGO API LIMITATIONS)
-  // to a global variable
-  const table = multinet.tables.edgeTable;
-  const linkTable = await _loadLinks(workspace, table, apiRoot);
-  multinet.links = multinet.links.concat(linkTable);
+  // Load the link table
+  multinet.links = await _downloadAllRows(api, workspace, multinet.tables.edgeTable, 'link');
 
   // Define neighbors
   multinet.nodes = _defineNeighbors(multinet.nodes, multinet.links);
@@ -84,6 +90,6 @@ export async function loadData(
     nodes: _renameNodeVars(multinet.nodes),
     links: _renameLinkVars(multinet.links),
   };
-  return JSON.parse(JSON.stringify(multinet.network));
-}
 
+  return multinet.network;
+}
