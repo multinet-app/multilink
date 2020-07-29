@@ -254,8 +254,6 @@ export default {
             v-bind="{
               graphStructure,
               provenance,
-              nodeMarkerHeight: nodeMarkerSize,
-              nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
               selectNeighbors,
               renderNested,

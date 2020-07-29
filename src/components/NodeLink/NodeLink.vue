@@ -28,14 +28,6 @@ export default {
       type: Number,
       default: 14,
     },
-    nodeMarkerLength: {
-      type: Number,
-      default: 50,
-    },
-    nodeMarkerHeight: {
-      type: Number,
-      default: 50,
-    },
     selectNeighbors: {
       type: Boolean,
       default: true,
@@ -118,7 +110,6 @@ export default {
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
-      wasDragged: false,
     };
   },
 
@@ -127,8 +118,6 @@ export default {
       const {
         graphStructure,
         nodeFontSize,
-        nodeMarkerLength,
-        nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
@@ -144,8 +133,6 @@ export default {
       return {
         graphStructure,
         nodeFontSize,
-        nodeMarkerLength,
-        nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
@@ -170,7 +157,7 @@ export default {
   async mounted() {
     this.loadVis();
 
-    this.simulation = this.makeSimulation();
+    this.simulation = this.makeSimulation(this.provenance.current().getState());
 
     // Required to update when brushing the legend
     this.$root.$on('brushing', () => {

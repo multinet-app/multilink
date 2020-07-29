@@ -1,62 +1,54 @@
-import { event, select } from 'd3-selection';
-import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force';
+import { event, select, selectAll } from 'd3-selection';
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation } from 'd3-force';
 import { max } from 'd3-array';
 import { drag } from 'd3-drag';
 import { selectNode } from '@/lib/provenance';
-import { Simulation } from '@types/d3';
-import { Node, State } from '@/types';
+import { Node, State, Link, Network, Dimensions } from '@/types';
 import { Provenance } from '@visdesignlab/provenance-lib-core';
 
-export function arcPath(leftHand, d, state = false) {
-  const {
-    graphStructure,
-    nodeMarkerLength,
-    nodeMarkerHeight,
-    visMargins,
-    visDimensions,
-    straightEdges,
-    reloaded,
-  } = this;
+export function arcPath(
+  d: Link,
+  state: State,
+  visDimensions: Dimensions,
+  visMargins: any,
+  straightEdges: boolean,
+) {
+  const source: Node = state.network.nodes.find((n: Node) => n.id === d.source) || d.source;
+  const target: Node = state.network.nodes.find((n: Node) => n.id === d.target) || d.target;
 
-  let source = state ? { x: state.nodePos[d.source.id].x, y: state.nodePos[d.source.id].y } :
-    d.source;
-  let target = state ? { x: state.nodePos[d.target.id].x, y: state.nodePos[d.target.id].y } :
-    d.target;
-
-  if (reloaded) {
-    source = graphStructure.nodes.find((x) => x.id === source.id);
-    target = graphStructure.nodes.find((x) => x.id === target.id);
+  if (!source || !target) {
+    throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
   }
 
-  let x1 = leftHand ? parseFloat(source.x) + nodeMarkerLength / 2 : target.x;
-  let y1 = leftHand ? parseFloat(source.y) + nodeMarkerHeight / 2 : target.y;
-  let x2 = leftHand ? parseFloat(target.x) + nodeMarkerLength / 2 : source.x;
-  let y2 = leftHand ? parseFloat(target.y) + nodeMarkerHeight / 2 : source.y;
+  let x1 = source.x + state.nodeMarkerLength / 2;
+  let y1 = source.y + state.nodeMarkerHeight / 2;
+  let x2 = target.x + state.nodeMarkerLength / 2;
+  let y2 = target.y + state.nodeMarkerHeight / 2;
 
-  const horizontalSpace = visDimensions.width - visMargins.left - visMargins.right - nodeMarkerLength;
-  const verticalSpace = visDimensions.height - visMargins.bottom - visMargins.top - nodeMarkerHeight;
+  const horizontalSpace = visDimensions.width - visMargins.left -
+    visMargins.right - state.nodeMarkerLength;
+  const verticalSpace = visDimensions.height - visMargins.bottom -
+    visMargins.top - state.nodeMarkerHeight;
   x1 = Math.max(
-    visMargins.left + nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x1),
+    visMargins.left + state.nodeMarkerLength / 2,
+    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x1),
   );
   y1 = Math.max(
-    visMargins.top + nodeMarkerHeight / 2,
-    Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y1),
+    visMargins.top + state.nodeMarkerHeight / 2,
+    Math.min(verticalSpace + visMargins.top + state.nodeMarkerHeight / 2, y1),
   );
   x2 = Math.max(
-    visMargins.left + nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + nodeMarkerLength / 2, x2),
+    visMargins.left + state.nodeMarkerLength / 2,
+    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x2),
   );
   y2 = Math.max(
-    visMargins.top + nodeMarkerHeight / 2,
-    Math.min(verticalSpace + visMargins.top + nodeMarkerHeight / 2, y2),
+    visMargins.top + state.nodeMarkerHeight / 2,
+    Math.min(verticalSpace + visMargins.top + state.nodeMarkerHeight / 2, y2),
   );
 
   const dx = x2 - x1;
   const dy = y2 - y1;
   const dr = Math.sqrt(dx * dx + dy * dy);
-  const drx = dr;
-  const dry = dr;
   const sweep = 1;
   const xRotation = 0;
   const largeArc = 0;
@@ -64,116 +56,108 @@ export function arcPath(leftHand, d, state = false) {
   if (straightEdges) {
     return (`M ${x1} ${y1} L ${x2} ${y2}`);
   } else {
-    return (`M ${x1}, ${y1} A ${drx}, ${dry} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+    return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
   }
 }
 
-export function dragstarted(d: Node): void {
+export function dragStarted(d: Node): void {
   d.fx = d.x;
   d.fy = d.y;
-  this.wasDragged = true;
 }
 
-export function dragged(d: Node): void {
+export function dragged(this: any, d: Node, state: State): void {
   d.fx = event.x;
   d.fy = event.y;
   d.x = event.x;
   d.y = event.y;
-  this.dragNode();
+  dragNode(state, this);
 }
 
-export function dragended(): void {
-  const { wasDragged, graphStructure, provenance } = this;
-  if (wasDragged) {
-    // update node position in state graph;
-    // updateState("Dragged Node");
-    const action = {
-      label: 'Dragged Node',
-      action: () => {
-        const currentState = app.currentState();
-        // add time stamp to the state graph
-        currentState.time = Date.now();
-        // Add label describing what the event was
-        currentState.event = 'Dragged Node';
-        // Update node positions
-        graphStructure.nodes.map(
-          (n: Node) => (currentState.nodePos[n.id] = { x: n.x, y: n.y }),
-        );
-        return currentState;
-      },
-      args: [],
-    };
+export function dragEnded(this: any): void {
+  // update node position in state graph;
+  // updateState("Dragged Node");
+  const action = {
+    label: 'Dragged Node',
+    action: () => {
+      const currentState = this.provenance.current().getState();
+      // add time stamp to the state graph
+      currentState.time = Date.now();
+      // Add label describing what the event was
+      currentState.event = 'Dragged Node';
+      // Update node positions
+      this.graphStructure.nodes.map(
+        (n: Node) => (currentState.nodePos[n.id] = { x: n.x, y: n.y }),
+      );
+      return currentState;
+    },
+    args: [],
+  };
 
-    provenance.applyAction(action);
-  }
-  this.wasDragged = false;
+  this.provenance.applyAction(action);
 }
 
-export function dragNode(): void {
-  const {
-    svg,
-    visDimensions,
-    visMargins,
-    nodeMarkerHeight,
-    nodeMarkerLength,
-  } = this;
+export function dragNode(this: any, state: State, that?: any): void {
+  const env = this ? this : that;
+  const currentState = env.provenance.current().getState();
 
-  svg
-    .selectAll('.linkGroup')
+  selectAll('.linkGroup')
     .select('path')
-    .attr('d', (d) => this.arcPath(1, d, false));
+    .attr('d', (l: any) => arcPath(
+      l,
+      currentState,
+      env.visDimensions,
+      env.visMargins,
+      env.straightEdges,
+    ));
 
   // Get the total space available on the svg
   const horizontalSpace =
-    visDimensions.width - visMargins.right - nodeMarkerLength;
+    env.visDimensions.width - env.visMargins.right - state.nodeMarkerLength;
   const verticalSpace =
-    visDimensions.height - visMargins.top - nodeMarkerHeight;
+  env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
 
   // Don't allow nodes to be dragged off the main svg area
-  svg
-    .selectAll('.nodeGroup').attr('transform', (d) => {
-      d.x = Math.max(visMargins.left, Math.min(horizontalSpace, d.x));
-      d.y = Math.max(visMargins.top, Math.min(verticalSpace, d.y));
+  env.svg
+    .selectAll('.nodeGroup').attr('transform', (d: Node) => {
+      d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
+      d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
+
       return 'translate(' + d.x + ',' + d.y + ')';
     });
 }
 
-export function hideTooltip(): void {
+export function hideTooltip(this: any): void {
   this.svg.select('.tooltip').transition().duration(100).style('opacity', 0);
 }
 
-export function makeSimulation(): Simulation {
-  const {
-    visDimensions,
-    graphStructure,
-    nodeMarkerLength,
-    nodeMarkerHeight,
-    renderNested,
-  } = this;
-
-  const simulation = forceSimulation()
-    .force('link', forceLink().id((d) => d.id))
+export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
+  const simulation = forceSimulation<Node, Link>()
+    .force('link', forceLink().id((l: any) => l.id))
     .force('charge', forceManyBody().strength(-300))
     .force(
       'center',
       forceCenter(
-        visDimensions.width / 2,
-        visDimensions.height / 2,
+        this.visDimensions.width / 2,
+        this.visDimensions.height / 2,
       ),
     );
 
-  simulation.nodes(graphStructure.nodes);
+  simulation.nodes(state.network.nodes);
 
-  simulation.force('link').links(graphStructure.links);
-  simulation.force('link').distance(() => 60);
+  const simulationLinks = simulation.force('link') as any;
 
+  if (simulationLinks) {
+    simulationLinks.links(state.network.links);
+    simulationLinks.distance(() => 60);
+  }
+
+  simulation.force('link');
   simulation.force('center');
-
-  simulation.on('tick', () => this.dragNode());
+  simulation.on('tick', () => dragNode(state, this));
 
   simulation.force('collision',
     forceCollide()
-    .radius(getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested))
+    .radius(getForceRadius(state.nodeMarkerLength, state.nodeMarkerHeight, this.renderNested))
     .strength(0.7)
     .iterations(10),
   );
@@ -186,49 +170,30 @@ export function makeSimulation(): Simulation {
   return simulation;
 }
 
-export function getForceRadii(nodeMarkerLength, nodeMarkerHeight, renderNested) {
+export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
   if (renderNested) {
-    return max([nodeMarkerLength , nodeMarkerHeight]) * 0.8;
+    const radius = max([nodeMarkerLength , nodeMarkerHeight]) || 0;
+    return radius * 0.8;
   } else {
-    return max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) * 1.5;
+    const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
+    return radius * 1.5;
   }
 }
 
 export function showTooltip(message: string, delay = 200) {
-  const tooltip = select('.tooltip');
+  const tooltip = select('.tooltip') as any;
   tooltip.html(message)
     .style('left', (event.clientX + 10) + 'px')
     .style('top', (event.clientY - 20) + 'px');
   tooltip.transition().duration(delay).style('opacity', .9);
 }
 
-export function updateVis(provenance: Provenance<State, any, any>): void {
-  const {
-    attributes,
-    graphStructure,
-    nodeFontSize,
-    labelVariable,
-    nodeMarkerLength,
-    nodeMarkerHeight,
-    svg,
-    visMargins,
-    visDimensions,
-    renderNested,
-    colorVariable,
-    nodeColorScale,
-    barVariables,
-    glyphVariables,
-    linkColorScale,
-    linkWidthScale,
-    widthVariables,
-    colorVariables,
-    glyphColorScale,
-  } = this;
-
-  let node = svg
+export function updateVis(this: any, provenance: Provenance<State, any, any>): void {
+  const state = provenance.current().getState();
+  let node = this.svg
     .select('.nodes')
     .selectAll('.nodeGroup')
-    .data(graphStructure.nodes);
+    .data(this.graphStructure.nodes);
 
   const nodeEnter = node
     .enter()
@@ -244,32 +209,40 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
 
   node.classed('muted', false)
     .classed('selected', false)
-    .attr('transform', (d) => {
+    .attr('transform', (d: Node) => {
       // Get the space we have to work with
-      const horizontalSpace = visDimensions.width - visMargins.left - visMargins.right - (2 * nodeMarkerLength);
-      const verticalSpace = visDimensions.height - visMargins.bottom - visMargins.top - (2 * nodeMarkerHeight);
+      const horizontalSpace = this.visDimensions.width - this.visMargins.left -
+        this.visMargins.right - (2 * state.nodeMarkerLength);
+      const verticalSpace = this.visDimensions.height - this.visMargins.bottom -
+        this.visMargins.top - (2 * state.nodeMarkerHeight);
       // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-      d.x = d.x === undefined ? (Math.random() * horizontalSpace) + visMargins.left :
-        Math.max(visMargins.left, Math.min(visDimensions.width - nodeMarkerLength - visMargins.right, d.x));
-      d.y = d.y === undefined ? (Math.random() * verticalSpace) + visMargins.top :
-        Math.max(visMargins.top, Math.min(visDimensions.height - nodeMarkerHeight - visMargins.bottom, d.y));
+      d.x = d.x === undefined ? (Math.random() * horizontalSpace) + this.visMargins.left :
+        Math.max(
+          this.visMargins.left,
+          Math.min(this.visDimensions.width - state.nodeMarkerLength - this.visMargins.right, d.x),
+        );
+      d.y = d.y === undefined ? (Math.random() * verticalSpace) + this.visMargins.top :
+        Math.max(
+          this.visMargins.top,
+          Math.min(this.visDimensions.height - state.nodeMarkerHeight - this.visMargins.bottom, d.y),
+        );
       return 'translate(' + d.x + ',' + d.y + ')';
     });
 
   node
     .selectAll('.nodeBox')
-    .attr('width', () => nodeMarkerLength)
-    .attr('height', () => nodeMarkerHeight)
-    .attr('rx', renderNested ? 0 : nodeMarkerLength / 2)
-    .attr('ry', renderNested ? 0 : nodeMarkerHeight / 2);
+    .attr('width', () => state.nodeMarkerLength)
+    .attr('height', () => state.nodeMarkerHeight)
+    .attr('rx', this.renderNested ? 0 : state.nodeMarkerLength / 2)
+    .attr('ry', this.renderNested ? 0 : state.nodeMarkerHeight / 2);
 
   node.select('.node')
-    .style('fill', (d) => {
-      if (colorVariable === 'table') {
+    .style('fill', (d: Node) => {
+      if (this.colorVariable === 'table') {
         const table = d.id.split('/')[0];
-        return nodeColorScale(table);
+        return this.nodeColorScale(table);
       } else {
-        return nodeColorScale(d[colorVariable]);
+        return this.nodeColorScale(d[this.colorVariable]);
       }
     })
     .on('click', (n: Node) => selectNode(n, provenance))
@@ -280,19 +253,27 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
 
   node
     .select('text')
-    .text((d) => d[labelVariable])
-    .style('font-size', nodeFontSize + 'pt')
-    .attr('dx', nodeMarkerLength / 2)
-    .attr('dy', renderNested ? 8 : (nodeMarkerHeight / 2) + 2);
+    .text((d: Node) => d[this.labelVariable])
+    .style('font-size', this.nodeFontSize + 'pt')
+    .attr('dx', state.nodeMarkerLength / 2)
+    .attr('dy', this.renderNested ? 8 : (state.nodeMarkerHeight / 2) + 2);
 
   node
     .select('.labelBackground')
-    .attr('y', () => renderNested ? 0 : (nodeMarkerHeight / 2) - 8)
-    .attr('width', () => nodeMarkerLength)
+    .attr('y', () => this.renderNested ? 0 : (state.nodeMarkerHeight / 2) - 8)
+    .attr('width', () => state.nodeMarkerLength)
     .attr('height', '1em');
 
-  if (renderNested) {
-    drawNested(node, nodeMarkerHeight, nodeMarkerLength, glyphColorScale, barVariables, glyphVariables, graphStructure);
+  if (this.renderNested) {
+    drawNested(
+      node,
+      state.nodeMarkerHeight,
+      state.nodeMarkerLength,
+      this.glyphColorScale,
+      this.barVariables,
+      this.glyphVariables,
+      this.graphStructure,
+      );
   } else {
     node.selectAll('.bar').remove();
     node.selectAll('.glyph').remove();
@@ -300,15 +281,15 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
 
   node.call(
     drag()
-      .on('start', (d) => this.dragstarted(d))
-      .on('drag', (d) => this.dragged(d)),
-      // .on("end", () => this.dragended())
+      .on('start', (d) => this.dragStarted(d))
+      .on('drag', (d) => this.dragged(d, state)),
+      // .on("end", () => this.dragEnded())
   );
 
   // Draw Links
-  let link = select('.links')
+  let link: any = select('.links')
     .selectAll('.linkGroup')
-    .data(graphStructure.links);
+    .data(this.graphStructure.links);
 
   const linkEnter = link
     .enter()
@@ -326,29 +307,40 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
 
   link.exit().remove();
 
-  link = linkEnter.merge(link);
+  link = linkEnter.merge(link) as any;
 
   link.classed('muted', false);
   link
     .select('path')
-    .style('stroke-width', (d) =>
-      linkWidthScale(d[widthVariables[0]]) > 0 && linkWidthScale(d[widthVariables[0]]) < 20 ?
-        linkWidthScale(d[widthVariables[0]]) : 1,
+    .style('stroke-width', (d: any) =>
+    this.linkWidthScale(d[this.widthVariables[0]]) > 0 && this.linkWidthScale(d[this.widthVariables[0]]) < 20 ?
+    this.linkWidthScale(d[this.widthVariables[0]]) : 1,
     )
-    .style('stroke', (d) => {
-      if (colorVariables[0] !== undefined && linkColorScale.domain().indexOf(d[colorVariables[0]].toString()) > -1) {
-        return linkColorScale(d[colorVariables[0]]);
+    .style('stroke', (d: any) => {
+      if (
+        this.colorVariables[0] !== undefined &&
+        this.linkColorScale.domain().indexOf(d[this.colorVariables[0]].toString()) > -1
+      ) {
+        return this.linkColorScale(d[this.colorVariables[0]]);
       } else {
         return '#888888';
       }
     })
-    .attr('id', (d) => d._key)
-    .attr('d', (d) => this.arcPath(1, d))
-    .on('mouseover', (d) => {
+    .attr('id', (d: any) => d._key)
+    .attr('d', (d: any) =>
+      arcPath(
+        d,
+        this.provenance.current().getState(),
+        this.visDimensions,
+        this.visMargins,
+        this.straightEdges,
+      ),
+    )
+    .on('mouseover', (d: any) => {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
-      if (attributes.edgeWidthKey) {
-        tooltipData = tooltipData.concat(' [' + d[attributes.edgeWidthKey] + ']');
+      if (this.attributes.edgeWidthKey) {
+        tooltipData = tooltipData.concat(' [' + d[this.attributes.edgeWidthKey] + ']');
       }
       this.showTooltip(tooltipData, 400);
     })
@@ -362,14 +354,14 @@ export function updateVis(provenance: Provenance<State, any, any>): void {
   });
 }
 
-function drawNested(
-  node,
-  nodeMarkerHeight,
-  nodeMarkerLength,
-  glyphColorScale,
-  barVariables,
-  glyphVariables,
-  graphStructure,
+export function drawNested(
+  node: any,
+  nodeMarkerHeight: any,
+  nodeMarkerLength: any,
+  glyphColorScale: any,
+  barVariables: any,
+  glyphVariables: any,
+  graphStructure: any,
 ) {
   // Delete past renders
   node.selectAll('.bar').remove();
@@ -382,7 +374,7 @@ function drawNested(
     (nodeMarkerLength / 2) / barVariables.length;
 
   for (const barVar of barVariables) {
-    const maxValue = max(graphStructure.nodes.map((o) => parseFloat(o[barVar])));
+    const maxValue: number = parseFloat(max(graphStructure.nodes.map((n: Node) => parseFloat(n[barVar]))) || '');
     // Draw white, background bar
     node.append('rect')
       .attr('class', 'bar')
@@ -396,10 +388,10 @@ function drawNested(
     node.append('rect')
       .attr('class', 'bar')
       .attr('width', `${barWidth - 10}px`)
-      .attr('height', (d) => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
-      .attr('y', (d) => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
+      .attr('height', (d: Node) => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
+      .attr('y', (d: Node) => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
       .attr('x', `${5 + (i * barWidth)}px`)
-      .style('fill', (d) => '#82b1ff');
+      .style('fill', '#82b1ff');
 
     // Update i
     i++;
@@ -421,7 +413,7 @@ function drawNested(
       .attr('x', `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
       .attr('ry', `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
       .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style('fill', (d) => glyphColorScale(d[glyphVar]));
+      .style('fill', (d: Node) => glyphColorScale(d[glyphVar]));
 
     // Update i
     i++;

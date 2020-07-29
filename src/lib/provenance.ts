@@ -16,6 +16,8 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     hardSelected: [],
     search: [],
     event: 'startedProvenance',
+    nodeMarkerLength: 50,
+    nodeMarkerHeight: 50,
   };
 
   const provenance =  initProvenance(initialState, false);

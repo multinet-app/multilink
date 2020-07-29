@@ -20,6 +20,8 @@ export interface Node {
   _key: string;
   id: string;
   neighbors: string[];
+  x: number;
+  y: number;
   [propName: string]: any;
 }
 
@@ -41,4 +43,6 @@ export interface State {
   hardSelected: [];
   search: [];
   event: string;
+  nodeMarkerLength: number;
+  nodeMarkerHeight: number;
 }
