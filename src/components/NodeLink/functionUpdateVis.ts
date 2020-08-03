@@ -352,6 +352,9 @@ export function updateVis(this: any, provenance: Provenance<State, any, any>): v
   node.on('mouseout', () => {
     this.hideTooltip();
   });
+
+  highlightSelectedNodes(state);
+  highlightLinks(state);
 }
 
 export function drawNested(
