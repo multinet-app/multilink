@@ -4,10 +4,9 @@ import { max } from 'd3-array';
 import { drag } from 'd3-drag';
 import { selectNode } from '@/lib/provenance';
 import { Node, State, Link, Network, Dimensions } from '@/types';
-import { Provenance } from '@visdesignlab/provenance-lib-core';
 
 export function arcPath(
-  d: Link,
+  d: Link | any,
   state: State,
   visDimensions: Dimensions,
   visMargins: any,
@@ -188,7 +187,7 @@ export function showTooltip(message: string, delay = 200) {
   tooltip.transition().duration(delay).style('opacity', .9);
 }
 
-export function updateVis(this: any, provenance: Provenance<State, any, any>): void {
+export function updateVis(this: any, provenance: any): void {
   const state = provenance.current().getState();
   let node = this.svg
     .select('.nodes')

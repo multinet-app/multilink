@@ -4,7 +4,6 @@ import { select } from 'd3-selection';
 
 import * as updateVisMethods from './functionUpdateVis';
 import { Network } from '@/types';
-import { Provenance } from '@visdesignlab/provenance-lib-core';
 
 export default {
   props: {
