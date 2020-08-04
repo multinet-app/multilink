@@ -2,7 +2,7 @@
  * This module contains various utilities for
  * creating, updating, and managing a nodelink graph.
  */
-import { initProvenance, Provenance } from '@visdesignlab/provenance-lib-core';
+import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { Node, State, Network } from '@/types';
 import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
 
