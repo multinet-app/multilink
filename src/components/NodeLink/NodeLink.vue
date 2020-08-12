@@ -8,7 +8,7 @@ import { Network } from '@/types';
 export default {
   props: {
     provenance: {
-      type: Provenance,
+      type: Object,
       required: true,
     },
     graphStructure: {
