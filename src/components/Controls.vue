@@ -2,7 +2,7 @@
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
 import Legend from '@/components/NodeLink/Legend.vue';
 
-import { setUpProvenance } from '@/lib/provenance';
+import { setUpProvenance, undo, redo } from '@/lib/provenance';
 import { getUrlVars } from '@/lib/utils';
 import { loadData } from '@/lib/multinet';
 
@@ -17,7 +17,6 @@ export default {
 
   data() {
     return {
-      app: null,
       provenance: null,
       graphStructure: {
         nodes: [],
@@ -82,11 +81,11 @@ export default {
       );
     }
     this.graphStructure = await loadData(workspace, graph, host);
-    const { provenance, app } = setUpProvenance(this.graphStructure.nodes);
-    this.app = app;
-    this.provenance = provenance;
+    this.provenance = setUpProvenance(this.graphStructure);
     this.workspace = workspace;
     this.graph = graph;
+
+    document.addEventListener('keydown', this.keyDownHandler);
   },
 
   methods: {
@@ -112,6 +111,22 @@ export default {
       );
       a.download = 'graph.json';
       a.click();
+    },
+
+    keyDownHandler(event) {
+      if (
+        (event.ctrlKey && event.code === 'KeyZ' && !event.shiftKey) || // ctrl + z (no shift)
+        (event.metaKey && event.code === 'KeyZ' && !event.shiftKey) // meta + z (no shift)
+      ) {
+        undo(this.provenance);
+      } else if (
+        (event.ctrlKey && event.code === 'KeyY') || // ctrl + y
+        (event.ctrlKey && event.code === 'KeyZ' && event.shiftKey) || // ctrl + shift + z
+        (event.metaKey && event.code === 'KeyY') || // meta + y
+        (event.metaKey && event.code === 'KeyZ' && event.shiftKey) // meta + shift + z
+      ) {
+        redo(this.provenance);
+      }
     },
   },
 };
@@ -214,7 +229,6 @@ export default {
           v-bind="{
               graphStructure,
               provenance,
-              app,
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
@@ -240,9 +254,6 @@ export default {
             v-bind="{
               graphStructure,
               provenance,
-              app,
-              nodeMarkerHeight: nodeMarkerSize,
-              nodeMarkerLength: nodeMarkerSize,
               nodeFontSize,
               selectNeighbors,
               renderNested,

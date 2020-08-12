@@ -3,17 +3,12 @@ import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
 import * as updateVisMethods from './functionUpdateVis';
-import * as uiMethods from './functionUi';
 import { Network } from '@/types';
 
 export default {
   props: {
-    app: {
-      type: Object,
-      required: true,
-    },
     provenance: {
-      type: Object,
+      type: Provenance,
       required: true,
     },
     graphStructure: {
@@ -31,14 +26,6 @@ export default {
     nodeFontSize: {
       type: Number,
       default: 14,
-    },
-    nodeMarkerLength: {
-      type: Number,
-      default: 50,
-    },
-    nodeMarkerHeight: {
-      type: Number,
-      default: 50,
     },
     selectNeighbors: {
       type: Boolean,
@@ -122,7 +109,6 @@ export default {
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
-      wasDragged: false,
     };
   },
 
@@ -131,8 +117,6 @@ export default {
       const {
         graphStructure,
         nodeFontSize,
-        nodeMarkerLength,
-        nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
@@ -148,8 +132,6 @@ export default {
       return {
         graphStructure,
         nodeFontSize,
-        nodeMarkerLength,
-        nodeMarkerHeight,
         isDirected,
         isMultiEdge,
         attributes,
@@ -167,27 +149,23 @@ export default {
 
   watch: {
     properties() {
-      this.updateVis();
+      this.updateVis(this.provenance);
     },
   },
 
   async mounted() {
     this.loadVis();
-    this.provenance.addObserver('selected', (state) =>
-      this.highlightSelectedNodes(state),
-    );
 
-    this.simulation = this.makeSimulation();
+    this.simulation = this.makeSimulation(this.provenance.current().getState());
 
     // Required to update when brushing the legend
     this.$root.$on('brushing', () => {
-      this.updateVis();
+      this.updateVis(this.provenance);
     });
   },
 
   methods: {
     ...updateVisMethods,
-    ...uiMethods,
 
     loadVis() {
       // Get the browser width and height
@@ -219,7 +197,7 @@ export default {
         .style('opacity', 0);
 
       // Call update vis to append all the data to the svg
-      this.updateVis(this.graphStructure);
+      this.updateVis(this.provenance);
     },
   },
 };
