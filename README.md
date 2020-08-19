@@ -1,29 +1,17 @@
-# vue-nodelink
+# Node-link View
 
-## Project setup
-```
-yarn install
-```
+This is the node-link data visualization app for the Multinet project.
+It is a typescript application, written using the Vue.js framework, that allows
+users to visualize network data hosted on a Multinet instance.
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## Quick Start
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+To get the application up and running in dev mode:
 
-### Run your tests
-```
-yarn run test
-```
+1. Ensure that you have Node and yarn installed.
+2. Check out this repository and move into it (e.g., `cd view-nodelink`).
+3. Install the Yarn dependencies: `yarn install`.
+4. Run the application: `yarn serve`.
 
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+For further details, including how to set up a full multinet instance, please
+see the [full documentation](https://multinet-app.readthedocs.io).
