@@ -39,6 +39,8 @@ export default {
       widthVariables: [],
       colorVariables: [],
       linkWidthScale: scaleLinear().domain([0, 10]).range([2, 20]),
+      dataTooLarge: false,
+      graphDoesntExist: false,
     };
   },
 
@@ -71,6 +73,12 @@ export default {
         return [];
       }
     },
+    client_link() {
+      return process.env.VUE_APP_MULTINET_CLIENT;
+    },
+    aql_link() {
+      return `${process.env.VUE_APP_MULTINET_CLIENT}/workspaces/connectivity_matrix/aql`
+    },
   },
 
   async mounted() {
@@ -80,7 +88,19 @@ export default {
         `Workspace and graph must be set! workspace=${workspace} graph=${graph}`,
       );
     }
-    this.graphStructure = await loadData(workspace, graph, host);
+    try {
+      this.graphStructure = await loadData(workspace, graph, host);
+    } catch (error) {
+      console.error(error)
+      if (error instanceof RangeError) {
+        this.dataTooLarge = true;
+      }
+
+      if (error.status === 404){
+        this.graphDoesntExist = true;
+      }
+    }
+    
     this.provenance = setUpProvenance(this.graphStructure);
     this.workspace = workspace;
     this.graph = graph;
@@ -248,6 +268,31 @@ export default {
       <!-- node-link component -->
       <v-col>
         <v-row row wrap class="ma-0 pa-0">
+          <v-alert 
+            type="error" 
+            :value="dataTooLarge"
+            prominent
+          >
+            <v-row align="center">
+              <v-col class="grow">Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.</v-col>
+              <v-col class="shrink">
+                <v-btn :href="this.aql_link">Query Data</v-btn>
+              </v-col>
+            </v-row>
+          </v-alert>
+
+          <v-alert 
+            type="error"
+            :value="graphDoesntExist"
+            prominent>
+            <v-row align="center">
+              <v-col class="grow">It seems like that graph doesn't exist.</v-col>
+              <v-col class="shrink">
+                <v-btn :href="this.client_link">Back to multinet</v-btn>
+              </v-col>
+            </v-row>
+          </v-alert>
+
           <node-link
             ref="nodelink"
             v-if="workspace"

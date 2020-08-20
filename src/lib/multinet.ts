@@ -10,7 +10,7 @@ async function _downloadAllRows(api: any, workspace: string, tableName: string, 
     (table.count > 100 && tableType === 'node') ||
     (table.count > 2000 && tableType === 'link')
   ) {
-    throw new Error(`The table called ${tableName} is too large, not downloading.`);
+    throw new RangeError(`The table called ${tableName} is too large, not downloading.`);
   }
 
   // Else if the table is small enough, grab the previously
