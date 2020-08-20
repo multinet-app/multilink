@@ -3,3 +3,6 @@ node_modules/
 
 # Compiled app
 dist/
+
+# General config
+.env

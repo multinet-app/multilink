@@ -59,7 +59,7 @@ function _defineNeighbors(nodes: any[], links: any[]) {
 export async function loadData(
   workspace: string,
   networkName: string,
-  apiRoot: string = 'https://api.multinet.app/api',
+  apiRoot: string = process.env.VUE_APP_MULTINET_HOST,
 ): Promise<Network> {
   // Define local variables that will store the api url and the responses from the database
   const multinet: {tables: { nodeTables: string[], edgeTable: string}, nodes: any[], links: any[], network: Network} = {
