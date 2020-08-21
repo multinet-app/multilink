@@ -5,6 +5,7 @@ import Legend from '@/components/NodeLink/Legend.vue';
 import { setUpProvenance, undo, redo } from '@/lib/provenance';
 import { getUrlVars } from '@/lib/utils';
 import { loadData } from '@/lib/multinet';
+import { DataTooBigError } from '@/lib/errors';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
@@ -91,9 +92,7 @@ export default {
     try {
       this.graphStructure = await loadData(workspace, graph, host);
     } catch (error) {
-      console.error(error)
-      if (error instanceof RangeError) {
-        this.dataTooLarge = true;
+      if (error instanceof DataTooBigError) {
       }
 
       if (error.status === 404){

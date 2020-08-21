@@ -1,6 +1,7 @@
 /* Multinet data importer */
 import { multinetApi } from 'multinet';
 import { Node, Network, Link } from '@/types';
+import { DataTooBigError } from '@/lib/errors';
 
 async function _downloadAllRows(api: any, workspace: string, tableName: string, tableType: 'node' | 'link') {
   let table = await api.table(workspace, tableName, { offset: 0, limit: 100 });
@@ -10,7 +11,7 @@ async function _downloadAllRows(api: any, workspace: string, tableName: string, 
     (table.count > 100 && tableType === 'node') ||
     (table.count > 2000 && tableType === 'link')
   ) {
-    throw new RangeError(`The table called ${tableName} is too large, not downloading.`);
+    throw new DataTooBigError(`The table called ${tableName} is too large, not downloading.`);
   }
 
   // Else if the table is small enough, grab the previously
