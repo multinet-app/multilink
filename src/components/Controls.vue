@@ -74,7 +74,7 @@ export default {
         return [];
       }
     },
-    },
+  },
 
   async mounted() {
     const { workspace, graph, host } = getUrlVars();
@@ -85,6 +85,10 @@ export default {
       this.loadErrorData.href = process.env.VUE_APP_MULTINET_CLIENT;
       throw new TypeError('Workspace and graph must be set in the url.');
     }
+
+    this.workspace = workspace;
+    this.graph = graph;
+
     try {
       this.graphStructure = await loadData(workspace, graph, host);
     } catch (error) {
@@ -108,10 +112,8 @@ export default {
       // Re-throw the error from loadData
       throw error;
     }
-    
+
     this.provenance = setUpProvenance(this.graphStructure);
-    this.workspace = workspace;
-    this.graph = graph;
 
     document.addEventListener('keydown', this.keyDownHandler);
   },
