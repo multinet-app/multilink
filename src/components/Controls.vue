@@ -40,8 +40,8 @@ export default {
       widthVariables: [],
       colorVariables: [],
       linkWidthScale: scaleLinear().domain([0, 10]).range([2, 20]),
-      dataTooLarge: false,
-      graphDoesntExist: false,
+      loadError: false,
+      loadErrorData: {},
     };
   },
 
@@ -74,30 +74,39 @@ export default {
         return [];
       }
     },
-    client_link() {
-      return process.env.VUE_APP_MULTINET_CLIENT;
     },
-    aql_link() {
-      return `${process.env.VUE_APP_MULTINET_CLIENT}/workspaces/connectivity_matrix/aql`
-    },
-  },
 
   async mounted() {
     const { workspace, graph, host } = getUrlVars();
     if (!workspace || !graph) {
-      throw new Error(
-        `Workspace and graph must be set! workspace=${workspace} graph=${graph}`,
-      );
+      this.loadError = true;
+      this.loadErrorData.message = 'Workspace and graph must be set in the url.';
+      this.loadErrorData.buttonText = 'Back to Multinet';
+      this.loadErrorData.href = process.env.VUE_APP_MULTINET_CLIENT;
+      throw new TypeError('Workspace and graph must be set in the url.');
     }
     try {
       this.graphStructure = await loadData(workspace, graph, host);
     } catch (error) {
+      this.loadError = true;
+
+      // Set error message, button text, and href based on error type
       if (error instanceof DataTooBigError) {
+        this.loadErrorData.message = 'Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.';
+        this.loadErrorData.buttonText = 'AQL wizard';
+        this.loadErrorData.href = `${process.env.VUE_APP_MULTINET_CLIENT}/#/workspaces/${workspace}/aql`;
+      } else if (error.status === 404) {
+        this.loadErrorData.message = `Network ${this.graph} does not exist.`;
+        this.loadErrorData.buttonText = 'Back to multinet';
+        this.loadErrorData.href = process.env.VUE_APP_MULTINET_CLIENT;
+      } else {
+        this.loadErrorData.message = 'There has been an unexpected error.';
+        this.loadErrorData.buttonText = 'Back to Multinet';
+        this.loadErrorData.href = process.env.VUE_APP_MULTINET_CLIENT;
       }
 
-      if (error.status === 404){
-        this.graphDoesntExist = true;
-      }
+      // Re-throw the error from loadData
+      throw error;
     }
     
     this.provenance = setUpProvenance(this.graphStructure);
@@ -269,25 +278,13 @@ export default {
         <v-row row wrap class="ma-0 pa-0">
           <v-alert 
             type="error" 
-            :value="dataTooLarge"
+            :value="loadError"
             prominent
           >
             <v-row align="center">
-              <v-col class="grow">Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.</v-col>
+              <v-col class="grow">{{ loadErrorData.message }}</v-col>
               <v-col class="shrink">
-                <v-btn :href="this.aql_link">Query Data</v-btn>
-              </v-col>
-            </v-row>
-          </v-alert>
-
-          <v-alert 
-            type="error"
-            :value="graphDoesntExist"
-            prominent>
-            <v-row align="center">
-              <v-col class="grow">It seems like that graph doesn't exist.</v-col>
-              <v-col class="shrink">
-                <v-btn :href="this.client_link">Back to multinet</v-btn>
+                <v-btn :href="this.loadErrorData.href">{{ loadErrorData.buttonText }}</v-btn>
               </v-col>
             </v-row>
           </v-alert>
