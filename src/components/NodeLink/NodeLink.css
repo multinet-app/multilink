@@ -1,157 +1,157 @@
 .links,
 .textpath,
 .edgeLegend {
-    fill: none;
-    opacity: .8;
+  fill: none;
+  opacity: 0.8;
 }
 
 .textpath {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .axisLine {
-    stroke-width: 2px;
-    stroke: black;
+  stroke-width: 2px;
+  stroke: black;
 }
 
 .sizeCircle {
-    fill: rgb(110, 110, 110);
+  fill: rgb(110, 110, 110);
 }
 
 .nodeBorder {
-    stroke-width: 7px;
-    stroke: white;
-    fill: none
+  stroke-width: 7px;
+  stroke: white;
+  fill: none;
 }
 
 .label {
-    fill: #3a3a3a;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: -moz-none;
-    -o-user-select: none;
-    user-select: none;
+  fill: #3a3a3a;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -o-user-select: none;
+  user-select: none;
 }
 
 .selectBox {
-    stroke: rgb(94, 94, 94);
-    fill: white;
-    stroke-width: 2px;
+  stroke: rgb(94, 94, 94);
+  fill: white;
+  stroke-width: 2px;
 }
 
 .label,
 .selectBox,
 .labelBackground {
-    pointer-events: none;
+  pointer-events: none;
 }
 
-.pathLabel>textPath {
-    font-size: 14px;
+.pathLabel > textPath {
+  font-size: 14px;
 }
 
-.edgeArrow>textPath {
-    font-size: 10px;
+.edgeArrow > textPath {
+  font-size: 10px;
 }
 
 .legendLabel,
 .catLegend {
-    font-size: 1em;
+  font-size: 1em;
 }
 
 .muted {
-    opacity: .2;
+  opacity: 0.2;
 }
 
 .hideLabel {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .frame {
-    fill: white;
-    stroke-width: 1px;
-    stroke: black;
+  fill: white;
+  stroke-width: 1px;
+  stroke: black;
 }
 
-.barGroup>.bar {
-    stroke-width: 2px;
-    stroke: white;
-    fill: rgb(167, 197, 158);
+.barGroup > .bar {
+  stroke-width: 2px;
+  stroke: white;
+  fill: rgb(167, 197, 158);
 }
 
 .nodeGroup {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #node-link-svg {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 #disableInteraction {
-    fill: white;
-    opacity: .7;
+  fill: white;
+  opacity: 0.7;
 }
 
 .input {
-    width: 60% !important;
+  width: 60% !important;
 }
 
 .input.searchInput {
-    width: 65% !important;
+  width: 65% !important;
 }
 
 .node {
-    stroke-width: 1px;
-    stroke: rgb(200, 200, 200);
+  stroke-width: 1px;
+  stroke: rgb(200, 200, 200);
 }
 
 .node.clicked {
-    stroke-width: 6px;
-    stroke: #F8CF91;
+  stroke-width: 6px;
+  stroke: #f8cf91;
 }
 
 .selected .labelBackground.nested {
-    fill: #ea9b0f;
-    opacity: .6;
+  fill: #ea9b0f;
+  opacity: 0.6;
 }
 
 #finished,
 #next,
 #previous {
-    margin: 50px 0px 0px 0px;
-    padding: 10px;
-    background-color: rgb(3, 93, 158);
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
+  margin: 50px 0px 0px 0px;
+  padding: 10px;
+  background-color: rgb(3, 93, 158);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .button.clicked {
-    color: rgb(217, 99, 3) !important;
+  color: rgb(217, 99, 3) !important;
 }
 
 .button.condition {
-    margin: 0px 0px 0px 10px;
-    background-color: rgb(192, 192, 192);
-    color: rgb(57, 57, 57);
-    font-weight: bold;
+  margin: 0px 0px 0px 10px;
+  background-color: rgb(192, 192, 192);
+  color: rgb(57, 57, 57);
+  font-weight: bold;
 }
 
 .labelBackground.nested {
-    opacity: .2;
-    fill: rgb(112, 112, 112);
+  opacity: 0.2;
+  fill: rgb(112, 112, 112);
 }
 
 .labelBackground {
-    opacity: .4;
-    fill: rgb(255, 255, 255);
+  opacity: 0.4;
+  fill: rgb(255, 255, 255);
 }
 
 #vis {
-    display: flex;
+  display: flex;
 }
 
 .ticks {
-    font-size: 12px;
+  font-size: 12px;
 }

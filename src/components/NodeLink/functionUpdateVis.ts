@@ -1,5 +1,12 @@
 import { event, select, selectAll } from 'd3-selection';
-import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation } from 'd3-force';
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  Simulation,
+} from 'd3-force';
 import { max } from 'd3-array';
 import { drag } from 'd3-drag';
 import { selectNode } from '@/lib/provenance';
@@ -12,11 +19,15 @@ export function arcPath(
   visMargins: any,
   straightEdges: boolean,
 ) {
-  const source: Node = state.network.nodes.find((n: Node) => n.id === d.source) || d.source;
-  const target: Node = state.network.nodes.find((n: Node) => n.id === d.target) || d.target;
+  const source: Node =
+    state.network.nodes.find((n: Node) => n.id === d.source) || d.source;
+  const target: Node =
+    state.network.nodes.find((n: Node) => n.id === d.target) || d.target;
 
   if (!source || !target) {
-    throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
+    throw new Error(
+      `Couldn't find the source or target for a link, didn't draw arc.`,
+    );
   }
 
   let x1 = source.x + state.nodeMarkerLength / 2;
@@ -24,13 +35,22 @@ export function arcPath(
   let x2 = target.x + state.nodeMarkerLength / 2;
   let y2 = target.y + state.nodeMarkerHeight / 2;
 
-  const horizontalSpace = visDimensions.width - visMargins.left -
-    visMargins.right - state.nodeMarkerLength;
-  const verticalSpace = visDimensions.height - visMargins.bottom -
-    visMargins.top - state.nodeMarkerHeight;
+  const horizontalSpace =
+    visDimensions.width -
+    visMargins.left -
+    visMargins.right -
+    state.nodeMarkerLength;
+  const verticalSpace =
+    visDimensions.height -
+    visMargins.bottom -
+    visMargins.top -
+    state.nodeMarkerHeight;
   x1 = Math.max(
     visMargins.left + state.nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x1),
+    Math.min(
+      horizontalSpace + visMargins.left + state.nodeMarkerLength / 2,
+      x1,
+    ),
   );
   y1 = Math.max(
     visMargins.top + state.nodeMarkerHeight / 2,
@@ -38,7 +58,10 @@ export function arcPath(
   );
   x2 = Math.max(
     visMargins.left + state.nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x2),
+    Math.min(
+      horizontalSpace + visMargins.left + state.nodeMarkerLength / 2,
+      x2,
+    ),
   );
   y2 = Math.max(
     visMargins.top + state.nodeMarkerHeight / 2,
@@ -53,9 +76,9 @@ export function arcPath(
   const largeArc = 0;
 
   if (straightEdges) {
-    return (`M ${x1} ${y1} L ${x2} ${y2}`);
+    return `M ${x1} ${y1} L ${x2} ${y2}`;
   } else {
-    return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+    return `M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`;
   }
 }
 
@@ -101,44 +124,48 @@ export function dragNode(this: any, state: State, that?: any): void {
 
   selectAll('.linkGroup')
     .select('path')
-    .attr('d', (l: any) => arcPath(
-      l,
-      currentState,
-      env.visDimensions,
-      env.visMargins,
-      env.straightEdges,
-    ));
+    .attr('d', (l: any) =>
+      arcPath(
+        l,
+        currentState,
+        env.visDimensions,
+        env.visMargins,
+        env.straightEdges,
+      ),
+    );
 
   // Get the total space available on the svg
   const horizontalSpace =
     env.visDimensions.width - env.visMargins.right - state.nodeMarkerLength;
   const verticalSpace =
-  env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
+    env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
 
   // Don't allow nodes to be dragged off the main svg area
-  env.svg
-    .selectAll('.nodeGroup').attr('transform', (d: Node) => {
-      d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
-      d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
+  env.svg.selectAll('.nodeGroup').attr('transform', (d: Node) => {
+    d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
+    d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
 
-      return 'translate(' + d.x + ',' + d.y + ')';
-    });
+    return 'translate(' + d.x + ',' + d.y + ')';
+  });
 }
 
 export function hideTooltip(this: any): void {
   this.svg.select('.tooltip').transition().duration(100).style('opacity', 0);
 }
 
-export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
+export function makeSimulation(
+  this: any,
+  state: State,
+): Simulation<Node, Link> {
   const simulation = forceSimulation<Node, Link>()
-    .force('link', forceLink().id((l: any) => l.id))
+    .force(
+      'link',
+      forceLink().id((l: any) => l.id),
+    )
     .force('charge', forceManyBody().strength(-300))
     .force(
       'center',
-      forceCenter(
-        this.visDimensions.width / 2,
-        this.visDimensions.height / 2,
-      ),
+      forceCenter(this.visDimensions.width / 2, this.visDimensions.height / 2),
     );
 
   simulation.nodes(state.network.nodes);
@@ -154,11 +181,18 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   simulation.force('center');
   simulation.on('tick', () => dragNode(state, this));
 
-  simulation.force('collision',
+  simulation.force(
+    'collision',
     forceCollide()
-    .radius(getForceRadius(state.nodeMarkerLength, state.nodeMarkerHeight, this.renderNested))
-    .strength(0.7)
-    .iterations(10),
+      .radius(
+        getForceRadius(
+          state.nodeMarkerLength,
+          state.nodeMarkerHeight,
+          this.renderNested,
+        ),
+      )
+      .strength(0.7)
+      .iterations(10),
   );
 
   // Start the simulation with an alpha target and an alpha min
@@ -169,9 +203,13 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   return simulation;
 }
 
-export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
+export function getForceRadius(
+  nodeMarkerLength: number,
+  nodeMarkerHeight: number,
+  renderNested: boolean,
+) {
   if (renderNested) {
-    const radius = max([nodeMarkerLength , nodeMarkerHeight]) || 0;
+    const radius = max([nodeMarkerLength, nodeMarkerHeight]) || 0;
     return radius * 0.8;
   } else {
     const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
@@ -181,10 +219,11 @@ export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: numbe
 
 export function showTooltip(message: string, delay = 200) {
   const tooltip = select('.tooltip') as any;
-  tooltip.html(message)
-    .style('left', (event.clientX + 10) + 'px')
-    .style('top', (event.clientY - 20) + 'px');
-  tooltip.transition().duration(delay).style('opacity', .9);
+  tooltip
+    .html(message)
+    .style('left', event.clientX + 10 + 'px')
+    .style('top', event.clientY - 20 + 'px');
+  tooltip.transition().duration(delay).style('opacity', 0.9);
 }
 
 export function updateVis(this: any, provenance: any): void {
@@ -194,10 +233,7 @@ export function updateVis(this: any, provenance: any): void {
     .selectAll('.nodeGroup')
     .data(this.graphStructure.nodes);
 
-  const nodeEnter = node
-    .enter()
-    .append('g')
-    .attr('class', 'nodeGroup');
+  const nodeEnter = node.enter().append('g').attr('class', 'nodeGroup');
   nodeEnter.append('rect').attr('class', 'nodeBorder nodeBox');
   nodeEnter.append('rect').attr('class', 'node nodeBox');
   nodeEnter.append('rect').attr('class', 'labelBackground');
@@ -206,25 +242,46 @@ export function updateVis(this: any, provenance: any): void {
 
   node = nodeEnter.merge(node);
 
-  node.classed('muted', false)
+  node
+    .classed('muted', false)
     .classed('selected', false)
     .attr('transform', (d: Node) => {
       // Get the space we have to work with
-      const horizontalSpace = this.visDimensions.width - this.visMargins.left -
-        this.visMargins.right - (2 * state.nodeMarkerLength);
-      const verticalSpace = this.visDimensions.height - this.visMargins.bottom -
-        this.visMargins.top - (2 * state.nodeMarkerHeight);
+      const horizontalSpace =
+        this.visDimensions.width -
+        this.visMargins.left -
+        this.visMargins.right -
+        2 * state.nodeMarkerLength;
+      const verticalSpace =
+        this.visDimensions.height -
+        this.visMargins.bottom -
+        this.visMargins.top -
+        2 * state.nodeMarkerHeight;
       // If no x,y defined, get a random place in the space we have and bump it over by 1 margin
-      d.x = d.x === undefined ? (Math.random() * horizontalSpace) + this.visMargins.left :
-        Math.max(
-          this.visMargins.left,
-          Math.min(this.visDimensions.width - state.nodeMarkerLength - this.visMargins.right, d.x),
-        );
-      d.y = d.y === undefined ? (Math.random() * verticalSpace) + this.visMargins.top :
-        Math.max(
-          this.visMargins.top,
-          Math.min(this.visDimensions.height - state.nodeMarkerHeight - this.visMargins.bottom, d.y),
-        );
+      d.x =
+        d.x === undefined
+          ? Math.random() * horizontalSpace + this.visMargins.left
+          : Math.max(
+              this.visMargins.left,
+              Math.min(
+                this.visDimensions.width -
+                  state.nodeMarkerLength -
+                  this.visMargins.right,
+                d.x,
+              ),
+            );
+      d.y =
+        d.y === undefined
+          ? Math.random() * verticalSpace + this.visMargins.top
+          : Math.max(
+              this.visMargins.top,
+              Math.min(
+                this.visDimensions.height -
+                  state.nodeMarkerHeight -
+                  this.visMargins.bottom,
+                d.y,
+              ),
+            );
       return 'translate(' + d.x + ',' + d.y + ')';
     });
 
@@ -235,7 +292,8 @@ export function updateVis(this: any, provenance: any): void {
     .attr('rx', this.renderNested ? 0 : state.nodeMarkerLength / 2)
     .attr('ry', this.renderNested ? 0 : state.nodeMarkerHeight / 2);
 
-  node.select('.node')
+  node
+    .select('.node')
     .style('fill', (d: Node) => {
       if (this.colorVariable === 'table') {
         const table = d.id.split('/')[0];
@@ -249,17 +307,16 @@ export function updateVis(this: any, provenance: any): void {
       this.showTooltip(d.id);
     });
 
-
   node
     .select('text')
     .text((d: Node) => d[this.labelVariable])
     .style('font-size', this.nodeFontSize + 'pt')
     .attr('dx', state.nodeMarkerLength / 2)
-    .attr('dy', this.renderNested ? 8 : (state.nodeMarkerHeight / 2) + 2);
+    .attr('dy', this.renderNested ? 8 : state.nodeMarkerHeight / 2 + 2);
 
   node
     .select('.labelBackground')
-    .attr('y', () => this.renderNested ? 0 : (state.nodeMarkerHeight / 2) - 8)
+    .attr('y', () => (this.renderNested ? 0 : state.nodeMarkerHeight / 2 - 8))
     .attr('width', () => state.nodeMarkerLength)
     .attr('height', '1em');
 
@@ -272,7 +329,7 @@ export function updateVis(this: any, provenance: any): void {
       this.barVariables,
       this.glyphVariables,
       this.graphStructure,
-      );
+    );
   } else {
     node.selectAll('.bar').remove();
     node.selectAll('.glyph').remove();
@@ -282,7 +339,7 @@ export function updateVis(this: any, provenance: any): void {
     drag()
       .on('start', (d) => this.dragStarted(d))
       .on('drag', (d) => this.dragged(d, state)),
-      // .on("end", () => this.dragEnded())
+    // .on("end", () => this.dragEnded())
   );
 
   // Draw Links
@@ -290,10 +347,7 @@ export function updateVis(this: any, provenance: any): void {
     .selectAll('.linkGroup')
     .data(this.graphStructure.links);
 
-  const linkEnter = link
-    .enter()
-    .append('g')
-    .attr('class', 'linkGroup');
+  const linkEnter = link.enter().append('g').attr('class', 'linkGroup');
 
   linkEnter.append('path').attr('class', 'links');
 
@@ -312,13 +366,17 @@ export function updateVis(this: any, provenance: any): void {
   link
     .select('path')
     .style('stroke-width', (d: any) =>
-    this.linkWidthScale(d[this.widthVariables[0]]) > 0 && this.linkWidthScale(d[this.widthVariables[0]]) < 20 ?
-    this.linkWidthScale(d[this.widthVariables[0]]) : 1,
+      this.linkWidthScale(d[this.widthVariables[0]]) > 0 &&
+      this.linkWidthScale(d[this.widthVariables[0]]) < 20
+        ? this.linkWidthScale(d[this.widthVariables[0]])
+        : 1,
     )
     .style('stroke', (d: any) => {
       if (
         this.colorVariables[0] !== undefined &&
-        this.linkColorScale.domain().indexOf(d[this.colorVariables[0]].toString()) > -1
+        this.linkColorScale
+          .domain()
+          .indexOf(d[this.colorVariables[0]].toString()) > -1
       ) {
         return this.linkColorScale(d[this.colorVariables[0]]);
       } else {
@@ -339,7 +397,9 @@ export function updateVis(this: any, provenance: any): void {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
       if (this.attributes.edgeWidthKey) {
-        tooltipData = tooltipData.concat(' [' + d[this.attributes.edgeWidthKey] + ']');
+        tooltipData = tooltipData.concat(
+          ' [' + d[this.attributes.edgeWidthKey] + ']',
+        );
       }
       this.showTooltip(tooltipData, 400);
     })
@@ -371,28 +431,45 @@ export function drawNested(
 
   // Set some bar specific variables that we'll need for tracking position and sizes
   let i = 0;
-  const barWidth = glyphVariables.length === 0 ?
-    nodeMarkerLength / barVariables.length :
-    (nodeMarkerLength / 2) / barVariables.length;
+  const barWidth =
+    glyphVariables.length === 0
+      ? nodeMarkerLength / barVariables.length
+      : nodeMarkerLength / 2 / barVariables.length;
 
   for (const barVar of barVariables) {
-    const maxValue: number = parseFloat(max(graphStructure.nodes.map((n: Node) => parseFloat(n[barVar]))) || '');
+    const maxValue: number = parseFloat(
+      max(graphStructure.nodes.map((n: Node) => parseFloat(n[barVar]))) || '',
+    );
     // Draw white, background bar
-    node.append('rect')
+    node
+      .append('rect')
       .attr('class', 'bar')
       .attr('width', `${barWidth - 10}px`)
       .attr('height', `${nodeMarkerHeight - 16 - 5 - 5}px`)
-      .attr('y', `${16 +  5}px`)
-      .attr('x', `${5 + (i * barWidth)}px`)
+      .attr('y', `${16 + 5}px`)
+      .attr('x', `${5 + i * barWidth}px`)
       .style('fill', '#FFFFFF');
 
     // Draw the color bar with height based on data
-    node.append('rect')
+    node
+      .append('rect')
       .attr('class', 'bar')
       .attr('width', `${barWidth - 10}px`)
-      .attr('height', (d: Node) => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
-      .attr('y', (d: Node) => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
-      .attr('x', `${5 + (i * barWidth)}px`)
+      .attr(
+        'height',
+        (d: Node) =>
+          `${((nodeMarkerHeight - 16 - 5 - 5) * d[barVar]) / maxValue}px`,
+      )
+      .attr(
+        'y',
+        (d: Node) =>
+          `${
+            nodeMarkerHeight -
+            5 -
+            ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar]) / maxValue
+          }px`,
+      )
+      .attr('x', `${5 + i * barWidth}px`)
       .style('fill', '#82b1ff');
 
     // Update i
@@ -407,14 +484,15 @@ export function drawNested(
       break;
     }
     // Draw glyph
-    node.append('rect')
+    node
+      .append('rect')
       .attr('class', 'glyph')
-      .attr('width', `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
-      .attr('height', `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr('y', `${16 +  5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5 * (i)}px`)
-      .attr('x', `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
-      .attr('ry', `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
-      .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
+      .attr('width', `${nodeMarkerLength / 2 - 5 - 5 - 5}px`)
+      .attr('height', `${nodeMarkerHeight / 2 - 5 - 5 - 5}px`)
+      .attr('y', `${16 + 5 + i * (nodeMarkerHeight / 2 - 5 - 5 - 5) + 5 * i}px`)
+      .attr('x', `${5 + (nodeMarkerLength / 2 - 5 - 5) + 5 + 5}px`)
+      .attr('ry', `${(nodeMarkerHeight / 2 - 5 - 5) / 2}px`)
+      .attr('rx', `${(nodeMarkerLength / 2 - 5 - 5) / 2}px`)
       .style('fill', (d: Node) => glyphColorScale(d[glyphVar]));
 
     // Update i
@@ -431,7 +509,9 @@ export function highlightSelectedNodes(state: State): void {
       return (
         Object.keys(state.selected).length > 0 &&
         !Object.keys(state.selected).includes(n.id) &&
-        !Array<string>().concat(...Object.values(state.selected)).includes(n.id)
+        !Array<string>()
+          .concat(...Object.values(state.selected))
+          .includes(n.id)
       );
     });
 
@@ -455,11 +535,17 @@ export function highlightLinks(state: State): void {
     .selectAll('.linkGroup')
     .classed('muted', (l: any) => {
       l = l as Link;
-      return Object.keys(state.selected).length > 0 && !linksToHighlight.includes(l.id);
+      return (
+        Object.keys(state.selected).length > 0 &&
+        !linksToHighlight.includes(l.id)
+      );
     });
 }
 
-export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
+export function releaseNodes(
+  network: Network,
+  simulation: Simulation<Node, Link>,
+) {
   // Release the pinned nodes
   network.nodes.map((n: Node) => {
     n.fx = null;
@@ -470,18 +556,28 @@ export function releaseNodes(network: Network, simulation: Simulation<Node, Link
 
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii
-  simulation.force('collision',
+  simulation.force(
+    'collision',
     forceCollide()
-    .radius(getForceRadius(this.nodeMarkerLength, this.nodeMarkerHeight, this.renderNested))
-    .strength(0.7)
-    .iterations(10),
+      .radius(
+        getForceRadius(
+          this.nodeMarkerLength,
+          this.nodeMarkerHeight,
+          this.renderNested,
+        ),
+      )
+      .strength(0.7)
+      .iterations(10),
   );
 
   simulation.alpha(0.5);
   // simulation.alphaTarget(0.02).restart();
 }
 
-export function stopSimulation(network: Network, simulation: Simulation<Node, Link>) {
+export function stopSimulation(
+  network: Network,
+  simulation: Simulation<Node, Link>,
+) {
   simulation.stop();
   network.nodes.map((n: Node) => {
     n.savedX = n.x;

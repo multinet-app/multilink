@@ -169,13 +169,15 @@ export default {
 
     loadVis() {
       // Get the browser width and height
-      this.browser.width = window.innerWidth
-      || document.documentElement.clientWidth
-      || document.body.clientWidth;
+      this.browser.width =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
 
-      this.browser.height = window.innerHeight
-      || document.documentElement.clientHeight
-      || document.body.clientHeight;
+      this.browser.height =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight;
 
       // Set dimensions of the nodelink
       this.visDimensions.width = this.browser.width * 0.75;
@@ -204,7 +206,7 @@ export default {
 </script>
 
 <template>
-  <svg ref="svg" width="800" height="900"/>
+  <svg ref="svg" width="800" height="900" />
 </template>
 
 <style scoped>

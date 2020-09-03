@@ -4,8 +4,10 @@
  */
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { Node, State, Network } from '@/types';
-import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
-
+import {
+  highlightSelectedNodes,
+  highlightLinks,
+} from '@/components/NodeLink/functionUpdateVis';
 
 export function setUpProvenance(network: Network): Provenance<State, any, any> {
   const initialState: State = {
@@ -20,9 +22,11 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     nodeMarkerHeight: 50,
   };
 
-  const provenance =  initProvenance(initialState, false);
+  const provenance = initProvenance(initialState, false);
 
-  provenance.addObserver(['selected'], function _func(state: State | undefined) {
+  provenance.addObserver(['selected'], function _func(
+    state: State | undefined,
+  ) {
     if (state) {
       // Update the UI
       highlightSelectedNodes(state);
@@ -32,7 +36,6 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     }
   });
 
-
   return provenance;
 }
 
@@ -41,23 +44,20 @@ export function isSelected(node: Node, currentState: State) {
   return Object.keys(currentState.selected).includes(node.id);
 }
 
-export function selectNode(node: Node, provenance: Provenance<State, any, any>): void {
-  const action = provenance.addAction(
-    'select node',
-    (currentState: State) => {
-      if (isSelected(node, currentState)) {
-        delete currentState.selected[node.id];
-      } else {
-        currentState.selected[node.id] = node.neighbors;
-      }
-      return currentState;
-    },
-  );
+export function selectNode(
+  node: Node,
+  provenance: Provenance<State, any, any>,
+): void {
+  const action = provenance.addAction('select node', (currentState: State) => {
+    if (isSelected(node, currentState)) {
+      delete currentState.selected[node.id];
+    } else {
+      currentState.selected[node.id] = node.neighbors;
+    }
+    return currentState;
+  });
 
-  action
-    .addEventType('selection')
-    .alwaysStoreState(true)
-    .applyAction();
+  action.addEventType('selection').alwaysStoreState(true).applyAction();
 }
 
 export function redo(provenance: Provenance<State, any, any>): void {

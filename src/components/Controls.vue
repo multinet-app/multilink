@@ -52,7 +52,9 @@ export default {
     multiVariableList() {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node));
+        let allVars = this.graphStructure.nodes.map((node) =>
+          Object.keys(node),
+        );
         allVars = [].concat.apply([], allVars);
         allVars = [...new Set(allVars)];
         return allVars;
@@ -66,9 +68,13 @@ export default {
     linkVariableList() {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
         // Loop through all links, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.links.map((node) => Object.keys(node));
+        let allVars = this.graphStructure.links.map((node) =>
+          Object.keys(node),
+        );
         allVars = [].concat.apply([], allVars);
-        allVars = [...new Set(allVars)].filter((d) => d !== 'source' && d !== 'target');
+        allVars = [...new Set(allVars)].filter(
+          (d) => d !== 'source' && d !== 'target',
+        );
         return allVars;
       } else {
         return [];
@@ -81,10 +87,10 @@ export default {
     if (!workspace || !graph) {
       this.loadError = true;
       this.loadErrorData = {
-          message: 'Workspace and graph must be set in the url.',
-          buttonText: 'Back to Multinet',
-          href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        message: 'Workspace and graph must be set in the url.',
+        buttonText: 'Back to Multinet',
+        href: process.env.VUE_APP_MULTINET_CLIENT,
+      };
     }
 
     this.workspace = workspace;
@@ -98,22 +104,23 @@ export default {
       // Set error message, button text, and href based on error type
       if (error instanceof DataTooBigError) {
         this.loadErrorData = {
-          message: 'Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.',
+          message:
+            'Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.',
           buttonText: 'AQL wizard',
           href: `${process.env.VUE_APP_MULTINET_CLIENT}/#/workspaces/${workspace}/aql`,
-        }
+        };
       } else if (error.status === 404) {
         this.loadErrorData = {
           message: `Network ${this.graph} does not exist.`,
           buttonText: 'Back to multinet',
           href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        };
       } else {
         this.loadErrorData = {
           message: `There has been an unexpected error.`,
           buttonText: 'Back to multinet',
           href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        };
       }
 
       // Re-throw the error from loadData
@@ -141,10 +148,7 @@ export default {
     exportGraph() {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(
-        new Blob(
-          [JSON.stringify(this.graphStructure)],
-          { type: 'text/json' },
-        ),
+        new Blob([JSON.stringify(this.graphStructure)], { type: 'text/json' }),
       );
       a.download = 'graph.json';
       a.click();
@@ -178,13 +182,16 @@ export default {
           <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
 
           <v-card-text>
-            <v-card-subtitle class="pb-0 pl-0" style="display: flex; align-items: center; justify-content: space-between">
+            <v-card-subtitle
+              class="pb-0 pl-0"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
               Display charts
-              <v-switch
-                  class="ma-0"
-                  v-model="renderNested"
-                  hide-details
-                />
+              <v-switch class="ma-0" v-model="renderNested" hide-details />
             </v-card-subtitle>
 
             <v-divider class="mt-4" />
@@ -222,7 +229,7 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-select 
+            <v-select
               v-model="colorVariable"
               label="Color Variable"
               :items="colorVariableList"
@@ -231,13 +238,16 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+            <v-card-subtitle
+              class="pb-0 px-0"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
               Autoselect neighbors
-              <v-switch
-                class="ma-0"
-                v-model="selectNeighbors"
-                hide-details
-              />
+              <v-switch class="ma-0" v-model="selectNeighbors" hide-details />
             </v-card-subtitle>
           </v-card-text>
 
@@ -258,42 +268,39 @@ export default {
           </v-card-actions>
         </v-card>
 
-        <Legend 
-          class="mt-4" 
+        <Legend
+          class="mt-4"
           cols="3"
           ref="legend"
           v-if="workspace"
           v-bind="{
-              graphStructure,
-              provenance,
-              nodeColorScale,
-              linkColorScale,
-              glyphColorScale,
-              linkWidthScale,
-              multiVariableList,
-              linkVariableList,
-              nodeAttrScales,
-              barVariables,
-              glyphVariables,
-              widthVariables,
-              colorVariables,
-            }"
+            graphStructure,
+            provenance,
+            nodeColorScale,
+            linkColorScale,
+            glyphColorScale,
+            linkWidthScale,
+            multiVariableList,
+            linkVariableList,
+            nodeAttrScales,
+            barVariables,
+            glyphVariables,
+            widthVariables,
+            colorVariables,
+          }"
         />
-
       </v-col>
 
       <!-- node-link component -->
       <v-col>
         <v-row row wrap class="ma-0 pa-0">
-          <v-alert 
-            type="error" 
-            :value="loadError"
-            prominent
-          >
+          <v-alert type="error" :value="loadError" prominent>
             <v-row align="center">
               <v-col class="grow">{{ loadErrorData.message }}</v-col>
               <v-col class="shrink">
-                <v-btn :href="this.loadErrorData.href">{{ loadErrorData.buttonText }}</v-btn>
+                <v-btn :href="this.loadErrorData.href">{{
+                  loadErrorData.buttonText
+                }}</v-btn>
               </v-col>
             </v-row>
           </v-alert>
@@ -316,10 +323,10 @@ export default {
               nodeColorScale,
               linkColorScale,
               glyphColorScale,
-              linkWidthScale
+              linkWidthScale,
             }"
             @restart-simulation="hello()"
-            />
+          />
         </v-row>
       </v-col>
     </v-row>
@@ -327,8 +334,8 @@ export default {
 </template>
 
 <style scoped>
-  #control {
-    max-height: calc(33vh - 18px);
-    overflow-y: scroll
-  }
+#control {
+  max-height: calc(33vh - 18px);
+  overflow-y: scroll;
+}
 </style>
