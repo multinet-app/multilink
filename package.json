@@ -10,7 +10,9 @@
     "test": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint --no-fix",
     "lint:fix": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "format:check": "prettier --check '**/*.{js,ts,css,vue}'",
+    "format:fix": "prettier --write '**/*.{js,ts,css,vue}'"
   },
   "dependencies": {
     "@types/d3": "^5.7.2",
@@ -32,6 +34,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "jest": "^24.9.0",
+    "prettier": "^2.1.1",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "typescript": "^3.6.3",
