@@ -2,8 +2,8 @@
 import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
-import * as updateVisMethods from './functionUpdateVis';
 import { Network } from '@/types';
+import * as updateVisMethods from './functionUpdateVis';
 
 export default {
   props: {
@@ -204,7 +204,11 @@ export default {
 </script>
 
 <template>
-  <svg ref="svg" width="800" height="900"/>
+  <svg
+    ref="svg"
+    width="800"
+    height="900"
+  />
 </template>
 
 <style scoped>

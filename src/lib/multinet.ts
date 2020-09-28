@@ -13,8 +13,8 @@ async function _downloadAllRows(
 
   // If the table is large, don't download the data
   if (
-    (table.count > 100 && tableType === 'node') ||
-    (table.count > 2000 && tableType === 'link')
+    (table.count > 100 && tableType === 'node')
+    || (table.count > 2000 && tableType === 'link')
   ) {
     throw new DataTooBigError(`The table called ${tableName} is too large, not downloading.`);
   }

@@ -4,7 +4,7 @@ const publicPath = process.env.PUBLIC_PATH || '/';
 
 module.exports = {
   transpileDependencies: [
-    "vuetify"
+    'vuetify',
   ],
   publicPath: process.env.NODE_ENV === 'production' ? publicPath : '/',
 };

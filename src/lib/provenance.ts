@@ -6,7 +6,6 @@ import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { Node, State, Network } from '@/types';
 import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
 
-
 export function setUpProvenance(network: Network): Provenance<State, any, any> {
   const initialState: State = {
     network,
@@ -20,7 +19,7 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     nodeMarkerHeight: 50,
   };
 
-  const provenance =  initProvenance(initialState, false);
+  const provenance = initProvenance(initialState, false);
 
   provenance.addObserver(['selected'], function _func(state: State | undefined) {
     if (state) {
@@ -31,7 +30,6 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
       throw new Error('The state is not defined. Cannot highlight nodes.');
     }
   });
-
 
   return provenance;
 }

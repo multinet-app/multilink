@@ -56,9 +56,8 @@ export default {
         allVars = [].concat.apply([], allVars);
         allVars = [...new Set(allVars)];
         return allVars;
-      } else {
-        return [];
       }
+      return [];
     },
     colorVariableList() {
       return this.multiVariableList.concat(['table', null]);
@@ -70,9 +69,8 @@ export default {
         allVars = [].concat.apply([], allVars);
         allVars = [...new Set(allVars)].filter((d) => d !== 'source' && d !== 'target');
         return allVars;
-      } else {
-        return [];
       }
+      return [];
     },
   },
 
@@ -81,10 +79,10 @@ export default {
     if (!workspace || !graph) {
       this.loadError = true;
       this.loadErrorData = {
-          message: 'Workspace and graph must be set in the url.',
-          buttonText: 'Back to Multinet',
-          href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        message: 'Workspace and graph must be set in the url.',
+        buttonText: 'Back to Multinet',
+        href: process.env.VUE_APP_MULTINET_CLIENT,
+      };
     }
 
     this.workspace = workspace;
@@ -101,19 +99,19 @@ export default {
           message: 'Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.',
           buttonText: 'AQL wizard',
           href: `${process.env.VUE_APP_MULTINET_CLIENT}/#/workspaces/${workspace}/aql`,
-        }
+        };
       } else if (error.status === 404) {
         this.loadErrorData = {
           message: `Network ${this.graph} does not exist.`,
           buttonText: 'Back to multinet',
           href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        };
       } else {
         this.loadErrorData = {
-          message: `There has been an unexpected error.`,
+          message: 'There has been an unexpected error.',
           buttonText: 'Back to multinet',
           href: process.env.VUE_APP_MULTINET_CLIENT,
-        }
+        };
       }
 
       // Re-throw the error from loadData
@@ -152,15 +150,15 @@ export default {
 
     keyDownHandler(event) {
       if (
-        (event.ctrlKey && event.code === 'KeyZ' && !event.shiftKey) || // ctrl + z (no shift)
-        (event.metaKey && event.code === 'KeyZ' && !event.shiftKey) // meta + z (no shift)
+        (event.ctrlKey && event.code === 'KeyZ' && !event.shiftKey) // ctrl + z (no shift)
+        || (event.metaKey && event.code === 'KeyZ' && !event.shiftKey) // meta + z (no shift)
       ) {
         undo(this.provenance);
       } else if (
-        (event.ctrlKey && event.code === 'KeyY') || // ctrl + y
-        (event.ctrlKey && event.code === 'KeyZ' && event.shiftKey) || // ctrl + shift + z
-        (event.metaKey && event.code === 'KeyY') || // meta + y
-        (event.metaKey && event.code === 'KeyZ' && event.shiftKey) // meta + shift + z
+        (event.ctrlKey && event.code === 'KeyY') // ctrl + y
+        || (event.ctrlKey && event.code === 'KeyZ' && event.shiftKey) // ctrl + shift + z
+        || (event.metaKey && event.code === 'KeyY') // meta + y
+        || (event.metaKey && event.code === 'KeyZ' && event.shiftKey) // meta + shift + z
       ) {
         redo(this.provenance);
       }
@@ -170,26 +168,36 @@ export default {
 </script>
 
 <template>
-  <v-container fluid class="pt-0 pb-0">
+  <v-container
+    fluid
+    class="pt-0 pb-0"
+  >
     <v-row class="flex-nowrap">
       <!-- control panel content -->
       <v-col cols="3">
         <v-card id="control">
-          <v-card-title class="pb-6">MultiNet Node Link Controls</v-card-title>
+          <v-card-title class="pb-6">
+            MultiNet Node Link Controls
+          </v-card-title>
 
           <v-card-text>
-            <v-card-subtitle class="pb-0 pl-0" style="display: flex; align-items: center; justify-content: space-between">
+            <v-card-subtitle
+              class="pb-0 pl-0"
+              style="display: flex; align-items: center; justify-content: space-between"
+            >
               Display charts
               <v-switch
-                  class="ma-0"
-                  v-model="renderNested"
-                  hide-details
-                />
+                v-model="renderNested"
+                class="ma-0"
+                hide-details
+              />
             </v-card-subtitle>
 
             <v-divider class="mt-4" />
 
-            <v-card-subtitle class="pb-0 pl-0">Marker Size</v-card-subtitle>
+            <v-card-subtitle class="pb-0 pl-0">
+              Marker Size
+            </v-card-subtitle>
             <v-slider
               v-model="nodeMarkerSize"
               :min="10"
@@ -201,7 +209,9 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-card-subtitle class="pb-0 pl-0">Font Size</v-card-subtitle>
+            <v-card-subtitle class="pb-0 pl-0">
+              Font Size
+            </v-card-subtitle>
             <v-slider
               v-model="nodeFontSize"
               :min="10"
@@ -231,76 +241,106 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-card-subtitle class="pb-0 px-0" style="display: flex; align-items: center; justify-content: space-between">
+            <v-card-subtitle
+              class="pb-0 px-0"
+              style="display: flex; align-items: center; justify-content: space-between"
+            >
               Autoselect neighbors
               <v-switch
-                class="ma-0"
                 v-model="selectNeighbors"
+                class="ma-0"
                 hide-details
               />
             </v-card-subtitle>
           </v-card-text>
 
           <v-card-actions>
-            <v-btn small @click="startSimulation">Start Simulation</v-btn>
+            <v-btn
+              small
+              @click="startSimulation"
+            >
+              Start Simulation
+            </v-btn>
           </v-card-actions>
 
           <v-card-actions>
-            <v-btn small @click="stopSimulation">Stop Simulation</v-btn>
+            <v-btn
+              small
+              @click="stopSimulation"
+            >
+              Stop Simulation
+            </v-btn>
           </v-card-actions>
 
           <v-card-actions>
-            <v-btn small @click="releaseNodes">Release Pinned Nodes</v-btn>
+            <v-btn
+              small
+              @click="releaseNodes"
+            >
+              Release Pinned Nodes
+            </v-btn>
           </v-card-actions>
 
           <v-card-actions>
-            <v-btn small @click="exportGraph">Export Graph</v-btn>
+            <v-btn
+              small
+              @click="exportGraph"
+            >
+              Export Graph
+            </v-btn>
           </v-card-actions>
         </v-card>
 
         <Legend
+          v-if="workspace"
+          ref="legend"
           class="mt-4"
           cols="3"
-          ref="legend"
-          v-if="workspace"
           v-bind="{
-              graphStructure,
-              provenance,
-              nodeColorScale,
-              linkColorScale,
-              glyphColorScale,
-              linkWidthScale,
-              multiVariableList,
-              linkVariableList,
-              nodeAttrScales,
-              barVariables,
-              glyphVariables,
-              widthVariables,
-              colorVariables,
-            }"
+            graphStructure,
+            provenance,
+            nodeColorScale,
+            linkColorScale,
+            glyphColorScale,
+            linkWidthScale,
+            multiVariableList,
+            linkVariableList,
+            nodeAttrScales,
+            barVariables,
+            glyphVariables,
+            widthVariables,
+            colorVariables,
+          }"
         />
-
       </v-col>
 
       <!-- node-link component -->
       <v-col>
-        <v-row row wrap class="ma-0 pa-0">
+        <v-row
+          row
+          wrap
+          class="ma-0 pa-0"
+        >
           <v-alert
             type="error"
             :value="loadError"
             prominent
           >
             <v-row align="center">
-              <v-col class="grow">{{ loadErrorData.message }}</v-col>
+              <v-col class="grow">
+                {{ loadErrorData.message }}
+              </v-col>
               <v-col class="shrink">
-                <v-btn :href="this.loadErrorData.href">{{ loadErrorData.buttonText }}</v-btn>
+                <v-btn :href="this.loadErrorData.href">
+                  {{ loadErrorData.buttonText }}
+                </v-btn>
               </v-col>
             </v-row>
           </v-alert>
 
           <node-link
-            ref="nodelink"
             v-if="workspace"
+            ref="nodelink"
             v-bind="{
               graphStructure,
               provenance,
@@ -319,7 +359,7 @@ export default {
               linkWidthScale
             }"
             @restart-simulation="hello()"
-            />
+          />
         </v-row>
       </v-col>
     </v-row>
