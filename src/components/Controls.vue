@@ -10,6 +10,7 @@ import { DataTooBigError } from '@/lib/errors';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 
+const loginTokenRegex = /#loginToken=(\S+)/;
 export default {
   components: {
     NodeLink,
@@ -86,12 +87,13 @@ export default {
           href: process.env.VUE_APP_MULTINET_CLIENT,
         }
     }
+    const loginToken = this.checkUrlForLogin();
 
     this.workspace = workspace;
     this.graph = graph;
 
     try {
-      this.graphStructure = await loadData(workspace, graph, host);
+      this.graphStructure = await loadData(workspace, graph, host, loginToken);
     } catch (error) {
       this.loadError = true;
 
@@ -164,6 +166,20 @@ export default {
       ) {
         redo(this.provenance);
       }
+    },
+
+    checkUrlForLogin() {
+      const result = loginTokenRegex.exec(window.location.href);
+
+      if (result !== null) {
+        const { index, 1: token } = result;
+
+        const newPath = window.location.href.slice(0, index);
+        window.history.replaceState({}, window.document.title, newPath);
+        return token;
+      }
+
+      return null;
     },
   },
 };
