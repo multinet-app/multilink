@@ -1,9 +1,12 @@
-import { event, select, selectAll } from 'd3-selection';
 import {
-  forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation,
+  Selection, select, selectAll, BaseType,
+} from 'd3-selection';
+import {
+  forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation, ForceLink,
 } from 'd3-force';
 import { max } from 'd3-array';
 import { drag } from 'd3-drag';
+import { ScaleOrdinal } from 'd3-scale';
 import { selectNode } from '@/lib/provenance';
 import {
   Node, State, Link, Network, Dimensions,

@@ -1,6 +1,6 @@
 <script>
 import { min, max } from 'd3-array';
-import { select, event } from 'd3-selection';
+import { select } from 'd3-selection';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
