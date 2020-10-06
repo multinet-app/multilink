@@ -53,7 +53,7 @@ export default {
       if (typeof this.graphStructure.nodes[0] !== 'undefined') {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         let allVars = this.graphStructure.nodes.map((node) => Object.keys(node));
-        allVars = [].concat.apply([], allVars);
+        allVars = [].concat(...allVars);
         allVars = [...new Set(allVars)];
         return allVars;
       }
@@ -66,7 +66,7 @@ export default {
       if (typeof this.graphStructure.links[0] !== 'undefined') {
         // Loop through all links, flatten the 2d array, and turn it into a set
         let allVars = this.graphStructure.links.map((node) => Object.keys(node));
-        allVars = [].concat.apply([], allVars);
+        allVars = [].concat(...allVars);
         allVars = [...new Set(allVars)].filter((d) => d !== 'source' && d !== 'target');
         return allVars;
       }
