@@ -7,10 +7,11 @@ import {
 import { max } from 'd3-array';
 import { drag } from 'd3-drag';
 import { ScaleOrdinal } from 'd3-scale';
-import { selectNode } from '@/lib/provenance';
+import { selectNode, ProvenanceEvents } from '@/lib/provenance';
 import {
   Node, State, Link, Network, Dimensions,
 } from '@/types';
+import { Provenance } from '@visdesignlab/trrack';
 
 export function arcPath(
   d: Link | any,
@@ -189,7 +190,7 @@ export function showTooltip(message: string, delay = 200) {
   tooltip.transition().duration(delay).style('opacity', 0.9);
 }
 
-export function updateVis(this: any, provenance: any): void {
+export function updateVis(this: any, provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   const state = provenance.current().getState();
   let node = this.svg
     .select('.nodes')

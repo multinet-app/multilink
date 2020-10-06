@@ -18,7 +18,7 @@ export default {
 
   data() {
     return {
-      provenance: null,
+      provenance: undefined,
       graphStructure: {
         nodes: [],
         links: [],
@@ -292,7 +292,7 @@ export default {
         </v-card>
 
         <Legend
-          v-if="workspace"
+          v-if="provenance"
           ref="legend"
           class="mt-4"
           cols="3"
@@ -339,7 +339,7 @@ export default {
           </v-alert>
 
           <node-link
-            v-if="workspace"
+            v-if="provenance"
             ref="nodelink"
             v-bind="{
               graphStructure,

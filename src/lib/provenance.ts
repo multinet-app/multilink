@@ -6,7 +6,9 @@ import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { Node, State, Network } from '@/types';
 import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
 
-export function setUpProvenance(network: Network): Provenance<State, any, any> {
+export type ProvenanceEvents = 'Selected Node' | 'Dragged Node'
+
+export function setUpProvenance(network: Network): Provenance<State, ProvenanceEvents, unknown> {
   const initialState: State = {
     network,
     order: [],
@@ -19,7 +21,7 @@ export function setUpProvenance(network: Network): Provenance<State, any, any> {
     nodeMarkerHeight: 50,
   };
 
-  const provenance = initProvenance(initialState, false);
+  const provenance = initProvenance<State, ProvenanceEvents, unknown>(initialState, false);
 
   provenance.addObserver(['selected'], function _func(state: State | undefined) {
     if (state) {
@@ -39,7 +41,7 @@ export function isSelected(node: Node, currentState: State) {
   return Object.keys(currentState.selected).includes(node.id);
 }
 
-export function selectNode(node: Node, provenance: Provenance<State, any, any>): void {
+export function selectNode(node: Node, provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   const action = provenance.addAction(
     'select node',
     (currentState: State) => {
@@ -53,18 +55,18 @@ export function selectNode(node: Node, provenance: Provenance<State, any, any>):
   );
 
   action
-    .addEventType('selection')
+    .addEventType('Selected Node')
     .alwaysStoreState(true)
     .applyAction();
 }
 
-export function redo(provenance: Provenance<State, any, any>): void {
+export function redo(provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   if (provenance.current().children.length > 0) {
     provenance.goForwardOneStep();
   }
 }
 
-export function undo(provenance: Provenance<State, any, any>): void {
+export function undo(provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   if ('parent' in provenance.current()) {
     provenance.goBackOneStep();
   }
