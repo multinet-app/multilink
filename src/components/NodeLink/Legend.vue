@@ -156,14 +156,14 @@ export default {
             .append('rect')
             .attr('x', (d) => xScale(d))
             .attr('y', (d) => yScale(bins[d]))
-            .attr('height', (d, i, values) => this.svgHeight - yScale(bins[d]))
+            .attr('height', (d) => this.svgHeight - yScale(bins[d]))
             .attr('width', xScale.bandwidth())
             .attr('fill', (d) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
 
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            .on('start brush', () => {
+            .on('start brush', (event) => {
               const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
