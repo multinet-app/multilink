@@ -71,6 +71,34 @@ export function arcPath(
   return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
 }
 
+export function dragNode(this: any, state: State, that?: any): void {
+  const env = this ? this : that;
+  const currentState = env.provenance.current().getState();
+
+  selectAll('.linkGroup')
+    .select('path')
+    .attr('d', (l: unknown) => arcPath(
+      l,
+      currentState,
+      env.visDimensions,
+      env.visMargins,
+      env.straightEdges,
+    ));
+
+  // Get the total space available on the svg
+  const horizontalSpace = env.visDimensions.width - env.visMargins.right - state.nodeMarkerLength;
+  const verticalSpace = env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
+
+  // Don't allow nodes to be dragged off the main svg area
+  env.svg
+    .selectAll('.nodeGroup').attr('transform', (d: Node) => {
+      d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
+      d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
+
+      return `translate(${d.x},${d.y})`;
+    });
+}
+
 export function dragStarted(d: Node): void {
   d.fx = d.x;
   d.fy = d.y;
@@ -109,36 +137,17 @@ export function dragEnded(this: any): void {
   this.provenance.applyAction(action);
 }
 
-export function dragNode(this: any, state: State, that?: any): void {
-  const env = this ? this : that;
-  const currentState = env.provenance.current().getState();
-
-  selectAll('.linkGroup')
-    .select('path')
-    .attr('d', (l: any) => arcPath(
-      l,
-      currentState,
-      env.visDimensions,
-      env.visMargins,
-      env.straightEdges,
-    ));
-
-  // Get the total space available on the svg
-  const horizontalSpace = env.visDimensions.width - env.visMargins.right - state.nodeMarkerLength;
-  const verticalSpace = env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
-
-  // Don't allow nodes to be dragged off the main svg area
-  env.svg
-    .selectAll('.nodeGroup').attr('transform', (d: Node) => {
-      d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
-      d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
-
-      return `translate(${d.x},${d.y})`;
-    });
-}
-
 export function hideTooltip(this: any): void {
   this.svg.select('.tooltip').transition().duration(100).style('opacity', 0);
+}
+
+export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
+  if (renderNested) {
+    const radius = max([nodeMarkerLength, nodeMarkerHeight]) || 0;
+    return radius * 0.8;
+  }
+  const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
+  return radius * 1.5;
 }
 
 export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
@@ -183,14 +192,6 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   return simulation;
 }
 
-export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
-  if (renderNested) {
-    const radius = max([nodeMarkerLength, nodeMarkerHeight]) || 0;
-    return radius * 0.8;
-  }
-  const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
-  return radius * 1.5;
-}
 
 export function showTooltip(message: string, delay = 200) {
   const tooltip = select('.tooltip') as any;
@@ -466,14 +467,6 @@ export function highlightLinks(state: State): void {
     });
 }
 
-export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
-  // Release the pinned nodes
-  network.nodes.forEach((n: Node) => {
-    n.fx = null;
-    n.fy = null;
-  });
-  startSimulation(simulation);
-}
 
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii
@@ -493,4 +486,13 @@ export function stopSimulation(network: Network, simulation: Simulation<Node, Li
     n.savedX = n.x;
     n.savedY = n.y;
   });
+}
+
+export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
+  // Release the pinned nodes
+  network.nodes.forEach((n: Node) => {
+    n.fx = null;
+    n.fy = null;
+  });
+  startSimulation(simulation);
 }
