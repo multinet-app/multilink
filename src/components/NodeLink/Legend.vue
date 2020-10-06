@@ -104,9 +104,9 @@ export default {
   methods: {
     setUpPanel() {
       // For node and link variables
-      for (const list of [this.multiVariableList, this.linkVariableList]) {
+      [this.multiVariableList, this.linkVariableList].forEach((list) => {
         // For each attribute
-        for (const attr of list) {
+        list.forEach((attr) => {
           // Get the SVG element and its width
           const type = list === this.multiVariableList ? 'node' : 'link';
           const variableSvg = select(`#${type}${attr}`);
@@ -117,9 +117,16 @@ export default {
 
           // Get the data and generate the bins
           const currentData = this.graphStructure[`${type}s`].map((d) => d[attr]);
-          const bins = currentData.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
-          const binLabels = Object.entries(bins).map((d) => d[0]);
-          const binValues = Object.entries(bins).map((d) => d[1]);
+          const bins = new Map([...new Set(currentData)].map(
+            (x) => [x, currentData.filter((y) => y === x).length],
+          ));
+
+          const binLabels = [];
+          const binValues = [];
+          bins.forEach((label, value) => {
+            binLabels.push(label);
+            binValues.push(value);
+          });
 
           // Generate axis scales
           const yScale = scaleLinear()
@@ -206,8 +213,8 @@ export default {
           variableSvg
             .call(brush)
             .call(brush.move, xScale.range());
-        }
-      }
+        });
+      });
     },
 
     isQuantitative(varName, type) {
@@ -218,14 +225,17 @@ export default {
     ordinalInvert(pos, scale, binLabels) {
       let previous = null;
       const domain = scale.domain();
-      for (const idx in domain) {
+
+      domain.forEach((value, idx) => {
         if (idx !== null) {
           if (scale(binLabels[idx]) > pos) {
             return previous;
           }
           previous = binLabels[idx];
         }
-      }
+
+        return null;
+      });
       return previous;
     },
 

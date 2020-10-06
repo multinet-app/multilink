@@ -36,7 +36,7 @@ async function _downloadAllRows(
 }
 
 function _renameLinkVars(links: any[]): Link[] {
-  for (const row of links) {
+  links.forEach((row) => {
     row.id = row._id;
     row.source = row._from;
     row.target = row._to;
@@ -44,24 +44,27 @@ function _renameLinkVars(links: any[]): Link[] {
     delete row._id;
     delete row._from;
     delete row._to;
-  }
+  });
+
   return links;
 }
 
 function _renameNodeVars(nodes: any[]): Node[] {
-  for (const row of nodes) {
+  nodes.forEach((row) => {
     row.id = row._id;
     delete row._id;
-  }
+  });
+
   return nodes;
 }
 
 function _defineNeighbors(nodes: any[], links: any[]) {
-  nodes.map((d: { neighbors: string[] }) => (d.neighbors = []));
-  for (const link of links) {
+  nodes.forEach((d: { neighbors: string[] }) => { d.neighbors = []; });
+
+  links.forEach((link) => {
     nodes.filter((d: Node) => d._id === link._from)[0].neighbors.push(link._to);
     nodes.filter((d: Node) => d._id === link._to)[0].neighbors.push(link._from);
-  }
+  });
   return nodes;
 }
 

@@ -91,8 +91,10 @@ export function dragEnded(this: any): void {
       // Add label describing what the event was
       currentState.event = 'Dragged Node';
       // Update node positions
-      this.graphStructure.nodes.map(
-        (n: Node) => (currentState.nodePos[n.id] = { x: n.x, y: n.y }),
+      this.graphStructure.nodes.forEach(
+        (n: Node) => {
+          currentState.nodePos[n.id] = { x: n.x, y: n.y };
+        },
       );
       return currentState;
     },
@@ -457,7 +459,7 @@ export function highlightLinks(state: State): void {
 
 export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
   // Release the pinned nodes
-  network.nodes.map((n: Node) => {
+  network.nodes.forEach((n: Node) => {
     n.fx = null;
     n.fy = null;
   });
@@ -478,7 +480,7 @@ export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
 
 export function stopSimulation(network: Network, simulation: Simulation<Node, Link>) {
   simulation.stop();
-  network.nodes.map((n: Node) => {
+  network.nodes.forEach((n: Node) => {
     n.savedX = n.x;
     n.savedY = n.y;
   });
