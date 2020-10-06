@@ -331,7 +331,7 @@ export default {
                 {{ loadErrorData.message }}
               </v-col>
               <v-col class="shrink">
-                <v-btn :href="this.loadErrorData.href">
+                <v-btn :href="loadErrorData.href">
                   {{ loadErrorData.buttonText }}
                 </v-btn>
               </v-col>

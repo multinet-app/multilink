@@ -436,11 +436,11 @@ export default {
       </svg>
 
       <!-- Variables to brush and to drag onto the sticky SVG -->
-      <div :style="{'padding': `${this.varPadding}px`}">
+      <div :style="{'padding': `${varPadding}px`}">
         <h2>Node Attributes</h2>
         <br>
         <div
-          v-for="nodeAttr of this.multiVariableList"
+          v-for="nodeAttr of multiVariableList"
           :id="`node${nodeAttr}div`"
           :key="`node${nodeAttr}`"
           class="draggable"
@@ -463,7 +463,7 @@ export default {
         <h2>Link Attributes</h2>
         <br>
         <div
-          v-for="linkAttr of this.linkVariableList"
+          v-for="linkAttr of linkVariableList"
           :id="`link${linkAttr}div`"
           :key="`link${linkAttr}`"
           class="draggable"
