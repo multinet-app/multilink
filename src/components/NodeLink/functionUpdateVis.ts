@@ -5,7 +5,7 @@ import {
   forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation, ForceLink,
 } from 'd3-force';
 import { max } from 'd3-array';
-import { drag } from 'd3-drag';
+import { D3DragEvent, drag } from 'd3-drag';
 import { ScaleOrdinal } from 'd3-scale';
 import { selectNode, ProvenanceEvents } from '@/lib/provenance';
 import {
@@ -104,7 +104,7 @@ export function dragStarted(d: Node): void {
   d.fy = d.y;
 }
 
-export function dragged(this: unknown, d: Node, event:any, state: State): void {
+export function dragged(this: unknown, d: Node, event: D3DragEvent<Element, Node, unknown>, state: State): void {
   d.fx = event.x;
   d.fy = event.y;
   d.x = event.x;
