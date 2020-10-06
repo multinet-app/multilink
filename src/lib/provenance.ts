@@ -23,7 +23,7 @@ export function setUpProvenance(network: Network): Provenance<State, ProvenanceE
 
   const provenance = initProvenance<State, ProvenanceEvents, unknown>(initialState, false);
 
-  provenance.addObserver(['selected'], function _func(state: State | undefined) {
+  provenance.addObserver(['selected'], (state: State | undefined) => {
     if (state) {
       // Update the UI
       highlightSelectedNodes(state);
