@@ -192,8 +192,7 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   return simulation;
 }
 
-
-export function showTooltip(message: string, delay = 200) {
+export function showTooltip(message: string, event: MouseEvent, delay = 200) {
   const tooltip = select('.tooltip') as any;
   tooltip.html(message)
     .style('left', `${event.clientX + 10}px`)
@@ -257,9 +256,9 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       }
       return this.nodeColorScale(d[this.colorVariable]);
     })
-    .on('click', (n: Node) => selectNode(n, provenance))
-    .on('mouseover', (d: Node) => {
-      this.showTooltip(d.id);
+    .on('click', (_event: unknown, n: Node) => selectNode(n, provenance))
+    .on('mouseover', (event: unknown, d: Node) => {
+      this.showTooltip(d.id, event);
     });
 
   node
@@ -292,8 +291,8 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
 
   node.call(
     drag()
-      .on('start', (d) => this.dragStarted(d))
-      .on('drag', (d) => this.dragged(d, state)),
+      .on('start', (event, d) => this.dragStarted(d))
+      .on('drag', (event, d) => this.dragged(d, event, state)),
     // .on("end", () => this.dragEnded())
   );
 
@@ -343,13 +342,13 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       this.visMargins,
       this.straightEdges,
     ))
-    .on('mouseover', (d: Link) => {
+    .on('mouseover', (event: unknown, d: Link) => {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
       if (this.attributes.edgeWidthKey) {
         tooltipData = tooltipData.concat(` [${d[this.attributes.edgeWidthKey]}]`);
       }
-      this.showTooltip(tooltipData, 400);
+      this.showTooltip(tooltipData, event, 400);
     })
 
     .on('mouseout', () => {
