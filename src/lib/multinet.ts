@@ -74,12 +74,7 @@ export async function loadData(
   apiRoot: string = process.env.VUE_APP_MULTINET_HOST,
 ): Promise<Network> {
   // Define local variables that will store the api url and the responses from the database
-  const multinet: {
-    tables: { nodeTables: string[]; edgeTable: string };
-    nodes: any[];
-    links: any[];
-    network: Network;
-  } = {
+  const multinet: {tables: { nodeTables: string[]; edgeTable: string}; nodes: any[]; links: any[]; network: Network} = {
     tables: { nodeTables: [], edgeTable: '' },
     nodes: [],
     links: [],

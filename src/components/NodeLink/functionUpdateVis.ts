@@ -14,10 +14,15 @@ import {
 import { Provenance } from '@visdesignlab/trrack';
 
 export function arcPath(
-  d: Link | any,
+  d: any,
   state: State,
   visDimensions: Dimensions,
-  visMargins: any,
+  visMargins: {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  },
   straightEdges: boolean,
 ) {
   const source: Node = state.network.nodes.find((n: Node) => n.id === d.source) || d.source;
@@ -71,7 +76,7 @@ export function dragStarted(d: Node): void {
   d.fy = d.y;
 }
 
-export function dragged(this: any, d: Node, state: State): void {
+export function dragged(this: unknown, d: Node, event:any, state: State): void {
   d.fx = event.x;
   d.fy = event.y;
   d.x = event.x;
@@ -138,7 +143,10 @@ export function hideTooltip(this: any): void {
 
 export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
   const simulation = forceSimulation<Node, Link>()
-    .force('link', forceLink().id((l: any) => l.id))
+    .force('link', forceLink().id((l: unknown) => {
+      const link = l as Link;
+      return link.id;
+    }))
     .force('charge', forceManyBody().strength(-300))
     .force(
       'center',
@@ -150,9 +158,9 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
 
   simulation.nodes(state.network.nodes);
 
-  const simulationLinks = simulation.force('link') as any;
+  const simulationLinks: ForceLink<Node, Link> | undefined = simulation.force('link');
 
-  if (simulationLinks) {
+  if (simulationLinks !== undefined) {
     simulationLinks.links(state.network.links);
     simulationLinks.distance(() => 60);
   }
@@ -289,8 +297,8 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
   );
 
   // Draw Links
-  let link: any = select('.links')
-    .selectAll('.linkGroup')
+  const link: Selection<SVGGElement, Link, SVGGElement, unknown> = select<SVGGElement, BaseType>('.links')
+    .selectAll<SVGGElement, Link>('.linkGroup')
     .data(this.graphStructure.links);
 
   const linkEnter = link
@@ -309,14 +317,15 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
 
   link.exit().remove();
 
-  link = linkEnter.merge(link) as any;
+  // Redefining as linkMerge allows for better typing
+  const linkMerge = linkEnter.merge(link);
 
-  link.classed('muted', false);
-  link
+  linkMerge.classed('muted', false);
+  linkMerge
     .select('path')
-    .style('stroke-width', (d: any) => (this.linkWidthScale(d[this.widthVariables[0]]) > 0 && this.linkWidthScale(d[this.widthVariables[0]]) < 20
+    .style('stroke-width', (d: Link) => (this.linkWidthScale(d[this.widthVariables[0]]) > 0 && this.linkWidthScale(d[this.widthVariables[0]]) < 20
       ? this.linkWidthScale(d[this.widthVariables[0]]) : 1))
-    .style('stroke', (d: any) => {
+    .style('stroke', (d: Link) => {
       if (
         this.colorVariables[0] !== undefined
         && this.linkColorScale.domain().indexOf(d[this.colorVariables[0]].toString()) > -1
@@ -325,15 +334,15 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       }
       return '#888888';
     })
-    .attr('id', (d: any) => d._key)
-    .attr('d', (d: any) => arcPath(
+    .attr('id', (d: Link) => d._key)
+    .attr('d', (d: Link) => arcPath(
       d,
       this.provenance.current().getState(),
       this.visDimensions,
       this.visMargins,
       this.straightEdges,
     ))
-    .on('mouseover', (d: any) => {
+    .on('mouseover', (d: Link) => {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
       if (this.attributes.edgeWidthKey) {
