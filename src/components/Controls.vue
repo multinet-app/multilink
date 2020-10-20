@@ -10,7 +10,6 @@ import { DataTooBigError } from '@/lib/errors';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 
-const loginTokenRegex = /#loginToken=(\S+)/;
 export default {
   components: {
     NodeLink,
@@ -87,13 +86,12 @@ export default {
           href: process.env.VUE_APP_MULTINET_CLIENT,
         }
     }
-    const loginToken = this.checkUrlForLogin();
 
     this.workspace = workspace;
     this.graph = graph;
 
     try {
-      this.graphStructure = await loadData(workspace, graph, host, loginToken);
+      this.graphStructure = await loadData(workspace, graph, host);
     } catch (error) {
       this.loadError = true;
 
@@ -167,20 +165,6 @@ export default {
         redo(this.provenance);
       }
     },
-
-    checkUrlForLogin() {
-      const result = loginTokenRegex.exec(window.location.href);
-
-      if (result !== null) {
-        const { index, 1: token } = result;
-
-        const newPath = window.location.href.slice(0, index);
-        window.history.replaceState({}, window.document.title, newPath);
-        return token;
-      }
-
-      return null;
-    },
   },
 };
 </script>
@@ -238,7 +222,7 @@ export default {
 
             <v-divider class="mt-4" />
 
-            <v-select 
+            <v-select
               v-model="colorVariable"
               label="Color Variable"
               :items="colorVariableList"
@@ -274,8 +258,8 @@ export default {
           </v-card-actions>
         </v-card>
 
-        <Legend 
-          class="mt-4" 
+        <Legend
+          class="mt-4"
           cols="3"
           ref="legend"
           v-if="workspace"
@@ -301,8 +285,8 @@ export default {
       <!-- node-link component -->
       <v-col>
         <v-row row wrap class="ma-0 pa-0">
-          <v-alert 
-            type="error" 
+          <v-alert
+            type="error"
             :value="loadError"
             prominent
           >
