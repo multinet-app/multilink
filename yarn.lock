@@ -7616,10 +7616,10 @@ multicast-dns@^6.0.1:
     dns-packet "^1.3.1"
     thunky "^1.0.2"
 
-multinet@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.17.0.tgz#05b30b85d29af8cb877bed502d8cacdabe8796ed"
-  integrity sha512-EC+ALY7ciwSmbkC49NE5A0OmFYxjt/QrTPQf7sXDeL6FUi74UKaammlN3E11T4Pur3kNx686AycmKSbgCkPHNA==
+multinet@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.18.0.tgz#bc88f0fc980ddce18ba781962ef597788a1c26ec"
+  integrity sha512-rLO+5EH67kbiosN2DnEZLaKUa6VSNy/pm372EfZkn8JSMkwNK1SL7si6zpTfuXFA/QZIShlJmzRpD92+LZ6GQg==
   dependencies:
     axios "^0.19.0"
 
