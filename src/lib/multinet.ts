@@ -1,7 +1,9 @@
 /* Multinet data importer */
-import { multinetApi } from 'multinet';
+import { multinetApi, RowsSpec } from 'multinet';
 import { Node, Network, Link } from '@/types';
 import { DataTooBigError } from '@/lib/errors';
+
+const ROWS_TO_PULL = 100;
 
 async function _downloadAllRows(
   api: any,
@@ -9,28 +11,31 @@ async function _downloadAllRows(
   tableName: string,
   tableType: 'node' | 'link',
 ) {
-  let table = await api.table(workspace, tableName, { offset: 0, limit: 100 });
+  let table = await api.table(workspace, tableName, { offset: 0, limit: ROWS_TO_PULL });
+  const numberOfRows = table.count;
 
   // If the table is large, don't download the data
   if (
-    (table.count > 100 && tableType === 'node')
-    || (table.count > 2000 && tableType === 'link')
+    (numberOfRows > 100 && tableType === 'node')
+    || (numberOfRows > 2000 && tableType === 'link')
   ) {
     throw new DataTooBigError(`The table called ${tableName} is too large, not downloading.`);
   }
 
-  // Else if the table is small enough, grab the previously
-  // acquired data and make requests for the remaining data
-  let output: any[] = [];
-  output = output.concat(table.rows);
+  const tables: Array<Promise<RowsSpec>> = [];
+  tables.push(table);
 
-  while (output.length < table.count) {
-    table = await api.table(workspace, tableName, {
-      offset: output.length,
-      limit: 100,
-    });
-    output = output.concat(table.rows);
+  while (tables.length < (numberOfRows / ROWS_TO_PULL) + 1) {
+    table = api.table(workspace, tableName, { offset: (tables.length * ROWS_TO_PULL), limit: ROWS_TO_PULL });
+    tables.push(table);
   }
+
+  const resolvedPromises = await Promise.all(tables);
+
+  let output: any[] = [];
+  resolvedPromises.forEach((resolved) => {
+    output = output.concat(resolved.rows);
+  });
 
   return output;
 }
@@ -86,12 +91,17 @@ export async function loadData(
   // Fetch the names of all the node and edge tables
   multinet.tables = await api.graph(workspace, networkName);
 
-  // Loop through each node tables and fetch the nodes
-  for (const tableName of multinet.tables.nodeTables) {
-    multinet.nodes = multinet.nodes.concat(
-      await _downloadAllRows(api, workspace, tableName, 'node'),
-    );
-  }
+  // Loop through each node table and fetch the nodes
+  const promiseArray: Array<Promise<any>> = [];
+  multinet.tables.nodeTables.forEach((tableName) => {
+    promiseArray.push(_downloadAllRows(api, workspace, tableName, 'node'));
+  });
+
+  const resolvedPromises = await Promise.all(promiseArray);
+
+  resolvedPromises.forEach((resolved) => {
+    multinet.nodes.push(...resolved);
+  });
 
   // Load the link table
   multinet.links = await _downloadAllRows(
