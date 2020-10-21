@@ -1,6 +1,9 @@
 import { mount } from '@vue/test-utils';
 import NodeLink from '@/components/NodeLink/NodeLink.vue';
 import App from '@/App.vue';
+import {
+  describe, expect, it, beforeEach,
+} from 'jest';
 
 describe('Node-Link Utils', () => {
   describe('Arc Drawing', () => {
@@ -11,7 +14,7 @@ describe('Node-Link Utils', () => {
         propsData: {
           graphStructure: { nodes: [], links: [{ source: { x: 100, y: 150 }, target: { x: 400, y: 450 } }] },
           app: App,
-          provenance: { addObserver: () => {} },
+          provenance: { addObserver: () => {} }, // eslint-disable-line  @typescript-eslint/no-empty-function
         },
       });
 
