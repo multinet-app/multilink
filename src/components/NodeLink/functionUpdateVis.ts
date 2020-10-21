@@ -200,6 +200,102 @@ export function showTooltip(message: string, event: MouseEvent, delay = 200) {
   tooltip.transition().duration(delay).style('opacity', 0.9);
 }
 
+export function highlightSelectedNodes(state: State): void {
+  // Set the class of everything to 'muted', except for the selected node and it's neighbors
+  select('.nodes')
+    .selectAll('.nodeGroup')
+    .classed('muted', (n: unknown) => {
+      const node = n as Node;
+      return (
+        Object.keys(state.selected).length > 0
+        && !Object.keys(state.selected).includes(node.id)
+        && !Array<string>().concat(...Object.values(state.selected)).includes(node.id)
+      );
+    });
+
+  // Set the class of a clicked node to clicked
+  select('.nodes')
+    .selectAll('.node')
+    .classed('clicked', (n: unknown) => {
+      const node = n as Node;
+      return Object.keys(state.selected).includes(node.id);
+    });
+}
+
+export function highlightLinks(state: State): void {
+  const linksToHighlight = state.network.links.map((l: Link) => {
+    if (l.source.id in state.selected || l.target.id in state.selected) {
+      return l.id;
+    }
+    return '';
+  });
+
+  select('.links')
+    .selectAll('.linkGroup')
+    .classed('muted', (l: unknown) => {
+      const link = l as Link;
+      return Object.keys(state.selected).length > 0 && !linksToHighlight.includes(link.id);
+    });
+}
+
+export function drawNested(
+  node: Selection<BaseType, Node, BaseType, unknown>,
+  nodeMarkerHeight: number,
+  nodeMarkerLength: number,
+  glyphColorScale: ScaleOrdinal<string, string>,
+  barVariables: string[],
+  glyphVariables: string[],
+  graphStructure: Network,
+) {
+  // Delete past renders
+  node.selectAll('.bar').remove();
+  node.selectAll('.glyph').remove();
+
+  // Set some bar specific variables that we'll need for tracking position and sizes
+  const barWidth = glyphVariables.length === 0
+    ? nodeMarkerLength / barVariables.length
+    : (nodeMarkerLength / 2) / barVariables.length;
+
+  barVariables.forEach((barVar, i) => {
+    const maxValue: number = max(graphStructure.nodes.map((n: Node) => parseFloat(n[barVar]))) || 1;
+    // Draw white, background bar
+    node.append('rect')
+      .attr('class', 'bar')
+      .attr('width', `${barWidth - 10}px`)
+      .attr('height', `${nodeMarkerHeight - 16 - 5 - 5}px`)
+      .attr('y', `${16 + 5}px`)
+      .attr('x', `${5 + (i * barWidth)}px`)
+      .style('fill', '#FFFFFF');
+
+    // Draw the color bar with height based on data
+    node.append('rect')
+      .attr('class', 'bar')
+      .attr('width', `${barWidth - 10}px`)
+      .attr('height', (d: Node) => `${((nodeMarkerHeight - 16 - 5 - 5) * d[barVar]) / maxValue}px`)
+      .attr('y', (d: Node) => `${(nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar]) / maxValue)}px`)
+      .attr('x', `${5 + (i * barWidth)}px`)
+      .style('fill', '#82b1ff');
+  });
+
+  // Append glyphs
+  [0, 1].forEach((i) => {
+    const glyphVar = glyphVariables[i];
+    if (glyphVar === undefined) {
+      return;
+    }
+    // Draw glyph
+    node.append('rect')
+      .attr('class', 'glyph')
+      .attr('width', `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
+      .attr('height', `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
+      .attr('y', `${16 + 5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5 * (i)}px`)
+      .attr('x', `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
+      .attr('ry', `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
+      .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
+      .style('fill', (d: Node) => glyphColorScale(d[glyphVar]));
+  });
+}
+
 export function updateVis(this: any, provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   const state = provenance.current().getState();
   let node = this.svg
@@ -362,110 +458,6 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
   highlightSelectedNodes(state);
   highlightLinks(state);
 }
-
-export function drawNested(
-  node: any,
-  nodeMarkerHeight: any,
-  nodeMarkerLength: any,
-  glyphColorScale: any,
-  barVariables: any,
-  glyphVariables: any,
-  graphStructure: any,
-) {
-  // Delete past renders
-  node.selectAll('.bar').remove();
-  node.selectAll('.glyph').remove();
-
-  // Set some bar specific variables that we'll need for tracking position and sizes
-  let i = 0;
-  const barWidth = glyphVariables.length === 0
-    ? nodeMarkerLength / barVariables.length
-    : (nodeMarkerLength / 2) / barVariables.length;
-
-  for (const barVar of barVariables) {
-    const maxValue: number = parseFloat(max(graphStructure.nodes.map((n: Node) => parseFloat(n[barVar]))) || '');
-    // Draw white, background bar
-    node.append('rect')
-      .attr('class', 'bar')
-      .attr('width', `${barWidth - 10}px`)
-      .attr('height', `${nodeMarkerHeight - 16 - 5 - 5}px`)
-      .attr('y', `${16 + 5}px`)
-      .attr('x', `${5 + (i * barWidth)}px`)
-      .style('fill', '#FFFFFF');
-
-    // Draw the color bar with height based on data
-    node.append('rect')
-      .attr('class', 'bar')
-      .attr('width', `${barWidth - 10}px`)
-      .attr('height', (d: Node) => `${(nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue}px`)
-      .attr('y', (d: Node) => `${nodeMarkerHeight - 5 - ((nodeMarkerHeight - 16 - 5 - 5) * d[barVar] / maxValue)}px`)
-      .attr('x', `${5 + (i * barWidth)}px`)
-      .style('fill', '#82b1ff');
-
-    // Update i
-    i++;
-  }
-
-  // Append glyphs
-  i = 0;
-  while (i < 2) {
-    const glyphVar = glyphVariables[i];
-    if (glyphVar === undefined) {
-      break;
-    }
-    // Draw glyph
-    node.append('rect')
-      .attr('class', 'glyph')
-      .attr('width', `${(nodeMarkerLength / 2) - 5 - 5 - 5}px`)
-      .attr('height', `${(nodeMarkerHeight / 2) - 5 - 5 - 5}px`)
-      .attr('y', `${16 + 5 + (i * ((nodeMarkerHeight / 2) - 5 - 5 - 5)) + 5 * (i)}px`)
-      .attr('x', `${5 + ((nodeMarkerLength / 2) - 5 - 5) + 5 + 5}px`)
-      .attr('ry', `${((nodeMarkerHeight / 2) - 5 - 5) / 2}px`)
-      .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
-      .style('fill', (d: Node) => glyphColorScale(d[glyphVar]));
-
-    // Update i
-    i++;
-  }
-}
-
-export function highlightSelectedNodes(state: State): void {
-  // Set the class of everything to 'muted', except for the selected node and it's neighbors
-  select('.nodes')
-    .selectAll('.nodeGroup')
-    .classed('muted', (n: any) => {
-      n = n as Node;
-      return (
-        Object.keys(state.selected).length > 0
-        && !Object.keys(state.selected).includes(n.id)
-        && !Array<string>().concat(...Object.values(state.selected)).includes(n.id)
-      );
-    });
-
-  // Set the class of a clicked node to clicked
-  select('.nodes')
-    .selectAll('.node')
-    .classed('clicked', (n: any) => {
-      n = n as Node;
-      return Object.keys(state.selected).includes(n.id);
-    });
-}
-
-export function highlightLinks(state: State): void {
-  const linksToHighlight = state.network.links.map((l: Link) => {
-    if (l.source.id in state.selected || l.target.id in state.selected) {
-      return l.id;
-    }
-  });
-
-  select('.links')
-    .selectAll('.linkGroup')
-    .classed('muted', (l: any) => {
-      l = l as Link;
-      return Object.keys(state.selected).length > 0 && !linksToHighlight.includes(l.id);
-    });
-}
-
 
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii
