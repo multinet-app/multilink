@@ -7,6 +7,7 @@ import {
 import { max } from 'd3-array';
 import { D3DragEvent, drag } from 'd3-drag';
 import { ScaleOrdinal } from 'd3-scale';
+// eslint-disable-next-line import/no-cycle
 import { selectNode, ProvenanceEvents } from '@/lib/provenance';
 import {
   Node, State, Link, Network, Dimensions,
