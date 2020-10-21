@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/no-mutating-props */
 import { min, max } from 'd3-array';
 import { select } from 'd3-selection';
 import { scaleLinear, scaleBand } from 'd3-scale';
