@@ -6,6 +6,8 @@ import { DataTooBigError } from '@/lib/errors';
 const ROWS_TO_PULL = 100;
 
 async function _downloadAllRows(
+  // MultinetAPI not exported from multinetjs
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   api: any,
   workspace: string,
   tableName: string,
@@ -32,6 +34,7 @@ async function _downloadAllRows(
 
   const resolvedPromises = await Promise.all(tables);
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   let output: any[] = [];
   resolvedPromises.forEach((resolved) => {
     output = output.concat(resolved.rows);
@@ -40,6 +43,7 @@ async function _downloadAllRows(
   return output;
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function _renameLinkVars(links: any[]): Link[] {
   links.forEach((row) => {
     row.id = row._id;
@@ -54,6 +58,7 @@ function _renameLinkVars(links: any[]): Link[] {
   return links;
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function _renameNodeVars(nodes: any[]): Node[] {
   nodes.forEach((row) => {
     row.id = row._id;
@@ -63,6 +68,7 @@ function _renameNodeVars(nodes: any[]): Node[] {
   return nodes;
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function _defineNeighbors(nodes: any[], links: any[]) {
   nodes.forEach((d: { neighbors: string[] }) => { d.neighbors = []; });
 
@@ -79,6 +85,7 @@ export async function loadData(
   apiRoot: string = process.env.VUE_APP_MULTINET_HOST,
 ): Promise<Network> {
   // Define local variables that will store the api url and the responses from the database
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const multinet: {tables: { nodeTables: string[]; edgeTable: string}; nodes: any[]; links: any[]; network: Network} = {
     tables: { nodeTables: [], edgeTable: '' },
     nodes: [],
@@ -92,6 +99,7 @@ export async function loadData(
   multinet.tables = await api.graph(workspace, networkName);
 
   // Loop through each node table and fetch the nodes
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const promiseArray: Array<Promise<any>> = [];
   multinet.tables.nodeTables.forEach((tableName) => {
     promiseArray.push(_downloadAllRows(api, workspace, tableName, 'node'));

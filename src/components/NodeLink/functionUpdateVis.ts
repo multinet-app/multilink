@@ -15,6 +15,7 @@ import {
 import { Provenance } from '@visdesignlab/trrack';
 
 export function arcPath(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   d: any,
   state: State,
   visDimensions: Dimensions,
@@ -72,6 +73,7 @@ export function arcPath(
   return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function dragNode(this: any, state: State, that?: any): void {
   const env = this ? this : that;
   const currentState = env.provenance.current().getState();
@@ -113,6 +115,7 @@ export function dragged(this: unknown, d: Node, event: D3DragEvent<Element, Node
   dragNode(state, this);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function dragEnded(this: any): void {
   // update node position in state graph;
   // updateState("Dragged Node");
@@ -138,7 +141,9 @@ export function dragEnded(this: any): void {
   this.provenance.applyAction(action);
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function hideTooltip(this: any): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (select('.tooltip') as any).transition().duration(100).style('opacity', 0);
 }
 
@@ -151,6 +156,7 @@ export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: numbe
   return radius * 1.5;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
   const simulation = forceSimulation<Node, Link>()
     .force('link', forceLink().id((l: unknown) => {
@@ -194,6 +200,7 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
 }
 
 export function showTooltip(message: string, event: MouseEvent, delay = 200) {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const tooltip = select('.tooltip') as any;
   tooltip.html(message)
     .style('left', `${event.clientX + 10}px`)
@@ -297,6 +304,7 @@ export function drawNested(
   });
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function updateVis(this: any, provenance: Provenance<State, ProvenanceEvents, unknown>): void {
   const state = provenance.current().getState();
   let node = this.svg
@@ -461,6 +469,7 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
   highlightLinks(state);
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii
   simulation.force('collision',
