@@ -25,8 +25,8 @@ export function arcPath(
   },
   straightEdges: boolean,
 ) {
-  const source: Node = state.network.nodes.find((n: Node) => n.id === d.source) || d.source;
-  const target: Node = state.network.nodes.find((n: Node) => n.id === d.target) || d.target;
+  const source: Node = state.network.nodes.find((n: Node) => n.id === d.source as string) || d.source as Node;
+  const target: Node = state.network.nodes.find((n: Node) => n.id === d.target as string) || d.target as Node;
 
   if (!source || !target) {
     throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
@@ -138,7 +138,7 @@ export function dragEnded(this: any): void {
 }
 
 export function hideTooltip(this: any): void {
-  this.svg.select('.tooltip').transition().duration(100).style('opacity', 0);
+  (select('.tooltip') as any).transition().duration(100).style('opacity', 0);
 }
 
 export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
@@ -438,12 +438,13 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       this.visMargins,
       this.straightEdges,
     ))
-    .on('mouseover', (event: unknown, d: Link) => {
+    .on('mouseover', (d: Link) => {
       let tooltipData = d.id;
       // Add the width attribute to the tooltip
       if (this.attributes.edgeWidthKey) {
         tooltipData = tooltipData.concat(` [${d[this.attributes.edgeWidthKey]}]`);
       }
+      // eslint-disable-next-line no-restricted-globals
       this.showTooltip(tooltipData, event, 400);
     })
 
