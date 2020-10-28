@@ -18,8 +18,8 @@ module.exports = {
   ],
 
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'max-len': ['off'],
     'import/prefer-default-export': ['off'],
     'no-underscore-dangle': ['off'],
