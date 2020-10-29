@@ -22,7 +22,7 @@ jobs:
     - uses: actions/cache@v1
       id: yarn-cache
       with:
-        path: /home/runner/work/view-nodelink/view-nodelink/node_modules
+        path: /home/runner/work/MultiLink/MultiLink/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-cache
 
     - name: Install yarn packages
