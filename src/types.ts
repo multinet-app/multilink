@@ -8,7 +8,7 @@ export interface Link {
   id: string;
   source: Node;
   target: Node;
-  [propName: string]: any;
+  [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
 export interface Network {
@@ -22,7 +22,7 @@ export interface Node {
   neighbors: string[];
   x: number;
   y: number;
-  [propName: string]: any;
+  [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
 export interface Cell {
