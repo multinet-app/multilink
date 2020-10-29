@@ -190,12 +190,6 @@ export default {
       this.svg.append('g').attr('class', 'links');
       this.svg.append('g').attr('class', 'nodes');
 
-      // Add tooltip
-      select(this.$el)
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('opacity', 0);
-
       // Call update vis to append all the data to the svg
       this.updateVis(this.provenance);
     },
@@ -204,13 +198,31 @@ export default {
 </script>
 
 <template>
-  <svg
-    ref="svg"
-    width="800"
-    height="900"
-  />
+  <div>
+    <svg
+      ref="svg"
+      width="800"
+      height="900"
+    />
+    <div class="tooltip" />
+  </div>
 </template>
 
 <style scoped>
 @import './NodeLink.css';
+
+.tooltip {
+  position: absolute;
+  opacity: 0;
+  background-color: white;
+
+  font-size: 12.5px;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px;
+  pointer-events: none;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
+  max-width: 400px
+}
 </style>

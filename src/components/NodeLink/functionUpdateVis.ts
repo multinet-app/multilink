@@ -205,7 +205,7 @@ export function showTooltip(message: string, event: MouseEvent, delay = 200) {
   tooltip.html(message)
     .style('left', `${event.clientX + 10}px`)
     .style('top', `${event.clientY - 20}px`);
-  tooltip.transition().duration(delay).style('opacity', 0.9);
+  tooltip.transition().duration(delay).style('opacity', 1);
 }
 
 export function highlightSelectedNodes(state: State): void {
