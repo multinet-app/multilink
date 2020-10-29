@@ -216,13 +216,13 @@ export default {
   opacity: 0;
   background-color: white;
 
-  font-size:12.5px;
-  color:#000;
-  border-radius:5px;
-  padding:5px;
-  pointer-events:none;
-  -webkit-box-shadow:0 4px 8px 0 rgba(0,0,0,.2);
-  box-shadow:0 4px 8px 0 rgba(0,0,0,.2);
-  max-width:400px
+  font-size: 12.5px;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px;
+  pointer-events: none;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
+  max-width: 400px
 }
 </style>
