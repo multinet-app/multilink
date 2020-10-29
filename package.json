@@ -2,7 +2,7 @@
   "name": "MultiLink",
   "version": "0.1.0",
   "private": true,
-  "description": "",
+  "description": "A first class MultiNet node-link visualization",
   "author": "Visualization Design Lab <vdl.sci.utah.edu>",
   "scripts": {
     "serve": "vue-cli-service serve",
