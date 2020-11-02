@@ -3,9 +3,9 @@ publish = "dist/"
 command = "yarn build"
 
 [context.production.environment]
-VUE_APP_MULTINET_HOST = "https://api.multinet.app/api"
+VUE_APP_MULTINET_HOST = "https://api.multinet.app/"
 VUE_APP_MULTINET_CLIENT = "https://multinet.app/"
 
 [context.deploy-preview.environment]
-VUE_APP_MULTINET_HOST = "https://api.multinet.app/api"
+VUE_APP_MULTINET_HOST = "https://api.multinet.app/"
 VUE_APP_MULTINET_CLIENT = "https://multinet.app/"
