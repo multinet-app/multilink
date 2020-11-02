@@ -4588,6 +4588,11 @@ dir-glob@^2.0.0, dir-glob@^2.2.2:
   dependencies:
     path-type "^3.0.0"
 
+direct-vuex@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/direct-vuex/-/direct-vuex-0.12.0.tgz#aba06acc5def3c5cd8e26b6dabb0557e9d074ddf"
+  integrity sha512-yhIlQl9nfKtP55ZEomljcEsxq9rWWc6Fo/DhuU2SIN24qIa4VfTY1dcCAAOQrYdZt4+id5hHjWMdDFa0BDGgSw==
+
 dns-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/dns-equal/-/dns-equal-1.0.0.tgz#b39e7f1da6eb0a75ba9c17324b34753c47e0654d"
@@ -11174,6 +11179,11 @@ vuetify@^2.1.0:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.3.8.tgz#4b468f0eaa780107d6a89249856e46f96e1e1bda"
   integrity sha512-T754w4jV3eeuEwEfRTpHdlo76ZRUVTBeMMzVyqSEr61AfhDSYf9rJfHOlhfXG4aaQbZ34dRR48bzRiS4ICz2fQ==
+
+vuex@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.5.1.tgz#f1b8dcea649bc25254cf4f4358081dbf5da18b3d"
+  integrity sha512-w7oJzmHQs0FM9LXodfskhw9wgKBiaB+totOdb8sNzbTB2KDCEEwEs29NzBZFh/lmEK1t5tDmM1vtsO7ubG1DFw==
 
 w3c-hr-time@^1.0.1:
   version "1.0.2"
