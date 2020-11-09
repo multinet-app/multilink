@@ -1,4 +1,7 @@
 <script lang="ts">
+import store from '@/store';
+import { getUrlVars } from '@/lib/utils';
+
 import Controls from './components/Controls.vue';
 
 export default {
@@ -6,6 +9,25 @@ export default {
 
   components: {
     Controls,
+  },
+
+  computed: {
+    network() {
+      return store.getters.network;
+    },
+    selectedNodes() {
+      return store.getters.selectedNodes;
+    },
+  },
+
+  async mounted() {
+    const { workspace, graph, host } = getUrlVars();
+
+    await store.dispatch.initializeState();
+    await store.dispatch.fetchNetwork({
+      workspaceName: workspace,
+      networkName: graph,
+    });
   },
 };
 </script>
