@@ -11,7 +11,6 @@ import { schemeCategory10 } from 'd3-scale-chromatic';
 
 export default {
   components: {
-    MultiLink,
     Legend,
   },
 
@@ -171,9 +170,7 @@ export default {
     fluid
     class="pt-0 pb-0"
   >
-    <v-row class="flex-nowrap">
       <!-- control panel content -->
-      <v-col cols="3">
         <v-card id="control">
           <v-card-title class="pb-6">
             MultiNet Node Link Controls
@@ -294,7 +291,6 @@ export default {
           v-if="provenance"
           ref="legend"
           class="mt-4"
-          cols="3"
           v-bind="{
             graphStructure,
             provenance,
@@ -311,57 +307,6 @@ export default {
             colorVariables,
           }"
         />
-      </v-col>
-
-      <!-- node-link component -->
-      <v-col>
-        <v-row
-          row
-          wrap
-          class="ma-0 pa-0"
-        >
-          <v-alert
-            type="error"
-            :value="loadError"
-            prominent
-          >
-            <v-row align="center">
-              <v-col class="grow">
-                {{ loadErrorData.message }}
-              </v-col>
-              <v-col class="shrink">
-                <v-btn :href="loadErrorData.href">
-                  {{ loadErrorData.buttonText }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-alert>
-
-          <multi-link
-            v-if="provenance"
-            ref="MultiLink"
-            v-bind="{
-              graphStructure,
-              provenance,
-              nodeFontSize,
-              selectNeighbors,
-              renderNested,
-              labelVariable,
-              colorVariable,
-              barVariables,
-              glyphVariables,
-              widthVariables,
-              colorVariables,
-              nodeColorScale,
-              linkColorScale,
-              glyphColorScale,
-              linkWidthScale
-            }"
-            @restart-simulation="hello()"
-          />
-        </v-row>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
