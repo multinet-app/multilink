@@ -5,83 +5,9 @@ import * as updateVisMethods from './functionUpdateVis';
 
 export default {
   props: {
-    provenance: {
+    svgDimensions: {
       type: Object,
       required: true,
-    },
-    graphStructure: {
-      type: Network,
-      default: null,
-    },
-    labelVariable: {
-      type: String,
-      default: '_key',
-    },
-    colorVariable: {
-      type: String,
-      default: 'table',
-    },
-    nodeFontSize: {
-      type: Number,
-      default: 14,
-    },
-    selectNeighbors: {
-      type: Boolean,
-      default: true,
-    },
-    isDirected: {
-      type: Boolean,
-      default: false,
-    },
-    isMultiEdge: {
-      type: Boolean,
-      default: false,
-    },
-    attributes: {
-      type: Object,
-      default: () => ({
-        edgeWidthKey: undefined,
-      }),
-    },
-    renderNested: {
-      type: Boolean,
-      default: false,
-    },
-    barVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
-    glyphVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
-    widthVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
-    colorVariables: {
-      type: Array,
-      default: () => [],
-      validator: (prop) => prop.every((item) => typeof item === 'string'),
-    },
-    nodeColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkColorScale: {
-      type: Function,
-      default: null,
-    },
-    glyphColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkWidthScale: {
-      type: Function,
-      default: null,
     },
   },
 
