@@ -8,10 +8,17 @@ import { GraphSpec, RowsSpec, TableRow } from 'multinet';
 
 Vue.use(Vuex);
 
+interface LoadError {
+  message: string;
+  buttonText: string;
+  href: string;
+}
+
 export interface State {
   workspaceName: string | null;
   networkName: string | null;
   network: Network | null;
+  loadError: LoadError;
 }
 
 const {
@@ -25,6 +32,11 @@ const {
     workspaceName: null,
     networkName: null,
     network: null,
+    loadError: {
+      message: '',
+      buttonText: '',
+      href: '',
+    },
   } as State,
   getters: {
     workspaceName(state: State): string {
@@ -44,8 +56,9 @@ const {
     network(state: State): Network | null {
       if (state.network !== null) {
         return state.network;
-      }
-      return null;
+
+    loadError(state: State) {
+      return state.loadError;
     },
   },
   mutations: {
@@ -58,6 +71,14 @@ const {
     setNetwork(state, network: Network) {
       state.network = network;
     },
+    setLoadError(state, loadError: LoadError) {
+      state.loadError = {
+        message: loadError.message,
+        buttonText: loadError.buttonText,
+        href: loadError.href,
+      };
+    },
+
   },
   actions: {
     async fetchNetwork(context, { workspaceName, networkName }) {
@@ -65,8 +86,30 @@ const {
       commit.setWorkspaceName(workspaceName);
       commit.setNetworkName(networkName);
 
+      let networkTables: GraphSpec | undefined;
+
       // Get all table names
-      const networkTables: GraphSpec = await api.graph(workspaceName, networkName);
+      try {
+        networkTables = await api.graph(workspaceName, networkName);
+      } catch (error) {
+        if (error.status === 404) {
+          commit.setLoadError({
+            message: error.statusText,
+            buttonText: 'Back to MultiNet',
+            href: '/',
+          });
+        }
+
+        commit.setLoadError({
+          message: 'An unexpected error ocurred',
+          buttonText: 'Back to MultiNet',
+          href: '/',
+        });
+      }
+
+      if (networkTables === undefined) {
+        return;
+      }
 
       // Generate all node table promises
       const nodePromises: Promise<RowsSpec>[] = [];

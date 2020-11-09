@@ -2,9 +2,6 @@
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import { setUpProvenance, undo, redo } from '@/lib/provenance';
-import { getUrlVars } from '@/lib/utils';
-import { loadData } from '@/lib/multinet';
-import { DataTooBigError } from '@/lib/errors';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
@@ -38,8 +35,6 @@ export default {
       widthVariables: [],
       colorVariables: [],
       linkWidthScale: scaleLinear().domain([0, 10]).range([2, 20]),
-      loadError: false,
-      loadErrorData: {},
     };
   },
 
@@ -73,49 +68,6 @@ export default {
   },
 
   async mounted() {
-    const { workspace, graph, host } = getUrlVars();
-    if (!workspace || !graph) {
-      this.loadError = true;
-      this.loadErrorData = {
-        message: 'Workspace and graph must be set in the url.',
-        buttonText: 'Back to Multinet',
-        href: process.env.VUE_APP_MULTINET_CLIENT,
-      };
-    }
-
-    this.workspace = workspace;
-    this.graph = graph;
-
-    try {
-      this.graphStructure = await loadData(workspace, graph, host);
-    } catch (error) {
-      this.loadError = true;
-
-      // Set error message, button text, and href based on error type
-      if (error instanceof DataTooBigError) {
-        this.loadErrorData = {
-          message: 'Your data is too large to view with this visualization. Please use AQL to reduce the size before you visualize it.',
-          buttonText: 'AQL wizard',
-          href: `${process.env.VUE_APP_MULTINET_CLIENT}/#/workspaces/${workspace}/aql`,
-        };
-      } else if (error.status === 404) {
-        this.loadErrorData = {
-          message: `Network ${this.graph} does not exist.`,
-          buttonText: 'Back to multinet',
-          href: process.env.VUE_APP_MULTINET_CLIENT,
-        };
-      } else {
-        this.loadErrorData = {
-          message: 'There has been an unexpected error.',
-          buttonText: 'Back to multinet',
-          href: process.env.VUE_APP_MULTINET_CLIENT,
-        };
-      }
-
-      // Re-throw the error from loadData
-      throw error;
-    }
-
     this.provenance = setUpProvenance(this.graphStructure);
 
     document.addEventListener('keydown', this.keyDownHandler);

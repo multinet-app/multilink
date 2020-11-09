@@ -20,6 +20,9 @@ export default {
     selectedNodes() {
       return store.getters.selectedNodes;
     },
+    loadError() {
+      return store.getters.loadError;
+  },
   },
 
   async mounted() {
@@ -54,6 +57,23 @@ export default {
                 height: this.$refs.multilink_container.clientHeight,
               }"
             />
+
+            <v-alert
+              type="error"
+              :value="loadError.message !== ''"
+              prominent
+            >
+              <v-row align="center">
+                <v-col class="grow">
+                  {{ loadError.message }}
+                </v-col>
+                <v-col class="shrink">
+                  <v-btn :href="loadError.href">
+                    {{ loadError.buttonText }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-alert>
           </v-row>
         </v-col>
       </v-row>
