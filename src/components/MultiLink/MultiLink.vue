@@ -1,6 +1,4 @@
-<script>
-import { scaleLinear } from 'd3-scale';
-import { select } from 'd3-selection';
+<script lang="ts">
 
 import { Network } from '@/types';
 import * as updateVisMethods from './functionUpdateVis';

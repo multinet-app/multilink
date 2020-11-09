@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 /* eslint-disable vue/no-mutating-props */
 import { min, max } from 'd3-array';
 import { select } from 'd3-selection';

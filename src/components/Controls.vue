@@ -1,5 +1,4 @@
-<script>
-import MultiLink from '@/components/MultiLink/MultiLink.vue';
+<script lang="ts">
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import { setUpProvenance, undo, redo } from '@/lib/provenance';

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Controls from './components/Controls.vue';
 
 export default {
