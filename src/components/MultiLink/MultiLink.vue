@@ -209,8 +209,6 @@ export default {
 </template>
 
 <style scoped>
-@import './MultiLink.css';
-
 .tooltip {
   position: absolute;
   opacity: 0;
@@ -225,4 +223,162 @@ export default {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   max-width: 400px
 }
+
+.links,
+.textpath,
+.edgeLegend {
+    fill: none;
+    opacity: .8;
+}
+
+.textpath {
+    visibility: hidden;
+}
+
+.axisLine {
+    stroke-width: 2px;
+    stroke: black;
+}
+
+.sizeCircle {
+    fill: rgb(110, 110, 110);
+}
+
+.nodeBorder {
+    stroke-width: 7px;
+    stroke: white;
+}
+
+.label {
+    fill: #3a3a3a;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.selectBox {
+    stroke: rgb(94, 94, 94);
+    fill: white;
+    stroke-width: 2px;
+}
+
+.label,
+.selectBox,
+.labelBackground {
+    pointer-events: none;
+}
+
+.pathLabel>textPath {
+    font-size: 14px;
+}
+
+.edgeArrow>textPath {
+    font-size: 10px;
+}
+
+.legendLabel,
+.catLegend {
+    font-size: 1em;
+}
+
+.muted {
+    opacity: .2;
+}
+
+.hideLabel {
+    visibility: hidden;
+}
+
+.frame {
+    fill: white;
+    stroke-width: 1px;
+    stroke: black;
+}
+
+.barGroup>.bar {
+    stroke-width: 2px;
+    stroke: white;
+    fill: rgb(167, 197, 158);
+}
+
+.nodeGroup {
+    cursor: pointer;
+}
+
+#node-link-svg {
+    display: inline-flex;
+}
+
+#disableInteraction {
+    fill: white;
+    opacity: .7;
+}
+
+.input {
+    width: 60% !important;
+}
+
+.input.searchInput {
+    width: 65% !important;
+}
+
+.node {
+    stroke-width: 1px;
+    stroke: rgb(200, 200, 200);
+}
+
+.node.selected {
+    stroke-width: 6px;
+    stroke: #F8CF91;
+}
+
+.selected .labelBackground.nested {
+    fill: #ea9b0f;
+    opacity: .6;
+}
+
+#finished,
+#next,
+#previous {
+    margin: 50px 0px 0px 0px;
+    padding: 10px;
+    background-color: rgb(3, 93, 158);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.button.clicked {
+    color: rgb(217, 99, 3) !important;
+}
+
+.button.condition {
+    margin: 0px 0px 0px 10px;
+    background-color: rgb(192, 192, 192);
+    color: rgb(57, 57, 57);
+    font-weight: bold;
+}
+
+.labelBackground.nested {
+    opacity: .2;
+    fill: rgb(112, 112, 112);
+}
+
+.labelBackground {
+    opacity: .4;
+    fill: rgb(255, 255, 255);
+}
+
+#vis {
+    display: flex;
+}
+
+.ticks {
+    font-size: 12px;
+}
+
 </style>
