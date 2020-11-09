@@ -141,12 +141,6 @@ export function dragEnded(this: any): void {
   this.provenance.applyAction(action);
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export function hideTooltip(this: any): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (select('.tooltip') as any).transition().duration(100).style('opacity', 0);
-}
-
 export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
   if (renderNested) {
     const radius = max([nodeMarkerLength, nodeMarkerHeight]) || 0;
@@ -197,15 +191,6 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   simulation.alphaTarget(0.02).restart();
 
   return simulation;
-}
-
-export function showTooltip(message: string, event: MouseEvent, delay = 200) {
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  const tooltip = select('.tooltip') as any;
-  tooltip.html(message)
-    .style('left', `${event.clientX + 10}px`)
-    .style('top', `${event.clientY - 20}px`);
-  tooltip.transition().duration(delay).style('opacity', 1);
 }
 
 export function highlightSelectedNodes(state: State): void {
@@ -362,9 +347,6 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       return this.nodeColorScale(d[this.colorVariable]);
     })
     .on('click', (_event: unknown, n: Node) => selectNode(n, provenance))
-    .on('mouseover', (event: unknown, d: Node) => {
-      this.showTooltip(d.id, event);
-    });
 
   node
     .select('text')
@@ -447,23 +429,8 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
       this.visMargins,
       this.straightEdges,
     ))
-    .on('mouseover', (d: Link) => {
-      let tooltipData = d.id;
-      // Add the width attribute to the tooltip
-      if (this.attributes.edgeWidthKey) {
-        tooltipData = tooltipData.concat(` [${d[this.attributes.edgeWidthKey]}]`);
-      }
-      // eslint-disable-next-line no-restricted-globals
-      this.showTooltip(tooltipData, event, 400);
-    })
 
-    .on('mouseout', () => {
-      this.hideTooltip();
-    });
 
-  node.on('mouseout', () => {
-    this.hideTooltip();
-  });
 
   highlightSelectedNodes(state);
   highlightLinks(state);

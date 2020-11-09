@@ -107,10 +107,16 @@ export default {
       nodeSizeAttr: undefined,
       barPadding: 3,
       straightEdges: false,
+      tooltipMessage: '',
+      toggleTooltip: false,
+      tooltipPosition: { x: 0, y: 0 },
     };
   },
 
   computed: {
+    tooltipStyle(): string {
+      return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
+    },
     properties() {
       const {
         graphStructure,
@@ -164,6 +170,20 @@ export default {
 
   methods: {
     ...updateVisMethods,
+    showTooltip(element: Node | Link, event: MouseEvent) {
+      this.tooltipPosition = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+
+      this.tooltipMessage = element._id;
+      this.toggleTooltip = true;
+    },
+
+    hideTooltip() {
+      this.tooltipMessage = '';
+      this.toggleTooltip = false;
+    },
 
     loadVis() {
       // Get the browser width and height
@@ -202,14 +222,20 @@ export default {
       width="800"
       height="900"
     />
-    <div class="tooltip" />
+
+    <div
+      v-if="toggleTooltip"
+      class="tooltip"
+      :style="tooltipStyle"
+    >
+      ID: {{ tooltipMessage }}
+    </div>
   </div>
 </template>
 
 <style scoped>
 .tooltip {
   position: absolute;
-  opacity: 0;
   background-color: white;
 
   font-size: 12.5px;
