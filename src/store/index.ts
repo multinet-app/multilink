@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { createDirectStore } from 'direct-vuex';
 
-import { Network } from '@/types';
+import { Link, Node, Network } from '@/types';
 import api from '@/api';
 import { GraphSpec, RowsSpec, TableRow } from 'multinet';
 
@@ -41,23 +41,17 @@ const {
     },
   } as State,
   getters: {
-    workspaceName(state: State): string {
-      if (state.workspaceName !== null) {
-        return state.workspaceName;
-      }
-      return '';
+    workspaceName(state: State) {
+      return state.workspaceName;
     },
 
-    networkName(state: State): string {
-      if (state.networkName !== null) {
-        return state.networkName;
-      }
-      return '';
+    networkName(state: State) {
+      return state.networkName;
     },
 
-    network(state: State): Network | null {
-      if (state.network !== null) {
-        return state.network;
+    network(state: State) {
+      return state.network;
+    },
 
     selectedNodes(state: State) {
       return state.selectedNodes;
@@ -148,8 +142,8 @@ const {
 
       // Build the network object and set it as the network in the store
       const network = {
-        nodes,
-        edges,
+        nodes: nodes as Node[],
+        edges: edges as Link[],
       };
       commit.setNetwork(network);
     },

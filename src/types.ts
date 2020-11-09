@@ -1,27 +1,24 @@
+import { TableRow } from 'multinet';
+
 export interface Dimensions {
   height: number;
   width: number;
 }
 
-export interface Link {
-  _key: string;
-  id: string;
-  source: Node;
-  target: Node;
+export interface Link extends TableRow {
+  _from: string;
+  _to: string;
   [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
 export interface Network {
   nodes: Node[];
-  links: Link[];
+  edges: Link[];
 }
 
-export interface Node {
-  _key: string;
-  id: string;
-  neighbors: string[];
-  x: number;
-  y: number;
+export interface Node extends TableRow {
+  x?: number;
+  y?: number;
   [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
