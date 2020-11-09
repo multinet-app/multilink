@@ -18,6 +18,7 @@ export interface State {
   workspaceName: string | null;
   networkName: string | null;
   network: Network | null;
+  selectedNodes: Set<string>;
   loadError: LoadError;
 }
 
@@ -32,6 +33,7 @@ const {
     workspaceName: null,
     networkName: null,
     network: null,
+    selectedNodes: new Set(),
     loadError: {
       message: '',
       buttonText: '',
@@ -57,6 +59,10 @@ const {
       if (state.network !== null) {
         return state.network;
 
+    selectedNodes(state: State) {
+      return state.selectedNodes;
+    },
+
     loadError(state: State) {
       return state.loadError;
     },
@@ -71,6 +77,11 @@ const {
     setNetwork(state, network: Network) {
       state.network = network;
     },
+
+    setSelected(state, selectedNodes: Set<string>) {
+      state.selectedNodes = selectedNodes;
+    },
+
     setLoadError(state, loadError: LoadError) {
       state.loadError = {
         message: loadError.message,
@@ -79,6 +90,13 @@ const {
       };
     },
 
+    addSelectedNode(state, nodeID: string) {
+      state.selectedNodes.add(nodeID);
+    },
+
+    removeSelectedNode(state, nodeID: string) {
+      state.selectedNodes.delete(nodeID);
+    },
   },
   actions: {
     async fetchNetwork(context, { workspaceName, networkName }) {
