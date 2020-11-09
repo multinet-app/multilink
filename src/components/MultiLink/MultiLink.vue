@@ -145,9 +145,10 @@ export default {
   <div>
     <svg
       ref="svg"
-      width="800"
-      height="900"
-    />
+      :width="svgDimensions.width"
+      :height="svgDimensions.height"
+    >
+    </svg>
 
     <div
       v-if="toggleTooltip"
