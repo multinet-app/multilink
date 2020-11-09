@@ -17,12 +17,14 @@ export default {
     network() {
       return store.getters.network;
     },
+
     selectedNodes() {
       return store.getters.selectedNodes;
     },
+
     loadError() {
       return store.getters.loadError;
-  },
+    },
   },
 
   async mounted() {

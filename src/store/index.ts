@@ -65,9 +65,11 @@ const {
     setWorkspaceName(state, workspaceName: string) {
       state.workspaceName = workspaceName;
     },
+
     setNetworkName(state, networkName: string) {
       state.networkName = networkName;
     },
+
     setNetwork(state, network: Network) {
       state.network = network;
     },
