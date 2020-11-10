@@ -108,6 +108,41 @@ export default {
       return `translate(${node.x || 0}, ${node.y || 0})`;
     },
 
+    arcPath(link: Link): string {
+      if (this.network !== null) {
+        const fromNode = this.network.nodes.find((node) => node._id === link._from);
+        const toNode = this.network.nodes.find((node) => node._id === link._to);
+
+        if (fromNode === undefined || toNode === undefined) {
+          console.log('Couldn\'t find the source or target for a link, didn\'t draw arc.');
+          return '';
+        }
+
+        if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
+          console.log('_from or _to node didn\'t have an x or a y position.');
+          return '';
+        }
+
+        const x1 = fromNode.x + this.nodeSize / 2;
+        const y1 = fromNode.y + this.nodeSize / 2;
+        const x2 = toNode.x + this.nodeSize / 2;
+        const y2 = toNode.y + this.nodeSize / 2;
+
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const dr = Math.sqrt(dx * dx + dy * dy);
+        const sweep = 1;
+        const xRotation = 0;
+        const largeArc = 0;
+
+        if (this.straightEdges) {
+          return (`M ${x1} ${y1} L ${x2} ${y2}`);
+        }
+        return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+      }
+      return '';
+    },
+
     isSelected(nodeID: string): boolean {
       return this.selectedNodes.has(nodeID);
     },

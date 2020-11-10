@@ -14,65 +14,6 @@ import {
 } from '@/types';
 import { Provenance } from '@visdesignlab/trrack';
 
-export function arcPath(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  d: any,
-  state: State,
-  visDimensions: Dimensions,
-  visMargins: {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
-  },
-  straightEdges: boolean,
-) {
-  const source: Node = state.network.nodes.find((n: Node) => n.id === d.source as string) || d.source as Node;
-  const target: Node = state.network.nodes.find((n: Node) => n.id === d.target as string) || d.target as Node;
-
-  if (!source || !target) {
-    throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
-  }
-
-  let x1 = source.x + state.nodeMarkerLength / 2;
-  let y1 = source.y + state.nodeMarkerHeight / 2;
-  let x2 = target.x + state.nodeMarkerLength / 2;
-  let y2 = target.y + state.nodeMarkerHeight / 2;
-
-  const horizontalSpace = visDimensions.width - visMargins.left
-    - visMargins.right - state.nodeMarkerLength;
-  const verticalSpace = visDimensions.height - visMargins.bottom
-    - visMargins.top - state.nodeMarkerHeight;
-  x1 = Math.max(
-    visMargins.left + state.nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x1),
-  );
-  y1 = Math.max(
-    visMargins.top + state.nodeMarkerHeight / 2,
-    Math.min(verticalSpace + visMargins.top + state.nodeMarkerHeight / 2, y1),
-  );
-  x2 = Math.max(
-    visMargins.left + state.nodeMarkerLength / 2,
-    Math.min(horizontalSpace + visMargins.left + state.nodeMarkerLength / 2, x2),
-  );
-  y2 = Math.max(
-    visMargins.top + state.nodeMarkerHeight / 2,
-    Math.min(verticalSpace + visMargins.top + state.nodeMarkerHeight / 2, y2),
-  );
-
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const dr = Math.sqrt(dx * dx + dy * dy);
-  const sweep = 1;
-  const xRotation = 0;
-  const largeArc = 0;
-
-  if (straightEdges) {
-    return (`M ${x1} ${y1} L ${x2} ${y2}`);
-  }
-  return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function dragNode(this: any, state: State, that?: any): void {
   const env = this ? this : that;
