@@ -34,6 +34,26 @@ export default {
       return store.getters.selectedNodes;
     },
 
+    oneHop() {
+      console.log('one hop');
+      if (this.network !== null) {
+        console.log(this.network, this.selectedNodes);
+        const inNodes = this.network.edges.map((link) => (this.selectedNodes.has(link._to) ? link._from : null));
+        const outNodes = this.network.edges.map((link) => (this.selectedNodes.has(link._from) ? link._to : null));
+
+        const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
+
+        // Remove null if it exists
+        if (oneHopNodeIDs.has(null)) {
+          oneHopNodeIDs.delete(null);
+        }
+        console.log(oneHopNodeIDs);
+
+        return oneHopNodeIDs;
+      }
+      return new Set();
+    },
+
     nodeColorScale() {
       return scaleOrdinal(schemeCategory10);
     },
