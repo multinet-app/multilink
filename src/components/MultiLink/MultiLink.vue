@@ -60,37 +60,6 @@ export default {
     tooltipStyle(): string {
       return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
     },
-    properties() {
-      const {
-        graphStructure,
-        nodeFontSize,
-        isDirected,
-        isMultiEdge,
-        attributes,
-        renderNested,
-        labelVariable,
-        colorVariable,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
-        linkWidthScale,
-      } = this;
-      return {
-        graphStructure,
-        nodeFontSize,
-        isDirected,
-        isMultiEdge,
-        attributes,
-        renderNested,
-        labelVariable,
-        colorVariable,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
-        linkWidthScale,
-      };
     },
   },
 
