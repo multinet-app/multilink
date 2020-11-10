@@ -30,6 +30,10 @@ export default {
       return store.getters.network;
     },
 
+    selectedNodes() {
+      return store.getters.selectedNodes;
+    },
+
     nodeColorScale() {
       return scaleOrdinal(schemeCategory10);
     },
@@ -87,6 +91,15 @@ export default {
         }
       });
     },
+
+    selectNode(node: Node) {
+      if (this.selectedNodes.has(node._id)) {
+        store.commit.removeSelectedNode(node._id);
+      } else {
+        store.commit.addSelectedNode(node._id);
+      }
+    },
+
     showTooltip(element: Node | Link, event: MouseEvent) {
       this.tooltipPosition = {
         x: event.clientX,
@@ -106,12 +119,22 @@ export default {
       return `translate(${node.x || 0}, ${node.y || 0})`;
     },
 
+    isSelected(nodeID: string): boolean {
+      return this.selectedNodes.has(nodeID);
+    },
+
     nodeGroupClass(node: Node): string {
+      if (this.selectedNodes.size > 0) {
+        const selected = this.isSelected(node._id);
+        const inOneHop = this.oneHop.has(node._id);
+        const selectedClass = selected || inOneHop ? '' : 'muted';
+        return `nodeGroup ${selectedClass}`;
+      }
       return 'nodeGroup';
     },
 
     nodeClass(node: Node): string {
-      const selected = false;
+      const selected = this.isSelected(node._id);
       const selectedClass = selected ? 'selected' : '';
 
       return `node nodeBox nodeBorder ${selectedClass}`;
@@ -153,6 +176,7 @@ export default {
             :fill="nodeColorScale(node[colorVariable])"
             rx="25"
             ry="25"
+            @click="selectNode(node)"
           />
           <rect
             class="labelBackground"

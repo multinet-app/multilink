@@ -193,28 +193,6 @@ export function makeSimulation(this: any, state: State): Simulation<Node, Link> 
   return simulation;
 }
 
-export function highlightSelectedNodes(state: State): void {
-  // Set the class of everything to 'muted', except for the selected node and it's neighbors
-  select('.nodes')
-    .selectAll('.nodeGroup')
-    .classed('muted', (n: unknown) => {
-      const node = n as Node;
-      return (
-        Object.keys(state.selected).length > 0
-        && !Object.keys(state.selected).includes(node.id)
-        && !Array<string>().concat(...Object.values(state.selected)).includes(node.id)
-      );
-    });
-
-  // Set the class of a clicked node to clicked
-  select('.nodes')
-    .selectAll('.node')
-    .classed('clicked', (n: unknown) => {
-      const node = n as Node;
-      return Object.keys(state.selected).includes(node.id);
-    });
-}
-
 export function highlightLinks(state: State): void {
   const linksToHighlight = state.network.links.map((l: Link) => {
     if (l.source.id in state.selected || l.target.id in state.selected) {
