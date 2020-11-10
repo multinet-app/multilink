@@ -209,30 +209,6 @@ export function drawNested(
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export function updateVis(this: any, provenance: Provenance<State, ProvenanceEvents, unknown>): void {
-  if (this.renderNested) {
-    drawNested(
-      node,
-      state.nodeMarkerHeight,
-      state.nodeMarkerLength,
-      this.glyphColorScale,
-      this.barVariables,
-      this.glyphVariables,
-      this.graphStructure,
-    );
-  } else {
-    node.selectAll('.bar').remove();
-    node.selectAll('.glyph').remove();
-  }
-
-  node.call(
-    drag()
-      .on('start', (event, d) => this.dragStarted(d))
-      .on('drag', (event, d) => this.dragged(d, event, state)),
-    // .on("end", () => this.dragEnded())
-  );
-
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii
   simulation.force('collision',
