@@ -224,6 +224,8 @@ export default {
             rx="25"
             ry="25"
             @click="selectNode(node)"
+            @mouseover="showTooltip(node, $event)"
+            @mouseout="hideTooltip"
           />
           <rect
             class="labelBackground"
