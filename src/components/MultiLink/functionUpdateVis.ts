@@ -232,59 +232,6 @@ export function updateVis(this: any, provenance: Provenance<State, ProvenanceEve
     // .on("end", () => this.dragEnded())
   );
 
-  // Draw Links
-  const link: Selection<SVGGElement, Link, SVGGElement, unknown> = select<SVGGElement, BaseType>('.links')
-    .selectAll<SVGGElement, Link>('.linkGroup')
-    .data(this.graphStructure.links);
-
-  const linkEnter = link
-    .enter()
-    .append('g')
-    .attr('class', 'linkGroup');
-
-  linkEnter.append('path').attr('class', 'links');
-
-  linkEnter
-    .append('text')
-    .attr('class', 'edgeArrow')
-    .attr('dy', 4)
-    .append('textPath')
-    .attr('startOffset', '50%');
-
-  link.exit().remove();
-
-  // Redefining as linkMerge allows for better typing
-  const linkMerge = linkEnter.merge(link);
-
-  linkMerge.classed('muted', false);
-  linkMerge
-    .select('path')
-    .style('stroke-width', (d: Link) => (this.linkWidthScale(d[this.widthVariables[0]]) > 0 && this.linkWidthScale(d[this.widthVariables[0]]) < 20
-      ? this.linkWidthScale(d[this.widthVariables[0]]) : 1))
-    .style('stroke', (d: Link) => {
-      if (
-        this.colorVariables[0] !== undefined
-        && this.linkColorScale.domain().indexOf(d[this.colorVariables[0]].toString()) > -1
-      ) {
-        return this.linkColorScale(d[this.colorVariables[0]]);
-      }
-      return '#888888';
-    })
-    .attr('id', (d: Link) => d._key)
-    .attr('d', (d: Link) => arcPath(
-      d,
-      this.provenance.current().getState(),
-      this.visDimensions,
-      this.visMargins,
-      this.straightEdges,
-    ))
-
-
-
-  highlightSelectedNodes(state);
-  highlightLinks(state);
-}
-
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
   // Update the force radii

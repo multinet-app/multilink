@@ -168,12 +168,17 @@ export default {
       return `font-size: ${this.nodeFontSize}pt;`;
     },
 
-      // Set up groups for nodes/links
-      this.svg.append('g').attr('class', 'links');
-      this.svg.append('g').attr('class', 'nodes');
+    linkGroupClass(link: Link): string {
+      if (this.selectedNodes.size > 0) {
+        const selected = this.isSelected(link._from) || this.isSelected(link._to);
+        const selectedClass = selected ? '' : 'muted';
+        return `linkGroup ${selectedClass}`;
+      }
+      return 'linkGroup';
+    },
 
-      // Call update vis to append all the data to the svg
-      this.updateVis(this.provenance);
+    linkStyle(): string {
+      return 'stroke: #888888; stroke-width: 1px;';
     },
   },
 };
@@ -186,6 +191,24 @@ export default {
       :width="svgDimensions.width"
       :height="svgDimensions.height"
     >
+      <g
+        class="links"
+      >
+        <g
+          v-for="link of network.edges"
+          :key="link._id"
+          :class="linkGroupClass(link)"
+          @mouseover="showTooltip(link, $event)"
+          @mouseout="hideTooltip"
+        >
+          <path
+            class="link"
+            :d="arcPath(link)"
+            style="stroke: #888888; stroke-width: 1px;"
+          />
+        </g>
+      </g>
+
       <g class="nodes">
         <g
           v-for="node of network.nodes"
