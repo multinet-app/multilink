@@ -1,7 +1,9 @@
 <script lang="ts">
+import { scaleOrdinal } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 
-import { Network } from '@/types';
-import * as updateVisMethods from './functionUpdateVis';
+import store from '@/store';
+import { Node, Link } from '@/types';
 
 export default {
   props: {
@@ -13,25 +15,9 @@ export default {
 
   data() {
     return {
-      browser: {
-        height: 0,
-        width: 0,
-      },
-      panelDimensions: { width: 0, height: 0 },
-      visDimensions: { width: 0, height: 0 },
-      visMargins: {
-        left: 25,
-        right: 25,
-        top: 25,
-        bottom: 25,
-      },
-      svg: undefined,
-      simulation: undefined,
-      scales: {},
-      edgeScale: scaleLinear().domain([0, 1]),
-      colorClasses: [],
-      nodeSizeAttr: undefined,
-      barPadding: 3,
+      colorVariable: 'group',
+      nodeSize: 50,
+      nodeFontSize: 12,
       straightEdges: false,
       tooltipMessage: '',
       toggleTooltip: false,
@@ -40,6 +26,13 @@ export default {
   },
 
   computed: {
+    network() {
+      return store.getters.network;
+    },
+
+    nodeColorScale() {
+      return scaleOrdinal(schemeCategory10);
+    },
     tooltipStyle(): string {
       return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
     },
@@ -77,25 +70,23 @@ export default {
     },
   },
 
-  watch: {
-    properties() {
-      this.updateVis(this.provenance);
-    },
+  created() {
+    if (this.network !== null) {
+      this.generateNodePositions(this.network.nodes);
+    }
   },
 
-  async mounted() {
-    this.loadVis();
-
-    this.simulation = this.makeSimulation(this.provenance.current().getState());
-
-    // Required to update when brushing the legend
-    this.$root.$on('brushing', () => {
-      this.updateVis(this.provenance);
-    });
-  },
 
   methods: {
-    ...updateVisMethods,
+    generateNodePositions(nodes: Node[]) {
+      nodes.forEach((node) => {
+        // If the position is not defined for x or y, generate it
+        if (node.x === undefined || node.y === undefined) {
+          node.x = Math.random() * this.svgDimensions.width;
+          node.y = Math.random() * this.svgDimensions.height;
+        }
+      });
+    },
     showTooltip(element: Node | Link, event: MouseEvent) {
       this.tooltipPosition = {
         x: event.clientX,
@@ -111,24 +102,24 @@ export default {
       this.toggleTooltip = false;
     },
 
-    loadVis() {
-      // Get the browser width and height
-      this.browser.width = window.innerWidth
-      || document.documentElement.clientWidth
-      || document.body.clientWidth;
+    nodeTranslate(node: Node): string {
+      return `translate(${node.x || 0}, ${node.y || 0})`;
+    },
 
-      this.browser.height = window.innerHeight
-      || document.documentElement.clientHeight
-      || document.body.clientHeight;
+    nodeGroupClass(node: Node): string {
+      return 'nodeGroup';
+    },
 
-      // Set dimensions of the nodelink
-      this.visDimensions.width = this.browser.width * 0.75;
-      this.visDimensions.height = this.browser.height - 24;
+    nodeClass(node: Node): string {
+      const selected = false;
+      const selectedClass = selected ? 'selected' : '';
 
-      // Apply the size to the nodelink svg
-      this.svg = select(this.$refs.svg)
-        .attr('width', this.visDimensions.width)
-        .attr('height', this.visDimensions.height);
+      return `node nodeBox nodeBorder ${selectedClass}`;
+    },
+
+    nodeTextStyle(): string {
+      return `font-size: ${this.nodeFontSize}pt;`;
+    },
 
       // Set up groups for nodes/links
       this.svg.append('g').attr('class', 'links');
@@ -148,6 +139,35 @@ export default {
       :width="svgDimensions.width"
       :height="svgDimensions.height"
     >
+      <g class="nodes">
+        <g
+          v-for="node of network.nodes"
+          :key="node._id"
+          :transform="nodeTranslate(node)"
+          :class="nodeGroupClass(node)"
+        >
+          <rect
+            :class="nodeClass(node)"
+            :width="nodeSize"
+            :height="nodeSize"
+            :fill="nodeColorScale(node[colorVariable])"
+            rx="25"
+            ry="25"
+          />
+          <rect
+            class="labelBackground"
+            height="1em"
+            :y="(nodeSize / 2) - 8"
+            :width="nodeSize"
+          />
+          <text
+            class="label"
+            :dy="nodeSize / 2 + 2"
+            :dx="nodeSize / 2"
+            :style="nodeTextStyle"
+          >{{ node._id }}</text>
+        </g>
+      </g>
     </svg>
 
     <div
