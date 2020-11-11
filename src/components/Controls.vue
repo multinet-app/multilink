@@ -340,7 +340,7 @@ export default {
 
           <multi-link
             v-if="provenance"
-            ref="MultiLink"
+            ref="multilink"
             v-bind="{
               graphStructure,
               provenance,
