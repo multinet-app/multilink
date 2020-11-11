@@ -125,15 +125,15 @@ export default {
 
   methods: {
     startSimulation() {
-      this.$refs.MultiLink.startSimulation();
+      this.$refs.multilink.startSimulation();
     },
 
     stopSimulation() {
-      this.$refs.MultiLink.stopSimulation();
+      this.$refs.multilink.stopSimulation();
     },
 
     releaseNodes() {
-      this.$refs.MultiLink.releaseNodes();
+      this.$refs.multilink.releaseNodes();
     },
 
     exportGraph() {
