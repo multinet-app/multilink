@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import NodeLink from '@/components/NodeLink/NodeLink.vue';
+import MultiLink from '@/components/MultiLink/MultiLink.vue';
 import App from '@/App.vue';
 import {
   describe, expect, it, beforeEach,
@@ -10,7 +10,7 @@ describe('Node-Link Utils', () => {
     let wrapper;
 
     beforeEach(() => {
-      wrapper = mount(NodeLink, {
+      wrapper = mount(MultiLink, {
         propsData: {
           graphStructure: { nodes: [], links: [{ source: { x: 100, y: 150 }, target: { x: 400, y: 450 } }] },
           app: App,

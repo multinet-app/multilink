@@ -209,7 +209,7 @@ export default {
 </template>
 
 <style scoped>
-@import './NodeLink.css';
+@import './MultiLink.css';
 
 .tooltip {
   position: absolute;

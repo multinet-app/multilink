@@ -5,7 +5,7 @@
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { Node, State, Network } from '@/types';
 // eslint-disable-next-line import/no-cycle
-import { highlightSelectedNodes, highlightLinks } from '@/components/NodeLink/functionUpdateVis';
+import { highlightSelectedNodes, highlightLinks } from '@/components/MultiLink/functionUpdateVis';
 
 export type ProvenanceEvents = 'Selected Node' | 'Dragged Node'
 

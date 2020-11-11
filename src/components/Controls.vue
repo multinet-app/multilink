@@ -1,6 +1,6 @@
 <script>
-import NodeLink from '@/components/NodeLink/NodeLink.vue';
-import Legend from '@/components/NodeLink/Legend.vue';
+import MultiLink from '@/components/MultiLink/MultiLink.vue';
+import Legend from '@/components/MultiLink/Legend.vue';
 
 import { setUpProvenance, undo, redo } from '@/lib/provenance';
 import { getUrlVars } from '@/lib/utils';
@@ -12,7 +12,7 @@ import { schemeCategory10 } from 'd3-scale-chromatic';
 
 export default {
   components: {
-    NodeLink,
+    MultiLink,
     Legend,
   },
 
@@ -125,15 +125,15 @@ export default {
 
   methods: {
     startSimulation() {
-      this.$refs.nodelink.startSimulation();
+      this.$refs.multilink.startSimulation();
     },
 
     stopSimulation() {
-      this.$refs.nodelink.stopSimulation();
+      this.$refs.multilink.stopSimulation();
     },
 
     releaseNodes() {
-      this.$refs.nodelink.releaseNodes();
+      this.$refs.multilink.releaseNodes();
     },
 
     exportGraph() {
@@ -338,9 +338,9 @@ export default {
             </v-row>
           </v-alert>
 
-          <node-link
+          <multi-link
             v-if="provenance"
-            ref="nodelink"
+            ref="multilink"
             v-bind="{
               graphStructure,
               provenance,
