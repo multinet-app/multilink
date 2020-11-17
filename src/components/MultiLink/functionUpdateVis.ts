@@ -5,7 +5,6 @@ import {
   forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation, ForceLink,
 } from 'd3-force';
 import { max } from 'd3-array';
-import { D3DragEvent, drag } from 'd3-drag';
 import { ScaleOrdinal } from 'd3-scale';
 // eslint-disable-next-line import/no-cycle
 import { selectNode, ProvenanceEvents } from '@/lib/provenance';
@@ -13,74 +12,6 @@ import {
   Node, State, Link, Network, Dimensions,
 } from '@/types';
 import { Provenance } from '@visdesignlab/trrack';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function dragNode(this: any, state: State, that?: any): void {
-  const env = this ? this : that;
-  const currentState = env.provenance.current().getState();
-
-  selectAll('.linkGroup')
-    .select('path')
-    .attr('d', (l: unknown) => arcPath(
-      l,
-      currentState,
-      env.visDimensions,
-      env.visMargins,
-      env.straightEdges,
-    ));
-
-  // Get the total space available on the svg
-  const horizontalSpace = env.visDimensions.width - env.visMargins.right - state.nodeMarkerLength;
-  const verticalSpace = env.visDimensions.height - env.visMargins.top - state.nodeMarkerHeight;
-
-  // Don't allow nodes to be dragged off the main svg area
-  env.svg
-    .selectAll('.nodeGroup').attr('transform', (d: Node) => {
-      d.x = Math.max(env.visMargins.left, Math.min(horizontalSpace, d.x));
-      d.y = Math.max(env.visMargins.top, Math.min(verticalSpace, d.y));
-
-      return `translate(${d.x},${d.y})`;
-    });
-}
-
-export function dragStarted(d: Node): void {
-  d.fx = d.x;
-  d.fy = d.y;
-}
-
-export function dragged(this: unknown, d: Node, event: D3DragEvent<Element, Node, unknown>, state: State): void {
-  d.fx = event.x;
-  d.fy = event.y;
-  d.x = event.x;
-  d.y = event.y;
-  dragNode(state, this);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function dragEnded(this: any): void {
-  // update node position in state graph;
-  // updateState("Dragged Node");
-  const action = {
-    label: 'Dragged Node',
-    action: () => {
-      const currentState = this.provenance.current().getState();
-      // add time stamp to the state graph
-      currentState.time = Date.now();
-      // Add label describing what the event was
-      currentState.event = 'Dragged Node';
-      // Update node positions
-      this.graphStructure.nodes.forEach(
-        (n: Node) => {
-          currentState.nodePos[n.id] = { x: n.x, y: n.y };
-        },
-      );
-      return currentState;
-    },
-    args: [],
-  };
-
-  this.provenance.applyAction(action);
-}
 
 export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
   if (renderNested) {

@@ -22,6 +22,7 @@ export default {
       tooltipMessage: '',
       toggleTooltip: false,
       tooltipPosition: { x: 0, y: 0 },
+      el: null as Element | null,
     };
   },
 
@@ -60,6 +61,16 @@ export default {
     tooltipStyle(): string {
       return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
     },
+
+    svgOffset(): {x: number; y: number} {
+      if (this.el === null) {
+        return { x: 0, y: 0 };
+      }
+
+      return {
+        x: (this.el as HTMLElement).offsetLeft,
+        y: (this.el as HTMLElement).offsetTop,
+      };
     },
   },
 
@@ -69,6 +80,9 @@ export default {
     }
   },
 
+  mounted() {
+    this.el = this.$el;
+  },
 
   methods: {
     generateNodePositions(nodes: Node[]) {
@@ -87,6 +101,23 @@ export default {
       } else {
         store.commit.addSelectedNode(node._id);
       }
+    },
+
+    dragNode(node: Node, event: MouseEvent) {
+      event.preventDefault();
+
+      const moveFn = (evt: Event) => {
+        node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.nodeSize / 2);
+        node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.nodeSize / 2);
+      };
+
+      const stopFn = () => {
+        (this.$refs.svg as Element).removeEventListener('mousemove', moveFn);
+        (this.$refs.svg as Element).removeEventListener('mouseup', stopFn);
+      };
+
+      (this.$refs.svg as Element).addEventListener('mousemove', moveFn);
+      (this.$refs.svg as Element).addEventListener('mouseup', stopFn);
     },
 
     showTooltip(element: Node | Link, event: MouseEvent) {
@@ -226,6 +257,7 @@ export default {
             @click="selectNode(node)"
             @mouseover="showTooltip(node, $event)"
             @mouseout="hideTooltip"
+            @mousedown="dragNode(node, $event)"
           />
           <rect
             class="labelBackground"
