@@ -1,11 +1,12 @@
 <script lang="ts">
+import Vue from 'vue';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 
 import store from '@/store';
 import { Node, Link } from '@/types';
 
-export default {
+export default Vue.extend({
   props: {
     svgDimensions: {
       type: Object,
@@ -212,7 +213,7 @@ export default {
       return 'stroke: #888888; stroke-width: 1px;';
     },
   },
-};
+});
 </script>
 
 <template>
