@@ -146,13 +146,11 @@ export default Vue.extend({
         const toNode = this.network.nodes.find((node) => node._id === link._to);
 
         if (fromNode === undefined || toNode === undefined) {
-          console.log('Couldn\'t find the source or target for a link, didn\'t draw arc.');
-          return '';
+          throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
         }
 
         if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
-          console.log('_from or _to node didn\'t have an x or a y position.');
-          return '';
+          throw new Error('_from or _to node didn\'t have an x or a y position.');
         }
 
         const x1 = fromNode.x + this.nodeSize / 2;
