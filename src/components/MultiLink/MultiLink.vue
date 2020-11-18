@@ -117,6 +117,10 @@ export default Vue.extend({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .force('link') as any).links(this.simulationLinks);
 
+      simulation.on('tick', () => {
+        this.$forceUpdate();
+      });
+
       this.simulation = simulation;
     }
   },
@@ -146,6 +150,7 @@ export default Vue.extend({
       const moveFn = (evt: Event) => {
         node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.nodeSize / 2);
         node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.nodeSize / 2);
+        this.$forceUpdate();
       };
 
       const stopFn = () => {
