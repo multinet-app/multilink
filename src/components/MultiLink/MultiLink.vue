@@ -108,7 +108,7 @@ export default Vue.extend({
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
         .force('charge', forceManyBody().strength(-300))
-        .force('link', forceLink().id((d) => d._id));
+        .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }));
 
       simulation
         .nodes(this.network.nodes);
