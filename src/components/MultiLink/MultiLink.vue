@@ -37,9 +37,7 @@ export default Vue.extend({
     },
 
     oneHop() {
-      console.log('one hop');
       if (this.network !== null) {
-        console.log(this.network, this.selectedNodes);
         const inNodes = this.network.edges.map((link) => (this.selectedNodes.has(link._to) ? link._from : null));
         const outNodes = this.network.edges.map((link) => (this.selectedNodes.has(link._from) ? link._to : null));
 
@@ -49,7 +47,6 @@ export default Vue.extend({
         if (oneHopNodeIDs.has(null)) {
           oneHopNodeIDs.delete(null);
         }
-        console.log(oneHopNodeIDs);
 
         return oneHopNodeIDs;
       }
@@ -59,6 +56,7 @@ export default Vue.extend({
     nodeColorScale() {
       return scaleOrdinal(schemeCategory10);
     },
+
     tooltipStyle(): string {
       return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
     },
