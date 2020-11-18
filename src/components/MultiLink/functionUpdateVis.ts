@@ -1,9 +1,7 @@
 import {
   Selection, select, selectAll, BaseType,
 } from 'd3-selection';
-import {
-  forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, Simulation, ForceLink,
-} from 'd3-force';
+import { forceCollide, Simulation } from 'd3-force';
 import { max } from 'd3-array';
 import { ScaleOrdinal } from 'd3-scale';
 // eslint-disable-next-line import/no-cycle
@@ -20,49 +18,6 @@ export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: numbe
   }
   const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
   return radius * 1.5;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function makeSimulation(this: any, state: State): Simulation<Node, Link> {
-  const simulation = forceSimulation<Node, Link>()
-    .force('link', forceLink().id((l: unknown) => {
-      const link = l as Link;
-      return link.id;
-    }))
-    .force('charge', forceManyBody().strength(-300))
-    .force(
-      'center',
-      forceCenter(
-        this.visDimensions.width / 2,
-        this.visDimensions.height / 2,
-      ),
-    );
-
-  simulation.nodes(state.network.nodes);
-
-  const simulationLinks: ForceLink<Node, Link> | undefined = simulation.force('link');
-
-  if (simulationLinks !== undefined) {
-    simulationLinks.links(state.network.links);
-    simulationLinks.distance(() => 60);
-  }
-
-  simulation.force('link');
-  simulation.force('center');
-  simulation.on('tick', () => dragNode(state, this));
-
-  simulation.force('collision',
-    forceCollide()
-      .radius(getForceRadius(state.nodeMarkerLength, state.nodeMarkerHeight, this.renderNested))
-      .strength(0.7)
-      .iterations(10));
-
-  // Start the simulation with an alpha target and an alpha min
-  // that's a little larger so the sim ends
-  simulation.alphaMin(0.025);
-  simulation.alphaTarget(0.02).restart();
-
-  return simulation;
 }
 
 export function highlightLinks(state: State): void {

@@ -2,9 +2,17 @@
 import Vue from 'vue';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import {
+  forceCenter, forceLink, forceManyBody, forceSimulation, Simulation,
+} from 'd3-force';
 
 import store from '@/store';
 import { Node, Link } from '@/types';
+
+interface SimulationLink extends Link {
+  source: string;
+  target: string;
+}
 
 export default Vue.extend({
   props: {
@@ -24,12 +32,24 @@ export default Vue.extend({
       toggleTooltip: false,
       tooltipPosition: { x: 0, y: 0 },
       el: null as Element | null,
+      simulation: null as Simulation<Node, SimulationLink> | null,
     };
   },
 
   computed: {
     network() {
       return store.getters.network;
+    },
+
+    simulationLinks(): SimulationLink[] | null {
+      if (store.getters.network !== null) {
+        return store.getters.network.edges.map((link: Link) => {
+          link.source = link._from;
+          link.target = link._to;
+          return (link as SimulationLink);
+        });
+      }
+      return null;
     },
 
     selectedNodes() {
@@ -81,6 +101,24 @@ export default Vue.extend({
 
   mounted() {
     this.el = this.$el;
+
+    if (this.network !== null) {
+      console.log(this.network.edges);
+      // Make the simulation
+      const simulation = forceSimulation<Node, SimulationLink>()
+        .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
+        .force('charge', forceManyBody().strength(-300))
+        .force('link', forceLink().id((d) => d._id));
+
+      simulation
+        .nodes(this.network.nodes);
+
+      (simulation
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .force('link') as any).links(this.simulationLinks);
+
+      this.simulation = simulation;
+    }
   },
 
   methods: {
