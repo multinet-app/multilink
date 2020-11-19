@@ -3,7 +3,7 @@ import Vue from 'vue';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import {
-  forceCenter, forceLink, forceManyBody, forceSimulation, Simulation,
+  forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation,
 } from 'd3-force';
 
 import store from '@/store';
@@ -86,6 +86,10 @@ export default Vue.extend({
         y: (this.el as HTMLElement).offsetTop,
       };
     },
+
+    forceRadius(): number {
+      return (this.nodeSize / 2) * 1.5;
+    },
   },
 
   created() {
@@ -103,7 +107,8 @@ export default Vue.extend({
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
         .force('charge', forceManyBody().strength(-300))
-        .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }));
+        .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }))
+        .force('collision', forceCollide(this.forceRadius));
 
       simulation
         .nodes(this.network.nodes);

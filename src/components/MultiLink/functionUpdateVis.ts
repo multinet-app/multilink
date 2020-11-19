@@ -11,15 +11,6 @@ import {
 } from '@/types';
 import { Provenance } from '@visdesignlab/trrack';
 
-export function getForceRadius(nodeMarkerLength: number, nodeMarkerHeight: number, renderNested: boolean) {
-  if (renderNested) {
-    const radius = max([nodeMarkerLength, nodeMarkerHeight]) || 0;
-    return radius * 0.8;
-  }
-  const radius = max([nodeMarkerLength / 2, nodeMarkerHeight / 2]) || 0;
-  return radius * 1.5;
-}
-
 export function highlightLinks(state: State): void {
   const linksToHighlight = state.network.links.map((l: Link) => {
     if (l.source.id in state.selected || l.target.id in state.selected) {
