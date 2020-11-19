@@ -7,12 +7,7 @@ import {
 } from 'd3-force';
 
 import store from '@/store';
-import { Node, Link } from '@/types';
-
-interface SimulationLink extends Link {
-  source: string;
-  target: string;
-}
+import { Node, Link, SimulationLink } from '@/types';
 
 export default Vue.extend({
   props: {

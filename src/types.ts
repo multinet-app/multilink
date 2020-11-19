@@ -11,6 +11,11 @@ export interface Link extends TableRow {
   [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
+export interface SimulationLink extends Link {
+  source: string;
+  target: string;
+}
+
 export interface Network {
   nodes: Node[];
   edges: Link[];
