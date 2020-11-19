@@ -1,8 +1,11 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { createDirectStore } from 'direct-vuex';
+import { Simulation } from 'd3-force';
 
-import { Link, Node, Network } from '@/types';
+import {
+  Link, Node, Network, SimulationLink,
+} from '@/types';
 import api from '@/api';
 import { GraphSpec, RowsSpec, TableRow } from 'multinet';
 
@@ -20,6 +23,7 @@ export interface State {
   network: Network | null;
   selectedNodes: Set<string>;
   loadError: LoadError;
+  simulation: Simulation<Node, SimulationLink> | null;
 }
 
 const {
@@ -39,6 +43,7 @@ const {
       buttonText: '',
       href: '',
     },
+    simulation: null,
   } as State,
   getters: {
     workspaceName(state: State) {
@@ -59,6 +64,10 @@ const {
 
     loadError(state: State) {
       return state.loadError;
+    },
+
+    simulation(state: State) {
+      return state.simulation;
     },
   },
   mutations: {
@@ -84,6 +93,10 @@ const {
         buttonText: loadError.buttonText,
         href: loadError.href,
       };
+    },
+
+    setSimulation(state, simulation: Simulation<Node, SimulationLink>) {
+      state.simulation = simulation;
     },
 
     addSelectedNode(state, nodeID: string) {

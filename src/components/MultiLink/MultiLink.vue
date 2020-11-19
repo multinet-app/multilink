@@ -121,7 +121,7 @@ export default Vue.extend({
         this.$forceUpdate();
       });
 
-      this.simulation = simulation;
+      store.original.commit('setSimulation', simulation);
     }
   },
 
