@@ -1,7 +1,6 @@
 import {
   Selection, select, selectAll, BaseType,
 } from 'd3-selection';
-import { forceCollide, Simulation } from 'd3-force';
 import { max } from 'd3-array';
 import { ScaleOrdinal } from 'd3-scale';
 // eslint-disable-next-line import/no-cycle
@@ -83,34 +82,4 @@ export function drawNested(
       .attr('rx', `${((nodeMarkerLength / 2) - 5 - 5) / 2}px`)
       .style('fill', (d: Node) => glyphColorScale(d[glyphVar]));
   });
-}
-
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export function startSimulation(this: any, simulation: Simulation<Node, Link>) {
-  // Update the force radii
-  simulation.force('collision',
-    forceCollide()
-      .radius(getForceRadius(this.nodeMarkerLength, this.nodeMarkerHeight, this.renderNested))
-      .strength(0.7)
-      .iterations(10));
-
-  simulation.alpha(0.5);
-  // simulation.alphaTarget(0.02).restart();
-}
-
-export function stopSimulation(network: Network, simulation: Simulation<Node, Link>) {
-  simulation.stop();
-  network.nodes.forEach((n: Node) => {
-    n.savedX = n.x;
-    n.savedY = n.y;
-  });
-}
-
-export function releaseNodes(network: Network, simulation: Simulation<Node, Link>) {
-  // Release the pinned nodes
-  network.nodes.forEach((n: Node) => {
-    n.fx = null;
-    n.fy = null;
-  });
-  startSimulation(simulation);
 }

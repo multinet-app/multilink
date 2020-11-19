@@ -99,6 +99,19 @@ const {
       state.simulation = simulation;
     },
 
+    startSimulation(state) {
+      if (state.simulation !== null) {
+        state.simulation.alpha(0.5);
+        state.simulation.restart();
+      }
+    },
+
+    stopSimulation(state) {
+      if (state.simulation !== null) {
+        state.simulation.stop();
+      }
+    },
+
     addSelectedNode(state, nodeID: string) {
       state.selectedNodes.add(nodeID);
     },
@@ -161,6 +174,18 @@ const {
         edges: edges as Link[],
       };
       commit.setNetwork(network);
+    },
+
+    releaseNodes(context) {
+      const { commit } = rootActionContext(context);
+
+      if (context.state.network !== null) {
+        context.state.network.nodes.forEach((n: Node) => {
+          n.fx = null;
+          n.fy = null;
+        });
+        commit.startSimulation();
+      }
     },
   },
 });

@@ -1,6 +1,7 @@
 <script lang="ts">
 import Legend from '@/components/MultiLink/Legend.vue';
 
+import store from '@/store';
 import { setUpProvenance, undo, redo } from '@/lib/provenance';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
@@ -75,15 +76,15 @@ export default {
 
   methods: {
     startSimulation() {
-      this.$refs.MultiLink.startSimulation();
+      store.original.commit('startSimulation');
     },
 
     stopSimulation() {
-      this.$refs.MultiLink.stopSimulation();
+      store.original.commit('stopSimulation');
     },
 
     releaseNodes() {
-      this.$refs.MultiLink.releaseNodes();
+      store.dispatch.releaseNodes();
     },
 
     exportGraph() {
