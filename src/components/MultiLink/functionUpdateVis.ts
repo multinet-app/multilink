@@ -10,22 +10,6 @@ import {
 } from '@/types';
 import { Provenance } from '@visdesignlab/trrack';
 
-export function highlightLinks(state: State): void {
-  const linksToHighlight = state.network.links.map((l: Link) => {
-    if (l.source.id in state.selected || l.target.id in state.selected) {
-      return l.id;
-    }
-    return '';
-  });
-
-  select('.links')
-    .selectAll('.linkGroup')
-    .classed('muted', (l: unknown) => {
-      const link = l as Link;
-      return Object.keys(state.selected).length > 0 && !linksToHighlight.includes(link.id);
-    });
-}
-
 export function drawNested(
   node: Selection<BaseType, Node, BaseType, unknown>,
   nodeMarkerHeight: number,
