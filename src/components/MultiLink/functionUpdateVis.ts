@@ -1,14 +1,7 @@
-import {
-  Selection, select, selectAll, BaseType,
-} from 'd3-selection';
+import { Selection, BaseType } from 'd3-selection';
 import { max } from 'd3-array';
 import { ScaleOrdinal } from 'd3-scale';
-// eslint-disable-next-line import/no-cycle
-import { selectNode, ProvenanceEvents } from '@/lib/provenance';
-import {
-  Node, State, Link, Network, Dimensions,
-} from '@/types';
-import { Provenance } from '@visdesignlab/trrack';
+import { Node, Network } from '@/types';
 
 export function drawNested(
   node: Selection<BaseType, Node, BaseType, unknown>,
