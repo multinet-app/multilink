@@ -102,7 +102,6 @@ export default Vue.extend({
     this.el = this.$el;
 
     if (this.network !== null) {
-      console.log(this.network.edges);
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
