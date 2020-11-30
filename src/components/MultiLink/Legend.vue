@@ -34,12 +34,12 @@ export default {
       default: null,
     },
     multiVariableList: {
-      type: Array,
-      default: () => [],
+      type: Set,
+      default: () => new Set(),
     },
     linkVariableList: {
-      type: Array,
-      default: () => [],
+      type: Set,
+      default: () => new Set(),
     },
     barVariables: {
       type: Array,
@@ -99,7 +99,7 @@ export default {
   methods: {
     setUpPanel() {
       // For node and link variables
-      [this.multiVariableList, this.linkVariableList].forEach((list) => {
+      [this.multiVariableList as Set<string>, this.linkVariableList as Set<string>].forEach((list) => {
         // For each attribute
         list.forEach((attr) => {
           // Get the SVG element and its width

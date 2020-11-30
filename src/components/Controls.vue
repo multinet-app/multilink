@@ -13,10 +13,6 @@ export default {
 
   data() {
     return {
-      graphStructure: {
-        nodes: [],
-        links: [],
-      },
       nodeMarkerSize: 50,
       nodeFontSize: 14,
       workspace: null,
@@ -38,33 +34,43 @@ export default {
   },
 
   computed: {
-    variableList() {
-      return this.multiVariableList.concat([null]);
+    graphStructure() {
+      return store.getters.network;
     },
-    multiVariableList() {
-      if (typeof this.graphStructure.nodes[0] !== 'undefined') {
+
+    multiVariableList(): Set<string | null> {
+      if (this.graphStructure !== null) {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.nodes.map((node) => Object.keys(node));
-        allVars = [].concat(...allVars);
-        allVars = [...new Set(allVars)];
+        const allVars: Set<string> = new Set();
+        this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
         return allVars;
       }
-      return [];
+      return new Set();
     },
-    colorVariableList() {
-      return this.multiVariableList.concat(['table', null]);
+
+    variableList(): Set<string | null> {
+      return this.multiVariableList.add(null);
     },
-    linkVariableList() {
-      if (typeof this.graphStructure.links[0] !== 'undefined') {
+
+    colorVariableList(): Set<string | null> {
+      return this.variableList.add('table');
+    },
+
+    linkVariableList(): Set<string | null> {
+      if (this.graphStructure !== null) {
         // Loop through all links, flatten the 2d array, and turn it into a set
-        let allVars = this.graphStructure.links.map((node) => Object.keys(node));
-        allVars = [].concat(...allVars);
-        allVars = [...new Set(allVars)].filter((d) => d !== 'source' && d !== 'target');
+        const allVars: Set<string> = new Set();
+        this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
+
+        allVars.delete('_from');
+        allVars.delete('_to');
+        allVars.delete('source');
+        allVars.delete('target');
+
         return allVars;
       }
-      return [];
+      return new Set();
     },
-  },
   },
 
   methods: {
@@ -153,8 +159,8 @@ export default {
         <v-select
           v-model="labelVariable"
           label="Label Variable"
-          :items="variableList"
-          :options="variableList"
+          :items="[...variableList]"
+          :options="[...variableList]"
         />
 
         <v-divider class="mt-4" />
@@ -162,8 +168,8 @@ export default {
         <v-select
           v-model="colorVariable"
           label="Color Variable"
-          :items="colorVariableList"
-          :options="colorVariableList"
+          :items="[...colorVariableList]"
+          :options="[...colorVariableList]"
         />
 
         <v-divider class="mt-4" />
