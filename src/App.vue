@@ -28,7 +28,7 @@ export default {
   },
 
   async mounted() {
-    const { workspace, graph, host } = getUrlVars();
+    const { workspace, graph } = getUrlVars();
 
     await store.dispatch.fetchNetwork({
       workspaceName: workspace,
