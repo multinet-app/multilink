@@ -1,5 +1,6 @@
 <script lang="ts">
 /* eslint-disable vue/no-mutating-props */
+import Vue from 'vue';
 import { min, max } from 'd3-array';
 import { select } from 'd3-selection';
 import { scaleLinear, scaleBand } from 'd3-scale';
@@ -8,10 +9,7 @@ import { brushX } from 'd3-brush';
 
 import { Network } from '@/types';
 
-export default {
-  components: {
-  },
-
+export default Vue.extend({
   props: {
     graphStructure: {
       type: Network,
@@ -255,7 +253,7 @@ export default {
       newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
     },
   },
-};
+});
 </script>
 
 <template>
