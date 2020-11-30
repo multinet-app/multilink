@@ -36,15 +36,3 @@ export interface Cell {
   cellName: string;
   correspondingCell: string;
 }
-
-export interface State {
-  network: Network;
-  order: number[];
-  userSelectedEdges: [];
-  selected: { [nodeID: string]: string[] };
-  hardSelected: [];
-  search: [];
-  event: string;
-  nodeMarkerLength: number;
-  nodeMarkerHeight: number;
-}

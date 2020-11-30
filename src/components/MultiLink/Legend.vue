@@ -13,10 +13,6 @@ export default {
   },
 
   props: {
-    provenance: {
-      type: Object,
-      required: true,
-    },
     graphStructure: {
       type: Network,
       default: null,
@@ -74,7 +70,6 @@ export default {
   computed: {
     properties() {
       const {
-        provenance,
         graphStructure,
         linkWidthScale,
         multiVariableList,
@@ -85,7 +80,6 @@ export default {
         colorVariables,
       } = this;
       return {
-        provenance,
         graphStructure,
         linkWidthScale,
         multiVariableList,

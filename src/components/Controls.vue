@@ -2,7 +2,6 @@
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import store from '@/store';
-import { setUpProvenance, undo, redo } from '@/lib/provenance';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
@@ -14,7 +13,6 @@ export default {
 
   data() {
     return {
-      provenance: undefined,
       graphStructure: {
         nodes: [],
         links: [],
@@ -67,11 +65,6 @@ export default {
       return [];
     },
   },
-
-  async mounted() {
-    this.provenance = setUpProvenance(this.graphStructure);
-
-    document.addEventListener('keydown', this.keyDownHandler);
   },
 
   methods: {
@@ -99,21 +92,6 @@ export default {
       a.click();
     },
 
-    keyDownHandler(event) {
-      if (
-        (event.ctrlKey && event.code === 'KeyZ' && !event.shiftKey) // ctrl + z (no shift)
-        || (event.metaKey && event.code === 'KeyZ' && !event.shiftKey) // meta + z (no shift)
-      ) {
-        undo(this.provenance);
-      } else if (
-        (event.ctrlKey && event.code === 'KeyY') // ctrl + y
-        || (event.ctrlKey && event.code === 'KeyZ' && event.shiftKey) // ctrl + shift + z
-        || (event.metaKey && event.code === 'KeyY') // meta + y
-        || (event.metaKey && event.code === 'KeyZ' && event.shiftKey) // meta + shift + z
-      ) {
-        redo(this.provenance);
-      }
-    },
   },
 };
 </script>
@@ -241,12 +219,10 @@ export default {
     </v-card>
 
     <Legend
-      v-if="provenance"
       ref="legend"
       class="mt-4"
       v-bind="{
         graphStructure,
-        provenance,
         nodeColorScale,
         linkColorScale,
         glyphColorScale,
