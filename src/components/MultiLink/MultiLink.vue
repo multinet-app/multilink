@@ -37,8 +37,8 @@ export default Vue.extend({
     },
 
     simulationLinks(): SimulationLink[] | null {
-      if (store.getters.network !== null) {
-        return store.getters.network.edges.map((link: Link) => {
+      if (this.network !== null) {
+        return this.network.edges.map((link: Link) => {
           link.source = link._from;
           link.target = link._to;
           return (link as SimulationLink);
