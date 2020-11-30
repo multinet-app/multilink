@@ -1,4 +1,5 @@
 <script lang="ts">
+import Vue from 'vue';
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import store from '@/store';
@@ -6,7 +7,7 @@ import store from '@/store';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 
-export default {
+export default Vue.extend({
   components: {
     Legend,
   },
@@ -99,7 +100,7 @@ export default {
     },
 
   },
-};
+});
 </script>
 
 <template>
