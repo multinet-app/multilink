@@ -96,7 +96,7 @@ export default Vue.extend({
           { type: 'text/json' },
         ),
       );
-      a.download = 'graph.json';
+      a.download = `${store.getters.networkName || 'unknown_graph'}.json`;
       a.click();
     },
 
