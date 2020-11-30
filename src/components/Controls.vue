@@ -6,6 +6,7 @@ import store from '@/store';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { Node, Link } from '@/types';
 
 export default Vue.extend({
   components: {
