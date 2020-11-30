@@ -113,11 +113,12 @@ const {
     },
 
     addSelectedNode(state, nodeID: string) {
-      state.selectedNodes.add(nodeID);
+      state.selectedNodes = new Set(state.selectedNodes.add(nodeID));
     },
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
+      state.selectedNodes = new Set(state.selectedNodes);
     },
   },
   actions: {
