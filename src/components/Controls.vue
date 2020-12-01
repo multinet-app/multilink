@@ -284,6 +284,7 @@ export default Vue.extend({
     </v-card>
 
     <Legend
+      v-if="multiVariableList.has('_key')"
       ref="legend"
       class="mt-4"
       v-bind="{
