@@ -105,7 +105,7 @@ export default Vue.extend({
           const variableSvg = select(`#${type}${attr}`);
 
           const variableSvgWidth = (variableSvg
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .node() as any)
             .getBoundingClientRect()
             .width - this.yAxisPadding - this.varPadding;

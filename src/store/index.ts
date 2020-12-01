@@ -57,6 +57,7 @@ const {
     colorVariable: '_key',
     selectNeighbors: true,
   } as State,
+
   getters: {
     workspaceName(state: State) {
       return state.workspaceName;
