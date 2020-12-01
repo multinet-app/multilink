@@ -162,6 +162,7 @@ export default Vue.extend({
 
 <template>
   <v-container
+    id="sidebar"
     fluid
     class="pt-0 pb-0"
   >
@@ -304,6 +305,10 @@ export default Vue.extend({
 </template>
 
 <style scoped>
+  #sidebar {
+    min-height: calc(100vh - 55px);
+  }
+
   #control {
     max-height: calc(33vh - 18px);
     overflow-y: scroll
