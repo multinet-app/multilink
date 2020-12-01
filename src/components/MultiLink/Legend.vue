@@ -129,11 +129,9 @@ export default Vue.extend({
 
           const binLabels: string[] = [];
           const binValues: number[] = [];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          bins.forEach((label: any, value) => {
+          bins.forEach((value, label) => {
             binLabels.push(label);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            binValues.push((value as any));
+            binValues.push(value);
           });
 
           // Generate axis scales
