@@ -39,6 +39,13 @@ export default Vue.extend({
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
         this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        allVars.delete('_id');
+        allVars.delete('_rev');
+        allVars.delete('vx');
+        allVars.delete('vy');
+        allVars.delete('x');
+        allVars.delete('y');
+        allVars.delete('index');
         return allVars;
       }
       return new Set();
@@ -58,10 +65,11 @@ export default Vue.extend({
         const allVars: Set<string> = new Set();
         this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
-        allVars.delete('_from');
-        allVars.delete('_to');
+        allVars.delete('_id');
+        allVars.delete('_rev');
         allVars.delete('source');
         allVars.delete('target');
+        allVars.delete('index');
 
         return allVars;
       }
