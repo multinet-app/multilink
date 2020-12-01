@@ -15,14 +15,8 @@ export default Vue.extend({
 
   data() {
     return {
-      nodeMarkerSize: 50,
-      nodeFontSize: 14,
       workspace: null,
       graph: null,
-      selectNeighbors: true,
-      renderNested: false,
-      labelVariable: '_key',
-      colorVariable: null,
       nodeColorScale: scaleOrdinal(schemeCategory10),
       linkColorScale: scaleOrdinal().range(schemeCategory10),
       glyphColorScale: scaleOrdinal(schemeCategory10),
@@ -72,6 +66,60 @@ export default Vue.extend({
         return allVars;
       }
       return new Set();
+    },
+
+    renderNested: {
+      get() {
+        return store.getters.renderNested;
+      },
+      set(value: boolean) {
+        return store.commit.setRenderNested(value);
+      },
+    },
+
+    markerSize: {
+      get() {
+        return store.getters.markerSize || 0;
+      },
+      set(value: number) {
+        store.commit.setMarkerSize(value);
+      },
+    },
+
+    fontSize: {
+      get() {
+        return store.getters.fontSize || 0;
+      },
+      set(value: number) {
+        store.commit.setFontSize(value);
+      },
+    },
+
+    labelVariable: {
+      get() {
+        return store.getters.labelVariable;
+      },
+      set(value: string) {
+        store.commit.setLabelVariable(value);
+      },
+    },
+
+    colorVariable: {
+      get() {
+        return store.getters.colorVariable;
+      },
+      set(value: string) {
+        store.commit.setColorVariable(value);
+      },
+    },
+
+    selectNeighbors: {
+      get() {
+        return store.getters.selectNeighbors;
+      },
+      set(value: boolean) {
+        store.commit.setSelectNeighbors(value);
+      },
     },
   },
 
@@ -134,10 +182,10 @@ export default Vue.extend({
           Marker Size
         </v-card-subtitle>
         <v-slider
-          v-model="nodeMarkerSize"
+          v-model="markerSize"
           :min="10"
           :max="100"
-          :label="String(nodeMarkerSize)"
+          :label="String(markerSize)"
           inverse-label
           hide-details
         />
@@ -148,10 +196,10 @@ export default Vue.extend({
           Font Size
         </v-card-subtitle>
         <v-slider
-          v-model="nodeFontSize"
-          :min="10"
-          :max="30"
-          :label="String(nodeFontSize)"
+          v-model="fontSize"
+          :min="6"
+          :max="20"
+          :label="String(fontSize)"
           inverse-label
           hide-details
         />
@@ -161,8 +209,8 @@ export default Vue.extend({
         <v-select
           v-model="labelVariable"
           label="Label Variable"
-          :items="[...variableList]"
-          :options="[...variableList]"
+          :items="Array.from(variableList)"
+          :options="Array.from(variableList)"
         />
 
         <v-divider class="mt-4" />
@@ -170,8 +218,8 @@ export default Vue.extend({
         <v-select
           v-model="colorVariable"
           label="Color Variable"
-          :items="[...colorVariableList]"
-          :options="[...colorVariableList]"
+          :items="Array.from(colorVariableList)"
+          :options="Array.from(colorVariableList)"
         />
 
         <v-divider class="mt-4" />

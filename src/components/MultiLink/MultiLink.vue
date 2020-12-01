@@ -19,9 +19,6 @@ export default Vue.extend({
 
   data() {
     return {
-      colorVariable: 'group',
-      nodeSize: 50,
-      nodeFontSize: 12,
       straightEdges: false,
       tooltipMessage: '',
       toggleTooltip: false,
@@ -76,6 +73,10 @@ export default Vue.extend({
       return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
     },
 
+    nodeTextStyle(): string {
+      return `font-size: ${this.fontSize}pt;`;
+    },
+
     svgOffset(): {x: number; y: number} {
       if (this.el === null) {
         return { x: 0, y: 0 };
@@ -88,7 +89,31 @@ export default Vue.extend({
     },
 
     forceRadius(): number {
-      return (this.nodeSize / 2) * 1.5;
+      return (this.markerSize / 2) * 1.5;
+    },
+
+    renderNested() {
+      return store.getters.renderNested;
+    },
+
+    markerSize() {
+      return store.getters.markerSize || 0;
+    },
+
+    fontSize() {
+      return store.getters.fontSize || 0;
+    },
+
+    labelVariable() {
+      return store.getters.labelVariable;
+    },
+
+    colorVariable() {
+      return store.getters.colorVariable;
+    },
+
+    selectNeighbors() {
+      return store.getters.selectNeighbors;
     },
   },
 
@@ -147,8 +172,8 @@ export default Vue.extend({
       event.preventDefault();
 
       const moveFn = (evt: Event) => {
-        node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.nodeSize / 2);
-        node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.nodeSize / 2);
+        node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.markerSize / 2);
+        node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.markerSize / 2);
         this.$forceUpdate();
       };
 
@@ -193,10 +218,10 @@ export default Vue.extend({
           throw new Error('_from or _to node didn\'t have an x or a y position.');
         }
 
-        const x1 = fromNode.x + this.nodeSize / 2;
-        const y1 = fromNode.y + this.nodeSize / 2;
-        const x2 = toNode.x + this.nodeSize / 2;
-        const y2 = toNode.y + this.nodeSize / 2;
+        const x1 = fromNode.x + this.markerSize / 2;
+        const y1 = fromNode.y + this.markerSize / 2;
+        const x2 = toNode.x + this.markerSize / 2;
+        const y2 = toNode.y + this.markerSize / 2;
 
         const dx = x2 - x1;
         const dy = y2 - y1;
@@ -220,7 +245,7 @@ export default Vue.extend({
     nodeGroupClass(node: Node): string {
       if (this.selectedNodes.size > 0) {
         const selected = this.isSelected(node._id);
-        const inOneHop = this.oneHop.has(node._id);
+        const inOneHop = this.selectNeighbors ? this.oneHop.has(node._id) : false;
         const selectedClass = selected || inOneHop ? '' : 'muted';
         return `nodeGroup ${selectedClass}`;
       }
@@ -234,14 +259,10 @@ export default Vue.extend({
       return `node nodeBox nodeBorder ${selectedClass}`;
     },
 
-    nodeTextStyle(): string {
-      return `font-size: ${this.nodeFontSize}pt;`;
-    },
-
     linkGroupClass(link: Link): string {
       if (this.selectedNodes.size > 0) {
         const selected = this.isSelected(link._from) || this.isSelected(link._to);
-        const selectedClass = selected ? '' : 'muted';
+        const selectedClass = selected && this.selectNeighbors ? '' : 'muted';
         return `linkGroup ${selectedClass}`;
       }
       return 'linkGroup';
@@ -288,11 +309,11 @@ export default Vue.extend({
         >
           <rect
             :class="nodeClass(node)"
-            :width="nodeSize"
-            :height="nodeSize"
+            :width="markerSize"
+            :height="markerSize"
             :fill="nodeColorScale(node[colorVariable])"
-            rx="25"
-            ry="25"
+            :rx="!renderNested ? (markerSize / 2) : 0"
+            :ry="!renderNested ? (markerSize / 2) : 0"
             @click="selectNode(node)"
             @mouseover="showTooltip(node, $event)"
             @mouseout="hideTooltip"
@@ -301,15 +322,15 @@ export default Vue.extend({
           <rect
             class="labelBackground"
             height="1em"
-            :y="(nodeSize / 2) - 8"
-            :width="nodeSize"
+            :y="!renderNested ? (markerSize / 2) - 8 : 0"
+            :width="markerSize"
           />
           <text
             class="label"
-            :dy="nodeSize / 2 + 2"
-            :dx="nodeSize / 2"
+            :dy="!renderNested ? markerSize / 2 + 2: 10"
+            :dx="markerSize / 2"
             :style="nodeTextStyle"
-          >{{ node._id }}</text>
+          >{{ node[labelVariable] }}</text>
         </g>
       </g>
     </svg>

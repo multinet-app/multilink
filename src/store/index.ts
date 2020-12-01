@@ -24,6 +24,12 @@ export interface State {
   selectedNodes: Set<string>;
   loadError: LoadError;
   simulation: Simulation<Node, SimulationLink> | null;
+  renderNested: boolean;
+  markerSize: number;
+  fontSize: number;
+  labelVariable: string;
+  colorVariable: string;
+  selectNeighbors: boolean;
 }
 
 const {
@@ -44,6 +50,12 @@ const {
       href: '',
     },
     simulation: null,
+    renderNested: false,
+    markerSize: 50,
+    fontSize: 12,
+    labelVariable: '_key',
+    colorVariable: '_key',
+    selectNeighbors: true,
   } as State,
   getters: {
     workspaceName(state: State) {
@@ -68,6 +80,30 @@ const {
 
     simulation(state: State) {
       return state.simulation;
+    },
+
+    renderNested(state: State) {
+      return state.renderNested;
+    },
+
+    markerSize(state: State) {
+      return state.markerSize;
+    },
+
+    fontSize(state: State) {
+      return state.fontSize;
+    },
+
+    labelVariable(state: State) {
+      return state.labelVariable;
+    },
+
+    colorVariable(state: State) {
+      return state.colorVariable;
+    },
+
+    selectNeighbors(state: State) {
+      return state.selectNeighbors;
     },
   },
   mutations: {
@@ -119,6 +155,30 @@ const {
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
       state.selectedNodes = new Set(state.selectedNodes);
+    },
+
+    setRenderNested(state, renderNested: boolean) {
+      state.renderNested = renderNested;
+    },
+
+    setMarkerSize(state, markerSize: number) {
+      state.markerSize = markerSize;
+    },
+
+    setFontSize(state, fontSize: number) {
+      state.fontSize = fontSize;
+    },
+
+    setLabelVariable(state, labelVariable: string) {
+      state.labelVariable = labelVariable;
+    },
+
+    setColorVariable(state, colorVariable: string) {
+      state.colorVariable = colorVariable;
+    },
+
+    setSelectNeighbors(state, selectNeighbors: boolean) {
+      state.selectNeighbors = selectNeighbors;
     },
   },
   actions: {
