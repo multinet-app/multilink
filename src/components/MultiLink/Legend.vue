@@ -1,18 +1,18 @@
 <script lang="ts">
 /* eslint-disable vue/no-mutating-props */
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { min, max } from 'd3-array';
 import { select } from 'd3-selection';
-import { scaleLinear, scaleBand } from 'd3-scale';
+import { scaleLinear, scaleBand, ScaleBand } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
 
-import { Network } from '@/types';
+import { Node, Link, Network } from '@/types';
 
 export default Vue.extend({
   props: {
     graphStructure: {
-      type: Network,
+      type: Object as PropType<Network | null>,
       default: null,
     },
     nodeColorScale: {
@@ -103,27 +103,42 @@ export default Vue.extend({
           // Get the SVG element and its width
           const type = list === this.multiVariableList ? 'node' : 'link';
           const variableSvg = select(`#${type}${attr}`);
-          const variableSvgWidth = variableSvg
-            .node()
+
+          const variableSvgWidth = (variableSvg
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .node() as any)
             .getBoundingClientRect()
             .width - this.yAxisPadding - this.varPadding;
 
           // Get the data and generate the bins
-          const currentData = this.graphStructure[`${type}s`].map((d) => d[attr]);
+          if (this.graphStructure === null) {
+            return;
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let currentData: any[];
+
+          if (type === 'node') {
+            currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]);
+          } else {
+            currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]);
+          }
           const bins = new Map([...new Set(currentData)].map(
             (x) => [x, currentData.filter((y) => y === x).length],
           ));
 
-          const binLabels = [];
-          const binValues = [];
-          bins.forEach((label, value) => {
+          const binLabels: string[] = [];
+          const binValues: number[] = [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          bins.forEach((label: any, value) => {
             binLabels.push(label);
-            binValues.push(value);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            binValues.push((value as any));
           });
 
           // Generate axis scales
           const yScale = scaleLinear()
-            .domain([min(binValues), max(binValues)])
+            .domain([min(binValues) || 0, max(binValues) || 0])
             .range([this.svgHeight, 0]);
 
           const xScale = scaleBand()
@@ -142,26 +157,28 @@ export default Vue.extend({
             .call(axisBottom(xScale));
 
           // Add the bars
-          const variableSvgEnter = variableSvg
+          const variableSvgEnter = (variableSvg
             .selectAll()
             .data(currentData)
             .enter()
-            .append('rect')
-            .attr('x', (d) => xScale(d))
-            .attr('y', (d) => yScale(bins[d]))
-            .attr('height', (d) => this.svgHeight - yScale(bins[d]))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .append('rect') as any)
+            .attr('x', (d: string) => xScale(d))
+            .attr('y', (d: string) => yScale(bins.get(d) || 0))
+            .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
             .attr('width', xScale.bandwidth())
-            .attr('fill', (d) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
+            .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
 
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            .on('start brush', (event) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .on('start brush', (event: any) => {
               const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
               variableSvgEnter
-                .attr('stroke', (d) => (xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? '#000000' : ''));
+                .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
 
               // TODO: Update the nested bars domain
               // if (attr === this.barVariables[0]) {
@@ -187,7 +204,8 @@ export default Vue.extend({
                   this.ordinalInvert(extent[0], xScale, binLabels),
                   this.ordinalInvert(extent[1], xScale, binLabels),
                 ];
-                this.linkWidthScale.domain(newDomain).range([2, 20]);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (this.linkWidthScale as any).domain(newDomain).range([2, 20]);
               }
 
               // Update the link color domain
@@ -196,7 +214,8 @@ export default Vue.extend({
                 const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels));
                 const newDomain = binLabels.slice(start, end);
 
-                this.linkColorScale.domain(newDomain);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (this.linkColorScale as any).domain(newDomain);
               }
 
               // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
@@ -204,24 +223,34 @@ export default Vue.extend({
             });
 
           variableSvg
-            .call(brush)
-            .call(brush.move, xScale.range());
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .call((brush as any))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .call((brush.move as any), xScale.range());
         });
       });
     },
 
-    isQuantitative(varName, type) {
-      const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((node) => parseFloat(node[varName])))];
-      return uniqueValues.length > 5;
+    isQuantitative(varName: string, type: 'node' | 'link') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let nodesOrLinks: any[];
+
+      if (this.graphStructure !== null) {
+        nodesOrLinks = type === 'node' ? this.graphStructure.nodes : this.graphStructure.edges;
+        const uniqueValues = [...new Set(nodesOrLinks.map((element) => parseFloat(element[varName])))];
+        return uniqueValues.length > 5;
+      }
+      return false;
     },
 
-    ordinalInvert(pos, scale, binLabels) {
-      let previous = null;
+    ordinalInvert(pos: number, scale: ScaleBand<string>, binLabels: string[]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let previous: any = null;
       const domain = scale.domain();
 
-      domain.forEach((value, idx) => {
+      domain.forEach((value, idx: number) => {
         if (idx !== null) {
-          if (scale(binLabels[idx]) > pos) {
+          if ((scale(binLabels[idx]) || 0) > pos) {
             return previous;
           }
           previous = binLabels[idx];
@@ -232,7 +261,8 @@ export default Vue.extend({
       return previous;
     },
 
-    rectDrop(newEvent) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rectDrop(newEvent: any) {
       const droppedEl = newEvent.dataTransfer.getData('attr_id');
       const type = droppedEl.substring(0, 4) === 'node' ? 'node' : 'link';
       const targetEl = newEvent.target.parentNode.id;
@@ -249,7 +279,8 @@ export default Vue.extend({
       }
     },
 
-    dragStart(newEvent) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dragStart(newEvent: any) {
       newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
     },
   },
