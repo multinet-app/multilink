@@ -145,7 +145,7 @@ export default Vue.extend({
         this.$forceUpdate();
       });
 
-      store.original.commit('setSimulation', simulation);
+      store.commit.setSimulation(simulation);
     }
   },
 

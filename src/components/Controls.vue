@@ -125,11 +125,11 @@ export default Vue.extend({
 
   methods: {
     startSimulation() {
-      store.original.commit('startSimulation');
+      store.commit.startSimulation();
     },
 
     stopSimulation() {
-      store.original.commit('stopSimulation');
+      store.commit.stopSimulation();
     },
 
     releaseNodes() {
