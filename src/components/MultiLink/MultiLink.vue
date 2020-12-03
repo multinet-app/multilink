@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
-import { scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import { scaleLinear, ScaleLinear } from 'd3-scale';
 import {
   forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation,
 } from 'd3-force';
@@ -122,6 +121,23 @@ export default Vue.extend({
 
     linkVariables() {
       return store.getters.linkVariables;
+    },
+
+    attributeRanges() {
+      return store.getters.attributeRanges;
+    },
+
+    attributeScales() {
+      const scales: {[key: string]: ScaleLinear<number, number>} = {};
+
+      if (Object.values(this.attributeRanges) !== undefined) {
+        Object.values(this.attributeRanges).forEach((attr) => {
+          scales[attr.attr] = scaleLinear()
+            .domain([attr.min, attr.max])
+            .range([0, this.nestedBarHeight]);
+        });
+      }
+      return scales;
     },
 
     linkWidthScale() {

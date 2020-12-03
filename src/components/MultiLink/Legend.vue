@@ -105,6 +105,11 @@ export default Vue.extend({
             binValues.push(value);
           });
 
+          // Add the domain of values to attributeScales
+          if (type === 'node' && this.isQuantitative(attr, type)) {
+            store.commit.addAttributeRange({ attr, min: parseFloat(min(binLabels) || '0'), max: parseFloat(max(binLabels) || '0') });
+          }
+
           // Generate axis scales
           const yScale = scaleLinear()
             .domain([min(binValues) || 0, max(binValues) || 0])

@@ -31,6 +31,10 @@ interface LinkStyleVariables {
   color: string;
 }
 
+interface AttributeRanges {
+  [key: string]: {attr: string; min: number; max: number};
+}
+
 export interface State {
   workspaceName: string | null;
   networkName: string | null;
@@ -46,6 +50,7 @@ export interface State {
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
+  attributeRanges: AttributeRanges;
   nodeColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
 }
@@ -82,6 +87,7 @@ const {
       width: '',
       color: '',
     },
+    attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
   } as State,
@@ -141,6 +147,10 @@ const {
 
     linkVariables(state: State) {
       return state.linkVariables;
+    },
+
+    attributeRanges(state: State) {
+      return state.attributeRanges;
     },
 
     nodeColorScale(state: State) {
@@ -239,6 +249,10 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
+    },
+
+    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {
+      state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
     },
 
     updateLinkWidthDomain(state, domain: number[]) {
