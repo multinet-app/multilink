@@ -24,6 +24,7 @@ export default Vue.extend({
       tooltipPosition: { x: 0, y: 0 },
       el: null as Element | null,
       simulation: null as Simulation<Node, SimulationLink> | null,
+      nestedPadding: 5,
     };
   },
 
@@ -85,6 +86,20 @@ export default Vue.extend({
         x: (this.el as HTMLElement).offsetLeft,
         y: (this.el as HTMLElement).offsetTop,
       };
+    },
+
+    nestedBarWidth(): number {
+      const hasGlyphs = this.nestedVariables.glyph.length !== 0;
+      const totalColumns = this.nestedVariables.bar.length + (hasGlyphs ? 1 : 0);
+
+      // Left padding + padding on right for each column
+      const totalPadding = this.nestedPadding + totalColumns * this.nestedPadding;
+
+      return (this.markerSize - totalPadding) / (totalColumns);
+    },
+
+    nestedBarHeight(): number {
+      return this.markerSize - 24;
     },
 
     forceRadius(): number {
@@ -366,6 +381,51 @@ export default Vue.extend({
             :dx="markerSize / 2"
             :style="nodeTextStyle"
           >{{ node[labelVariable] }}</text>
+
+          <g
+            v-if="renderNested"
+            class="nested"
+          >
+
+            <!-- White background bar -->
+            <rect
+              v-for="(barVar, i) of nestedVariables.bar"
+              :key="`${node}_${barVar}_background`"
+              class="bar"
+              :width="nestedBarWidth"
+              :height="nestedBarHeight"
+              style="fill: white;"
+              :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
+              y="20"
+            />
+
+            <!-- Foreground colored bar -->
+            <rect
+              v-for="(barVar, i) of nestedVariables.bar"
+              :key="`${node}_${barVar}_foreground`"
+              class="bar"
+              :width="nestedBarWidth"
+              :height="attributeScales[barVar](node[barVar])"
+              style="fill: blue;"
+              :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
+              :y="20 + nestedBarHeight - attributeScales[barVar](node[barVar])"
+            />
+
+            <!-- Glyphs -->
+            <rect
+              v-for="(glyphVar, i) of nestedVariables.glyph"
+              :key="`${node}_${glyphVar}_glyph`"
+              class="glyph"
+              :width="nestedBarWidth"
+              :height="nestedBarHeight/2/nestedVariables.glyph.length"
+              :y="20 + (i * (nestedBarHeight/2/nestedVariables.glyph.length + 5))"
+              :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
+              rx="100"
+              ry="100"
+              :style="glyphStyle(node[glyphVar])"
+            />
+            <g />
+          </g>
         </g>
       </g>
     </svg>
@@ -404,6 +464,10 @@ export default Vue.extend({
 
 .textpath {
     visibility: hidden;
+}
+
+.bar, .glyph, .nested {
+  pointer-events: none;
 }
 
 .axisLine {
