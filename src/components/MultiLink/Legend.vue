@@ -15,22 +15,6 @@ export default Vue.extend({
       type: Object as PropType<Network | null>,
       default: null,
     },
-    nodeColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkColorScale: {
-      type: Function,
-      default: null,
-    },
-    glyphColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkWidthScale: {
-      type: Function,
-      default: null,
-    },
     multiVariableList: {
       type: Set,
       default: () => new Set(),
@@ -69,7 +53,6 @@ export default Vue.extend({
     properties() {
       const {
         graphStructure,
-        linkWidthScale,
         multiVariableList,
         linkVariableList,
         barVariables,
@@ -79,7 +62,6 @@ export default Vue.extend({
       } = this;
       return {
         graphStructure,
-        linkWidthScale,
         multiVariableList,
         linkVariableList,
         barVariables,
@@ -87,6 +69,11 @@ export default Vue.extend({
         widthVariables,
         colorVariables,
       };
+    },
+  },
+
+    nodeColorScale() {
+      return store.getters.nodeColorScale;
     },
   },
 
@@ -203,7 +190,7 @@ export default Vue.extend({
                   this.ordinalInvert(extent[1], xScale, binLabels),
                 ];
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (this.linkWidthScale as any).domain(newDomain).range([2, 20]);
+                store.commit.updateLinkWidthDomain(newDomain as number[]);
               }
 
               // Update the link color domain

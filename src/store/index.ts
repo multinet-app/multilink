@@ -8,6 +8,10 @@ import {
 } from '@/types';
 import api from '@/api';
 import { GraphSpec, RowsSpec, TableRow } from 'multinet';
+import {
+  scaleLinear, ScaleLinear, scaleOrdinal, ScaleOrdinal,
+} from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 
 Vue.use(Vuex);
 
@@ -30,6 +34,8 @@ export interface State {
   labelVariable: string;
   colorVariable: string;
   selectNeighbors: boolean;
+  nodeColorScale: ScaleOrdinal<string, string>;
+  linkWidthScale: ScaleLinear<number, number>;
 }
 
 const {
@@ -56,6 +62,8 @@ const {
     labelVariable: '_key',
     colorVariable: '_key',
     selectNeighbors: true,
+    nodeColorScale: scaleOrdinal(schemeCategory10),
+    linkWidthScale: scaleLinear().range([1, 20]),
   } as State,
 
   getters: {
@@ -105,6 +113,14 @@ const {
 
     selectNeighbors(state: State) {
       return state.selectNeighbors;
+    },
+
+    nodeColorScale(state: State) {
+      return state.nodeColorScale;
+    },
+
+    linkWidthScale(state: State) {
+      return state.linkWidthScale;
     },
   },
   mutations: {
@@ -180,6 +196,12 @@ const {
 
     setSelectNeighbors(state, selectNeighbors: boolean) {
       state.selectNeighbors = selectNeighbors;
+    },
+
+    updateLinkWidthDomain(state, domain: number[]) {
+      if (domain.length === 2) {
+        state.linkWidthScale.domain(domain).range([1, 20]);
+      }
     },
   },
   actions: {

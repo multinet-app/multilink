@@ -3,9 +3,6 @@ import Vue from 'vue';
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import store from '@/store';
-
-import { scaleLinear, scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
 import { Node, Link } from '@/types';
 
 export default Vue.extend({
@@ -17,15 +14,11 @@ export default Vue.extend({
     return {
       workspace: null,
       graph: null,
-      nodeColorScale: scaleOrdinal(schemeCategory10),
-      linkColorScale: scaleOrdinal().range(schemeCategory10),
-      glyphColorScale: scaleOrdinal(schemeCategory10),
       nodeAttrScales: {},
       barVariables: [],
       glyphVariables: [],
       widthVariables: [],
       colorVariables: [],
-      linkWidthScale: scaleLinear().domain([0, 10]).range([2, 20]),
     };
   },
 
@@ -289,10 +282,6 @@ export default Vue.extend({
       class="mt-4"
       v-bind="{
         graphStructure,
-        nodeColorScale,
-        linkColorScale,
-        glyphColorScale,
-        linkWidthScale,
         multiVariableList,
         linkVariableList,
         nodeAttrScales,

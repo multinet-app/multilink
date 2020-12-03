@@ -66,7 +66,7 @@ export default Vue.extend({
     },
 
     nodeColorScale() {
-      return scaleOrdinal(schemeCategory10);
+      return store.getters.nodeColorScale;
     },
 
     tooltipStyle(): string {
@@ -114,6 +114,10 @@ export default Vue.extend({
 
     selectNeighbors() {
       return store.getters.selectNeighbors;
+    },
+
+    linkWidthScale() {
+      return store.getters.linkWidthScale;
     },
   },
 
@@ -268,8 +272,15 @@ export default Vue.extend({
       return 'linkGroup';
     },
 
-    linkStyle(): string {
-      return 'stroke: #888888; stroke-width: 1px;';
+    linkStyle(link: Link): string {
+      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeColorScale(link[this.linkVariables.color]);
+      const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
+
+      return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
+    },
+
+    glyphStyle(value: string) {
+      return `fill: ${this.nodeColorScale(value)};`;
     },
   },
 });
@@ -295,7 +306,7 @@ export default Vue.extend({
           <path
             class="link"
             :d="arcPath(link)"
-            style="stroke: #888888; stroke-width: 1px;"
+            :style="linkStyle(link)"
           />
         </g>
       </g>
