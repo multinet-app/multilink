@@ -191,9 +191,6 @@ export default Vue.extend({
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (this.linkColorScale as any).domain(newDomain);
               }
-
-              // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
-              this.$root.$emit('brushing');
             });
 
           variableSvg
