@@ -135,7 +135,7 @@ export default Vue.extend({
             .selectAll()
             .data(currentData)
             .enter()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .append('rect') as any)
             .attr('x', (d: string) => xScale(d))
             .attr('y', (d: string) => yScale(bins.get(d) || 0))
@@ -146,7 +146,7 @@ export default Vue.extend({
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .on('start brush', (event: any) => {
               const extent = event.selection;
 
