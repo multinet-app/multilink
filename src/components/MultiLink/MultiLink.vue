@@ -116,6 +116,14 @@ export default Vue.extend({
       return store.getters.selectNeighbors;
     },
 
+    nestedVariables(): {bar: string[]; glyph: string[]} {
+      return store.getters.nestedVariables;
+    },
+
+    linkVariables() {
+      return store.getters.linkVariables;
+    },
+
     linkWidthScale() {
       return store.getters.linkWidthScale;
     },

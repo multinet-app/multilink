@@ -21,6 +21,16 @@ interface LoadError {
   href: string;
 }
 
+interface NestedVariables {
+  bar: string[];
+  glyph: string[];
+}
+
+interface LinkStyleVariables {
+  width: string;
+  color: string;
+}
+
 export interface State {
   workspaceName: string | null;
   networkName: string | null;
@@ -34,6 +44,8 @@ export interface State {
   labelVariable: string;
   colorVariable: string;
   selectNeighbors: boolean;
+  nestedVariables: NestedVariables;
+  linkVariables: LinkStyleVariables;
   nodeColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
 }
@@ -62,6 +74,14 @@ const {
     labelVariable: '_key',
     colorVariable: '_key',
     selectNeighbors: true,
+    nestedVariables: {
+      bar: [],
+      glyph: [],
+    },
+    linkVariables: {
+      width: '',
+      color: '',
+    },
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
   } as State,
@@ -113,6 +133,14 @@ const {
 
     selectNeighbors(state: State) {
       return state.selectNeighbors;
+    },
+
+    nestedVariables(state: State) {
+      return state.nestedVariables;
+    },
+
+    linkVariables(state: State) {
+      return state.linkVariables;
     },
 
     nodeColorScale(state: State) {
@@ -196,6 +224,21 @@ const {
 
     setSelectNeighbors(state, selectNeighbors: boolean) {
       state.selectNeighbors = selectNeighbors;
+    },
+
+    setNestedVariables(state, nestedVariables: NestedVariables) {
+      // Remove duplicates from the nested variables
+      nestedVariables.bar = [...new Set(nestedVariables.bar)];
+      nestedVariables.glyph = [...new Set(nestedVariables.glyph)];
+
+      // Allow only 2 variables for the glyphs
+      nestedVariables.glyph.length = nestedVariables.glyph.length > 2 ? 2 : nestedVariables.glyph.length;
+
+      state.nestedVariables = nestedVariables;
+    },
+
+    setLinkVariables(state, linkVariables: LinkStyleVariables) {
+      state.linkVariables = linkVariables;
     },
 
     updateLinkWidthDomain(state, domain: number[]) {

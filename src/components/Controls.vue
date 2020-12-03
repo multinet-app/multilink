@@ -10,18 +10,6 @@ export default Vue.extend({
     Legend,
   },
 
-  data() {
-    return {
-      workspace: null,
-      graph: null,
-      nodeAttrScales: {},
-      barVariables: [],
-      glyphVariables: [],
-      widthVariables: [],
-      colorVariables: [],
-    };
-  },
-
   computed: {
     graphStructure() {
       return store.getters.network;
@@ -284,11 +272,6 @@ export default Vue.extend({
         graphStructure,
         multiVariableList,
         linkVariableList,
-        nodeAttrScales,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
       }"
     />
   </v-container>

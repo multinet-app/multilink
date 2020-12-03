@@ -8,6 +8,7 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
 
 import { Node, Link, Network } from '@/types';
+import store from '@/store';
 
 export default Vue.extend({
   props: {
@@ -22,22 +23,6 @@ export default Vue.extend({
     linkVariableList: {
       type: Set,
       default: () => new Set(),
-    },
-    barVariables: {
-      type: Array,
-      default: () => [],
-    },
-    glyphVariables: {
-      type: Array,
-      default: () => [],
-    },
-    widthVariables: {
-      type: Array,
-      default: () => [],
-    },
-    colorVariables: {
-      type: Array,
-      default: () => [],
     },
   },
 
@@ -55,22 +40,21 @@ export default Vue.extend({
         graphStructure,
         multiVariableList,
         linkVariableList,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
       } = this;
       return {
         graphStructure,
         multiVariableList,
         linkVariableList,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
       };
     },
-  },
+
+    nestedVariables() {
+      return store.getters.nestedVariables;
+    },
+
+    linkVariables() {
+      return store.getters.linkVariables;
+    },
 
     nodeColorScale() {
       return store.getters.nodeColorScale;
@@ -184,7 +168,7 @@ export default Vue.extend({
               // }
 
               // Update the link width domain
-              if (attr === this.widthVariables[0]) {
+              if (attr === this.linkVariables.width) {
                 const newDomain = [
                   this.ordinalInvert(extent[0], xScale, binLabels),
                   this.ordinalInvert(extent[1], xScale, binLabels),
@@ -194,7 +178,7 @@ export default Vue.extend({
               }
 
               // Update the link color domain
-              if (attr === this.colorVariables[0]) {
+              if (attr === this.linkVariables.color) {
                 const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels));
                 const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels));
                 const newDomain = binLabels.slice(start, end);
@@ -251,16 +235,32 @@ export default Vue.extend({
       const droppedEl = newEvent.dataTransfer.getData('attr_id');
       const type = droppedEl.substring(0, 4) === 'node' ? 'node' : 'link';
       const targetEl = newEvent.target.parentNode.id;
-      const droppedElText = droppedEl.replace(type, '').replace('div', '');
+      const droppedElText: string = droppedEl.replace(type, '').replace('div', '');
 
       if (type === 'node' && targetEl === 'barElements') {
-        this.barVariables.push(droppedElText);
+        const updatedNestedVars = {
+          bar: [...this.nestedVariables.bar, droppedElText],
+          glyph: this.nestedVariables.glyph,
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
       } else if (type === 'node' && targetEl === 'glyphElements') {
-        this.glyphVariables.push(droppedElText);
+        const updatedNestedVars = {
+          bar: this.nestedVariables.bar,
+          glyph: [...this.nestedVariables.glyph, droppedElText],
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
       } else if (type === 'link' && targetEl === 'widthElements') {
-        this.widthVariables.push(droppedElText);
+        const updatedLinkVars = {
+          width: droppedElText,
+          color: this.linkVariables.color,
+        };
+        store.commit.setLinkVariables(updatedLinkVars);
       } else if (type === 'link' && targetEl === 'colorElements') {
-        this.colorVariables.push(droppedElText);
+        const updatedLinkVars = {
+          width: this.linkVariables.width,
+          color: droppedElText,
+        };
+        store.commit.setLinkVariables(updatedLinkVars);
       }
     },
 
@@ -318,14 +318,14 @@ export default Vue.extend({
               dominant-baseline="hanging"
             >Bars</text>
             <path
-              v-if="barVariables.length === 0"
+              v-if="nestedVariables.bar.length === 0"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(barVar, i) of barVariables"
+              v-for="(barVar, i) of nestedVariables.bar"
               :key="barVar"
               :transform="`translate(0,${i * 15 + 15})`"
               dominant-baseline="hanging"
@@ -352,14 +352,14 @@ export default Vue.extend({
               dominant-baseline="hanging"
             >Glyphs</text>
             <path
-              v-if="glyphVariables.length === 0"
+              v-if="nestedVariables.glyph.length === 0"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(glyphVar, i) of glyphVariables"
+              v-for="(glyphVar, i) of nestedVariables.glyph"
               :key="glyphVar"
               :transform="`translate(0,${i * 15 + 15})`"
               dominant-baseline="hanging"
@@ -402,20 +402,18 @@ export default Vue.extend({
               dominant-baseline="hanging"
             >Width</text>
             <path
-              v-if="widthVariables.length === 0"
+              v-if="!linkVariables.width"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(widthVar, i) of widthVariables"
-              :key="widthVar"
-              :transform="`translate(0,${i * 15 + 15})`"
+              transform="translate(0,15)"
               dominant-baseline="hanging"
               style="text-anchor: start;"
               font-size="9pt"
-            >{{ widthVar }}</text>
+            >{{ linkVariables.width }}</text>
           </g>
 
           <!-- Color adding elements -->
@@ -436,20 +434,18 @@ export default Vue.extend({
               dominant-baseline="hanging"
             >Color</text>
             <path
-              v-if="colorVariables.length === 0"
+              v-if="!linkVariables.color"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(colorVar, i) of colorVariables"
-              :key="colorVar"
-              :transform="`translate(0,${i * 15 + 15})`"
+              transform="translate(0,15)"
               dominant-baseline="hanging"
               style="text-anchor: start;"
               font-size="9pt"
-            >{{ colorVar }}</text>
+            >{{ linkVariables.color }}</text>
           </g>
         </g>
       </svg>
