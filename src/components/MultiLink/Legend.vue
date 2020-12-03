@@ -181,16 +181,6 @@ export default Vue.extend({
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 store.commit.updateLinkWidthDomain(newDomain as number[]);
               }
-
-              // Update the link color domain
-              if (attr === this.linkVariables.color) {
-                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels));
-                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels));
-                const newDomain = binLabels.slice(start, end);
-
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (this.linkColorScale as any).domain(newDomain);
-              }
             });
 
           variableSvg
