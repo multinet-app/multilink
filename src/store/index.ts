@@ -13,6 +13,7 @@ import {
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance } from '@visdesignlab/trrack';
+import { updateProvenanceState } from '@/lib/provenanceUtils';
 
 Vue.use(Vuex);
 
@@ -167,11 +168,19 @@ const {
 
     addSelectedNode(state, nodeID: string) {
       state.selectedNodes = new Set(state.selectedNodes.add(nodeID));
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Select Node');
+      }
     },
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
       state.selectedNodes = new Set(state.selectedNodes);
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'De-select Node');
+      }
     },
 
     setRenderNested(state, renderNested: boolean) {
