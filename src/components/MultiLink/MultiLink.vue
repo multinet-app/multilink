@@ -245,7 +245,27 @@ export default Vue.extend({
     },
 
     nodeTranslate(node: Node): string {
-      return `translate(${node.x || 0}, ${node.y || 0})`;
+      let forcedX = node.x || 0;
+      let forcedY = node.y || 0;
+
+      const svgEdgePadding = 5;
+
+      const minimumX = svgEdgePadding;
+      const minimumY = svgEdgePadding;
+      const maximumX = this.svgDimensions.width - this.markerSize - svgEdgePadding;
+      const maximumY = this.svgDimensions.height - this.markerSize - svgEdgePadding;
+
+      forcedX = forcedX < minimumX ? minimumX : forcedX;
+      forcedX = forcedX > maximumX ? maximumX : forcedX;
+      forcedY = forcedY < minimumY ? minimumY : forcedY;
+      forcedY = forcedY > maximumY ? maximumY : forcedY;
+
+      // Update the node position with this forced position
+      node.x = forcedX;
+      node.y = forcedY;
+
+      // Use the forced position, because the node.x is updated by simulation
+      return `translate(${forcedX}, ${forcedY})`;
     },
 
     arcPath(link: Link): string {
