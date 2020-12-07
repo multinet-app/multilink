@@ -34,6 +34,8 @@ export default {
       workspaceName: workspace,
       networkName: graph,
     });
+
+    store.commit.createProvenance();
   },
 };
 </script>

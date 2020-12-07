@@ -4,7 +4,7 @@ import { createDirectStore } from 'direct-vuex';
 import { Simulation } from 'd3-force';
 
 import {
-  Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables,
+  Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
 } from '@/types';
 import api from '@/api';
 import { GraphSpec, RowsSpec, TableRow } from 'multinet';
@@ -12,6 +12,7 @@ import {
   scaleLinear, scaleOrdinal,
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { initProvenance } from '@visdesignlab/trrack';
 
 Vue.use(Vuex);
 
@@ -50,6 +51,7 @@ const {
     attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
+    provenance: null,
   } as State,
 
   getters: {
@@ -219,6 +221,14 @@ const {
       if (domain.length === 2) {
         state.linkWidthScale.domain(domain).range([1, 20]);
       }
+    },
+
+    createProvenance(state) {
+      state.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
+        JSON.parse(JSON.stringify(state)),
+        { loadFromUrl: false },
+      );
+      state.provenance.done();
     },
   },
   actions: {

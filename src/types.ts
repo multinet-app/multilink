@@ -1,3 +1,4 @@
+import { Provenance } from '@visdesignlab/trrack';
 import { Simulation } from 'd3-force';
 import { ScaleLinear, ScaleOrdinal } from 'd3-scale';
 import { TableRow } from 'multinet';
@@ -77,4 +78,7 @@ export interface State {
   simulation: Simulation<Node, SimulationLink> | null;
   nodeColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
+  provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
 }
+
+export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';
