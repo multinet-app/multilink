@@ -24,8 +24,6 @@ module.exports = {
     'import/prefer-default-export': ['off'],
     // Required for _to, _id, _key, etc. from Arango
     'no-underscore-dangle': ['off'],
-    // Required for data loading/processing and D3-style mutating callbacks
-    'no-param-reassign': ['error', { props: false }],
   },
 
   parserOptions: {
