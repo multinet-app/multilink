@@ -22,8 +22,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'max-len': ['off'],
     'import/prefer-default-export': ['off'],
-    // Required for _to, _id, _key, etc. from Arango
-    'no-underscore-dangle': ['off'],
+    'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to'] }],
   },
 
   parserOptions: {
