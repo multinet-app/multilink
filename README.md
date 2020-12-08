@@ -1,7 +1,7 @@
 # MultiLink
 
 This is the MultiLink data visualization app for the Multinet project.
-It is a typescript node-link application, written using the Vue.js framework,
+It is an interactive node-link diagram, written in TypeScript using the Vue.js framework,
 that allows users to visualize network data hosted on a Multinet instance.
 
 ## Quick Start
