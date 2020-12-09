@@ -374,10 +374,22 @@ export default Vue.extend({
           @mouseout="hideTooltip"
         >
           <path
+            :id="`${link._key}_path`"
             class="link"
             :d="arcPath(link)"
             :style="linkStyle(link)"
           />
+
+          <text
+            dominant-baseline="middle"
+          >
+            <textPath
+              :href="`#${link._key}_path`"
+              startOffset="50%"
+            >
+              ▶
+            </textPath>
+          </text>
         </g>
       </g>
 
