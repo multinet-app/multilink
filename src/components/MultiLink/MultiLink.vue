@@ -498,15 +498,10 @@ export default Vue.extend({
   max-width: 400px
 }
 
-.links,
-.textpath,
+.links >>> path,
 .edgeLegend {
     fill: none;
     opacity: .8;
-}
-
-.textpath {
-    visibility: hidden;
 }
 
 .bar, .glyph, .nested {
@@ -548,14 +543,6 @@ export default Vue.extend({
 .selectBox,
 .labelBackground {
     pointer-events: none;
-}
-
-.pathLabel>textPath {
-    font-size: 14px;
-}
-
-.edgeArrow>textPath {
-    font-size: 10px;
 }
 
 .legendLabel,
