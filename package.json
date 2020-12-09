@@ -1,8 +1,8 @@
 {
-  "name": "MultiLink",
+  "name": "multilink",
   "version": "0.1.0",
   "private": true,
-  "description": "A first class MultiNet node-link visualization",
+  "description": "An interactive node-link diagram application for MultiNet",
   "author": "Visualization Design Lab <vdl.sci.utah.edu>",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -48,6 +48,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^7.0.0-beta.4",
     "jest": "^24.9.0",
+    "lint-staged": "^10.5.0",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "typescript": "^3.6.3",
@@ -60,5 +61,16 @@
     "> 1%",
     "last 2 versions"
   ],
-  "repository": "https://github.com/multinet-app/multilink"
+  "repository": "https://github.com/multinet-app/multilink",
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "yarn lint"
+    ],
+    "*.vue": [
+      "yarn lint"
+    ]
+  }
 }
