@@ -14,7 +14,6 @@ describe('Node-Link Utils', () => {
         propsData: {
           graphStructure: { nodes: [], links: [{ source: { x: 100, y: 150 }, target: { x: 400, y: 450 } }] },
           app: App,
-          provenance: { addObserver: () => {} }, // eslint-disable-line  @typescript-eslint/no-empty-function
         },
       });
 

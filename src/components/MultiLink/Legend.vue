@@ -1,65 +1,28 @@
-<script>
+<script lang="ts">
 /* eslint-disable vue/no-mutating-props */
+import Vue, { PropType } from 'vue';
 import { min, max } from 'd3-array';
 import { select } from 'd3-selection';
-import { scaleLinear, scaleBand } from 'd3-scale';
+import { scaleLinear, scaleBand, ScaleBand } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
 
-import { Network } from '@/types';
+import { Node, Link, Network } from '@/types';
+import store from '@/store';
 
-export default {
-  components: {
-  },
-
+export default Vue.extend({
   props: {
-    provenance: {
-      type: Object,
-      required: true,
-    },
     graphStructure: {
-      type: Network,
-      default: null,
-    },
-    nodeColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkColorScale: {
-      type: Function,
-      default: null,
-    },
-    glyphColorScale: {
-      type: Function,
-      default: null,
-    },
-    linkWidthScale: {
-      type: Function,
+      type: Object as PropType<Network | null>,
       default: null,
     },
     multiVariableList: {
-      type: Array,
-      default: () => [],
+      type: Set,
+      default: () => new Set(),
     },
     linkVariableList: {
-      type: Array,
-      default: () => [],
-    },
-    barVariables: {
-      type: Array,
-      default: () => [],
-    },
-    glyphVariables: {
-      type: Array,
-      default: () => [],
-    },
-    widthVariables: {
-      type: Array,
-      default: () => [],
-    },
-    colorVariables: {
-      type: Array,
-      default: () => [],
+      type: Set,
+      default: () => new Set(),
     },
   },
 
@@ -74,27 +37,27 @@ export default {
   computed: {
     properties() {
       const {
-        provenance,
         graphStructure,
-        linkWidthScale,
         multiVariableList,
         linkVariableList,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
       } = this;
       return {
-        provenance,
         graphStructure,
-        linkWidthScale,
         multiVariableList,
         linkVariableList,
-        barVariables,
-        glyphVariables,
-        widthVariables,
-        colorVariables,
       };
+    },
+
+    nestedVariables() {
+      return store.getters.nestedVariables;
+    },
+
+    linkVariables() {
+      return store.getters.linkVariables;
+    },
+
+    nodeColorScale() {
+      return store.getters.nodeColorScale;
     },
   },
 
@@ -105,33 +68,51 @@ export default {
   methods: {
     setUpPanel() {
       // For node and link variables
-      [this.multiVariableList, this.linkVariableList].forEach((list) => {
+      [this.multiVariableList as Set<string>, this.linkVariableList as Set<string>].forEach((list) => {
         // For each attribute
         list.forEach((attr) => {
           // Get the SVG element and its width
           const type = list === this.multiVariableList ? 'node' : 'link';
           const variableSvg = select(`#${type}${attr}`);
-          const variableSvgWidth = variableSvg
-            .node()
+
+          const variableSvgWidth = (variableSvg
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .node() as any)
             .getBoundingClientRect()
             .width - this.yAxisPadding - this.varPadding;
 
           // Get the data and generate the bins
-          const currentData = this.graphStructure[`${type}s`].map((d) => d[attr]);
+          if (this.graphStructure === null) {
+            return;
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let currentData: any[];
+
+          if (type === 'node') {
+            currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]);
+          } else {
+            currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]);
+          }
           const bins = new Map([...new Set(currentData)].map(
             (x) => [x, currentData.filter((y) => y === x).length],
           ));
 
-          const binLabels = [];
-          const binValues = [];
-          bins.forEach((label, value) => {
+          const binLabels: string[] = [];
+          const binValues: number[] = [];
+          bins.forEach((value, label) => {
             binLabels.push(label);
             binValues.push(value);
           });
 
+          // Add the domain of values to attributeScales
+          if (type === 'node' && this.isQuantitative(attr, type)) {
+            store.commit.addAttributeRange({ attr, min: parseFloat(min(binLabels) || '0'), max: parseFloat(max(binLabels) || '0') });
+          }
+
           // Generate axis scales
           const yScale = scaleLinear()
-            .domain([min(binValues), max(binValues)])
+            .domain([min(binValues) || 0, max(binValues) || 0])
             .range([this.svgHeight, 0]);
 
           const xScale = scaleBand()
@@ -150,26 +131,28 @@ export default {
             .call(axisBottom(xScale));
 
           // Add the bars
-          const variableSvgEnter = variableSvg
+          const variableSvgEnter = (variableSvg
             .selectAll()
             .data(currentData)
             .enter()
-            .append('rect')
-            .attr('x', (d) => xScale(d))
-            .attr('y', (d) => yScale(bins[d]))
-            .attr('height', (d) => this.svgHeight - yScale(bins[d]))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .append('rect') as any)
+            .attr('x', (d: string) => xScale(d))
+            .attr('y', (d: string) => yScale(bins.get(d) || 0))
+            .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
             .attr('width', xScale.bandwidth())
-            .attr('fill', (d) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
+            .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
 
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            .on('start brush', (event) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .on('start brush', (event: any) => {
               const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
               variableSvgEnter
-                .attr('stroke', (d) => (xScale(d) >= extent[0] - xScale.bandwidth() && xScale(d) <= extent[1] ? '#000000' : ''));
+                .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
 
               // TODO: Update the nested bars domain
               // if (attr === this.barVariables[0]) {
@@ -190,46 +173,45 @@ export default {
               // }
 
               // Update the link width domain
-              if (attr === this.widthVariables[0]) {
+              if (attr === this.linkVariables.width) {
                 const newDomain = [
                   this.ordinalInvert(extent[0], xScale, binLabels),
                   this.ordinalInvert(extent[1], xScale, binLabels),
                 ];
-                this.linkWidthScale.domain(newDomain).range([2, 20]);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                store.commit.updateLinkWidthDomain(newDomain as number[]);
               }
-
-              // Update the link color domain
-              if (attr === this.colorVariables[0]) {
-                const start = binLabels.indexOf(this.ordinalInvert(extent[0], xScale, binLabels));
-                const end = binLabels.indexOf(this.ordinalInvert(extent[1], xScale, binLabels));
-                const newDomain = binLabels.slice(start, end);
-
-                this.linkColorScale.domain(newDomain);
-              }
-
-              // Required because changing the domain of the brush doesn't trigger an update of the prop in controls.vue
-              this.$root.$emit('brushing');
             });
 
           variableSvg
-            .call(brush)
-            .call(brush.move, xScale.range());
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .call((brush as any))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .call((brush.move as any), xScale.range());
         });
       });
     },
 
-    isQuantitative(varName, type) {
-      const uniqueValues = [...new Set(this.graphStructure[`${type}s`].map((node) => parseFloat(node[varName])))];
-      return uniqueValues.length > 5;
+    isQuantitative(varName: string, type: 'node' | 'link') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let nodesOrLinks: any[];
+
+      if (this.graphStructure !== null) {
+        nodesOrLinks = type === 'node' ? this.graphStructure.nodes : this.graphStructure.edges;
+        const uniqueValues = [...new Set(nodesOrLinks.map((element) => parseFloat(element[varName])))];
+        return uniqueValues.length > 5;
+      }
+      return false;
     },
 
-    ordinalInvert(pos, scale, binLabels) {
-      let previous = null;
+    ordinalInvert(pos: number, scale: ScaleBand<string>, binLabels: string[]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let previous: any = null;
       const domain = scale.domain();
 
-      domain.forEach((value, idx) => {
+      domain.forEach((value, idx: number) => {
         if (idx !== null) {
-          if (scale(binLabels[idx]) > pos) {
+          if ((scale(binLabels[idx]) || 0) > pos) {
             return previous;
           }
           previous = binLabels[idx];
@@ -240,28 +222,46 @@ export default {
       return previous;
     },
 
-    rectDrop(newEvent) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rectDrop(newEvent: any) {
       const droppedEl = newEvent.dataTransfer.getData('attr_id');
       const type = droppedEl.substring(0, 4) === 'node' ? 'node' : 'link';
       const targetEl = newEvent.target.parentNode.id;
-      const droppedElText = droppedEl.replace(type, '').replace('div', '');
+      const droppedElText: string = droppedEl.replace(type, '').replace('div', '');
 
       if (type === 'node' && targetEl === 'barElements') {
-        this.barVariables.push(droppedElText);
+        const updatedNestedVars = {
+          bar: [...this.nestedVariables.bar, droppedElText],
+          glyph: this.nestedVariables.glyph,
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
       } else if (type === 'node' && targetEl === 'glyphElements') {
-        this.glyphVariables.push(droppedElText);
+        const updatedNestedVars = {
+          bar: this.nestedVariables.bar,
+          glyph: [...this.nestedVariables.glyph, droppedElText],
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
       } else if (type === 'link' && targetEl === 'widthElements') {
-        this.widthVariables.push(droppedElText);
+        const updatedLinkVars = {
+          width: droppedElText,
+          color: this.linkVariables.color,
+        };
+        store.commit.setLinkVariables(updatedLinkVars);
       } else if (type === 'link' && targetEl === 'colorElements') {
-        this.colorVariables.push(droppedElText);
+        const updatedLinkVars = {
+          width: this.linkVariables.width,
+          color: droppedElText,
+        };
+        store.commit.setLinkVariables(updatedLinkVars);
       }
     },
 
-    dragStart(newEvent) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dragStart(newEvent: any) {
       newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
     },
   },
-};
+});
 </script>
 
 <template>
@@ -310,14 +310,14 @@ export default {
               dominant-baseline="hanging"
             >Bars</text>
             <path
-              v-if="barVariables.length === 0"
+              v-if="nestedVariables.bar.length === 0"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(barVar, i) of barVariables"
+              v-for="(barVar, i) of nestedVariables.bar"
               :key="barVar"
               :transform="`translate(0,${i * 15 + 15})`"
               dominant-baseline="hanging"
@@ -344,14 +344,14 @@ export default {
               dominant-baseline="hanging"
             >Glyphs</text>
             <path
-              v-if="glyphVariables.length === 0"
+              v-if="nestedVariables.glyph.length === 0"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(glyphVar, i) of glyphVariables"
+              v-for="(glyphVar, i) of nestedVariables.glyph"
               :key="glyphVar"
               :transform="`translate(0,${i * 15 + 15})`"
               dominant-baseline="hanging"
@@ -394,20 +394,18 @@ export default {
               dominant-baseline="hanging"
             >Width</text>
             <path
-              v-if="widthVariables.length === 0"
+              v-if="!linkVariables.width"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(widthVar, i) of widthVariables"
-              :key="widthVar"
-              :transform="`translate(0,${i * 15 + 15})`"
+              transform="translate(0,15)"
               dominant-baseline="hanging"
               style="text-anchor: start;"
               font-size="9pt"
-            >{{ widthVar }}</text>
+            >{{ linkVariables.width }}</text>
           </g>
 
           <!-- Color adding elements -->
@@ -428,20 +426,18 @@ export default {
               dominant-baseline="hanging"
             >Color</text>
             <path
-              v-if="colorVariables.length === 0"
+              v-if="!linkVariables.color"
               class="plus"
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="3px"
             />
             <text
-              v-for="(colorVar, i) of colorVariables"
-              :key="colorVar"
-              :transform="`translate(0,${i * 15 + 15})`"
+              transform="translate(0,15)"
               dominant-baseline="hanging"
               style="text-anchor: start;"
               font-size="9pt"
-            >{{ colorVar }}</text>
+            >{{ linkVariables.color }}</text>
           </g>
         </g>
       </svg>
