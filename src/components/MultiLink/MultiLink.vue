@@ -161,6 +161,10 @@ export default Vue.extend({
     linkWidthScale() {
       return store.getters.linkWidthScale;
     },
+
+    directionalEdges() {
+      return store.getters.directionalEdges;
+    },
   },
 
   created() {
@@ -381,6 +385,7 @@ export default Vue.extend({
           />
 
           <text
+            v-if="directionalEdges"
             dominant-baseline="middle"
           >
             <textPath
