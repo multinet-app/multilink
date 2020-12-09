@@ -53,6 +53,7 @@ const {
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
+    directionalEdges: false,
   } as State,
 
   getters: {
@@ -122,6 +123,10 @@ const {
 
     linkWidthScale(state: State) {
       return state.linkWidthScale;
+    },
+
+    directionalEdges(state: State) {
+      return state.directionalEdges;
     },
   },
   mutations: {
@@ -240,6 +245,10 @@ const {
         { loadFromUrl: false },
       );
       state.provenance.done();
+    },
+
+    setDirectionalEdges(state, directionalEdges: boolean) {
+      state.directionalEdges = directionalEdges;
     },
   },
   actions: {
