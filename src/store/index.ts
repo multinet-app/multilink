@@ -237,13 +237,14 @@ const {
     },
 
     setNestedVariables(state, nestedVariables: NestedVariables) {
-      const newNestedVars = nestedVariables;
-      // Remove duplicates from the nested variables
-      newNestedVars.bar = [...new Set(nestedVariables.bar)];
-      newNestedVars.glyph = [...new Set(nestedVariables.glyph)];
+      const newNestedVars = {
+        ...nestedVariables,
+        bar: [...new Set(nestedVariables.bar)],
+        glyph: [...new Set(nestedVariables.glyph)],
+      };
 
       // Allow only 2 variables for the glyphs
-      newNestedVars.glyph.length = newNestedVars.glyph.length > 2 ? 2 : newNestedVars.glyph.length;
+      newNestedVars.glyph.length = Math.min(2, newNestedVars.glyph.length);
 
       state.nestedVariables = newNestedVars;
     },
