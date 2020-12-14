@@ -36,9 +36,8 @@ export default Vue.extend({
     simulationLinks(): SimulationLink[] | null {
       if (this.network !== null) {
         return this.network.edges.map((link: Link) => {
-          link.source = link._from;
-          link.target = link._to;
-          return (link as SimulationLink);
+          const newLink: SimulationLink = { ...link, source: link._from, target: link._to };
+          return newLink;
         });
       }
       return null;
@@ -197,7 +196,9 @@ export default Vue.extend({
       nodes.forEach((node) => {
         // If the position is not defined for x or y, generate it
         if (node.x === undefined || node.y === undefined) {
+          // eslint-disable-next-line no-param-reassign
           node.x = Math.random() * this.svgDimensions.width;
+          // eslint-disable-next-line no-param-reassign
           node.y = Math.random() * this.svgDimensions.height;
         }
       });
@@ -215,7 +216,9 @@ export default Vue.extend({
       event.preventDefault();
 
       const moveFn = (evt: Event) => {
+        // eslint-disable-next-line no-param-reassign
         node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.markerSize / 2);
+        // eslint-disable-next-line no-param-reassign
         node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.markerSize / 2);
         this.$forceUpdate();
       };
