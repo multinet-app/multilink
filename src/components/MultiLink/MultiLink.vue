@@ -36,7 +36,11 @@ export default Vue.extend({
     simulationLinks(): SimulationLink[] | null {
       if (this.network !== null) {
         return this.network.edges.map((link: Link) => {
-          const newLink: SimulationLink = { ...link, source: link._from, target: link._to };
+          const newLink: SimulationLink = {
+            ...JSON.parse(JSON.stringify(link)),
+            source: link._from,
+            target: link._to,
+          };
           return newLink;
         });
       }
