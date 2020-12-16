@@ -252,7 +252,31 @@ export default Vue.extend({
     },
 
     nodeTranslate(node: Node): string {
-      return `translate(${node.x || 0}, ${node.y || 0})`;
+      let forcedX = node.x || 0;
+      let forcedY = node.y || 0;
+
+      const svgEdgePadding = 5;
+
+      const minimumX = svgEdgePadding;
+      const minimumY = svgEdgePadding;
+      const maximumX = this.svgDimensions.width - this.markerSize - svgEdgePadding;
+      const maximumY = this.svgDimensions.height - this.markerSize - svgEdgePadding;
+
+      // Ideally we would update node.x and node.y, but those variables are being changed
+      // by the simulation. My solution was to use these forcedX and forcedY variables.
+      if (forcedX < minimumX) { forcedX = minimumX; }
+      if (forcedX > maximumX) { forcedX = maximumX; }
+      if (forcedY < minimumY) { forcedY = minimumY; }
+      if (forcedY > maximumY) { forcedY = maximumY; }
+
+      // Update the node position with this forced position
+      // eslint-disable-next-line no-param-reassign
+      node.x = forcedX;
+      // eslint-disable-next-line no-param-reassign
+      node.y = forcedY;
+
+      // Use the forced position, because the node.x is updated by simulation
+      return `translate(${forcedX}, ${forcedY})`;
     },
 
     arcPath(link: Link): string {
