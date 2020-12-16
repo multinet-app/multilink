@@ -264,7 +264,9 @@ export default Vue.extend({
       forcedY = forcedY > maximumY ? maximumY : forcedY;
 
       // Update the node position with this forced position
+      // eslint-disable-next-line no-param-reassign
       node.x = forcedX;
+      // eslint-disable-next-line no-param-reassign
       node.y = forcedY;
 
       // Use the forced position, because the node.x is updated by simulation
