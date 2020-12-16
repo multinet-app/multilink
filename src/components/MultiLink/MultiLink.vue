@@ -258,10 +258,12 @@ export default Vue.extend({
       const maximumX = this.svgDimensions.width - this.markerSize - svgEdgePadding;
       const maximumY = this.svgDimensions.height - this.markerSize - svgEdgePadding;
 
-      forcedX = forcedX < minimumX ? minimumX : forcedX;
-      forcedX = forcedX > maximumX ? maximumX : forcedX;
-      forcedY = forcedY < minimumY ? minimumY : forcedY;
-      forcedY = forcedY > maximumY ? maximumY : forcedY;
+      // Ideally we would update node.x and node.y, but those variables are being changed
+      // by the simulation. My solution was to use these forcedX and forcedY variables.
+      if (forcedX < minimumX) { forcedX = minimumX; }
+      if (forcedX > maximumX) { forcedX = maximumX; }
+      if (forcedY < minimumY) { forcedY = minimumY; }
+      if (forcedY > maximumY) { forcedY = maximumY; }
 
       // Update the node position with this forced position
       // eslint-disable-next-line no-param-reassign
