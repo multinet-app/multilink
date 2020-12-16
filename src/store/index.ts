@@ -237,14 +237,16 @@ const {
     },
 
     setNestedVariables(state, nestedVariables: NestedVariables) {
-      // Remove duplicates from the nested variables
-      nestedVariables.bar = [...new Set(nestedVariables.bar)];
-      nestedVariables.glyph = [...new Set(nestedVariables.glyph)];
+      const newNestedVars = {
+        ...nestedVariables,
+        bar: [...new Set(nestedVariables.bar)],
+        glyph: [...new Set(nestedVariables.glyph)],
+      };
 
       // Allow only 2 variables for the glyphs
-      nestedVariables.glyph.length = nestedVariables.glyph.length > 2 ? 2 : nestedVariables.glyph.length;
+      newNestedVars.glyph.length = Math.min(2, newNestedVars.glyph.length);
 
-      state.nestedVariables = nestedVariables;
+      state.nestedVariables = newNestedVars;
     },
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
@@ -322,7 +324,9 @@ const {
 
       if (context.state.network !== null) {
         context.state.network.nodes.forEach((n: Node) => {
+          // eslint-disable-next-line no-param-reassign
           n.fx = null;
+          // eslint-disable-next-line no-param-reassign
           n.fy = null;
         });
         commit.startSimulation();
