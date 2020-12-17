@@ -1701,6 +1701,11 @@
     "@types/d3-voronoi" "*"
     "@types/d3-zoom" "*"
 
+"@types/deep-diff@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/deep-diff/-/deep-diff-1.0.0.tgz#7eba3202a99b3a207f758f351f7f86387269fc40"
+  integrity sha512-ENsJcujGbCU/oXhDfQ12mSo/mCBWodT2tpARZKmatoSrf8+cGRCPi0KVj3I0FORhYZfLXkewXu7AoIWqiBLkNw==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -1990,11 +1995,12 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@visdesignlab/trrack@^2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.5.tgz#c6b4cdfd6abf34198228cc5c32d55361cc618f59"
-  integrity sha512-iDPgQLGYbtfe2FTEi7GT4kMBrkfS4VFj4b3GCHLMzGnePM+tapySKJBnXRs2x6IT3y/xdvm4u/NWNdkC5GUCCg==
+"@visdesignlab/trrack@^2.0.0-alpha.7":
+  version "2.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.7.tgz#90d6931caafd90b641f07532590c15bb97330389"
+  integrity sha512-zSCiX1PMvDCWuATjyvuhj6ef8QtZYPWsuqwH5/MU+vmkHSaqhLjZzBWB8e17Btp8bXByQCCSl8dqiKO0JzC89A==
   dependencies:
+    "@types/deep-diff" "^1.0.0"
     deep-diff "^1.0.2"
     firebase "^7.15.5"
     lz-string "^1.4.4"
