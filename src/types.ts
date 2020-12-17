@@ -1,3 +1,6 @@
+import { Provenance } from '@visdesignlab/trrack';
+import { Simulation } from 'd3-force';
+import { ScaleLinear, ScaleOrdinal } from 'd3-scale';
 import { TableRow } from 'multinet';
 
 export interface Dimensions {
@@ -36,3 +39,46 @@ export interface Cell {
   cellName: string;
   correspondingCell: string;
 }
+
+export interface LoadError {
+  message: string;
+  buttonText: string;
+  href: string;
+}
+
+export interface NestedVariables {
+  bar: string[];
+  glyph: string[];
+}
+
+export interface LinkStyleVariables {
+  width: string;
+  color: string;
+}
+
+export interface AttributeRanges {
+  [key: string]: {attr: string; min: number; max: number};
+}
+
+export interface State {
+  workspaceName: string | null;
+  networkName: string | null;
+  network: Network | null;
+  selectedNodes: Set<string>;
+  loadError: LoadError;
+  renderNested: boolean;
+  markerSize: number;
+  fontSize: number;
+  labelVariable: string;
+  colorVariable: string;
+  selectNeighbors: boolean;
+  nestedVariables: NestedVariables;
+  linkVariables: LinkStyleVariables;
+  attributeRanges: AttributeRanges;
+  simulation: Simulation<Node, SimulationLink> | null;
+  nodeColorScale: ScaleOrdinal<string, string>;
+  linkWidthScale: ScaleLinear<number, number>;
+  provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
+}
+
+export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';

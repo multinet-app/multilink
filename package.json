@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@types/d3": "^5.7.2",
-    "@visdesignlab/trrack": "^1.2.0",
+    "@visdesignlab/trrack": "^2.0.0-alpha.7",
     "core-js": "^3.4.3",
     "d3-array": "^2.8.0",
     "d3-axis": "^2.0.0",

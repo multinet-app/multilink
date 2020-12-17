@@ -4,56 +4,18 @@ import { createDirectStore } from 'direct-vuex';
 import { Simulation } from 'd3-force';
 
 import {
-  Link, Node, Network, SimulationLink,
+  Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
 } from '@/types';
 import api from '@/api';
 import { GraphSpec, RowsSpec, TableRow } from 'multinet';
 import {
-  scaleLinear, ScaleLinear, scaleOrdinal, ScaleOrdinal,
+  scaleLinear, scaleOrdinal,
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { initProvenance } from '@visdesignlab/trrack';
+import { updateProvenanceState } from '@/lib/provenanceUtils';
 
 Vue.use(Vuex);
-
-interface LoadError {
-  message: string;
-  buttonText: string;
-  href: string;
-}
-
-interface NestedVariables {
-  bar: string[];
-  glyph: string[];
-}
-
-interface LinkStyleVariables {
-  width: string;
-  color: string;
-}
-
-interface AttributeRanges {
-  [key: string]: {attr: string; min: number; max: number};
-}
-
-export interface State {
-  workspaceName: string | null;
-  networkName: string | null;
-  network: Network | null;
-  selectedNodes: Set<string>;
-  loadError: LoadError;
-  simulation: Simulation<Node, SimulationLink> | null;
-  renderNested: boolean;
-  markerSize: number;
-  fontSize: number;
-  labelVariable: string;
-  colorVariable: string;
-  selectNeighbors: boolean;
-  nestedVariables: NestedVariables;
-  linkVariables: LinkStyleVariables;
-  attributeRanges: AttributeRanges;
-  nodeColorScale: ScaleOrdinal<string, string>;
-  linkWidthScale: ScaleLinear<number, number>;
-}
 
 const {
   store,
@@ -90,6 +52,7 @@ const {
     attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
+    provenance: null,
   } as State,
 
   getters: {
@@ -205,11 +168,19 @@ const {
 
     addSelectedNode(state, nodeID: string) {
       state.selectedNodes = new Set(state.selectedNodes.add(nodeID));
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Select Node');
+      }
     },
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
       state.selectedNodes = new Set(state.selectedNodes);
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'De-select Node');
+      }
     },
 
     setRenderNested(state, renderNested: boolean) {
@@ -261,6 +232,14 @@ const {
       if (domain.length === 2) {
         state.linkWidthScale.domain(domain).range([1, 20]);
       }
+    },
+
+    createProvenance(state) {
+      state.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
+        JSON.parse(JSON.stringify(state)),
+        { loadFromUrl: false },
+      );
+      state.provenance.done();
     },
   },
   actions: {
