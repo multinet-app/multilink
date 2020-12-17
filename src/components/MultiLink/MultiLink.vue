@@ -36,9 +36,12 @@ export default Vue.extend({
     simulationLinks(): SimulationLink[] | null {
       if (this.network !== null) {
         return this.network.edges.map((link: Link) => {
-          link.source = link._from;
-          link.target = link._to;
-          return (link as SimulationLink);
+          const newLink: SimulationLink = {
+            ...JSON.parse(JSON.stringify(link)),
+            source: link._from,
+            target: link._to,
+          };
+          return newLink;
         });
       }
       return null;
@@ -197,7 +200,9 @@ export default Vue.extend({
       nodes.forEach((node) => {
         // If the position is not defined for x or y, generate it
         if (node.x === undefined || node.y === undefined) {
+          // eslint-disable-next-line no-param-reassign
           node.x = Math.random() * this.svgDimensions.width;
+          // eslint-disable-next-line no-param-reassign
           node.y = Math.random() * this.svgDimensions.height;
         }
       });
@@ -215,7 +220,9 @@ export default Vue.extend({
       event.preventDefault();
 
       const moveFn = (evt: Event) => {
+        // eslint-disable-next-line no-param-reassign
         node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.markerSize / 2);
+        // eslint-disable-next-line no-param-reassign
         node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.markerSize / 2);
         this.$forceUpdate();
       };
@@ -245,7 +252,31 @@ export default Vue.extend({
     },
 
     nodeTranslate(node: Node): string {
-      return `translate(${node.x || 0}, ${node.y || 0})`;
+      let forcedX = node.x || 0;
+      let forcedY = node.y || 0;
+
+      const svgEdgePadding = 5;
+
+      const minimumX = svgEdgePadding;
+      const minimumY = svgEdgePadding;
+      const maximumX = this.svgDimensions.width - this.markerSize - svgEdgePadding;
+      const maximumY = this.svgDimensions.height - this.markerSize - svgEdgePadding;
+
+      // Ideally we would update node.x and node.y, but those variables are being changed
+      // by the simulation. My solution was to use these forcedX and forcedY variables.
+      if (forcedX < minimumX) { forcedX = minimumX; }
+      if (forcedX > maximumX) { forcedX = maximumX; }
+      if (forcedY < minimumY) { forcedY = minimumY; }
+      if (forcedY > maximumY) { forcedY = maximumY; }
+
+      // Update the node position with this forced position
+      // eslint-disable-next-line no-param-reassign
+      node.x = forcedX;
+      // eslint-disable-next-line no-param-reassign
+      node.y = forcedY;
+
+      // Use the forced position, because the node.x is updated by simulation
+      return `translate(${forcedX}, ${forcedY})`;
     },
 
     arcPath(link: Link): string {
