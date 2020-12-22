@@ -161,6 +161,10 @@ export default Vue.extend({
     linkWidthScale() {
       return store.getters.linkWidthScale;
     },
+
+    directionalEdges() {
+      return store.getters.directionalEdges;
+    },
   },
 
   created() {
@@ -374,10 +378,23 @@ export default Vue.extend({
           @mouseout="hideTooltip"
         >
           <path
+            :id="`${link._key}_path`"
             class="link"
             :d="arcPath(link)"
             :style="linkStyle(link)"
           />
+
+          <text
+            v-if="directionalEdges"
+            dominant-baseline="middle"
+          >
+            <textPath
+              :href="`#${link._key}_path`"
+              startOffset="50%"
+            >
+              ▶
+            </textPath>
+          </text>
         </g>
       </g>
 
@@ -486,15 +503,10 @@ export default Vue.extend({
   max-width: 400px
 }
 
-.links,
-.textpath,
+.links >>> path,
 .edgeLegend {
     fill: none;
     opacity: .8;
-}
-
-.textpath {
-    visibility: hidden;
 }
 
 .bar, .glyph, .nested {
@@ -536,14 +548,6 @@ export default Vue.extend({
 .selectBox,
 .labelBackground {
     pointer-events: none;
-}
-
-.pathLabel>textPath {
-    font-size: 14px;
-}
-
-.edgeArrow>textPath {
-    font-size: 10px;
 }
 
 .legendLabel,

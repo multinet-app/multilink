@@ -110,6 +110,15 @@ export default Vue.extend({
         store.commit.setSelectNeighbors(value);
       },
     },
+
+    directionalEdges: {
+      get() {
+        return store.getters.directionalEdges;
+      },
+      set(value: boolean) {
+        store.commit.setDirectionalEdges(value);
+      },
+    },
   },
 
   methods: {
@@ -161,6 +170,20 @@ export default Vue.extend({
           Display charts
           <v-switch
             v-model="renderNested"
+            class="ma-0"
+            hide-details
+          />
+        </v-card-subtitle>
+
+        <v-divider class="mt-4" />
+
+        <v-card-subtitle
+          class="pb-0 pl-0"
+          style="display: flex; align-items: center; justify-content: space-between"
+        >
+          Directional Edges
+          <v-switch
+            v-model="directionalEdges"
             class="ma-0"
             hide-details
           />
