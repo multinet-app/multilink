@@ -55,10 +55,6 @@ export default {
           <v-row>
             <multi-link
               v-if="network && selectedNodes"
-              :svg-dimensions="{
-                width: this.$refs.multilink_container.clientWidth - 24,
-                height: this.$refs.multilink_container.clientHeight - 24,
-              }"
             />
 
             <v-alert

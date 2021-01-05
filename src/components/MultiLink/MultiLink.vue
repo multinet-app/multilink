@@ -9,13 +9,6 @@ import store from '@/store';
 import { Node, Link, SimulationLink } from '@/types';
 
 export default Vue.extend({
-  props: {
-    svgDimensions: {
-      type: Object,
-      required: true,
-    },
-  },
-
   data() {
     return {
       straightEdges: false,
@@ -160,6 +153,13 @@ export default Vue.extend({
 
     linkWidthScale() {
       return store.getters.linkWidthScale;
+    },
+
+    svgDimensions() {
+      return {
+        height: document.body.clientHeight,
+        width: document.body.clientWidth - 256,
+      };
     },
   },
 
