@@ -89,7 +89,7 @@ export default {
   overflow: none;
 }
 
-.node-link-controls {
-  width: 300px;
+.v-btn__content {
+  padding-bottom: 2px;
 }
 </style>
