@@ -276,50 +276,65 @@ export default Vue.extend({
             hide-details
           />
 
-          <v-list-item class="px-0">
-            <v-btn
-              block
-              class="ml-0 mt-4"
-              color="primary"
-              depressed
-              @click="startSimulation"
+          <v-row>
+            <v-col cols="5">
+              <v-btn
+                class="px-2"
+                color="grey darken-3"
+                depressed
+                text
+                small
+                @click="releaseNodes"
+              >
+                <v-icon small>
+                  mdi-pin-off
+                </v-icon>
+                Release
+              </v-btn>
+            </v-col>
+
+            <v-col
+              cols="3"
+              class="px-0"
             >
-              <v-icon>mdi-play</v-icon>
-              Start
-            </v-btn>
-          </v-list-item>
+              <v-btn
+                class="ml-2 px-1"
+                color="primary"
+                depressed
+                small
+                @click="startSimulation"
+              >
+                <v-icon small>
+                  mdi-play
+                </v-icon>
+                Start
+              </v-btn>
+            </v-col>
+
+            <v-col
+              cols="3"
+              class="px-0"
+            >
+              <v-btn
+                class="ml-4 px-1"
+                color="primary"
+                depressed
+                small
+                @click="stopSimulation"
+              >
+                <v-icon small>
+                  mdi-stop
+                </v-icon>
+                Stop
+              </v-btn>
+            </v-col>
+          </v-row>
 
           <v-list-item class="px-0">
             <v-btn
               block
-              class="ml-0 mt-4"
-              color="primary"
-              depressed
-              @click="stopSimulation"
-            >
-              <v-icon>mdi-stop</v-icon>
-              Stop
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-btn
-              block
-              class="ml-0 mt-4"
-              color="primary"
-              depressed
-              @click="releaseNodes"
-            >
-              <v-icon>mdi-pin-off</v-icon>
-              Release Pinned
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-btn
-              block
-              class="ml-0 mt-4"
-              color="primary"
+              class="ml-0"
+              color="grey darken-3 white--text"
               depressed
               @click="exportGraph"
             >
@@ -349,5 +364,8 @@ export default Vue.extend({
 <style scoped>
 .app-logo {
   width: 36px;
+}
+.v-icon {
+  padding-top: 2px;
 }
 </style>
