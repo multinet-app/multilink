@@ -1,6 +1,9 @@
 <script lang="ts">
 import store from '@/store';
 import { getUrlVars } from '@/lib/utils';
+import {
+  ref, computed, Ref,
+} from '@vue/composition-api';
 
 import Controls from './components/Controls.vue';
 import MultiLink from './components/MultiLink/MultiLink.vue';
@@ -13,29 +16,38 @@ export default {
     MultiLink,
   },
 
-  computed: {
-    network() {
-      return store.getters.network;
-    },
+  setup() {
+    const network = computed(() => store.getters.network);
+    const selectedNodes = computed(() => store.getters.selectedNodes);
+    const loadError = computed(() => store.getters.loadError);
 
-    selectedNodes() {
-      return store.getters.selectedNodes;
-    },
+    const multilinkContainer: Ref<Element | null> = ref(null);
+    const multilinkContainerDimensions = computed(() => {
+      if (multilinkContainer.value !== null) {
+        return {
+          width: multilinkContainer.value.clientWidth - 24,
+          height: multilinkContainer.value.clientHeight - 24,
+        };
+      }
+      return null;
+    });
 
-    loadError() {
-      return store.getters.loadError;
-    },
-  },
-
-  async mounted() {
     const { workspace, graph } = getUrlVars();
 
-    await store.dispatch.fetchNetwork({
+    store.dispatch.fetchNetwork({
       workspaceName: workspace,
       networkName: graph,
     });
 
     store.commit.createProvenance();
+
+    return {
+      network,
+      selectedNodes,
+      loadError,
+      multilinkContainer,
+      multilinkContainerDimensions,
+    };
   },
 };
 </script>
@@ -46,7 +58,7 @@ export default {
       <controls />
 
       <multi-link
-        v-if="network && selectedNodes"
+        v-if="network !== null && selectedNodes !== null"
       />
 
       <v-alert

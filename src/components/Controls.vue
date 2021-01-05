@@ -110,6 +110,15 @@ export default Vue.extend({
         store.commit.setSelectNeighbors(value);
       },
     },
+
+    directionalEdges: {
+      get() {
+        return store.getters.directionalEdges;
+      },
+      set(value: boolean) {
+        store.commit.setDirectionalEdges(value);
+      },
+    },
   },
 
   methods: {
@@ -219,6 +228,17 @@ export default Vue.extend({
               />
             </v-list-item-action>
             <v-list-item-content> Display Charts </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-list-item-action class="mr-3">
+              <v-switch
+                v-model="directionalEdges"
+                class="ma-0"
+                hide-details
+              />
+            </v-list-item-action>
+            <v-list-item-content> Directional Edges </v-list-item-content>
           </v-list-item>
 
           <v-list-item class="px-0">

@@ -79,6 +79,7 @@ export interface State {
   nodeColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
+  directionalEdges: boolean;
 }
 
 export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';
