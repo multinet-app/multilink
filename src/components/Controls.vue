@@ -284,7 +284,8 @@ export default Vue.extend({
               depressed
               @click="startSimulation"
             >
-              Start Simulation
+              <v-icon>mdi-play</v-icon>
+              Start
             </v-btn>
           </v-list-item>
 
@@ -296,7 +297,8 @@ export default Vue.extend({
               depressed
               @click="stopSimulation"
             >
-              Stop Simulation
+              <v-icon>mdi-stop</v-icon>
+              Stop
             </v-btn>
           </v-list-item>
 
@@ -308,7 +310,8 @@ export default Vue.extend({
               depressed
               @click="releaseNodes"
             >
-              Release Pinned Nodes
+              <v-icon>mdi-pin-off</v-icon>
+              Release Pinned
             </v-btn>
           </v-list-item>
 
