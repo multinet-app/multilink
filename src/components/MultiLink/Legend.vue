@@ -265,227 +265,225 @@ export default Vue.extend({
 
 <template>
   <div id="legend">
-    <v-card>
-      <!-- Sticky SVG to drag variables onto -->
-      <svg
-        class="sticky"
-        height="33%"
+    <!-- Sticky SVG to drag variables onto -->
+    <svg
+      class="sticky"
+      height="33%"
+      width="100%"
+    >
+      <rect
         width="100%"
-      >
-        <rect
-          width="100%"
-          height="100%"
-          fill="#DDDDDD"
-          opacity="1"
+        height="100%"
+        fill="#DDDDDD"
+        opacity="1"
+      />
+
+      <!-- Node elements -->
+      <g id="nodeMapping">
+        <text
+          font-size="16pt"
+          y="-102"
+          dominant-baseline="hanging"
+        >Node Mapping</text>
+        <circle
+          r="70"
+          fill="#82B1FF"
         />
 
-        <!-- Node elements -->
-        <g id="nodeMapping">
-          <text
-            font-size="16pt"
-            y="-102"
-            dominant-baseline="hanging"
-          >Node Mapping</text>
-          <circle
-            r="70"
-            fill="#82B1FF"
-          />
-
-          <!-- Bar adding elements -->
-          <g
-            id="barElements"
-            @dragenter="(e) => e.preventDefault()"
-            @dragover="(e) => e.preventDefault()"
-            @drop="rectDrop"
-          >
-            <rect
-              width="10%"
-              height="40%"
-              fill="#EEEEEE"
-            />
-            <text
-              class="barLabel"
-              font-size="10pt"
-              dominant-baseline="hanging"
-            >Bars</text>
-            <path
-              v-if="nestedVariables.bar.length === 0"
-              class="plus"
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="3px"
-            />
-            <text
-              v-for="(barVar, i) of nestedVariables.bar"
-              :key="barVar"
-              :transform="`translate(0,${i * 15 + 15})`"
-              dominant-baseline="hanging"
-              style="text-anchor: start;"
-              font-size="9pt"
-            >{{ barVar }}</text>
-          </g>
-
-          <!-- Glyph adding elements -->
-          <g
-            id="glyphElements"
-            @dragenter="(e) => e.preventDefault()"
-            @dragover="(e) => e.preventDefault()"
-            @drop="rectDrop"
-          >
-            <rect
-              width="10%"
-              height="40%"
-              fill="#EEEEEE"
-            />
-            <text
-              class="barLabel"
-              font-size="10pt"
-              dominant-baseline="hanging"
-            >Glyphs</text>
-            <path
-              v-if="nestedVariables.glyph.length === 0"
-              class="plus"
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="3px"
-            />
-            <text
-              v-for="(glyphVar, i) of nestedVariables.glyph"
-              :key="glyphVar"
-              :transform="`translate(0,${i * 15 + 15})`"
-              dominant-baseline="hanging"
-              style="text-anchor: start;"
-              font-size="9pt"
-            >{{ glyphVar }}</text>
-          </g>
-        </g>
-
-        <!-- Link elements -->
-        <g id="linkMapping">
-          <text
-            font-size="16pt"
-            y="-102"
-            dominant-baseline="hanging"
-          >Link Mapping</text>
+        <!-- Bar adding elements -->
+        <g
+          id="barElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
           <rect
-            x="-70"
-            y="-70"
-            width="140"
-            height="140"
-            fill="#82B1FF"
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
           />
-
-          <!-- Width adding elements -->
-          <g
-            id="widthElements"
-            @dragenter="(e) => e.preventDefault()"
-            @dragover="(e) => e.preventDefault()"
-            @drop="rectDrop"
-          >
-            <rect
-              width="10%"
-              height="40%"
-              fill="#EEEEEE"
-            />
-            <text
-              class="barLabel"
-              font-size="10pt"
-              dominant-baseline="hanging"
-            >Width</text>
-            <path
-              v-if="!linkVariables.width"
-              class="plus"
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="3px"
-            />
-            <text
-              transform="translate(0,15)"
-              dominant-baseline="hanging"
-              style="text-anchor: start;"
-              font-size="9pt"
-            >{{ linkVariables.width }}</text>
-          </g>
-
-          <!-- Color adding elements -->
-          <g
-            id="colorElements"
-            @dragenter="(e) => e.preventDefault()"
-            @dragover="(e) => e.preventDefault()"
-            @drop="rectDrop"
-          >
-            <rect
-              width="10%"
-              height="40%"
-              fill="#EEEEEE"
-            />
-            <text
-              class="barLabel"
-              font-size="10pt"
-              dominant-baseline="hanging"
-            >Color</text>
-            <path
-              v-if="!linkVariables.color"
-              class="plus"
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="3px"
-            />
-            <text
-              transform="translate(0,15)"
-              dominant-baseline="hanging"
-              style="text-anchor: start;"
-              font-size="9pt"
-            >{{ linkVariables.color }}</text>
-          </g>
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Bars</text>
+          <path
+            v-if="nestedVariables.bar.length === 0"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            v-for="(barVar, i) of nestedVariables.bar"
+            :key="barVar"
+            :transform="`translate(0,${i * 15 + 15})`"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ barVar }}</text>
         </g>
-      </svg>
 
-      <!-- Variables to brush and to drag onto the sticky SVG -->
-      <div :style="{'padding': `${varPadding}px`}">
-        <h2>Node Attributes</h2>
-        <br>
-        <div
-          v-for="nodeAttr of multiVariableList"
-          :id="`node${nodeAttr}div`"
-          :key="`node${nodeAttr}`"
-          class="draggable"
-          draggable="true"
-          @dragstart="dragStart"
+        <!-- Glyph adding elements -->
+        <g
+          id="glyphElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
         >
-          <h3>{{ nodeAttr }}</h3>
-          <svg
-            :id="`node${nodeAttr}`"
-            :height="svgHeight + 20"
-            width="100%"
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
           />
-          <br>
-          <br>
-        </div>
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Glyphs</text>
+          <path
+            v-if="nestedVariables.glyph.length === 0"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            v-for="(glyphVar, i) of nestedVariables.glyph"
+            :key="glyphVar"
+            :transform="`translate(0,${i * 15 + 15})`"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ glyphVar }}</text>
+        </g>
+      </g>
 
-        <br>
-        <br>
+      <!-- Link elements -->
+      <g id="linkMapping">
+        <text
+          font-size="16pt"
+          y="-102"
+          dominant-baseline="hanging"
+        >Link Mapping</text>
+        <rect
+          x="-70"
+          y="-70"
+          width="140"
+          height="140"
+          fill="#82B1FF"
+        />
 
-        <h2>Link Attributes</h2>
-        <br>
-        <div
-          v-for="linkAttr of linkVariableList"
-          :id="`link${linkAttr}div`"
-          :key="`link${linkAttr}`"
-          class="draggable"
-          draggable="true"
-          @dragstart="dragStart"
+        <!-- Width adding elements -->
+        <g
+          id="widthElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
         >
-          <h3>{{ linkAttr }}</h3>
-          <svg
-            :id="`link${linkAttr}`"
-            :height="svgHeight + 20"
-            width="100%"
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
           />
-          <br>
-        </div>
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Width</text>
+          <path
+            v-if="!linkVariables.width"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            transform="translate(0,15)"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ linkVariables.width }}</text>
+        </g>
+
+        <!-- Color adding elements -->
+        <g
+          id="colorElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
+          />
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Color</text>
+          <path
+            v-if="!linkVariables.color"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            transform="translate(0,15)"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ linkVariables.color }}</text>
+        </g>
+      </g>
+    </svg>
+
+    <!-- Variables to brush and to drag onto the sticky SVG -->
+    <div :style="{'padding': `${varPadding}px`}">
+      <h2>Node Attributes</h2>
+      <br>
+      <div
+        v-for="nodeAttr of multiVariableList"
+        :id="`node${nodeAttr}div`"
+        :key="`node${nodeAttr}`"
+        class="draggable"
+        draggable="true"
+        @dragstart="dragStart"
+      >
+        <h3>{{ nodeAttr }}</h3>
+        <svg
+          :id="`node${nodeAttr}`"
+          :height="svgHeight + 20"
+          width="100%"
+        />
+        <br>
+        <br>
       </div>
-    </v-card>
+
+      <br>
+      <br>
+
+      <h2>Link Attributes</h2>
+      <br>
+      <div
+        v-for="linkAttr of linkVariableList"
+        :id="`link${linkAttr}div`"
+        :key="`link${linkAttr}`"
+        class="draggable"
+        draggable="true"
+        @dragstart="dragStart"
+      >
+        <h3>{{ linkAttr }}</h3>
+        <svg
+          :id="`link${linkAttr}`"
+          :height="svgHeight + 20"
+          width="100%"
+        />
+        <br>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -43,39 +43,28 @@ export default {
 <template>
   <v-app>
     <v-main>
-      <v-row>
-        <v-col cols="3">
-          <controls />
-        </v-col>
+      <controls />
 
-        <v-col
-          ref="multilink_container"
-          cols="9"
-        >
-          <v-row>
-            <multi-link
-              v-if="network && selectedNodes"
-            />
+      <multi-link
+        v-if="network && selectedNodes"
+      />
 
-            <v-alert
-              type="error"
-              :value="loadError.message !== ''"
-              prominent
-            >
-              <v-row align="center">
-                <v-col class="grow">
-                  {{ loadError.message }}
-                </v-col>
-                <v-col class="shrink">
-                  <v-btn :href="loadError.href">
-                    {{ loadError.buttonText }}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-alert>
-          </v-row>
-        </v-col>
-      </v-row>
+      <v-alert
+        type="error"
+        :value="loadError.message !== ''"
+        prominent
+      >
+        <v-row align="center">
+          <v-col class="grow">
+            {{ loadError.message }}
+          </v-col>
+          <v-col class="shrink">
+            <v-btn :href="loadError.href">
+              {{ loadError.buttonText }}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-alert>
     </v-main>
   </v-app>
 </template>
