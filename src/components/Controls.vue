@@ -151,162 +151,221 @@ export default Vue.extend({
 </script>
 
 <template>
-  <v-container
-    id="sidebar"
-    fluid
-    class="pt-0 pb-0"
-  >
-    <!-- control panel content -->
-    <v-card id="control">
-      <v-card-title class="pb-6">
-        MultiNet Node Link Controls
-      </v-card-title>
+  <div>
+    <v-navigation-drawer
+      app
+      class="app-sidebar"
+      fixed
+      permanent
+      stateless
+      value="true"
+    >
+      <v-toolbar color="grey lighten-2">
+        <v-toolbar-title class="d-flex align-center">
+          <div>
+            <v-row class="mx-0 align-center">
+              <v-col class="pb-0 pt-2 px-0">
+                <img
+                  class="app-logo"
+                  src="../assets/logo/app_logo.svg"
+                  alt="Multinet"
+                  width="100%"
+                >
+              </v-col>
+              <v-col class="text-left">
+                MultiLink
+              </v-col>
+            </v-row>
+          </div>
+        </v-toolbar-title>
+        <v-spacer />
+        <!-- login-menu / -->
+      </v-toolbar>
 
-      <v-card-text>
-        <v-card-subtitle
-          class="pb-0 pl-0"
-          style="display: flex; align-items: center; justify-content: space-between"
-        >
-          Display charts
-          <v-switch
-            v-model="renderNested"
-            class="ma-0"
+      <!-- control panel content -->
+      <v-list class="pa-0">
+        <v-subheader class="grey darken-3 py-0 white--text">
+          Controls
+        </v-subheader>
+
+        <div class="pa-4">
+          <v-list-item class="px-0">
+            <v-select
+              v-model="labelVariable"
+              label="Label Variable"
+              :items="Array.from(variableList)"
+              multiple
+              outlined
+              chips
+              dense
+              deletable-chips
+              small-chips
+              persistent-hint
+            />
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-select
+              v-model="colorVariable"
+              label="Color Variable"
+              :items="Array.from(colorVariableList)"
+              multiple
+              outlined
+              chips
+              dense
+              deletable-chips
+              small-chips
+              persistent-hint
+            />
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-list-item-action class="mr-3">
+              <v-switch
+                v-model="renderNested"
+                class="ma-0"
+                hide-details
+              />
+            </v-list-item-action>
+            <v-list-item-content> Display Charts </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-list-item-action class="mr-3">
+              <v-switch
+                v-model="directionalEdges"
+                class="ma-0"
+                hide-details
+              />
+            </v-list-item-action>
+            <v-list-item-content> Directional Edges </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-list-item-action class="mr-3">
+              <v-switch
+                v-model="selectNeighbors"
+                class="ma-0"
+                hide-details
+              />
+            </v-list-item-action>
+            <v-list-item-content> Autoselect Neighbors </v-list-item-content>
+          </v-list-item>
+
+          <v-card-subtitle class="pb-0 pl-0">
+            Marker Size
+          </v-card-subtitle>
+          <v-slider
+            v-model="markerSize"
+            :min="10"
+            :max="100"
+            :label="String(markerSize)"
+            inverse-label
             hide-details
           />
-        </v-card-subtitle>
 
-        <v-divider class="mt-4" />
-
-        <v-card-subtitle
-          class="pb-0 pl-0"
-          style="display: flex; align-items: center; justify-content: space-between"
-        >
-          Directional Edges
-          <v-switch
-            v-model="directionalEdges"
-            class="ma-0"
+          <v-card-subtitle class="pb-0 pl-0">
+            Font Size
+          </v-card-subtitle>
+          <v-slider
+            v-model="fontSize"
+            :min="6"
+            :max="20"
+            :label="String(fontSize)"
+            inverse-label
             hide-details
           />
-        </v-card-subtitle>
 
-        <v-divider class="mt-4" />
+          <v-row>
+            <v-col cols="5">
+              <v-btn
+                class="px-2"
+                color="grey darken-3"
+                depressed
+                text
+                small
+                @click="releaseNodes"
+              >
+                <v-icon small>
+                  mdi-pin-off
+                </v-icon>
+                Release
+              </v-btn>
+            </v-col>
 
-        <v-card-subtitle class="pb-0 pl-0">
-          Marker Size
-        </v-card-subtitle>
-        <v-slider
-          v-model="markerSize"
-          :min="10"
-          :max="100"
-          :label="String(markerSize)"
-          inverse-label
-          hide-details
+            <v-col
+              cols="3"
+              class="px-0"
+            >
+              <v-btn
+                class="ml-2 px-1"
+                color="primary"
+                depressed
+                small
+                @click="startSimulation"
+              >
+                <v-icon small>
+                  mdi-play
+                </v-icon>
+                Start
+              </v-btn>
+            </v-col>
+
+            <v-col
+              cols="3"
+              class="px-0"
+            >
+              <v-btn
+                class="ml-4 px-1"
+                color="primary"
+                depressed
+                small
+                @click="stopSimulation"
+              >
+                <v-icon small>
+                  mdi-stop
+                </v-icon>
+                Stop
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-list-item class="px-0">
+            <v-btn
+              block
+              class="ml-0"
+              color="grey darken-3 white--text"
+              depressed
+              @click="exportGraph"
+            >
+              Export Graph
+            </v-btn>
+          </v-list-item>
+        </div>
+
+        <v-subheader class="grey darken-3 py-0 white--text">
+          Legend
+        </v-subheader>
+        <Legend
+          v-if="multiVariableList.has('_key')"
+          ref="legend"
+          class="mt-4"
+          v-bind="{
+            graphStructure,
+            multiVariableList,
+            linkVariableList,
+          }"
         />
-
-        <v-divider class="mt-4" />
-
-        <v-card-subtitle class="pb-0 pl-0">
-          Font Size
-        </v-card-subtitle>
-        <v-slider
-          v-model="fontSize"
-          :min="6"
-          :max="20"
-          :label="String(fontSize)"
-          inverse-label
-          hide-details
-        />
-
-        <v-divider class="mt-4" />
-
-        <v-select
-          v-model="labelVariable"
-          label="Label Variable"
-          :items="Array.from(variableList)"
-          :options="Array.from(variableList)"
-        />
-
-        <v-divider class="mt-4" />
-
-        <v-select
-          v-model="colorVariable"
-          label="Color Variable"
-          :items="Array.from(colorVariableList)"
-          :options="Array.from(colorVariableList)"
-        />
-
-        <v-divider class="mt-4" />
-
-        <v-card-subtitle
-          class="pb-0 px-0"
-          style="display: flex; align-items: center; justify-content: space-between"
-        >
-          Autoselect neighbors
-          <v-switch
-            v-model="selectNeighbors"
-            class="ma-0"
-            hide-details
-          />
-        </v-card-subtitle>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-btn
-          small
-          @click="startSimulation"
-        >
-          Start Simulation
-        </v-btn>
-      </v-card-actions>
-
-      <v-card-actions>
-        <v-btn
-          small
-          @click="stopSimulation"
-        >
-          Stop Simulation
-        </v-btn>
-      </v-card-actions>
-
-      <v-card-actions>
-        <v-btn
-          small
-          @click="releaseNodes"
-        >
-          Release Pinned Nodes
-        </v-btn>
-      </v-card-actions>
-
-      <v-card-actions>
-        <v-btn
-          small
-          @click="exportGraph"
-        >
-          Export Graph
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-
-    <Legend
-      v-if="multiVariableList.has('_key')"
-      ref="legend"
-      class="mt-4"
-      v-bind="{
-        graphStructure,
-        multiVariableList,
-        linkVariableList,
-      }"
-    />
-  </v-container>
+      </v-list>
+    </v-navigation-drawer>
+  </div>
 </template>
 
 <style scoped>
-  #sidebar {
-    min-height: calc(100vh - 55px);
-  }
-
-  #control {
-    max-height: calc(33vh - 18px);
-    overflow-y: scroll
-  }
+.app-logo {
+  width: 36px;
+}
+.v-icon {
+  padding-top: 2px;
+}
 </style>

@@ -55,53 +55,41 @@ export default {
 <template>
   <v-app>
     <v-main>
-      <v-row>
-        <v-col cols="3">
-          <controls />
-        </v-col>
+      <controls />
 
-        <v-col
-          ref="multilinkContainer"
-          cols="9"
-        >
-          <v-row>
-            <multi-link
-              v-if="network !== null && selectedNodes !== null"
-              :svg-dimensions="multilinkContainerDimensions"
-            />
+      <multi-link
+        v-if="network !== null && selectedNodes !== null"
+      />
 
-            <v-alert
-              type="error"
-              :value="loadError.message !== ''"
-              prominent
-            >
-              <v-row align="center">
-                <v-col class="grow">
-                  {{ loadError.message }}
-                </v-col>
-                <v-col class="shrink">
-                  <v-btn :href="loadError.href">
-                    {{ loadError.buttonText }}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-alert>
-          </v-row>
-        </v-col>
-      </v-row>
+      <v-alert
+        type="error"
+        :value="loadError.message !== ''"
+        prominent
+      >
+        <v-row align="center">
+          <v-col class="grow">
+            {{ loadError.message }}
+          </v-col>
+          <v-col class="shrink">
+            <v-btn :href="loadError.href">
+              {{ loadError.buttonText }}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-alert>
     </v-main>
   </v-app>
 </template>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: "Blinker", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: none;
 }
 
-.node-link-controls {
-  width: 300px;
+.v-btn__content {
+  padding-bottom: 2px;
 }
 </style>
