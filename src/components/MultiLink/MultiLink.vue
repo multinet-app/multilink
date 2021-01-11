@@ -191,9 +191,15 @@ export default Vue.extend({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .force('link') as any).links(this.simulationLinks);
 
-      simulation.on('tick', () => {
-        this.$forceUpdate();
-      });
+      simulation
+        .on('tick', () => {
+          this.$forceUpdate();
+        })
+        // The next line handles the start stop button change in the controls.
+        // It's not explicitly necessary for the simulation to work
+        .on('end', () => {
+          store.commit.stopSimulation();
+        });
 
       store.commit.setSimulation(simulation);
     }
