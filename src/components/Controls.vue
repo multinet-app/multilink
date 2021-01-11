@@ -3,11 +3,21 @@ import Vue from 'vue';
 import Legend from '@/components/MultiLink/Legend.vue';
 
 import store from '@/store';
-import { Node, Link } from '@/types';
+import { Node, Link, Network } from '@/types';
 
 export default Vue.extend({
   components: {
     Legend,
+  },
+
+  data(): {
+    searchTerm: string;
+    searchErrors: string[];
+    } {
+    return {
+      searchTerm: '',
+      searchErrors: [],
+    };
   },
 
   computed: {
@@ -119,6 +129,17 @@ export default Vue.extend({
         store.commit.setDirectionalEdges(value);
       },
     },
+
+    network(): Network | null {
+      return store.getters.network;
+    },
+
+    searchItems(): string[] {
+      if (this.network !== null) {
+        return this.network.nodes.map((node) => node._key);
+      }
+      return [];
+    },
   },
 
   methods: {
@@ -146,6 +167,20 @@ export default Vue.extend({
       a.click();
     },
 
+    search() {
+      const searchErrors: string[] = [];
+      if (this.network !== null) {
+        const nodeToSelect = this.network.nodes.find((node) => node._key === this.searchTerm);
+
+        if (nodeToSelect !== undefined) {
+          store.commit.addSelectedNode(nodeToSelect._id);
+        } else {
+          searchErrors.push('Enter a node to search');
+        }
+      }
+
+      this.searchErrors = searchErrors;
+    },
   },
 });
 </script>
@@ -189,6 +224,25 @@ export default Vue.extend({
         </v-subheader>
 
         <div class="pa-4">
+          <v-list-item class="px-0">
+            <v-autocomplete
+              v-model="searchTerm"
+              label="Search for Node"
+              :items="searchItems"
+              :error-messages="searchErrors"
+            />
+
+            <v-btn
+              class="ml-2"
+              color="primary"
+              depressed
+              small
+              @click="search"
+            >
+              Search
+            </v-btn>
+          </v-list-item>
+
           <v-list-item class="px-0">
             <v-select
               v-model="labelVariable"
