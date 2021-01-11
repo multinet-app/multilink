@@ -302,12 +302,12 @@ export default Vue.extend({
                 color="primary"
                 depressed
                 small
-                @click="startSimulation"
+                @click="stopSimulation"
               >
                 <v-icon small>
-                  mdi-play
+                  mdi-stop
                 </v-icon>
-                Start
+                Stop
               </v-btn>
             </v-col>
 
@@ -320,12 +320,12 @@ export default Vue.extend({
                 color="primary"
                 depressed
                 small
-                @click="stopSimulation"
+                @click="startSimulation"
               >
                 <v-icon small>
-                  mdi-stop
+                  mdi-play
                 </v-icon>
-                Stop
+                Start
               </v-btn>
             </v-col>
           </v-row>
