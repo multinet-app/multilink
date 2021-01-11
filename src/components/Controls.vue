@@ -119,6 +119,10 @@ export default Vue.extend({
         store.commit.setDirectionalEdges(value);
       },
     },
+
+    simulationRunning() {
+      return store.getters.simulationRunning;
+    },
   },
 
   methods: {
@@ -293,6 +297,7 @@ export default Vue.extend({
             </v-col>
 
             <v-col
+              v-if="simulationRunning"
               cols="6"
             >
               <v-btn
@@ -310,6 +315,7 @@ export default Vue.extend({
             </v-col>
 
             <v-col
+              v-else
               cols="6"
             >
               <v-btn
