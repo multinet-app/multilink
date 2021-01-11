@@ -22,7 +22,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'max-len': ['off'],
     'import/prefer-default-export': ['off'],
-    'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to'] }],
+    'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to', '_key'] }],
   },
 
   parserOptions: {
