@@ -202,6 +202,7 @@ export default Vue.extend({
         });
 
       store.commit.setSimulation(simulation);
+      store.commit.startSimulation();
     }
   },
 
