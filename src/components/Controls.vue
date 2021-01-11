@@ -277,9 +277,8 @@ export default Vue.extend({
           />
 
           <v-row>
-            <v-col cols="5">
+            <v-col cols="6">
               <v-btn
-                class="px-2"
                 color="grey darken-3"
                 depressed
                 text
@@ -294,14 +293,13 @@ export default Vue.extend({
             </v-col>
 
             <v-col
-              cols="3"
-              class="px-0"
+              cols="6"
             >
               <v-btn
-                class="ml-2 px-1"
                 color="primary"
                 depressed
                 small
+                block
                 @click="stopSimulation"
               >
                 <v-icon small>
@@ -312,14 +310,13 @@ export default Vue.extend({
             </v-col>
 
             <v-col
-              cols="3"
-              class="px-0"
+              cols="6"
             >
               <v-btn
-                class="ml-4 px-1"
                 color="primary"
                 depressed
                 small
+                block
                 @click="startSimulation"
               >
                 <v-icon small>
