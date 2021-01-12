@@ -54,6 +54,7 @@ const {
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
     directionalEdges: false,
+    controlsWidth: 256,
   } as State,
 
   getters: {
@@ -127,6 +128,10 @@ const {
 
     directionalEdges(state: State) {
       return state.directionalEdges;
+    },
+
+    controlsWidth(state: State) {
+      return state.controlsWidth;
     },
   },
   mutations: {
