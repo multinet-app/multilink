@@ -281,7 +281,7 @@ export default Vue.extend({
           />
 
           <v-row>
-            <v-col cols="6">
+            <v-col>
               <v-btn
                 color="grey darken-3"
                 depressed
@@ -289,25 +289,27 @@ export default Vue.extend({
                 small
                 @click="releaseNodes"
               >
-                <v-icon small>
+                <v-icon
+                  left
+                  small
+                >
                   mdi-pin-off
                 </v-icon>
                 Release
               </v-btn>
             </v-col>
-
-            <v-col
-              v-if="simulationRunning"
-              cols="6"
-            >
+            <v-spacer />
+            <v-col v-if="simulationRunning">
               <v-btn
                 color="primary"
                 depressed
                 small
-                block
                 @click="stopSimulation"
               >
-                <v-icon small>
+                <v-icon
+                  left
+                  small
+                >
                   mdi-stop
                 </v-icon>
                 Stop
@@ -322,10 +324,12 @@ export default Vue.extend({
                 color="primary"
                 depressed
                 small
-                block
                 @click="startSimulation"
               >
-                <v-icon small>
+                <v-icon
+                  left
+                  small
+                >
                   mdi-play
                 </v-icon>
                 Start
