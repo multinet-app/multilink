@@ -119,6 +119,14 @@ export default Vue.extend({
         store.commit.setDirectionalEdges(value);
       },
     },
+
+    controlsWidth(): number {
+      return store.getters.controlsWidth;
+    },
+
+    navStyle(): string {
+      return `width: ${this.controlsWidth}px;`;
+    },
   },
 
   methods: {
@@ -159,6 +167,7 @@ export default Vue.extend({
       permanent
       stateless
       value="true"
+      :style="navStyle"
     >
       <v-toolbar color="grey lighten-2">
         <v-toolbar-title class="d-flex align-center">
