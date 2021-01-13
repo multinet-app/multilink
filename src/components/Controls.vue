@@ -131,7 +131,7 @@ export default Vue.extend({
       return store.getters.network;
     },
 
-    searchItems(): string[] {
+    autocompleteItems(): string[] {
       if (this.network !== null) {
         return this.network.nodes.map((node) => node._key);
       }
@@ -225,7 +225,7 @@ export default Vue.extend({
             <v-autocomplete
               v-model="searchTerm"
               label="Search for Node"
-              :items="searchItems"
+              :items="autocompleteItems"
               :error-messages="searchErrors"
             />
 
