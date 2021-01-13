@@ -299,37 +299,20 @@ export default Vue.extend({
               </v-btn>
             </v-col>
             <v-spacer />
-            <v-col v-if="simulationRunning">
+            <v-col>
               <v-btn
                 color="primary"
                 depressed
                 small
-                @click="stopSimulation"
+                @click="simulationRunning ? stopSimulation() : startSimulation()"
               >
                 <v-icon
                   left
                   small
                 >
-                  mdi-stop
+                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
                 </v-icon>
-                Stop
-              </v-btn>
-            </v-col>
-
-            <v-col v-else>
-              <v-btn
-                color="primary"
-                depressed
-                small
-                @click="startSimulation"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  mdi-play
-                </v-icon>
-                Start
+                {{ simulationRunning ? 'Stop' : 'Start' }}
               </v-btn>
             </v-col>
           </v-row>
