@@ -128,6 +128,10 @@ const {
     directionalEdges(state: State) {
       return state.directionalEdges;
     },
+
+    provenance(state: State) {
+      return state.provenance;
+    },
   },
   mutations: {
     setWorkspaceName(state, workspaceName: string) {
