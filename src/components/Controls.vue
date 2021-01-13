@@ -316,10 +316,7 @@ export default Vue.extend({
               </v-btn>
             </v-col>
 
-            <v-col
-              v-else
-              cols="6"
-            >
+            <v-col v-else>
               <v-btn
                 color="primary"
                 depressed
