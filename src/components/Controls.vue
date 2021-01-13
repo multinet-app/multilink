@@ -10,13 +10,10 @@ export default Vue.extend({
     Legend,
   },
 
-  data(): {
-    searchTerm: string;
-    searchErrors: string[];
-    } {
+  data() {
     return {
-      searchTerm: '',
-      searchErrors: [],
+      searchTerm: '' as string,
+      searchErrors: [] as string[],
     };
   },
 
