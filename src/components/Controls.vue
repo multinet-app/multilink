@@ -304,6 +304,7 @@ export default Vue.extend({
                 color="primary"
                 depressed
                 small
+                width="85"
                 @click="simulationRunning ? stopSimulation() : startSimulation()"
               >
                 <v-icon
