@@ -54,6 +54,7 @@ const {
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
     directionalEdges: false,
+    simulationRunning: false,
   } as State,
 
   getters: {
@@ -128,6 +129,10 @@ const {
     directionalEdges(state: State) {
       return state.directionalEdges;
     },
+
+    simulationRunning(state: State) {
+      return state.simulationRunning;
+    },
   },
   mutations: {
     setWorkspaceName(state, workspaceName: string) {
@@ -162,12 +167,14 @@ const {
       if (state.simulation !== null) {
         state.simulation.alpha(0.5);
         state.simulation.restart();
+        state.simulationRunning = true;
       }
     },
 
     stopSimulation(state) {
       if (state.simulation !== null) {
         state.simulation.stop();
+        state.simulationRunning = false;
       }
     },
 

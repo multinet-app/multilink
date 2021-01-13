@@ -80,6 +80,7 @@ export interface State {
   linkWidthScale: ScaleLinear<number, number>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
   directionalEdges: boolean;
+  simulationRunning: boolean;
 }
 
 export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';

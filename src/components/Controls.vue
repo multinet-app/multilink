@@ -127,6 +127,10 @@ export default Vue.extend({
       },
     },
 
+    simulationRunning() {
+      return store.getters.simulationRunning;
+    },
+
     network(): Network | null {
       return store.getters.network;
     },
@@ -328,55 +332,39 @@ export default Vue.extend({
           />
 
           <v-row>
-            <v-col cols="5">
+            <v-col>
               <v-btn
-                class="px-2"
                 color="grey darken-3"
                 depressed
                 text
                 small
                 @click="releaseNodes"
               >
-                <v-icon small>
+                <v-icon
+                  left
+                  small
+                >
                   mdi-pin-off
                 </v-icon>
                 Release
               </v-btn>
             </v-col>
-
-            <v-col
-              cols="3"
-              class="px-0"
-            >
+            <v-spacer />
+            <v-col>
               <v-btn
-                class="ml-2 px-1"
                 color="primary"
                 depressed
                 small
-                @click="startSimulation"
+                width="85"
+                @click="simulationRunning ? stopSimulation() : startSimulation()"
               >
-                <v-icon small>
-                  mdi-play
+                <v-icon
+                  left
+                  small
+                >
+                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
                 </v-icon>
-                Start
-              </v-btn>
-            </v-col>
-
-            <v-col
-              cols="3"
-              class="px-0"
-            >
-              <v-btn
-                class="ml-4 px-1"
-                color="primary"
-                depressed
-                small
-                @click="stopSimulation"
-              >
-                <v-icon small>
-                  mdi-stop
-                </v-icon>
-                Stop
+                {{ simulationRunning ? 'Stop' : 'Start' }}
               </v-btn>
             </v-col>
           </v-row>
