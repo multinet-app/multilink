@@ -147,9 +147,12 @@ export default Vue.extend({
     },
 
     svgDimensions(): Dimensions {
+      const { height } = this.$vuetify.breakpoint;
+      const width = this.$vuetify.breakpoint.width - this.controlsWidth;
+
       return {
-        height: this.$vuetify.breakpoint.height,
-        width: this.$vuetify.breakpoint.width - this.controlsWidth,
+        height,
+        width,
       };
     },
 
