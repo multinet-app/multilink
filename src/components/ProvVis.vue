@@ -38,5 +38,9 @@ export default Vue.extend({
 </template>
 
 <style scoped>
-
+#provDiv >>> .secondary {
+  /* Unset vuetify colors for secondary */
+  background-color: unset !important;
+  border-color: white !important;
+}
 </style>
