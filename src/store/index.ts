@@ -251,8 +251,11 @@ const {
     },
 
     createProvenance(state) {
+      const stateForProv = JSON.parse(JSON.stringify(state));
+      stateForProv.selectedNodes = [];
+
       state.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
-        JSON.parse(JSON.stringify(state)),
+        stateForProv,
         { loadFromUrl: false },
       );
       state.provenance.done();
