@@ -5,8 +5,9 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const stateUpdateActions = createAction<State, any[], ProvenanceEventTypes>((provState, newProvState) => {
     if (label === 'Select Node' || label === 'De-select Node') {
-      // eslint-disable-next-line no-param-reassign
-      provState.selectedNodes = newProvState.selectedNodes;
+      // TODO: #148 remove cast back to set
+      // eslint-disable-next-line no-param-reassign, @typescript-eslint/no-explicit-any
+      provState.selectedNodes = [...newProvState.selectedNodes] as any;
     }
   })
     .setLabel(label);

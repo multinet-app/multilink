@@ -130,6 +130,10 @@ const {
       return state.directionalEdges;
     },
 
+    provenance(state: State) {
+      return state.provenance;
+    },
+
     simulationRunning(state: State) {
       return state.simulationRunning;
     },
@@ -247,8 +251,11 @@ const {
     },
 
     createProvenance(state) {
+      const stateForProv = JSON.parse(JSON.stringify(state));
+      stateForProv.selectedNodes = [];
+
       state.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
-        JSON.parse(JSON.stringify(state)),
+        stateForProv,
         { loadFromUrl: false },
       );
       state.provenance.done();
@@ -325,6 +332,16 @@ const {
           n.fy = null;
         });
         commit.startSimulation();
+      }
+    },
+
+    goToProvenanceNode(context, node: string) {
+      const { commit } = rootActionContext(context);
+      if (context.state.provenance !== null) {
+        context.state.provenance.goToNode(node);
+
+        // TODO: #148 remove cast back to set
+        commit.setSelected(new Set(context.state.provenance.state.selectedNodes));
       }
     },
   },

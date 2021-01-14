@@ -15,6 +15,7 @@
   "dependencies": {
     "@types/d3": "^5.7.2",
     "@visdesignlab/trrack": "^2.0.0-alpha.7",
+    "@visdesignlab/trrack-vis": "^2.0.0-alpha.9",
     "@vue/composition-api": "^1.0.0-beta.22",
     "core-js": "^3.4.3",
     "d3-array": "^2.8.0",
@@ -50,6 +51,8 @@
     "eslint-plugin-vue": "^7.0.0-beta.4",
     "jest": "^24.9.0",
     "lint-staged": "^10.5.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "typescript": "^3.6.3",
