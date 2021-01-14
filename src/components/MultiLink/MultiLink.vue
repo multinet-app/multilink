@@ -157,8 +157,8 @@ export default Vue.extend({
 
     svgDimensions() {
       return {
-        height: document.body.clientHeight,
-        width: document.body.clientWidth - 256,
+        height: this.$vuetify.breakpoint.height,
+        width: this.$vuetify.breakpoint.width - 256,
       };
     },
 
