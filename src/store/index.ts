@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { createDirectStore } from 'direct-vuex';
-import { Simulation } from 'd3-force';
+import {
+  ForceCenter, ForceCollide, ForceLink, ForceManyBody, Simulation,
+} from 'd3-force';
 
 import {
   Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
@@ -270,6 +272,16 @@ const {
     goToProvenanceNode(state, node: string) {
       if (state.provenance !== null) {
         state.provenance.goToNode(node);
+      }
+    },
+
+    updateSimulationForce(state: State, payload: {
+      forceType: 'center' | 'charge' | 'link' | 'collision';
+      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
+    }) {
+      if (state.simulation !== null) {
+        const { forceType, forceValue } = payload;
+        state.simulation.force(forceType, forceValue);
       }
     },
   },
