@@ -324,6 +324,16 @@ const {
         commit.startSimulation();
       }
     },
+
+    goToProvenanceNode(context, node: string) {
+      const { commit } = rootActionContext(context);
+      if (context.state.provenance !== null) {
+        context.state.provenance.goToNode(node);
+
+        // TODO: #148 remove cast back to set
+        commit.setSelected(new Set(context.state.provenance.state.selectedNodes));
+      }
+    },
   },
 });
 
