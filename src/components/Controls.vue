@@ -76,7 +76,7 @@ export default Vue.extend({
         return store.getters.markerSize || 0;
       },
       set(value: number) {
-        store.commit.setMarkerSize(value);
+        store.commit.setMarkerSize({ markerSize: value, updateProv: false });
       },
     },
 
@@ -85,7 +85,7 @@ export default Vue.extend({
         return store.getters.fontSize || 0;
       },
       set(value: number) {
-        store.commit.setFontSize(value);
+        store.commit.setFontSize({ fontSize: value, updateProv: false });
       },
     },
 
@@ -183,6 +183,14 @@ export default Vue.extend({
       }
 
       this.searchErrors = searchErrors;
+    },
+
+    updateSliderProv(value: number, type: 'markerSize' | 'fontSize') {
+      if (type === 'markerSize') {
+        store.commit.setMarkerSize({ markerSize: value, updateProv: true });
+      } else if (type === 'fontSize') {
+        store.commit.setFontSize({ fontSize: value, updateProv: true });
+      }
     },
   },
 });
@@ -312,6 +320,7 @@ export default Vue.extend({
             :label="String(markerSize)"
             inverse-label
             hide-details
+            @change="(value) => updateSliderProv(value, 'markerSize')"
           />
 
           <v-card-subtitle class="pb-0 pl-0">
@@ -324,6 +333,7 @@ export default Vue.extend({
             :label="String(fontSize)"
             inverse-label
             hide-details
+            @change="(value) => updateSliderProv(value, 'fontSize')"
           />
 
           <v-row>

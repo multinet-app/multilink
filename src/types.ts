@@ -84,4 +84,13 @@ export interface State {
   simulationRunning: boolean;
 }
 
-export type ProvenanceEventTypes = 'Select Node' | 'De-select Node' | 'Set Display Charts';
+export type ProvenanceEventTypes =
+  'Select Node' |
+  'De-select Node' |
+  'Set Display Charts' |
+  'Set Marker Size' |
+  'Set Font Size' |
+  'Set Label Variable' |
+  'Set Color Variable' |
+  'Set Select Neighbors'|
+  'Set Directional Edges';

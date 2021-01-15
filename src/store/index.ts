@@ -214,24 +214,44 @@ const {
       }
     },
 
-    setMarkerSize(state, markerSize: number) {
-      state.markerSize = markerSize;
+    setMarkerSize(state, payload: { markerSize: number; updateProv: boolean }) {
+      state.markerSize = payload.markerSize;
+
+      if (state.provenance !== null && payload.updateProv) {
+        updateProvenanceState(state, 'Set Marker Size');
+      }
     },
 
-    setFontSize(state, fontSize: number) {
-      state.fontSize = fontSize;
+    setFontSize(state, payload: { fontSize: number; updateProv: boolean }) {
+      state.fontSize = payload.fontSize;
+
+      if (state.provenance !== null && payload.updateProv) {
+        updateProvenanceState(state, 'Set Font Size');
+      }
     },
 
     setLabelVariable(state, labelVariable: string) {
       state.labelVariable = labelVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Label Variable');
+      }
     },
 
     setColorVariable(state, colorVariable: string) {
       state.colorVariable = colorVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Color Variable');
+      }
     },
 
     setSelectNeighbors(state, selectNeighbors: boolean) {
       state.selectNeighbors = selectNeighbors;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Select Neighbors');
+      }
     },
 
     setNestedVariables(state, nestedVariables: NestedVariables) {
@@ -267,6 +287,10 @@ const {
 
     setDirectionalEdges(state, directionalEdges: boolean) {
       state.directionalEdges = directionalEdges;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Directional Edges');
+      }
     },
 
     goToProvenanceNode(state, node: string) {
@@ -386,9 +410,20 @@ const {
             storeState.selectedNodes = selectedNodes;
           }
 
-          if (provenanceState.displayCharts !== storeState.displayCharts) {
-            storeState.displayCharts = provenanceState.displayCharts;
-          }
+          // Iterate through vars with primitive data types
+          [
+            'displayCharts',
+            'markerSize',
+            'fontSize',
+            'labelVariable',
+            'colorVariable',
+            'selectNeighbors',
+            'directionalEdges',
+          ].forEach((primitiveVariable) => {
+            if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
+              storeState[primitiveVariable] = provenanceState[primitiveVariable];
+            }
+          });
         },
       );
 
