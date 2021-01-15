@@ -35,7 +35,7 @@ const {
       href: '',
     },
     simulation: null,
-    renderNested: false,
+    displayCharts: false,
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
@@ -82,8 +82,8 @@ const {
       return state.simulation;
     },
 
-    renderNested(state: State) {
-      return state.renderNested;
+    displayCharts(state: State) {
+      return state.displayCharts;
     },
 
     markerSize(state: State) {
@@ -199,8 +199,8 @@ const {
       }
     },
 
-    setRenderNested(state, renderNested: boolean) {
-      state.renderNested = renderNested;
+    setDisplayCharts(state, displayCharts: boolean) {
+      state.displayCharts = displayCharts;
     },
 
     setMarkerSize(state, markerSize: number) {

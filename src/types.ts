@@ -66,7 +66,7 @@ export interface State {
   network: Network | null;
   selectedNodes: Set<string>;
   loadError: LoadError;
-  renderNested: boolean;
+  displayCharts: boolean;
   markerSize: number;
   fontSize: number;
   labelVariable: string;
