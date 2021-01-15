@@ -9,6 +9,11 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       // eslint-disable-next-line no-param-reassign, @typescript-eslint/no-explicit-any
       provState.selectedNodes = [...newProvState.selectedNodes] as any;
     }
+
+    if (label === 'Set Display Charts') {
+      // eslint-disable-next-line no-param-reassign
+      provState.displayCharts = newProvState.displayCharts;
+    }
   })
     .setLabel(label);
 

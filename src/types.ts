@@ -83,4 +83,4 @@ export interface State {
   simulationRunning: boolean;
 }
 
-export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';
+export type ProvenanceEventTypes = 'Select Node' | 'De-select Node' | 'Set Display Charts';

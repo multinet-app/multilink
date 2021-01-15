@@ -201,6 +201,10 @@ const {
 
     setDisplayCharts(state, displayCharts: boolean) {
       state.displayCharts = displayCharts;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Display Charts');
+      }
     },
 
     setMarkerSize(state, markerSize: number) {
@@ -337,6 +341,8 @@ const {
     createProvenance(context) {
       const { commit } = rootActionContext(context);
 
+      const storeState = context.state;
+
       const stateForProv = JSON.parse(JSON.stringify(context.state));
       stateForProv.selectedNodes = [];
 
@@ -349,6 +355,8 @@ const {
       // enables undo/redo + navigating around provenance graph
       context.state.provenance.addGlobalObserver(
         () => {
+          const provenanceState = context.state.provenance.state;
+
           // TODO: #148 remove cast back to set
           const selectedNodes = new Set<string>(context.state.provenance.state.selectedNodes);
 
@@ -359,6 +367,10 @@ const {
           // update the store's selectedNodes to match the provenance state
           if (!setsAreEqual(selectedNodes, context.state.selectedNodes)) {
             commit.setSelected(selectedNodes);
+          }
+
+          if (provenanceState.displayCharts !== storeState.displayCharts) {
+            storeState.displayCharts = provenanceState.displayCharts;
           }
         },
       );
