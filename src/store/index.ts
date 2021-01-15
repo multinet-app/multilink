@@ -280,6 +280,10 @@ const {
 
     setDirectionalEdges(state, directionalEdges: boolean) {
       state.directionalEdges = directionalEdges;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Directional Edges');
+      }
     },
 
     goToProvenanceNode(state, node: string) {
@@ -397,6 +401,7 @@ const {
             'labelVariable',
             'colorVariable',
             'selectNeighbors',
+            'directionalEdges',
           ].forEach((primitiveVariable) => {
             if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
