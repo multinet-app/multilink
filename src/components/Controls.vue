@@ -41,12 +41,8 @@ export default Vue.extend({
       return new Set();
     },
 
-    variableList(): Set<string | null> {
-      return this.multiVariableList.add(null);
-    },
-
     colorVariableList(): Set<string | null> {
-      return this.variableList.add('table');
+      return new Set(this.multiVariableList).add('table');
     },
 
     linkVariableList(): Set<string | null> {
@@ -255,14 +251,10 @@ export default Vue.extend({
             <v-select
               v-model="labelVariable"
               label="Label Variable"
-              :items="Array.from(variableList)"
-              multiple
+              :items="Array.from(multiVariableList)"
+              clearable
               outlined
-              chips
               dense
-              deletable-chips
-              small-chips
-              persistent-hint
             />
           </v-list-item>
 
@@ -271,13 +263,9 @@ export default Vue.extend({
               v-model="colorVariable"
               label="Color Variable"
               :items="Array.from(colorVariableList)"
-              multiple
+              clearable
               outlined
-              chips
               dense
-              deletable-chips
-              small-chips
-              persistent-hint
             />
           </v-list-item>
 
