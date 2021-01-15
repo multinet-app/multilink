@@ -251,13 +251,9 @@ export default Vue.extend({
               v-model="labelVariable"
               label="Label Variable"
               :items="Array.from(variableList)"
-              multiple
+              clearable
               outlined
-              chips
               dense
-              deletable-chips
-              small-chips
-              persistent-hint
             />
           </v-list-item>
 
@@ -266,13 +262,9 @@ export default Vue.extend({
               v-model="colorVariable"
               label="Color Variable"
               :items="Array.from(colorVariableList)"
-              multiple
+              clearable
               outlined
-              chips
               dense
-              deletable-chips
-              small-chips
-              persistent-hint
             />
           </v-list-item>
 
