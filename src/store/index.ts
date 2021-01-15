@@ -12,7 +12,7 @@ import {
   scaleLinear, scaleOrdinal,
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
-import { initProvenance } from '@visdesignlab/trrack';
+import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { updateProvenanceState } from '@/lib/provenanceUtils';
 
 Vue.use(Vuex);
@@ -35,7 +35,7 @@ const {
       href: '',
     },
     simulation: null,
-    renderNested: false,
+    displayCharts: false,
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
@@ -82,8 +82,8 @@ const {
       return state.simulation;
     },
 
-    renderNested(state: State) {
-      return state.renderNested;
+    displayCharts(state: State) {
+      return state.displayCharts;
     },
 
     markerSize(state: State) {
@@ -199,8 +199,12 @@ const {
       }
     },
 
-    setRenderNested(state, renderNested: boolean) {
-      state.renderNested = renderNested;
+    setDisplayCharts(state, displayCharts: boolean) {
+      state.displayCharts = displayCharts;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Display Charts');
+      }
     },
 
     setMarkerSize(state, markerSize: number) {
@@ -250,19 +254,18 @@ const {
       }
     },
 
-    createProvenance(state) {
-      const stateForProv = JSON.parse(JSON.stringify(state));
-      stateForProv.selectedNodes = [];
-
-      state.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
-        stateForProv,
-        { loadFromUrl: false },
-      );
-      state.provenance.done();
+    setProvenance(state, provenance: Provenance<State, ProvenanceEventTypes, unknown>) {
+      state.provenance = provenance;
     },
 
     setDirectionalEdges(state, directionalEdges: boolean) {
       state.directionalEdges = directionalEdges;
+    },
+
+    goToProvenanceNode(state, node: string) {
+      if (state.provenance !== null) {
+        state.provenance.goToNode(node);
+      }
     },
   },
   actions: {
@@ -335,14 +338,44 @@ const {
       }
     },
 
-    goToProvenanceNode(context, node: string) {
+    createProvenance(context) {
       const { commit } = rootActionContext(context);
-      if (context.state.provenance !== null) {
-        context.state.provenance.goToNode(node);
 
-        // TODO: #148 remove cast back to set
-        commit.setSelected(new Set(context.state.provenance.state.selectedNodes));
-      }
+      const storeState = context.state;
+
+      const stateForProv = JSON.parse(JSON.stringify(context.state));
+      stateForProv.selectedNodes = [];
+
+      commit.setProvenance(initProvenance<State, ProvenanceEventTypes, unknown>(
+        stateForProv,
+        { loadFromUrl: false },
+      ));
+
+      // Add a global observer to watch the state and update the tracked elements in the store
+      // enables undo/redo + navigating around provenance graph
+      storeState.provenance.addGlobalObserver(
+        () => {
+          const provenanceState = context.state.provenance.state;
+
+          // TODO: #148 remove cast back to set
+          const selectedNodes = new Set<string>(provenanceState.selectedNodes);
+
+          // Helper function
+          const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
+
+          // If the sets are not equal (happens when provenance is updated through provenance vis),
+          // update the store's selectedNodes to match the provenance state
+          if (!setsAreEqual(selectedNodes, storeState.selectedNodes)) {
+            storeState.selectedNodes = selectedNodes;
+          }
+
+          if (provenanceState.displayCharts !== storeState.displayCharts) {
+            storeState.displayCharts = provenanceState.displayCharts;
+          }
+        },
+      );
+
+      storeState.provenance.done();
     },
   },
 });

@@ -66,7 +66,7 @@ export interface State {
   network: Network | null;
   selectedNodes: Set<string>;
   loadError: LoadError;
-  renderNested: boolean;
+  displayCharts: boolean;
   markerSize: number;
   fontSize: number;
   labelVariable: string;
@@ -83,4 +83,4 @@ export interface State {
   simulationRunning: boolean;
 }
 
-export type ProvenanceEventTypes = 'Select Node' | 'De-select Node';
+export type ProvenanceEventTypes = 'Select Node' | 'De-select Node' | 'Set Display Charts';

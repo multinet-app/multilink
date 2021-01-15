@@ -66,12 +66,12 @@ export default Vue.extend({
       return new Set();
     },
 
-    renderNested: {
+    displayCharts: {
       get() {
-        return store.getters.renderNested;
+        return store.getters.displayCharts;
       },
       set(value: boolean) {
-        return store.commit.setRenderNested(value);
+        return store.commit.setDisplayCharts(value);
       },
     },
 
@@ -279,7 +279,7 @@ export default Vue.extend({
           <v-list-item class="px-0">
             <v-list-item-action class="mr-3">
               <v-switch
-                v-model="renderNested"
+                v-model="displayCharts"
                 class="ma-0"
                 hide-details
               />
