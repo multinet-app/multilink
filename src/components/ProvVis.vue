@@ -18,7 +18,7 @@ export default Vue.extend({
         ProvVisCreator(
           provDiv,
           provenance.value,
-          (newNode: string) => store.dispatch.goToProvenanceNode(newNode),
+          (newNode: string) => store.commit.goToProvenanceNode(newNode),
           true,
           true,
           provenance.value.root.id,

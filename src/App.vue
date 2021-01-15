@@ -37,7 +37,7 @@ export default {
     store.dispatch.fetchNetwork({
       workspaceName: workspace,
       networkName: graph,
-    }).then(() => store.commit.createProvenance());
+    }).then(() => store.dispatch.createProvenance());
 
     return {
       network,
