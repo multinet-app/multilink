@@ -188,9 +188,7 @@ export default Vue.extend({
     updateSliderProv(value: number, type: 'markerSize' | 'fontSize') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
-      }
-
-      if (type === 'fontSize') {
+      } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
       }
     },

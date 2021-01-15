@@ -8,39 +8,25 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       // TODO: #148 remove cast back to set
       // eslint-disable-next-line no-param-reassign, @typescript-eslint/no-explicit-any
       provState.selectedNodes = [...newProvState.selectedNodes] as any;
-    }
-
-    if (label === 'Set Display Charts') {
+    } else if (label === 'Set Display Charts') {
       // eslint-disable-next-line no-param-reassign
       provState.displayCharts = newProvState.displayCharts;
-    }
-
-    if (label === 'Set Marker Size') {
+    } else if (label === 'Set Marker Size') {
       // eslint-disable-next-line no-param-reassign
       provState.markerSize = newProvState.markerSize;
-    }
-
-    if (label === 'Set Font Size') {
+    } else if (label === 'Set Font Size') {
       // eslint-disable-next-line no-param-reassign
       provState.fontSize = newProvState.fontSize;
-    }
-
-    if (label === 'Set Label Variable') {
+    } else if (label === 'Set Label Variable') {
       // eslint-disable-next-line no-param-reassign
       provState.labelVariable = newProvState.labelVariable;
-    }
-
-    if (label === 'Set Color Variable') {
+    } else if (label === 'Set Color Variable') {
       // eslint-disable-next-line no-param-reassign
       provState.colorVariable = newProvState.colorVariable;
-    }
-
-    if (label === 'Set Select Neighbors') {
+    } else if (label === 'Set Select Neighbors') {
       // eslint-disable-next-line no-param-reassign
       provState.selectNeighbors = newProvState.selectNeighbors;
-    }
-
-    if (label === 'Set Directional Edges') {
+    } else if (label === 'Set Directional Edges') {
       // eslint-disable-next-line no-param-reassign
       provState.directionalEdges = newProvState.directionalEdges;
     }
