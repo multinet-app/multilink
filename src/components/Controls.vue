@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Legend from '@/components/MultiLink/Legend.vue';
+import ProvVis from '@/components/ProvVis.vue';
 
 import store from '@/store';
 import { Node, Link, Network } from '@/types';
@@ -8,6 +9,7 @@ import { Node, Link, Network } from '@/types';
 export default Vue.extend({
   components: {
     Legend,
+    ProvVis,
   },
 
   data() {
@@ -64,12 +66,12 @@ export default Vue.extend({
       return new Set();
     },
 
-    renderNested: {
+    displayCharts: {
       get() {
-        return store.getters.renderNested;
+        return store.getters.displayCharts;
       },
       set(value: boolean) {
-        return store.commit.setRenderNested(value);
+        return store.commit.setDisplayCharts(value);
       },
     },
 
@@ -129,6 +131,10 @@ export default Vue.extend({
 
     controlsWidth(): number {
       return store.getters.controlsWidth;
+    },
+
+    simulationRunning() {
+      return store.getters.simulationRunning;
     },
 
     network(): Network | null {
@@ -278,7 +284,7 @@ export default Vue.extend({
           <v-list-item class="px-0">
             <v-list-item-action class="mr-3">
               <v-switch
-                v-model="renderNested"
+                v-model="displayCharts"
                 class="ma-0"
                 hide-details
               />
@@ -333,55 +339,39 @@ export default Vue.extend({
           />
 
           <v-row>
-            <v-col cols="5">
+            <v-col>
               <v-btn
-                class="px-2"
                 color="grey darken-3"
                 depressed
                 text
                 small
                 @click="releaseNodes"
               >
-                <v-icon small>
+                <v-icon
+                  left
+                  small
+                >
                   mdi-pin-off
                 </v-icon>
                 Release
               </v-btn>
             </v-col>
-
-            <v-col
-              cols="3"
-              class="px-0"
-            >
+            <v-spacer />
+            <v-col>
               <v-btn
-                class="ml-2 px-1"
                 color="primary"
                 depressed
                 small
-                @click="startSimulation"
+                width="85"
+                @click="simulationRunning ? stopSimulation() : startSimulation()"
               >
-                <v-icon small>
-                  mdi-play
+                <v-icon
+                  left
+                  small
+                >
+                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
                 </v-icon>
-                Start
-              </v-btn>
-            </v-col>
-
-            <v-col
-              cols="3"
-              class="px-0"
-            >
-              <v-btn
-                class="ml-4 px-1"
-                color="primary"
-                depressed
-                small
-                @click="stopSimulation"
-              >
-                <v-icon small>
-                  mdi-stop
-                </v-icon>
-                Stop
+                {{ simulationRunning ? 'Stop' : 'Start' }}
               </v-btn>
             </v-col>
           </v-row>
@@ -396,6 +386,29 @@ export default Vue.extend({
             >
               Export Graph
             </v-btn>
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-menu
+              :close-on-content-click="false"
+              :close-on-click="false"
+              :nudge-width="200"
+              offset-x
+            >
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  block
+                  depressed
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  Provenance Vis
+                </v-btn>
+              </template>
+
+              <prov-vis />
+            </v-menu>
           </v-list-item>
         </div>
 

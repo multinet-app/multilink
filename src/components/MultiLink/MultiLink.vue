@@ -93,8 +93,8 @@ export default Vue.extend({
       return (this.markerSize / 2) * 1.5;
     },
 
-    renderNested() {
-      return store.getters.renderNested;
+    displayCharts() {
+      return store.getters.displayCharts;
     },
 
     markerSize() {
@@ -186,11 +186,18 @@ export default Vue.extend({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .force('link') as any).links(this.simulationLinks);
 
-      simulation.on('tick', () => {
-        this.$forceUpdate();
-      });
+      simulation
+        .on('tick', () => {
+          this.$forceUpdate();
+        })
+        // The next line handles the start stop button change in the controls.
+        // It's not explicitly necessary for the simulation to work
+        .on('end', () => {
+          store.commit.stopSimulation();
+        });
 
       store.commit.setSimulation(simulation);
+      store.commit.startSimulation();
     }
   },
 
@@ -405,8 +412,8 @@ export default Vue.extend({
             :width="markerSize"
             :height="markerSize"
             :fill="nodeColorScale(node[colorVariable])"
-            :rx="!renderNested ? (markerSize / 2) : 0"
-            :ry="!renderNested ? (markerSize / 2) : 0"
+            :rx="!displayCharts ? (markerSize / 2) : 0"
+            :ry="!displayCharts ? (markerSize / 2) : 0"
             @click="selectNode(node)"
             @mouseover="showTooltip(node, $event)"
             @mouseout="hideTooltip"
@@ -415,18 +422,18 @@ export default Vue.extend({
           <rect
             class="labelBackground"
             height="1em"
-            :y="!renderNested ? (markerSize / 2) - 8 : 0"
+            :y="!displayCharts ? (markerSize / 2) - 8 : 0"
             :width="markerSize"
           />
           <text
             class="label"
-            :dy="!renderNested ? markerSize / 2 + 2: 10"
+            :dy="!displayCharts ? markerSize / 2 + 2: 10"
             :dx="markerSize / 2"
             :style="nodeTextStyle"
           >{{ node[labelVariable] }}</text>
 
           <g
-            v-if="renderNested"
+            v-if="displayCharts"
             class="nested"
           >
 
