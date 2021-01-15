@@ -147,9 +147,14 @@ export default Vue.extend({
     },
 
     svgDimensions(): Dimensions {
+      const { height } = this.$vuetify.breakpoint;
+      const width = this.$vuetify.breakpoint.width - this.controlsWidth;
+
+      store.commit.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2) });
+
       return {
-        height: this.$vuetify.breakpoint.height,
-        width: this.$vuetify.breakpoint.width - this.controlsWidth,
+        height,
+        width,
       };
     },
 
@@ -175,8 +180,8 @@ export default Vue.extend({
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
-        .force('charge', forceManyBody().strength(-300))
-        .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }))
+        .force('charge', forceManyBody<Node>().strength(-300))
+        .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
         .force('collision', forceCollide(this.forceRadius));
 
       simulation
