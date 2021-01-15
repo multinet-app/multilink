@@ -225,6 +225,10 @@ const {
 
     setSelectNeighbors(state, selectNeighbors: boolean) {
       state.selectNeighbors = selectNeighbors;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Select Neighbors');
+      }
     },
 
     setNestedVariables(state, nestedVariables: NestedVariables) {
@@ -369,9 +373,15 @@ const {
             storeState.selectedNodes = selectedNodes;
           }
 
-          if (provenanceState.displayCharts !== storeState.displayCharts) {
-            storeState.displayCharts = provenanceState.displayCharts;
-          }
+          // Iterate through vars with primitive data types
+          [
+            'displayCharts',
+            'selectNeighbors',
+          ].forEach((primitiveVariable) => {
+            if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
+              storeState[primitiveVariable] = provenanceState[primitiveVariable];
+            }
+          });
         },
       );
 

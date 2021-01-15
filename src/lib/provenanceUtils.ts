@@ -14,6 +14,11 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       // eslint-disable-next-line no-param-reassign
       provState.displayCharts = newProvState.displayCharts;
     }
+
+    if (label === 'Set Select Neighbors') {
+      // eslint-disable-next-line no-param-reassign
+      provState.selectNeighbors = newProvState.selectNeighbors;
+    }
   })
     .setLabel(label);
 
