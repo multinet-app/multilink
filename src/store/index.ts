@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { createDirectStore } from 'direct-vuex';
-import { Simulation } from 'd3-force';
+import {
+  ForceCenter, ForceCollide, ForceLink, ForceManyBody, Simulation,
+} from 'd3-force';
 
 import {
   Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
@@ -54,6 +56,7 @@ const {
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
     directionalEdges: false,
+    controlsWidth: 256,
     simulationRunning: false,
   } as State,
 
@@ -128,6 +131,10 @@ const {
 
     directionalEdges(state: State) {
       return state.directionalEdges;
+    },
+
+    controlsWidth(state: State) {
+      return state.controlsWidth;
     },
 
     provenance(state: State) {
@@ -289,6 +296,16 @@ const {
     goToProvenanceNode(state, node: string) {
       if (state.provenance !== null) {
         state.provenance.goToNode(node);
+      }
+    },
+
+    updateSimulationForce(state: State, payload: {
+      forceType: 'center' | 'charge' | 'link' | 'collision';
+      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
+    }) {
+      if (state.simulation !== null) {
+        const { forceType, forceValue } = payload;
+        state.simulation.force(forceType, forceValue);
       }
     },
   },

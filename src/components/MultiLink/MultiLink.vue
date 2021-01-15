@@ -6,7 +6,9 @@ import {
 } from 'd3-force';
 
 import store from '@/store';
-import { Node, Link, SimulationLink } from '@/types';
+import {
+  Node, Link, SimulationLink, Dimensions,
+} from '@/types';
 
 export default Vue.extend({
   data() {
@@ -71,17 +73,6 @@ export default Vue.extend({
 
     nodeTextStyle(): string {
       return `font-size: ${this.fontSize}pt;`;
-    },
-
-    svgOffset(): {x: number; y: number} {
-      if (this.el === null) {
-        return { x: 0, y: 0 };
-      }
-
-      return {
-        x: (this.el as HTMLElement).offsetLeft,
-        y: (this.el as HTMLElement).offsetTop,
-      };
     },
 
     nestedBarWidth(): number {
@@ -155,15 +146,24 @@ export default Vue.extend({
       return store.getters.linkWidthScale;
     },
 
-    svgDimensions() {
+    svgDimensions(): Dimensions {
+      const { height } = this.$vuetify.breakpoint;
+      const width = this.$vuetify.breakpoint.width - this.controlsWidth;
+
+      store.commit.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2) });
+
       return {
-        height: document.body.clientHeight,
-        width: document.body.clientWidth - 256,
+        height,
+        width,
       };
     },
 
     directionalEdges() {
       return store.getters.directionalEdges;
+    },
+
+    controlsWidth(): number {
+      return store.getters.controlsWidth;
     },
   },
 
@@ -179,9 +179,9 @@ export default Vue.extend({
     if (this.network !== null) {
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
-        .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
-        .force('charge', forceManyBody().strength(-300))
-        .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }))
+        .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
+        .force('charge', forceManyBody<Node>().strength(-300))
+        .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
         .force('collision', forceCollide(this.forceRadius));
 
       simulation
@@ -232,9 +232,9 @@ export default Vue.extend({
 
       const moveFn = (evt: Event) => {
         // eslint-disable-next-line no-param-reassign
-        node.x = (evt as MouseEvent).clientX - this.svgOffset.x - (this.markerSize / 2);
+        node.x = (evt as MouseEvent).clientX - this.controlsWidth - (this.markerSize / 2);
         // eslint-disable-next-line no-param-reassign
-        node.y = (evt as MouseEvent).clientY - this.svgOffset.y - (this.markerSize / 2);
+        node.y = (evt as MouseEvent).clientY - (this.markerSize / 2);
         this.$forceUpdate();
       };
 
@@ -249,7 +249,7 @@ export default Vue.extend({
 
     showTooltip(element: Node | Link, event: MouseEvent) {
       this.tooltipPosition = {
-        x: event.clientX,
+        x: event.clientX - this.controlsWidth,
         y: event.clientY,
       };
 
