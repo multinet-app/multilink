@@ -15,6 +15,16 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.displayCharts = newProvState.displayCharts;
     }
 
+    if (label === 'Set Marker Size') {
+      // eslint-disable-next-line no-param-reassign
+      provState.markerSize = newProvState.markerSize;
+    }
+
+    if (label === 'Set Font Size') {
+      // eslint-disable-next-line no-param-reassign
+      provState.fontSize = newProvState.fontSize;
+    }
+
     if (label === 'Set Select Neighbors') {
       // eslint-disable-next-line no-param-reassign
       provState.selectNeighbors = newProvState.selectNeighbors;

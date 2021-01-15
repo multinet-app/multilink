@@ -207,12 +207,20 @@ const {
       }
     },
 
-    setMarkerSize(state, markerSize: number) {
-      state.markerSize = markerSize;
+    setMarkerSize(state, payload: { markerSize: number; updateProv: boolean }) {
+      state.markerSize = payload.markerSize;
+
+      if (state.provenance !== null && payload.updateProv) {
+        updateProvenanceState(state, 'Set Marker Size');
+      }
     },
 
-    setFontSize(state, fontSize: number) {
-      state.fontSize = fontSize;
+    setFontSize(state, payload: { fontSize: number; updateProv: boolean }) {
+      state.fontSize = payload.fontSize;
+
+      if (state.provenance !== null && payload.updateProv) {
+        updateProvenanceState(state, 'Set Font Size');
+      }
     },
 
     setLabelVariable(state, labelVariable: string) {
@@ -376,6 +384,8 @@ const {
           // Iterate through vars with primitive data types
           [
             'displayCharts',
+            'markerSize',
+            'fontSize',
             'selectNeighbors',
           ].forEach((primitiveVariable) => {
             if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {

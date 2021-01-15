@@ -87,4 +87,6 @@ export type ProvenanceEventTypes =
   'Select Node' |
   'De-select Node' |
   'Set Display Charts' |
+  'Set Marker Size' |
+  'Set Font Size' |
   'Set Select Neighbors';
