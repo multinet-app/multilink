@@ -39,7 +39,7 @@ const {
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
-    colorVariable: '_key',
+    colorVariable: '',
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
@@ -54,6 +54,7 @@ const {
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
     directionalEdges: false,
+    controlsWidth: 256,
     simulationRunning: false,
   } as State,
 
@@ -128,6 +129,10 @@ const {
 
     directionalEdges(state: State) {
       return state.directionalEdges;
+    },
+
+    controlsWidth(state: State) {
+      return state.controlsWidth;
     },
 
     provenance(state: State) {
