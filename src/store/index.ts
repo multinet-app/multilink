@@ -225,10 +225,18 @@ const {
 
     setLabelVariable(state, labelVariable: string) {
       state.labelVariable = labelVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Label Variable');
+      }
     },
 
     setColorVariable(state, colorVariable: string) {
       state.colorVariable = colorVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Color Variable');
+      }
     },
 
     setSelectNeighbors(state, selectNeighbors: boolean) {
@@ -386,6 +394,8 @@ const {
             'displayCharts',
             'markerSize',
             'fontSize',
+            'labelVariable',
+            'colorVariable',
             'selectNeighbors',
           ].forEach((primitiveVariable) => {
             if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {

@@ -25,6 +25,16 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.fontSize = newProvState.fontSize;
     }
 
+    if (label === 'Set Label Variable') {
+      // eslint-disable-next-line no-param-reassign
+      provState.labelVariable = newProvState.labelVariable;
+    }
+
+    if (label === 'Set Color Variable') {
+      // eslint-disable-next-line no-param-reassign
+      provState.colorVariable = newProvState.colorVariable;
+    }
+
     if (label === 'Set Select Neighbors') {
       // eslint-disable-next-line no-param-reassign
       provState.selectNeighbors = newProvState.selectNeighbors;

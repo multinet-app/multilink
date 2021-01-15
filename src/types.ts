@@ -89,4 +89,6 @@ export type ProvenanceEventTypes =
   'Set Display Charts' |
   'Set Marker Size' |
   'Set Font Size' |
+  'Set Label Variable' |
+  'Set Color Variable' |
   'Set Select Neighbors';
