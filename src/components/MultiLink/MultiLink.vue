@@ -148,8 +148,8 @@ export default Vue.extend({
 
     svgDimensions(): Dimensions {
       return {
-        height: document.body.clientHeight,
-        width: document.body.clientWidth - this.controlsWidth,
+        height: this.$vuetify.breakpoint.height,
+        width: this.$vuetify.breakpoint.width - this.controlsWidth,
       };
     },
 
@@ -174,7 +174,7 @@ export default Vue.extend({
     if (this.network !== null) {
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
-        .force('center', forceCenter(this.el.clientWidth / 2, this.el.clientHeight / 2))
+        .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
         .force('charge', forceManyBody().strength(-300))
         .force('link', forceLink().id((d) => { const datum = (d as Link); return datum._id; }))
         .force('collision', forceCollide(this.forceRadius));
