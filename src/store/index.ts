@@ -35,7 +35,7 @@ const {
       href: '',
     },
     simulation: null,
-    renderNested: false,
+    displayCharts: false,
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
@@ -82,8 +82,8 @@ const {
       return state.simulation;
     },
 
-    renderNested(state: State) {
-      return state.renderNested;
+    displayCharts(state: State) {
+      return state.displayCharts;
     },
 
     markerSize(state: State) {
@@ -199,8 +199,12 @@ const {
       }
     },
 
-    setRenderNested(state, renderNested: boolean) {
-      state.renderNested = renderNested;
+    setDisplayCharts(state, displayCharts: boolean) {
+      state.displayCharts = displayCharts;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Display Charts');
+      }
     },
 
     setMarkerSize(state, markerSize: number) {
@@ -337,6 +341,8 @@ const {
     createProvenance(context) {
       const { commit } = rootActionContext(context);
 
+      const storeState = context.state;
+
       const stateForProv = JSON.parse(JSON.stringify(context.state));
       stateForProv.selectedNodes = [];
 
@@ -347,23 +353,29 @@ const {
 
       // Add a global observer to watch the state and update the tracked elements in the store
       // enables undo/redo + navigating around provenance graph
-      context.state.provenance.addGlobalObserver(
+      storeState.provenance.addGlobalObserver(
         () => {
+          const provenanceState = context.state.provenance.state;
+
           // TODO: #148 remove cast back to set
-          const selectedNodes = new Set<string>(context.state.provenance.state.selectedNodes);
+          const selectedNodes = new Set<string>(provenanceState.selectedNodes);
 
           // Helper function
           const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
 
           // If the sets are not equal (happens when provenance is updated through provenance vis),
           // update the store's selectedNodes to match the provenance state
-          if (!setsAreEqual(selectedNodes, context.state.selectedNodes)) {
-            commit.setSelected(selectedNodes);
+          if (!setsAreEqual(selectedNodes, storeState.selectedNodes)) {
+            storeState.selectedNodes = selectedNodes;
+          }
+
+          if (provenanceState.displayCharts !== storeState.displayCharts) {
+            storeState.displayCharts = provenanceState.displayCharts;
           }
         },
       );
 
-      context.state.provenance.done();
+      storeState.provenance.done();
     },
   },
 });
