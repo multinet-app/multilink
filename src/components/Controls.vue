@@ -129,6 +129,10 @@ export default Vue.extend({
       },
     },
 
+    controlsWidth(): number {
+      return store.getters.controlsWidth;
+    },
+
     simulationRunning() {
       return store.getters.simulationRunning;
     },
@@ -197,6 +201,7 @@ export default Vue.extend({
       permanent
       stateless
       value="true"
+      :width="controlsWidth"
     >
       <v-toolbar color="grey lighten-2">
         <v-toolbar-title class="d-flex align-center">
