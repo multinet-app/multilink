@@ -41,12 +41,8 @@ export default Vue.extend({
       return new Set();
     },
 
-    variableList(): Set<string | null> {
-      return this.multiVariableList.add(null);
-    },
-
     colorVariableList(): Set<string | null> {
-      return this.variableList.add('table');
+      return new Set(this.multiVariableList).add('table');
     },
 
     linkVariableList(): Set<string | null> {
@@ -250,7 +246,7 @@ export default Vue.extend({
             <v-select
               v-model="labelVariable"
               label="Label Variable"
-              :items="Array.from(variableList)"
+              :items="Array.from(multiVariableList)"
               clearable
               outlined
               dense

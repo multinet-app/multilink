@@ -39,7 +39,7 @@ const {
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
-    colorVariable: '_key',
+    colorVariable: '',
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
