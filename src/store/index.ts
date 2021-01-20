@@ -15,7 +15,7 @@ import {
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
-import { updateProvenanceState } from '@/lib/provenanceUtils';
+import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 
 Vue.use(Vuex);
 
@@ -430,25 +430,7 @@ const {
       storeState.provenance.done();
 
       // Add keydown listener for undo/redo
-      document.addEventListener('keydown', (event) => {
-        if (
-          (event.ctrlKey && event.code === 'KeyZ' && !event.shiftKey) // ctrl + z (no shift)
-          || (event.metaKey && event.code === 'KeyZ' && !event.shiftKey) // meta + z (no shift)
-        ) {
-          if (storeState.provenance.current.id !== storeState.provenance.root.id) {
-            storeState.provenance.undo();
-          }
-        } else if (
-          (event.ctrlKey && event.code === 'KeyY') // ctrl + y
-          || (event.ctrlKey && event.code === 'KeyZ' && event.shiftKey) // ctrl + shift + z
-          || (event.metaKey && event.code === 'KeyY') // meta + y
-          || (event.metaKey && event.code === 'KeyZ' && event.shiftKey) // meta + shift + z
-        ) {
-          if (storeState.provenance.current.children.length > 0) {
-            storeState.provenance.redo();
-          }
-        }
-      });
+      document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
     },
   },
 });
