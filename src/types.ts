@@ -87,6 +87,7 @@ export interface State {
 export type ProvenanceEventTypes =
   'Select Node' |
   'De-select Node' |
+  'Clear Selection' |
   'Set Display Charts' |
   'Set Marker Size' |
   'Set Font Size' |
