@@ -502,6 +502,10 @@ export default Vue.extend({
         <br>
       </div>
 
+      <div v-if="cleanedNodeVariables.size === 0">
+        No Node Attributes To Visualize
+      </div>
+
       <br>
       <br>
 
@@ -522,6 +526,10 @@ export default Vue.extend({
           width="100%"
         />
         <br>
+      </div>
+
+      <div v-if="cleanedLinkVariables.size === 0">
+        No Link Attributes To Visualize
       </div>
     </div>
   </div>
