@@ -28,7 +28,7 @@
     "d3-selection": "^2.0.0",
     "direct-vuex": "^0.12.0",
     "eslint-plugin-vuetify": "^1.0.0-beta.7",
-    "multinet": "^0.20.0",
+    "multinet": "^0.20.1",
     "vue": "^2.6.10",
     "vuetify": "^2.1.0",
     "vuex": "^3.5.1"
