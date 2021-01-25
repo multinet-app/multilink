@@ -54,6 +54,7 @@ const {
       width: '',
       color: '',
     },
+    nodeSizeVariable: '',
     attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
@@ -122,6 +123,10 @@ const {
 
     linkVariables(state: State) {
       return state.linkVariables;
+    },
+
+    nodeSizeVariable(state: State) {
+      return state.nodeSizeVariable;
     },
 
     attributeRanges(state: State) {
@@ -286,6 +291,10 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
+    },
+
+    setNodeSizeVariable(state, nodeSizeVariable: string) {
+      state.nodeSizeVariable = nodeSizeVariable;
     },
 
     addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {

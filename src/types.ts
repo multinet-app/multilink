@@ -77,6 +77,7 @@ export interface State {
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
+  nodeSizeVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
   nodeColorScale: ScaleOrdinal<string, string>;
