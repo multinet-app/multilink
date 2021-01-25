@@ -76,27 +76,11 @@ export default Vue.extend({
     },
 
     cleanedNodeVariables(): Set<string> {
-      const cleanedVariables = new Set<string>();
-
-      (this.multiVariableList as Set<string>).forEach((variable) => {
-        if (this.columnTypes[variable] !== 'label') {
-          cleanedVariables.add(variable);
-        }
-      });
-
-      return cleanedVariables;
+      return this.cleanVariableList(this.multiVariableList as Set<string>);
     },
 
     cleanedLinkVariables(): Set<string> {
-      const cleanedVariables = new Set<string>();
-
-      (this.linkVariableList as Set<string>).forEach((variable) => {
-        if (this.columnTypes[variable] !== 'label') {
-          cleanedVariables.add(variable);
-        }
-      });
-
-      return cleanedVariables;
+      return this.cleanVariableList(this.linkVariableList as Set<string>);
     },
   },
 
@@ -298,6 +282,18 @@ export default Vue.extend({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dragStart(newEvent: any) {
       newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
+    },
+
+    cleanVariableList(list: Set<string>): Set<string> {
+      const cleanedVariables = new Set<string>();
+
+      list.forEach((variable) => {
+        if (this.columnTypes[variable] !== 'label') {
+          cleanedVariables.add(variable);
+        }
+      });
+
+      return cleanedVariables;
     },
   },
 });
