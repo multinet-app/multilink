@@ -17,7 +17,7 @@ import {
 } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
-import { updateProvenanceState } from '@/lib/provenanceUtils';
+import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 
 Vue.use(Vuex);
 
@@ -458,6 +458,9 @@ const {
       );
 
       storeState.provenance.done();
+
+      // Add keydown listener for undo/redo
+      document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
     },
   },
 });
