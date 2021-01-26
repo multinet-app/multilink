@@ -56,6 +56,10 @@ export default Vue.extend({
       return store.getters.linkVariables;
     },
 
+    nodeSizeVariable() {
+      return store.getters.nodeSizeVariable;
+    },
+
     nodeColorScale() {
       return store.getters.nodeColorScale;
     },
@@ -80,6 +84,10 @@ export default Vue.extend({
 
     cleanedLinkVariables(): Set<string> {
       return this.cleanVariableList(this.linkVariableList as Set<string>);
+    },
+
+    displayCharts() {
+      return store.getters.displayCharts;
     },
   },
 
