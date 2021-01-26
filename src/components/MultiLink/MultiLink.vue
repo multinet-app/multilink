@@ -125,6 +125,10 @@ export default Vue.extend({
       return store.getters.linkVariables;
     },
 
+    nodeSizeVariable() {
+      return store.getters.nodeSizeVariable;
+    },
+
     attributeRanges() {
       return store.getters.attributeRanges;
     },
@@ -164,6 +168,15 @@ export default Vue.extend({
 
     controlsWidth(): number {
       return store.getters.controlsWidth;
+    },
+
+    nodeSizeScale(): ScaleLinear<number, number> | null {
+      if (this.network === null) { return null; }
+      const values = this.network.nodes.map((node) => node[this.nodeSizeVariable]);
+
+      return scaleLinear()
+        .domain([Math.min(...values), Math.max(...values)])
+        .range([10, 100]);
     },
   },
 
