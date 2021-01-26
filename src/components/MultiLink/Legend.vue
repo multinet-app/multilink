@@ -271,6 +271,8 @@ export default Vue.extend({
           glyph: [...this.nestedVariables.glyph, droppedElText],
         };
         store.commit.setNestedVariables(updatedNestedVars);
+      } else if (type === 'node' && targetEl === 'nodeSizeElements') {
+        store.commit.setNodeSizeVariable(droppedElText);
       } else if (type === 'link' && targetEl === 'widthElements') {
         const updatedLinkVars = {
           width: droppedElText,
