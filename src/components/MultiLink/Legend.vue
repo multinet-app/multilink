@@ -321,8 +321,11 @@ export default Vue.extend({
         opacity="1"
       />
 
-      <!-- Node elements -->
-      <g id="nodeMapping">
+      <!-- Node elements when displayCharts === true -->
+      <g
+        v-if="displayCharts"
+        id="nodeMapping"
+      >
         <text
           font-size="16pt"
           y="-102"
@@ -399,6 +402,54 @@ export default Vue.extend({
             style="text-anchor: start;"
             font-size="9pt"
           >{{ glyphVar }}</text>
+        </g>
+      </g>
+
+      <!-- Node elements when displayCharts === false -->
+      <g
+        v-else
+        id="nodeMapping"
+      >
+        <text
+          font-size="16pt"
+          y="-102"
+          dominant-baseline="hanging"
+        >Node Mapping</text>
+        <circle
+          r="70"
+          fill="#82B1FF"
+        />
+
+        <!-- Bar adding elements -->
+        <g
+          id="nodeSizeElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
+          />
+          <text
+            class="nodeSizeLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Size</text>
+          <path
+            v-if="!nodeSizeVariable"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            :transform="`translate(0,${15})`"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ nodeSizeVariable }}</text>
         </g>
       </g>
 
@@ -561,7 +612,7 @@ svg >>> .selected{
 .sticky >>> text {
   text-anchor: middle;
 }
-.barLabel {
+.barLabel, .nodeSizeLabel {
   transform: translate(5%, 0);
 }
 #nodeMapping {
@@ -570,7 +621,7 @@ svg >>> .selected{
 #linkMapping {
   transform: translate(80%, 50%);
 }
-#barElements, #widthElements {
+#barElements, #widthElements, #nodeSizeElements {
   transform: translate(-12%, -20%);
 }
 #glyphElements, #colorElements {
