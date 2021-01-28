@@ -171,6 +171,12 @@ const {
 
     setSelected(state, selectedNodes: Set<string>) {
       state.selectedNodes = selectedNodes;
+
+      if (state.provenance !== null) {
+        if (selectedNodes.size === 0) {
+          updateProvenanceState(state, 'Clear Selection');
+        }
+      }
     },
 
     setLoadError(state, loadError: LoadError) {
