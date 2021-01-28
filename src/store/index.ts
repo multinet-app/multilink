@@ -6,10 +6,12 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
 } from '@/types';
 import api from '@/api';
-import { GraphSpec, RowsSpec, TableRow } from 'multinet';
+import {
+  GraphSpec, RowsSpec, TableMetadata, TableRow,
+} from 'multinet';
 import {
   scaleLinear, scaleOrdinal,
 } from 'd3-scale';
@@ -30,6 +32,7 @@ const {
     workspaceName: null,
     networkName: null,
     network: null,
+    networkMetadata: null,
     selectedNodes: new Set(),
     loadError: {
       message: '',
@@ -71,6 +74,10 @@ const {
 
     network(state: State) {
       return state.network;
+    },
+
+    networkMetadata(state: State) {
+      return state.networkMetadata;
     },
 
     selectedNodes(state: State) {
@@ -156,6 +163,10 @@ const {
 
     setNetwork(state, network: Network) {
       state.network = network;
+    },
+
+    setNetworkMetadata(state, networkMetadata: NetworkMetadata) {
+      state.networkMetadata = networkMetadata;
     },
 
     setSelected(state, selectedNodes: Set<string>) {
@@ -369,6 +380,25 @@ const {
         edges: edges as Link[],
       };
       commit.setNetwork(network);
+
+      // Get the network metadata promises
+      const metadataPromises: Promise<TableMetadata>[] = [];
+      networkTables.nodeTables.forEach((table) => {
+        metadataPromises.push(api.tableMetadata(workspaceName, table));
+      });
+      metadataPromises.push(api.tableMetadata(workspaceName, networkTables.edgeTable));
+
+      // Resolve network metadata promises
+      const resolvedMetadataPromises = await Promise.all(metadataPromises);
+
+      // Combine all network metadata
+      const networkMetadata: NetworkMetadata = {};
+      resolvedMetadataPromises.forEach((metadata) => {
+        const tableName = metadata.item_id;
+        networkMetadata[tableName] = metadata;
+      });
+
+      commit.setNetworkMetadata(networkMetadata);
     },
 
     releaseNodes(context) {
