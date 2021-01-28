@@ -64,7 +64,6 @@ export default Vue.extend({
       const typeMapping: { [key: string]: string } = {};
 
       if (store.getters.networkMetadata !== null) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Object.values(store.getters.networkMetadata).forEach((metadata) => {
           (metadata as TableMetadata).table.columns.forEach((columnType) => {
             typeMapping[columnType.key] = columnType.type;
