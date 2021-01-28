@@ -61,7 +61,7 @@ export default Vue.extend({
     },
 
     columnTypes() {
-      const typeMapping: { [key: string]: string} = {};
+      const typeMapping: { [key: string]: string } = {};
 
       if (store.getters.networkMetadata !== null) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
