@@ -5,6 +5,7 @@ import { select } from 'd3-selection';
 import { scaleLinear, scaleBand, ScaleBand } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
+import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
 import store from '@/store';
@@ -57,6 +58,28 @@ export default Vue.extend({
 
     nodeColorScale() {
       return store.getters.nodeColorScale;
+    },
+
+    columnTypes() {
+      const typeMapping: { [key: string]: string } = {};
+
+      if (store.getters.networkMetadata !== null) {
+        Object.values(store.getters.networkMetadata).forEach((metadata) => {
+          (metadata as TableMetadata).table.columns.forEach((columnType) => {
+            typeMapping[columnType.key] = columnType.type;
+          });
+        });
+      }
+
+      return typeMapping;
+    },
+
+    cleanedNodeVariables(): Set<string> {
+      return this.cleanVariableList(this.multiVariableList as Set<string>);
+    },
+
+    cleanedLinkVariables(): Set<string> {
+      return this.cleanVariableList(this.linkVariableList as Set<string>);
     },
   },
 
@@ -259,6 +282,18 @@ export default Vue.extend({
     dragStart(newEvent: any) {
       newEvent.dataTransfer.setData('attr_id', newEvent.target.id);
     },
+
+    cleanVariableList(list: Set<string>): Set<string> {
+      const cleanedVariables = new Set<string>();
+
+      list.forEach((variable) => {
+        if (this.columnTypes[variable] !== 'label') {
+          cleanedVariables.add(variable);
+        }
+      });
+
+      return cleanedVariables;
+    },
   },
 });
 </script>
@@ -444,8 +479,14 @@ export default Vue.extend({
     <div :style="{'padding': `${varPadding}px`}">
       <h2>Node Attributes</h2>
       <br>
+
+      <div v-if="cleanedNodeVariables.size === 0">
+        No node attributes to visualize
+      </div>
+
       <div
-        v-for="nodeAttr of multiVariableList"
+        v-for="nodeAttr of cleanedNodeVariables"
+        v-else
         :id="`node${nodeAttr}div`"
         :key="`node${nodeAttr}`"
         class="draggable"
@@ -467,8 +508,14 @@ export default Vue.extend({
 
       <h2>Link Attributes</h2>
       <br>
+
+      <div v-if="cleanedLinkVariables.size === 0">
+        No link attributes to visualize
+      </div>
+
       <div
-        v-for="linkAttr of linkVariableList"
+        v-for="linkAttr of cleanedLinkVariables"
+        v-else
         :id="`link${linkAttr}div`"
         :key="`link${linkAttr}`"
         class="draggable"
