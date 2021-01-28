@@ -480,8 +480,14 @@ export default Vue.extend({
     <div :style="{'padding': `${varPadding}px`}">
       <h2>Node Attributes</h2>
       <br>
+
+      <div v-if="cleanedNodeVariables.size === 0">
+        No node attributes to visualize
+      </div>
+
       <div
         v-for="nodeAttr of cleanedNodeVariables"
+        v-else
         :id="`node${nodeAttr}div`"
         :key="`node${nodeAttr}`"
         class="draggable"
@@ -498,17 +504,19 @@ export default Vue.extend({
         <br>
       </div>
 
-      <div v-if="cleanedNodeVariables.size === 0">
-        No Node Attributes To Visualize
-      </div>
-
       <br>
       <br>
 
       <h2>Link Attributes</h2>
       <br>
+
+      <div v-if="cleanedLinkVariables.size === 0">
+        No link attributes to visualize
+      </div>
+
       <div
         v-for="linkAttr of cleanedLinkVariables"
+        v-else
         :id="`link${linkAttr}div`"
         :key="`link${linkAttr}`"
         class="draggable"
@@ -522,10 +530,6 @@ export default Vue.extend({
           width="100%"
         />
         <br>
-      </div>
-
-      <div v-if="cleanedLinkVariables.size === 0">
-        No Link Attributes To Visualize
       </div>
     </div>
   </div>
