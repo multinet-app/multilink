@@ -192,6 +192,10 @@ export default Vue.extend({
         store.commit.setFontSize({ fontSize: value, updateProv: true });
       }
     },
+
+    clearSelection() {
+      store.commit.setSelected(new Set());
+    },
   },
 });
 </script>
@@ -275,6 +279,18 @@ export default Vue.extend({
               outlined
               dense
             />
+          </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-btn
+              color="primary"
+              depressed
+              small
+              block
+              @click="clearSelection"
+            >
+              Clear Selection
+            </v-btn>
           </v-list-item>
 
           <v-list-item class="px-0">
