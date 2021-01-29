@@ -102,11 +102,11 @@ export default Vue.extend({
   methods: {
     setUpPanel() {
       // For node and link variables
-      [this.multiVariableList as Set<string>, this.linkVariableList as Set<string>].forEach((list) => {
+      [this.cleanedNodeVariables as Set<string>, this.cleanedLinkVariables as Set<string>].forEach((list) => {
         // For each attribute
         list.forEach((attr) => {
           // Get the SVG element and its width
-          const type = list === this.multiVariableList ? 'node' : 'link';
+          const type = list === this.cleanedNodeVariables ? 'node' : 'link';
           const variableSvg = select(`#${type}${attr}`);
 
           const variableSvgWidth = (variableSvg
