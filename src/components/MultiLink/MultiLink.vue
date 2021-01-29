@@ -439,7 +439,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="nodeColorScale(node[nodeColorVariable])"
+            :fill="!displayCharts ? nodeColorScale(node[nodeColorVariable]) : '1f77b4'"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"
