@@ -446,14 +446,14 @@ export default Vue.extend({
             dominant-baseline="hanging"
           >Size</text>
           <path
-            v-if="!nodeSizeVariable"
+            v-if="nodeSizeVariable === ''"
             class="plus"
             d="M0,-10 V10 M-10,0 H10"
             stroke="black"
             stroke-width="3px"
           />
           <text
-            :transform="`translate(0,${15})`"
+            transform="translate(0,15)"
             dominant-baseline="hanging"
             style="text-anchor: start;"
             font-size="9pt"
