@@ -22,7 +22,7 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.labelVariable = newProvState.labelVariable;
     } else if (label === 'Set Color Variable') {
       // eslint-disable-next-line no-param-reassign
-      provState.colorVariable = newProvState.colorVariable;
+      provState.nodeColorVariable = newProvState.nodeColorVariable;
     } else if (label === 'Set Select Neighbors') {
       // eslint-disable-next-line no-param-reassign
       provState.selectNeighbors = newProvState.selectNeighbors;

@@ -109,8 +109,8 @@ export default Vue.extend({
       return store.getters.labelVariable;
     },
 
-    colorVariable() {
-      return store.getters.colorVariable;
+    nodeColorVariable() {
+      return store.getters.nodeColorVariable;
     },
 
     selectNeighbors() {
@@ -439,7 +439,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="nodeColorScale(node[colorVariable])"
+            :fill="nodeColorScale(node[nodeColorVariable])"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"

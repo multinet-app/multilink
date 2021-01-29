@@ -98,12 +98,12 @@ export default Vue.extend({
       },
     },
 
-    colorVariable: {
+    nodeColorVariable: {
       get() {
-        return store.getters.colorVariable;
+        return store.getters.nodeColorVariable;
       },
       set(value: string) {
-        store.commit.setColorVariable(value);
+        store.commit.setNodeColorVariable(value);
       },
     },
 

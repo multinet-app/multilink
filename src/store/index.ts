@@ -44,7 +44,6 @@ const {
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
-    colorVariable: '',
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
@@ -55,6 +54,7 @@ const {
       color: '',
     },
     nodeSizeVariable: '',
+    nodeColorVariable: '',
     attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
@@ -109,8 +109,8 @@ const {
       return state.labelVariable;
     },
 
-    colorVariable(state: State) {
-      return state.colorVariable;
+    nodeColorVariable(state: State) {
+      return state.nodeColorVariable;
     },
 
     selectNeighbors(state: State) {
@@ -260,8 +260,8 @@ const {
       }
     },
 
-    setColorVariable(state, colorVariable: string) {
-      state.colorVariable = colorVariable;
+    setNodeColorVariable(state, nodeColorVariable: string) {
+      state.nodeColorVariable = nodeColorVariable;
 
       if (state.provenance !== null) {
         updateProvenanceState(state, 'Set Color Variable');
@@ -461,7 +461,7 @@ const {
             'markerSize',
             'fontSize',
             'labelVariable',
-            'colorVariable',
+            'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
           ].forEach((primitiveVariable) => {

@@ -60,6 +60,10 @@ export default Vue.extend({
       return store.getters.nodeSizeVariable;
     },
 
+    nodeColorVariable() {
+      return store.getters.nodeColorVariable;
+    },
+
     nodeColorScale() {
       return store.getters.nodeColorScale;
     },

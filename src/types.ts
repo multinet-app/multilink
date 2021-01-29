@@ -73,11 +73,11 @@ export interface State {
   markerSize: number;
   fontSize: number;
   labelVariable: string;
-  colorVariable: string;
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
   nodeSizeVariable: string;
+  nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
   nodeColorScale: ScaleOrdinal<string, string>;
