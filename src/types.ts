@@ -96,6 +96,7 @@ export type ProvenanceEventTypes =
   'Set Marker Size' |
   'Set Font Size' |
   'Set Label Variable' |
-  'Set Color Variable' |
+  'Set Node Color Variable' |
+  'Set Node Size Variable' |
   'Set Select Neighbors'|
   'Set Directional Edges';

@@ -264,7 +264,7 @@ const {
       state.nodeColorVariable = nodeColorVariable;
 
       if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Color Variable');
+        updateProvenanceState(state, 'Set Node Color Variable');
       }
     },
 
@@ -295,6 +295,10 @@ const {
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
       state.nodeSizeVariable = nodeSizeVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Node Size Variable');
+      }
     },
 
     addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {
@@ -461,6 +465,7 @@ const {
             'markerSize',
             'fontSize',
             'labelVariable',
+            'nodeSizeVariable',
             'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',

@@ -20,9 +20,12 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
     } else if (label === 'Set Label Variable') {
       // eslint-disable-next-line no-param-reassign
       provState.labelVariable = newProvState.labelVariable;
-    } else if (label === 'Set Color Variable') {
+    } else if (label === 'Set Node Color Variable') {
       // eslint-disable-next-line no-param-reassign
       provState.nodeColorVariable = newProvState.nodeColorVariable;
+    } else if (label === 'Set Node Size Variable') {
+      // eslint-disable-next-line no-param-reassign
+      provState.nodeSizeVariable = newProvState.nodeSizeVariable;
     } else if (label === 'Set Select Neighbors') {
       // eslint-disable-next-line no-param-reassign
       provState.selectNeighbors = newProvState.selectNeighbors;
