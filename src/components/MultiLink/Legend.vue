@@ -226,7 +226,12 @@ export default Vue.extend({
       });
     },
 
+    // TODO: #176 use table name for var selection
     isQuantitative(varName: string, type: 'node' | 'link') {
+      if (Object.entries(this.columnTypes).length > 0) {
+        return this.columnTypes[varName] === 'number';
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let nodesOrLinks: any[];
 
