@@ -41,10 +41,6 @@ export default Vue.extend({
       return new Set();
     },
 
-    colorVariableList(): Set<string | null> {
-      return new Set(this.multiVariableList).add('table');
-    },
-
     linkVariableList(): Set<string | null> {
       if (this.graphStructure !== null) {
         // Loop through all links, flatten the 2d array, and turn it into a set
@@ -95,15 +91,6 @@ export default Vue.extend({
       },
       set(value: string) {
         store.commit.setLabelVariable(value);
-      },
-    },
-
-    nodeColorVariable: {
-      get() {
-        return store.getters.nodeColorVariable;
-      },
-      set(value: string) {
-        store.commit.setNodeColorVariable(value);
       },
     },
 
@@ -264,17 +251,6 @@ export default Vue.extend({
               v-model="labelVariable"
               label="Label Variable"
               :items="Array.from(multiVariableList)"
-              clearable
-              outlined
-              dense
-            />
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-select
-              v-model="colorVariable"
-              label="Color Variable"
-              :items="Array.from(colorVariableList)"
               clearable
               outlined
               dense
