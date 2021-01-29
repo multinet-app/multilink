@@ -130,6 +130,10 @@ export default Vue.extend({
       }
       return [];
     },
+
+    networkMetadata() {
+      return store.getters.networkMetadata;
+    },
   },
 
   methods: {
@@ -406,7 +410,7 @@ export default Vue.extend({
           Legend
         </v-subheader>
         <Legend
-          v-if="multiVariableList.has('_key')"
+          v-if="multiVariableList.has('_key') && networkMetadata"
           ref="legend"
           class="mt-4"
           v-bind="{
