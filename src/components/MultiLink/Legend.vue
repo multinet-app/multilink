@@ -167,7 +167,7 @@ export default Vue.extend({
           // Add the bars
           const variableSvgEnter = (variableSvg
             .selectAll()
-            .data(currentData)
+            .data(binLabels)
             .enter()
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .append('rect') as any)
