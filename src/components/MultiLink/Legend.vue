@@ -277,6 +277,8 @@ export default Vue.extend({
         store.commit.setNestedVariables(updatedNestedVars);
       } else if (type === 'node' && targetEl === 'nodeSizeElements') {
         store.commit.setNodeSizeVariable(droppedElText);
+      } else if (type === 'node' && targetEl === 'nodeColorElements') {
+        store.commit.setNodeColorVariable(droppedElText);
       } else if (type === 'link' && targetEl === 'widthElements') {
         const updatedLinkVars = {
           width: droppedElText,
@@ -457,6 +459,38 @@ export default Vue.extend({
             font-size="9pt"
           >{{ nodeSizeVariable }}</text>
         </g>
+
+        <!-- Glyph adding elements -->
+        <g
+          id="nodeColorElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
+          />
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Color</text>
+          <path
+            v-if="nodeColorVariable === ''"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            transform="translate(0,15)"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ nodeColorVariable }}</text>
+        </g>
       </g>
 
       <!-- Link elements -->
@@ -630,7 +664,7 @@ svg >>> .selected{
 #barElements, #widthElements, #nodeSizeElements {
   transform: translate(-12%, -20%);
 }
-#glyphElements, #colorElements {
+#glyphElements, #colorElements, #nodeColorElements {
   transform: translate(2%, -20%);
 }
 .plus {
