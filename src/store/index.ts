@@ -61,6 +61,7 @@ const {
     directionalEdges: false,
     controlsWidth: 256,
     simulationRunning: false,
+    showProvenanceVis: false,
   } as State,
 
   getters: {
@@ -150,6 +151,10 @@ const {
 
     simulationRunning(state: State) {
       return state.simulationRunning;
+    },
+
+    showProvenanceVis(state: State) {
+      return state.showProvenanceVis;
     },
   },
   mutations: {
@@ -324,6 +329,10 @@ const {
         const { forceType, forceValue } = payload;
         state.simulation.force(forceType, forceValue);
       }
+    },
+
+    toggleShowProvenanceVis(state: State) {
+      state.showProvenanceVis = !state.showProvenanceVis;
     },
   },
   actions: {

@@ -85,6 +85,7 @@ export interface State {
   directionalEdges: boolean;
   controlsWidth: number;
   simulationRunning: boolean;
+  showProvenanceVis: boolean;
 }
 
 export type ProvenanceEventTypes =
