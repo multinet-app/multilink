@@ -476,7 +476,7 @@ export default Vue.extend({
               class="bar"
               :width="nestedBarWidth"
               :height="nestedBarHeight"
-              style="fill: white;"
+              fill="#FFFFFF"
               :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
               y="20"
             />
