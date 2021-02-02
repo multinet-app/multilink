@@ -726,41 +726,18 @@ export default Vue.extend({
 </template>
 
 <style scoped>
-.v-card {
-    height: calc(66vh - 24px);
-    overflow-y: scroll
-}
-svg >>> .selected{
-  stroke: "#000000";
-}
 .sticky {
-   position: sticky;
-   top: 0;
-   z-index: 2;
-}
-.sticky >>> text {
-  text-anchor: middle;
-}
-.barLabel, .nodeSizeLabel {
-  transform: translate(5%, 0);
-}
-#nodeMapping {
-  transform: translate(20%, 50%);
-}
-#linkMapping {
-  transform: translate(80%, 50%);
-}
-#barElements, #widthElements, #nodeSizeElements {
-  transform: translate(-12%, -20%);
-}
-#glyphElements, #colorElements, #nodeColorElements {
-  transform: translate(2%, -20%);
-}
-.plus {
-  transform: translate(5%, 20%);
-  width: 5%;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 .draggable {
   cursor: pointer;
+}
+.barLabel, .glyphLabel{
+  display: block;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
