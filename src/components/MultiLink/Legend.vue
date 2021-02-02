@@ -96,6 +96,10 @@ export default Vue.extend({
     displayCharts() {
       return store.getters.displayCharts;
     },
+
+    attributeRanges() {
+      return store.getters.attributeRanges;
+    },
   },
 
   mounted() {
@@ -146,7 +150,14 @@ export default Vue.extend({
             const bins = binGenerator(currentData);
 
             if (type === 'node') {
-              store.commit.addAttributeRange({ attr, min: parseFloat(min(currentData) || '0'), max: parseFloat(max(currentData) || '0') });
+              console.log(xScale);
+              store.commit.addAttributeRange({
+                attr,
+                min: xScale.domain()[0] || 0,
+                max: xScale.domain()[1] || 0,
+                binLabels: xScale.domain().map((label) => label.toString()),
+                binValues: xScale.range(),
+              });
             }
 
             const yScale = scaleLinear()
@@ -187,6 +198,16 @@ export default Vue.extend({
 
             const binLabels: string[] = Array.from(bins.keys());
             const binValues: number[] = Array.from(bins.values());
+
+            if (type === 'node') {
+              store.commit.addAttributeRange({
+                attr,
+                min: parseFloat(min(binLabels) || '0'),
+                max: parseFloat(max(binLabels) || '0'),
+                binLabels,
+                binValues,
+              });
+            }
 
             // Generate axis scales
             const yScale = scaleLinear()

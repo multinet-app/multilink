@@ -306,7 +306,7 @@ const {
       }
     },
 
-    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {
+    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number; binLabels: string[]; binValues: number[] }) {
       state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
     },
 
