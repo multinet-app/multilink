@@ -538,82 +538,82 @@ export default Vue.extend({
       </g>
 
       <!-- Link elements -->
-      <g id="linkMapping">
+      <g
+        id="linkMapping"
+        :transform="displayCharts ? `translate(15, 280)` : `translate(15, 150)`"
+      >
         <text
           font-size="16pt"
-          y="-102"
           dominant-baseline="hanging"
+          text-anchor="start"
         >Link Mapping</text>
-        <rect
-          x="-70"
-          y="-70"
-          width="140"
-          height="140"
-          fill="#82B1FF"
-        />
 
-        <!-- Width adding elements -->
-        <g
-          id="widthElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Width</text>
-          <path
-            v-if="!linkVariables.width"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ linkVariables.width }}</text>
+        <!-- Link width elements -->
+        <g transform="translate(0, 30)">
+          <text dominant-baseline="hanging">Width:</text>
+          <g
+            v-if="linkVariables.width === ''"
+            id="widthElements"
+            transform="translate(50, 0)"
+            @dragenter="(e) => e.preventDefault()"
+            @dragover="(e) => e.preventDefault()"
+            @drop="rectDrop"
+          >
+            <rect
+              width="30"
+              height="30"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M0,-10 V10 M-10,0 H10"
+              stroke="black"
+              stroke-width="2px"
+              transform="translate(15,15)"
+            />
+          </g>
+
+          <g v-else>
+            <text
+              transform="translate(50, 0)"
+              dominant-baseline="hanging"
+            >
+              {{ linkVariables.width }}
+            </text>
+          </g>
         </g>
 
-        <!-- Color adding elements -->
-        <g
-          id="colorElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Color</text>
-          <path
-            v-if="!linkVariables.color"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ linkVariables.color }}</text>
+        <!-- Link color elements -->
+        <g transform="translate(0, 80)">
+          <text dominant-baseline="hanging">Color:</text>
+          <g
+            v-if="linkVariables.color === ''"
+            id="colorElements"
+            transform="translate(50, 0)"
+            @dragenter="(e) => e.preventDefault()"
+            @dragover="(e) => e.preventDefault()"
+            @drop="rectDrop"
+          >
+            <rect
+              width="30"
+              height="30"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M0,-10 V10 M-10,0 H10"
+              stroke="black"
+              stroke-width="2px"
+              transform="translate(15,15)"
+            />
+          </g>
+
+          <g v-else>
+            <text
+              transform="translate(50, 0)"
+              dominant-baseline="hanging"
+            >
+              {{ linkVariables.color }}
+            </text>
+          </g>
         </g>
       </g>
     </svg>
