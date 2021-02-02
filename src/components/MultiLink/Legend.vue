@@ -375,165 +375,217 @@ export default Vue.extend({
 
       <!-- Node elements when displayCharts === true -->
       <g
-        v-if="displayCharts"
         id="nodeMapping"
       >
         <text
           font-size="16pt"
-          y="-102"
+          y="15"
+          x="15"
           dominant-baseline="hanging"
+          text-anchor="start"
         >Node Mapping</text>
-        <circle
-          r="70"
-          fill="#82B1FF"
-        />
 
-        <!-- Bar adding elements -->
         <g
-          id="barElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
+          v-if="displayCharts"
         >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Bars</text>
-          <path
-            v-if="nestedVariables.bar.length === 0"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            v-for="(barVar, i) of nestedVariables.bar"
-            :key="barVar"
-            :transform="`translate(0,${i * 15 + 15})`"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ barVar }}</text>
+          <!-- Bar adding elements -->
+          <g
+            transform="translate(15, 50)"
+          >
+            <g
+              v-for="(barVar, index) of nestedVariables.bar"
+              :key="barVar"
+            >
+              <rect
+                :x="index * 60"
+                width="30"
+                height="100"
+                fill="#FFFFFF"
+              />
+              <rect
+                :x="index * 60"
+                y="50"
+                width="30"
+                height="50"
+                :fill="nodeBarColorScale(barVar)"
+              />
+              <foreignObject
+                :x="index * 60"
+                y="100"
+                width="50"
+                height="20"
+              >
+                <xhtml:p
+                  class="barLabel"
+                  :title="barVar"
+                >
+                  {{ barVar }}
+                </xhtml:p>
+              </foreignObject>
+              <g
+                :id="`node_${barVar}_scale`"
+                :transform="`translate(${30 + (index * 60)}, 0)`"
+              />
+            </g>
+            <g
+              id="barElements"
+              :transform="`translate(${nestedVariables.bar.length * 60}, 0)`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                width="30"
+                height="100"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                transform="translate(15,50)"
+              />
+            </g>
+          </g>
+
+          <!-- Glyph adding elements -->
+          <g
+            transform="translate(15, 180)"
+          >
+            <text dominant-baseline="hanging">Glyph:</text>
+            <g
+              v-for="(glyphVar, outerIndex) of nestedVariables.glyph"
+              :key="glyphVar"
+            >
+              <text
+                x="50"
+                :y="15 + outerIndex * 60"
+              >
+                {{ glyphVar }}
+              </text>
+              <g
+                v-for="(glyphDatum, innerIndex) of attributeRanges[glyphVar].binLabels"
+                :key="glyphDatum"
+              >
+                <rect
+                  :x="50 + innerIndex * 20"
+                  :y="20 + outerIndex * 60"
+                  width="15"
+                  height="15"
+                  :fill="nodeGlyphColorScale(glyphDatum)"
+                />
+                <foreignObject
+                  :x="50 + innerIndex * 20"
+                  :y="30 + outerIndex * 60"
+                  width="15"
+                  height="20"
+                >
+                  <xhtml:p
+                    class="glyphLabel"
+                    :title="glyphDatum"
+                  >
+                    {{ glyphDatum }}
+                  </xhtml:p>
+                </foreignObject>
+              </g>
+            </g>
+            <g
+              v-if="nestedVariables.glyph.length !== 2"
+              id="glyphElements"
+              :transform="`translate(50, ${nestedVariables.glyph.length * 60})`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                width="30"
+                height="30"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                transform="translate(15,15)"
+              />
+            </g>
+          </g>
         </g>
 
-        <!-- Glyph adding elements -->
         <g
-          id="glyphElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
+          v-else
         >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Glyphs</text>
-          <path
-            v-if="nestedVariables.glyph.length === 0"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            v-for="(glyphVar, i) of nestedVariables.glyph"
-            :key="glyphVar"
-            :transform="`translate(0,${i * 15 + 15})`"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ glyphVar }}</text>
-        </g>
-      </g>
+          <!-- Node size elements -->
+          <g
+            transform="translate(15, 50)"
+          >
+            <text dominant-baseline="hanging">Size:</text>
+            <g
+              v-if="nodeSizeVariable === ''"
+              id="nodeSizeElements"
+              transform="translate(50, 0)"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                width="30"
+                height="30"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                transform="translate(15,15)"
+              />
+            </g>
 
-      <!-- Node elements when displayCharts === false -->
-      <g
-        v-else
-        id="nodeMapping"
-      >
-        <text
-          font-size="16pt"
-          y="-102"
-          dominant-baseline="hanging"
-        >Node Mapping</text>
-        <circle
-          r="70"
-          fill="#82B1FF"
-        />
+            <g v-else>
+              <text
+                transform="translate(50, 0)"
+                dominant-baseline="hanging"
+              >
+                {{ nodeSizeVariable }}
+              </text>
+            </g>
+          </g>
 
-        <!-- Bar adding elements -->
-        <g
-          id="nodeSizeElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="nodeSizeLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Size</text>
-          <path
-            v-if="nodeSizeVariable === ''"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ nodeSizeVariable }}</text>
-        </g>
+          <!-- Node size elements -->
+          <g
+            transform="translate(15, 100)"
+          >
+            <text dominant-baseline="hanging">Color:</text>
+            <g
+              v-if="nodeColorVariable === ''"
+              id="nodeColorElements"
+              transform="translate(50, 0)"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                width="30"
+                height="30"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                transform="translate(15,15)"
+              />
+            </g>
 
-        <!-- Glyph adding elements -->
-        <g
-          id="nodeColorElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Color</text>
-          <path
-            v-if="nodeColorVariable === ''"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ nodeColorVariable }}</text>
+            <g v-else>
+              <text
+                transform="translate(50, 0)"
+                dominant-baseline="hanging"
+              >
+                {{ nodeColorVariable }}
+              </text>
+            </g>
+          </g>
         </g>
       </g>
 
