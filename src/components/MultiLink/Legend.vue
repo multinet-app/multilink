@@ -7,7 +7,7 @@ import { select } from 'd3-selection';
 import {
   scaleLinear, scaleBand, ScaleBand,
 } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
+import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
@@ -297,6 +297,9 @@ export default Vue.extend({
           glyph: this.nestedVariables.glyph,
         };
         store.commit.setNestedVariables(updatedNestedVars);
+
+        // Render the scales
+        Vue.nextTick(() => this.renderScales(droppedElText));
       } else if (type === 'node' && targetEl === 'glyphElements') {
         const updatedNestedVars = {
           bar: this.nestedVariables.bar,
@@ -320,6 +323,19 @@ export default Vue.extend({
         };
         store.commit.setLinkVariables(updatedLinkVars);
       }
+    },
+
+    renderScales(barVar: string) {
+      const varMin = this.attributeRanges[barVar].min;
+      const varMax = this.attributeRanges[barVar].max;
+
+      const scale = scaleLinear()
+        .domain([varMin, varMax])
+        .range([100, 0]);
+      const axis = axisRight(scale);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      select(`#node_${barVar}_scale`).call((axis as any));
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
