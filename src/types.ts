@@ -80,7 +80,8 @@ export interface State {
   nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
-  nodeColorScale: ScaleOrdinal<string, string>;
+  nodeBarColorScale: ScaleOrdinal<string, string>;
+  nodeGlyphColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
   directionalEdges: boolean;

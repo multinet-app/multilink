@@ -67,8 +67,12 @@ export default Vue.extend({
       return store.getters.nodeColorVariable;
     },
 
-    nodeColorScale() {
-      return store.getters.nodeColorScale;
+    nodeBarColorScale() {
+      return store.getters.nodeBarColorScale;
+    },
+
+    nodeGlyphColorScale() {
+      return store.getters.nodeGlyphColorScale;
     },
 
     columnTypes() {
@@ -227,7 +231,7 @@ export default Vue.extend({
               .attr('y', (d: string) => yScale(bins.get(d) || 0))
               .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
               .attr('width', xScale.bandwidth())
-              .attr('fill', (d: string) => this.nodeColorScale(d));
+              .attr('fill', (d: string) => this.nodeGlyphColorScale(d));
 
             // Add the axis scales onto the chart
             variableSvg
