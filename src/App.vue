@@ -7,6 +7,7 @@ import {
 
 import Controls from './components/Controls.vue';
 import MultiLink from './components/MultiLink/MultiLink.vue';
+import ProvVis from './components/ProvVis.vue';
 
 export default {
   name: 'App',
@@ -14,6 +15,7 @@ export default {
   components: {
     Controls,
     MultiLink,
+    ProvVis,
   },
 
   setup() {
@@ -39,12 +41,16 @@ export default {
       networkName: graph,
     }).then(() => store.dispatch.createProvenance());
 
+    // Provenance vis boolean
+    const showProvenanceVis = computed(() => store.getters.showProvenanceVis);
+
     return {
       network,
       selectedNodes,
       loadError,
       multilinkContainer,
       multilinkContainerDimensions,
+      showProvenanceVis,
     };
   },
 };
@@ -76,6 +82,8 @@ export default {
         </v-row>
       </v-alert>
     </v-main>
+
+    <prov-vis v-if="showProvenanceVis" />
   </v-app>
 </template>
 

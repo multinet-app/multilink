@@ -26,15 +26,32 @@ export default Vue.extend({
       }
     });
 
-    return { };
+    function toggleProvVis() {
+      store.commit.toggleShowProvenanceVis();
+    }
+
+    return { toggleProvVis };
   },
 });
 </script>
 
 <template>
-  <v-card>
+  <v-navigation-drawer
+    absolute
+    permanent
+    right
+    :width="450"
+  >
+    <v-btn
+      icon
+      class="ma-2"
+      @click="toggleProvVis"
+    >
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+
     <div id="provDiv" />
-  </v-card>
+  </v-navigation-drawer>
 </template>
 
 <style scoped>
