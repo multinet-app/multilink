@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import Legend from '@/components/MultiLink/Legend.vue';
-import ProvVis from '@/components/ProvVis.vue';
 
 import store from '@/store';
 import { Node, Link, Network } from '@/types';
@@ -9,7 +8,6 @@ import { Node, Link, Network } from '@/types';
 export default Vue.extend({
   components: {
     Legend,
-    ProvVis,
   },
 
   data() {
@@ -186,6 +184,10 @@ export default Vue.extend({
 
     clearSelection() {
       store.commit.setSelected(new Set());
+    },
+
+    toggleProvVis() {
+      store.commit.toggleShowProvenanceVis();
     },
   },
 });
@@ -383,26 +385,14 @@ export default Vue.extend({
           </v-list-item>
 
           <v-list-item class="px-0">
-            <v-menu
-              :close-on-content-click="false"
-              :close-on-click="false"
-              :nudge-width="200"
-              offset-x
+            <v-btn
+              color="primary"
+              block
+              depressed
+              @click="toggleProvVis"
             >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  block
-                  depressed
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Provenance Vis
-                </v-btn>
-              </template>
-
-              <prov-vis />
-            </v-menu>
+              Provenance Vis
+            </v-btn>
           </v-list-item>
         </div>
 
