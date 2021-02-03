@@ -358,12 +358,12 @@ export default Vue.extend({
     <!-- Sticky SVG to drag variables onto -->
     <svg
       class="sticky"
-      :height="displayCharts ? 400 : 270"
+      :height="displayCharts ? 420 : 290"
       width="100%"
     >
       <rect
         width="100%"
-        height="400"
+        height="420"
         fill="#DDDDDD"
         opacity="1"
       />
