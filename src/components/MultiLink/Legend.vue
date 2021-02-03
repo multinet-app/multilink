@@ -56,6 +56,14 @@ export default Vue.extend({
       return store.getters.linkVariables;
     },
 
+    nodeSizeVariable() {
+      return store.getters.nodeSizeVariable;
+    },
+
+    nodeColorVariable() {
+      return store.getters.nodeColorVariable;
+    },
+
     nodeColorScale() {
       return store.getters.nodeColorScale;
     },
@@ -81,6 +89,10 @@ export default Vue.extend({
     cleanedLinkVariables(): Set<string> {
       return this.cleanVariableList(this.linkVariableList as Set<string>);
     },
+
+    displayCharts() {
+      return store.getters.displayCharts;
+    },
   },
 
   mounted() {
@@ -90,11 +102,11 @@ export default Vue.extend({
   methods: {
     setUpPanel() {
       // For node and link variables
-      [this.multiVariableList as Set<string>, this.linkVariableList as Set<string>].forEach((list) => {
+      [this.cleanedNodeVariables as Set<string>, this.cleanedLinkVariables as Set<string>].forEach((list) => {
         // For each attribute
         list.forEach((attr) => {
           // Get the SVG element and its width
-          const type = list === this.multiVariableList ? 'node' : 'link';
+          const type = list === this.cleanedNodeVariables ? 'node' : 'link';
           const variableSvg = select(`#${type}${attr}`);
 
           const variableSvgWidth = (variableSvg
@@ -155,7 +167,7 @@ export default Vue.extend({
           // Add the bars
           const variableSvgEnter = (variableSvg
             .selectAll()
-            .data(currentData)
+            .data(binLabels)
             .enter()
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .append('rect') as any)
@@ -214,7 +226,13 @@ export default Vue.extend({
       });
     },
 
+    // TODO: https://github.com/multinet-app/multilink/issues/176
+    // use table name for var selection
     isQuantitative(varName: string, type: 'node' | 'link') {
+      if (Object.keys(this.columnTypes).length > 0) {
+        return this.columnTypes[varName] === 'number';
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let nodesOrLinks: any[];
 
@@ -263,6 +281,10 @@ export default Vue.extend({
           glyph: [...this.nestedVariables.glyph, droppedElText],
         };
         store.commit.setNestedVariables(updatedNestedVars);
+      } else if (type === 'node' && targetEl === 'nodeSizeElements') {
+        store.commit.setNodeSizeVariable(droppedElText);
+      } else if (type === 'node' && targetEl === 'nodeColorElements') {
+        store.commit.setNodeColorVariable(droppedElText);
       } else if (type === 'link' && targetEl === 'widthElements') {
         const updatedLinkVars = {
           width: droppedElText,
@@ -313,8 +335,11 @@ export default Vue.extend({
         opacity="1"
       />
 
-      <!-- Node elements -->
-      <g id="nodeMapping">
+      <!-- Node elements when displayCharts === true -->
+      <g
+        v-if="displayCharts"
+        id="nodeMapping"
+      >
         <text
           font-size="16pt"
           y="-102"
@@ -391,6 +416,86 @@ export default Vue.extend({
             style="text-anchor: start;"
             font-size="9pt"
           >{{ glyphVar }}</text>
+        </g>
+      </g>
+
+      <!-- Node elements when displayCharts === false -->
+      <g
+        v-else
+        id="nodeMapping"
+      >
+        <text
+          font-size="16pt"
+          y="-102"
+          dominant-baseline="hanging"
+        >Node Mapping</text>
+        <circle
+          r="70"
+          fill="#82B1FF"
+        />
+
+        <!-- Bar adding elements -->
+        <g
+          id="nodeSizeElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
+          />
+          <text
+            class="nodeSizeLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Size</text>
+          <path
+            v-if="nodeSizeVariable === ''"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            transform="translate(0,15)"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ nodeSizeVariable }}</text>
+        </g>
+
+        <!-- Glyph adding elements -->
+        <g
+          id="nodeColorElements"
+          @dragenter="(e) => e.preventDefault()"
+          @dragover="(e) => e.preventDefault()"
+          @drop="rectDrop"
+        >
+          <rect
+            width="10%"
+            height="40%"
+            fill="#EEEEEE"
+          />
+          <text
+            class="barLabel"
+            font-size="10pt"
+            dominant-baseline="hanging"
+          >Color</text>
+          <path
+            v-if="nodeColorVariable === ''"
+            class="plus"
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="3px"
+          />
+          <text
+            transform="translate(0,15)"
+            dominant-baseline="hanging"
+            style="text-anchor: start;"
+            font-size="9pt"
+          >{{ nodeColorVariable }}</text>
         </g>
       </g>
 
@@ -553,7 +658,7 @@ svg >>> .selected{
 .sticky >>> text {
   text-anchor: middle;
 }
-.barLabel {
+.barLabel, .nodeSizeLabel {
   transform: translate(5%, 0);
 }
 #nodeMapping {
@@ -562,10 +667,10 @@ svg >>> .selected{
 #linkMapping {
   transform: translate(80%, 50%);
 }
-#barElements, #widthElements {
+#barElements, #widthElements, #nodeSizeElements {
   transform: translate(-12%, -20%);
 }
-#glyphElements, #colorElements {
+#glyphElements, #colorElements, #nodeColorElements {
   transform: translate(2%, -20%);
 }
 .plus {

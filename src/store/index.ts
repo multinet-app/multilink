@@ -44,7 +44,6 @@ const {
     markerSize: 50,
     fontSize: 12,
     labelVariable: '_key',
-    colorVariable: '',
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
@@ -54,6 +53,8 @@ const {
       width: '',
       color: '',
     },
+    nodeSizeVariable: '',
+    nodeColorVariable: '',
     attributeRanges: {},
     nodeColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
@@ -109,8 +110,8 @@ const {
       return state.labelVariable;
     },
 
-    colorVariable(state: State) {
-      return state.colorVariable;
+    nodeColorVariable(state: State) {
+      return state.nodeColorVariable;
     },
 
     selectNeighbors(state: State) {
@@ -123,6 +124,10 @@ const {
 
     linkVariables(state: State) {
       return state.linkVariables;
+    },
+
+    nodeSizeVariable(state: State) {
+      return state.nodeSizeVariable;
     },
 
     attributeRanges(state: State) {
@@ -260,11 +265,11 @@ const {
       }
     },
 
-    setColorVariable(state, colorVariable: string) {
-      state.colorVariable = colorVariable;
+    setNodeColorVariable(state, nodeColorVariable: string) {
+      state.nodeColorVariable = nodeColorVariable;
 
       if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Color Variable');
+        updateProvenanceState(state, 'Set Node Color Variable');
       }
     },
 
@@ -291,6 +296,14 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
+    },
+
+    setNodeSizeVariable(state, nodeSizeVariable: string) {
+      state.nodeSizeVariable = nodeSizeVariable;
+
+      if (state.provenance !== null) {
+        updateProvenanceState(state, 'Set Node Size Variable');
+      }
     },
 
     addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {
@@ -461,7 +474,8 @@ const {
             'markerSize',
             'fontSize',
             'labelVariable',
-            'colorVariable',
+            'nodeSizeVariable',
+            'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
           ].forEach((primitiveVariable) => {

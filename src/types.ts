@@ -73,10 +73,11 @@ export interface State {
   markerSize: number;
   fontSize: number;
   labelVariable: string;
-  colorVariable: string;
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
+  nodeSizeVariable: string;
+  nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
   nodeColorScale: ScaleOrdinal<string, string>;
@@ -96,6 +97,7 @@ export type ProvenanceEventTypes =
   'Set Marker Size' |
   'Set Font Size' |
   'Set Label Variable' |
-  'Set Color Variable' |
+  'Set Node Color Variable' |
+  'Set Node Size Variable' |
   'Set Select Neighbors'|
   'Set Directional Edges';
