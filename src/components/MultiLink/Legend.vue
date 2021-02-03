@@ -584,6 +584,31 @@ export default Vue.extend({
               >
                 {{ nodeColorVariable }}
               </text>
+              <g
+                v-for="(glyphDatum, innerIndex) of attributeRanges[nodeColorVariable].binLabels"
+                :key="glyphDatum"
+              >
+                <rect
+                  :x="50 + innerIndex * 20"
+                  :y="20"
+                  width="15"
+                  height="15"
+                  :fill="nodeGlyphColorScale(glyphDatum)"
+                />
+                <foreignObject
+                  :x="50 + innerIndex * 20"
+                  :y="30"
+                  width="15"
+                  height="20"
+                >
+                  <xhtml:p
+                    class="glyphLabel"
+                    :title="glyphDatum"
+                  >
+                    {{ glyphDatum }}
+                  </xhtml:p>
+                </foreignObject>
+              </g>
             </g>
           </g>
         </g>
@@ -665,6 +690,31 @@ export default Vue.extend({
             >
               {{ linkVariables.color }}
             </text>
+            <g
+              v-for="(glyphDatum, innerIndex) of attributeRanges[linkVariables.color].binLabels"
+              :key="glyphDatum"
+            >
+              <rect
+                :x="50 + innerIndex * 20"
+                :y="20"
+                width="15"
+                height="15"
+                :fill="nodeGlyphColorScale(glyphDatum)"
+              />
+              <foreignObject
+                :x="50 + innerIndex * 20"
+                :y="30"
+                width="15"
+                height="20"
+              >
+                <xhtml:p
+                  class="glyphLabel"
+                  :title="glyphDatum"
+                >
+                  {{ glyphDatum }}
+                </xhtml:p>
+              </foreignObject>
+            </g>
           </g>
         </g>
       </g>
