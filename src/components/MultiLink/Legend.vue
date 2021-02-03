@@ -410,12 +410,12 @@ export default Vue.extend({
                 width="50"
                 height="20"
               >
-                <xhtml:p
+                <p
                   class="barLabel"
                   :title="barVar"
                 >
                   {{ barVar }}
-                </xhtml:p>
+                </p>
               </foreignObject>
               <g
                 :id="`node_${barVar}_scale`"
@@ -475,12 +475,12 @@ export default Vue.extend({
                   width="15"
                   height="20"
                 >
-                  <xhtml:p
+                  <p
                     class="glyphLabel"
                     :title="glyphDatum"
                   >
                     {{ glyphDatum }}
-                  </xhtml:p>
+                  </p>
                 </foreignObject>
               </g>
             </g>
@@ -596,12 +596,12 @@ export default Vue.extend({
                   width="15"
                   height="20"
                 >
-                  <xhtml:p
+                  <p
                     class="glyphLabel"
                     :title="glyphDatum"
                   >
                     {{ glyphDatum }}
-                  </xhtml:p>
+                  </p>
                 </foreignObject>
               </g>
             </g>
@@ -702,12 +702,12 @@ export default Vue.extend({
                 width="15"
                 height="20"
               >
-                <xhtml:p
+                <p
                   class="glyphLabel"
                   :title="glyphDatum"
                 >
                   {{ glyphDatum }}
-                </xhtml:p>
+                </p>
               </foreignObject>
             </g>
           </g>
