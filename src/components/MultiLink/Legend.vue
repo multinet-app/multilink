@@ -551,7 +551,7 @@ export default Vue.extend({
             </g>
           </g>
 
-          <!-- Node size elements -->
+          <!-- Node color elements -->
           <g
             transform="translate(15, 100)"
           >
