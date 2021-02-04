@@ -157,7 +157,7 @@ export default Vue.extend({
             }
 
             yScale = scaleLinear()
-              .domain([0, max(bins, (d) => d.length)])
+              .domain([0, max(bins, (d) => d.length) || 0])
               .range([this.svgHeight, 0]);
 
             variableSvg
@@ -165,6 +165,10 @@ export default Vue.extend({
               .data(bins)
               .enter()
               .append('rect')
+              .attr('x', (d) => (xScale as ScaleLinear<number, number>)(d.x0 || 0))
+              .attr('y', (d) => (yScale as ScaleLinear<number, number>)(d.length))
+              .attr('height', (d) => this.svgHeight - (yScale as ScaleLinear<number, number>)(d.length))
+              .attr('width', (d) => (xScale as ScaleLinear<number, number>)(d.x1 || 0) - (xScale as ScaleLinear<number, number>)(d.x0 || 0))
               .attr('fill', '#82B1FF');
           } else {
             if (type === 'node') {
@@ -187,20 +191,20 @@ export default Vue.extend({
             // Generate axis scales
             yScale = scaleLinear()
               .domain([min(binValues) || 0, max(binValues) || 0])
-              .range([this.svgHeight, 0]) as ScaleLinear<number, number>;
+              .range([this.svgHeight, 0]);
 
             xScale = scaleBand()
               .domain(binLabels)
-              .range([this.yAxisPadding, variableSvgWidth]) as ScaleBand<string>;
+              .range([this.yAxisPadding, variableSvgWidth]);
 
             variableSvg
               .selectAll('rect')
               .data(currentData)
               .enter()
               .append('rect')
-              .attr('x', (d: string) => xScale(d))
-              .attr('y', (d: string) => yScale(bins.get(d) || 0))
-              .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
+              .attr('x', (d: string) => (xScale as ScaleBand<string>)(d) || 0)
+              .attr('y', (d: string) => (yScale as ScaleLinear<number, number>)((bins as Map<string, number>).get(d) || 0))
+              .attr('height', (d: string) => this.svgHeight - (yScale as ScaleLinear<number, number>)((bins as Map<string, number>).get(d) || 0))
               .attr('width', xScale.bandwidth())
               .attr('fill', (d: string) => this.nodeColorScale(d));
           }
