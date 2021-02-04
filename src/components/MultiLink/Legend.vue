@@ -136,6 +136,36 @@ export default Vue.extend({
             }
 
             // TODO: add histogram code
+
+            xScale = scaleLinear()
+              .domain([min(currentData), max(currentData) + 1])
+              .range([this.yAxisPadding, variableSvgWidth]);
+
+            const binGenerator = histogram()
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .domain((xScale as any).domain()) // then the domain of the graphic
+              .thresholds(xScale.ticks(15)); // then the numbers of bins
+
+            bins = binGenerator(currentData);
+
+            if (type === 'node') {
+              store.commit.addAttributeRange({ attr, min: parseFloat(min(currentData) || '0'), max: parseFloat(max(currentData) || '0') });
+            }
+
+            yScale = scaleLinear()
+              .domain([0, max(bins, (d) => d.length)])
+              .range([this.svgHeight, 0]);
+
+            variableSvg
+              .selectAll('rect')
+              .data(bins)
+              .enter()
+              .append('rect')
+              .attr('x', (d) => xScale(d.x0) || 0)
+              .attr('y', (d) => yScale(d.length) || 0)
+              .attr('height', (d) => this.svgHeight - yScale(d.length))
+              .attr('width', (d) => xScale(d.x1) - xScale(d.x0))
+              .attr('fill', (d) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
           } else {
             if (type === 'node') {
               currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
