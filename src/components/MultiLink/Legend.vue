@@ -28,8 +28,8 @@ export default Vue.extend({
 
   data() {
     return {
-      svgHeight: 150,
-      yAxisPadding: 10,
+      svgHeight: 50,
+      yAxisPadding: 25, // Gives enough width for hundreds on the y axis
       varPadding: 10,
     };
   },
