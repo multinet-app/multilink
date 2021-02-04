@@ -601,11 +601,7 @@ export default Vue.extend({
           width="100%"
         />
         <br>
-        <br>
       </div>
-
-      <br>
-      <br>
 
       <h2>Link Attributes</h2>
       <br>
@@ -639,9 +635,6 @@ export default Vue.extend({
 .v-card {
     height: calc(66vh - 24px);
     overflow-y: scroll
-}
-svg >>> text {
-  text-anchor: start;
 }
 svg >>> .selected{
   stroke: "#000000";
