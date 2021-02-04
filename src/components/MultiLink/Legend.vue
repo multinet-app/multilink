@@ -209,12 +209,12 @@ export default Vue.extend({
           variableSvg
             .append('g')
             .attr('transform', `translate(${this.yAxisPadding},0)`)
-            .call(axisLeft(yScale));
+            .call(axisLeft(yScale).ticks(4, 's'));
 
           variableSvg
             .append('g')
             .attr('transform', `translate(0, ${this.svgHeight})`)
-            .call(axisBottom(xScale));
+            .call(axisBottom(xScale as AxisScale<number>).ticks(4, 's'));
 
           // Add the brush
           const brush = brushX()
