@@ -8,7 +8,6 @@ import {
   scaleLinear, scaleBand, ScaleBand, ScaleLinear,
 } from 'd3-scale';
 import { axisBottom, axisLeft, AxisScale } from 'd3-axis';
-import { brushX } from 'd3-brush';
 import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
@@ -219,52 +218,6 @@ export default Vue.extend({
             .append('g')
             .attr('transform', `translate(0, ${this.svgHeight})`)
             .call(axisBottom(xScale as AxisScale<number>).ticks(4, 's'));
-
-          // Add the brush
-          const brush = brushX()
-            .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .on('start brush', (event: any) => {
-              const extent = event.selection;
-
-              // Set the brush highlighting on the legend svg
-              // variableSvgEnter
-              //   .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
-
-              // TODO: Update the nested bars domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
-
-              // TODO: Update the nested glyph domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
-
-              // Update the link width domain
-            // if (attr === this.linkVariables.width) {
-            //   const newDomain = [
-            //     this.ordinalInvert(extent[0], xScale, binLabels),
-            //     this.ordinalInvert(extent[1], xScale, binLabels),
-            //   ];
-            //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            //   store.commit.updateLinkWidthDomain(newDomain as number[]);
-            // }
-            });
-
-          variableSvg
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .call((brush as any))
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .call((brush.move as any), xScale.range());
         });
       });
     },
