@@ -165,11 +165,7 @@ export default Vue.extend({
               .data(bins)
               .enter()
               .append('rect')
-              .attr('x', (d) => xScale(d.x0) || 0)
-              .attr('y', (d) => yScale(d.length) || 0)
-              .attr('height', (d) => this.svgHeight - yScale(d.length))
-              .attr('width', (d) => xScale(d.x1) - xScale(d.x0))
-              .attr('fill', (d) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
+              .attr('fill', '#82B1FF');
           } else {
             if (type === 'node') {
               currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
@@ -206,7 +202,7 @@ export default Vue.extend({
               .attr('y', (d: string) => yScale(bins.get(d) || 0))
               .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
               .attr('width', xScale.bandwidth())
-              .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
+              .attr('fill', (d: string) => this.nodeColorScale(d));
           }
 
           // Add the axis scales onto the chart
