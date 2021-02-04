@@ -1,9 +1,13 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { min, max } from 'd3-array';
+import {
+  min, max, histogram, Bin,
+} from 'd3-array';
 import { select } from 'd3-selection';
-import { scaleLinear, scaleBand, ScaleBand } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
+import {
+  scaleLinear, scaleBand, ScaleBand, ScaleLinear,
+} from 'd3-scale';
+import { axisBottom, axisLeft, AxisScale } from 'd3-axis';
 import { brushX } from 'd3-brush';
 import { TableMetadata } from 'multinet';
 
