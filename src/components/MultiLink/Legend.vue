@@ -123,35 +123,57 @@ export default Vue.extend({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let currentData: any[];
 
-          if (type === 'node') {
-            currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]);
+          let xScale: ScaleLinear<number, number> | ScaleBand<string> | null = null;
+          let yScale: ScaleLinear<number, number> | null = null;
+          let bins: Bin<number, number>[] | Map<string, number> | null = null;
+
+          // Process data for bars/histogram
+          if (this.isQuantitative(attr, type)) {
+            if (type === 'node') {
+              currentData = this.graphStructure.nodes.map((d: Node | Link) => parseFloat(d[attr]));
+            } else {
+              currentData = this.graphStructure.edges.map((d: Node | Link) => parseFloat(d[attr]));
+            }
+
+            // TODO: add histogram code
           } else {
-            currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]);
+            if (type === 'node') {
+              currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
+            } else {
+              currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]).sort();
+            }
+
+            bins = new Map([...new Set(currentData)].map(
+              (x) => [x, currentData.filter((y) => y === x).length],
+            )) as Map<string, number>;
+
+            const binLabels: string[] = [];
+            const binValues: number[] = [];
+            bins.forEach((value, label) => {
+              binLabels.push(label);
+              binValues.push(value);
+            });
+
+            // Generate axis scales
+            yScale = scaleLinear()
+              .domain([min(binValues) || 0, max(binValues) || 0])
+              .range([this.svgHeight, 0]) as ScaleLinear<number, number>;
+
+            xScale = scaleBand()
+              .domain(binLabels)
+              .range([this.yAxisPadding, variableSvgWidth]) as ScaleBand<string>;
+
+            variableSvg
+              .selectAll('rect')
+              .data(currentData)
+              .enter()
+              .append('rect')
+              .attr('x', (d: string) => xScale(d))
+              .attr('y', (d: string) => yScale(bins.get(d) || 0))
+              .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
+              .attr('width', xScale.bandwidth())
+              .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
           }
-          const bins = new Map([...new Set(currentData)].map(
-            (x) => [x, currentData.filter((y) => y === x).length],
-          ));
-
-          const binLabels: string[] = [];
-          const binValues: number[] = [];
-          bins.forEach((value, label) => {
-            binLabels.push(label);
-            binValues.push(value);
-          });
-
-          // Add the domain of values to attributeScales
-          if (type === 'node' && this.isQuantitative(attr, type)) {
-            store.commit.addAttributeRange({ attr, min: parseFloat(min(binLabels) || '0'), max: parseFloat(max(binLabels) || '0') });
-          }
-
-          // Generate axis scales
-          const yScale = scaleLinear()
-            .domain([min(binValues) || 0, max(binValues) || 0])
-            .range([this.svgHeight, 0]);
-
-          const xScale = scaleBand()
-            .domain(binLabels)
-            .range([this.yAxisPadding, variableSvgWidth]);
 
           // Add the axis scales onto the chart
           variableSvg
@@ -164,19 +186,6 @@ export default Vue.extend({
             .attr('transform', `translate(0, ${this.svgHeight})`)
             .call(axisBottom(xScale));
 
-          // Add the bars
-          const variableSvgEnter = (variableSvg
-            .selectAll()
-            .data(binLabels)
-            .enter()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .append('rect') as any)
-            .attr('x', (d: string) => xScale(d))
-            .attr('y', (d: string) => yScale(bins.get(d) || 0))
-            .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
-            .attr('width', xScale.bandwidth())
-            .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
-
           // Add the brush
           const brush = brushX()
             .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
@@ -185,8 +194,8 @@ export default Vue.extend({
               const extent = event.selection;
 
               // Set the brush highlighting on the legend svg
-              variableSvgEnter
-                .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
+              // variableSvgEnter
+              //   .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
 
               // TODO: Update the nested bars domain
               // if (attr === this.barVariables[0]) {
@@ -207,14 +216,14 @@ export default Vue.extend({
               // }
 
               // Update the link width domain
-              if (attr === this.linkVariables.width) {
-                const newDomain = [
-                  this.ordinalInvert(extent[0], xScale, binLabels),
-                  this.ordinalInvert(extent[1], xScale, binLabels),
-                ];
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                store.commit.updateLinkWidthDomain(newDomain as number[]);
-              }
+            // if (attr === this.linkVariables.width) {
+            //   const newDomain = [
+            //     this.ordinalInvert(extent[0], xScale, binLabels),
+            //     this.ordinalInvert(extent[1], xScale, binLabels),
+            //   ];
+            //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            //   store.commit.updateLinkWidthDomain(newDomain as number[]);
+            // }
             });
 
           variableSvg
