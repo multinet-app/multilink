@@ -335,7 +335,7 @@ export default Vue.extend({
       const scale = scaleLinear()
         .domain([varMin, varMax])
         .range([this.stickyBarHeight, 0]);
-      const axis = axisRight(scale);
+      const axis = axisRight(scale).ticks(4, 's');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       select(`#node_${barVar}_scale`).call((axis as any));
