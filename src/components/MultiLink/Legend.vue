@@ -1,13 +1,13 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
-  min, max, histogram, Bin,
+  min, max, histogram,
 } from 'd3-array';
 import { select } from 'd3-selection';
 import {
-  scaleLinear, scaleBand, ScaleBand, ScaleLinear,
+  scaleLinear, scaleBand, ScaleBand,
 } from 'd3-scale';
-import { axisBottom, axisLeft, AxisScale } from 'd3-axis';
+import { axisBottom, axisLeft } from 'd3-axis';
 import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
@@ -126,10 +126,6 @@ export default Vue.extend({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let currentData: any[];
 
-          let xScale: ScaleLinear<number, number> | ScaleBand<string> | null = null;
-          let yScale: ScaleLinear<number, number> | null = null;
-          let bins: Bin<number, number>[] | Map<string, number> | null = null;
-
           // Process data for bars/histogram
           if (this.isQuantitative(attr, type)) {
             if (type === 'node') {
@@ -138,7 +134,7 @@ export default Vue.extend({
               currentData = this.graphStructure.edges.map((d: Node | Link) => parseFloat(d[attr]));
             }
 
-            xScale = scaleLinear()
+            const xScale = scaleLinear()
               .domain([min(currentData), max(currentData) + 1])
               .range([this.yAxisPadding, variableSvgWidth]);
 
@@ -147,13 +143,13 @@ export default Vue.extend({
               .domain((xScale as any).domain()) // then the domain of the graphic
               .thresholds(xScale.ticks(15)); // then the numbers of bins
 
-            bins = binGenerator(currentData);
+            const bins = binGenerator(currentData);
 
             if (type === 'node') {
               store.commit.addAttributeRange({ attr, min: parseFloat(min(currentData) || '0'), max: parseFloat(max(currentData) || '0') });
             }
 
-            yScale = scaleLinear()
+            const yScale = scaleLinear()
               .domain([0, max(bins, (d) => d.length) || 0])
               .range([this.svgHeight, 0]);
 
@@ -162,11 +158,22 @@ export default Vue.extend({
               .data(bins)
               .enter()
               .append('rect')
-              .attr('x', (d) => (xScale as ScaleLinear<number, number>)(d.x0 || 0))
-              .attr('y', (d) => (yScale as ScaleLinear<number, number>)(d.length))
-              .attr('height', (d) => this.svgHeight - (yScale as ScaleLinear<number, number>)(d.length))
-              .attr('width', (d) => (xScale as ScaleLinear<number, number>)(d.x1 || 0) - (xScale as ScaleLinear<number, number>)(d.x0 || 0))
+              .attr('x', (d) => xScale(d.x0 || 0))
+              .attr('y', (d) => yScale(d.length))
+              .attr('height', (d) => this.svgHeight - yScale(d.length))
+              .attr('width', (d) => xScale(d.x1 || 0) - xScale(d.x0 || 0))
               .attr('fill', '#82B1FF');
+
+            // Add the axis scales onto the chart
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(${this.yAxisPadding},0)`)
+              .call(axisLeft(yScale).ticks(4, 's'));
+
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(0, ${this.svgHeight})`)
+              .call(axisBottom(xScale).ticks(4, 's'));
           } else {
             if (type === 'node') {
               currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
@@ -174,19 +181,19 @@ export default Vue.extend({
               currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]).sort();
             }
 
-            bins = new Map([...new Set(currentData)].map(
+            const bins = new Map([...new Set(currentData)].map(
               (x) => [x, currentData.filter((y) => y === x).length],
-            )) as Map<string, number>;
+            ));
 
             const binLabels: string[] = Array.from(bins.keys());
             const binValues: number[] = Array.from(bins.values());
 
             // Generate axis scales
-            yScale = scaleLinear()
+            const yScale = scaleLinear()
               .domain([min(binValues) || 0, max(binValues) || 0])
               .range([this.svgHeight, 0]);
 
-            xScale = scaleBand()
+            const xScale = scaleBand()
               .domain(binLabels)
               .range([this.yAxisPadding, variableSvgWidth]);
 
@@ -195,23 +202,23 @@ export default Vue.extend({
               .data(currentData)
               .enter()
               .append('rect')
-              .attr('x', (d: string) => (xScale as ScaleBand<string>)(d) || 0)
-              .attr('y', (d: string) => (yScale as ScaleLinear<number, number>)((bins as Map<string, number>).get(d) || 0))
-              .attr('height', (d: string) => this.svgHeight - (yScale as ScaleLinear<number, number>)((bins as Map<string, number>).get(d) || 0))
+              .attr('x', (d: string) => xScale(d) || 0)
+              .attr('y', (d: string) => yScale(bins.get(d) || 0))
+              .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
               .attr('width', xScale.bandwidth())
               .attr('fill', (d: string) => this.nodeColorScale(d));
+
+            // Add the axis scales onto the chart
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(${this.yAxisPadding},0)`)
+              .call(axisLeft(yScale).ticks(4, 's'));
+
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(0, ${this.svgHeight})`)
+              .call(axisBottom(xScale).ticks(4, 's'));
           }
-
-          // Add the axis scales onto the chart
-          variableSvg
-            .append('g')
-            .attr('transform', `translate(${this.yAxisPadding},0)`)
-            .call(axisLeft(yScale).ticks(4, 's'));
-
-          variableSvg
-            .append('g')
-            .attr('transform', `translate(0, ${this.svgHeight})`)
-            .call(axisBottom(xScale as AxisScale<number>).ticks(4, 's'));
         });
       });
     },
