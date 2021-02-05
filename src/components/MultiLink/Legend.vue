@@ -138,8 +138,6 @@ export default Vue.extend({
               currentData = this.graphStructure.edges.map((d: Node | Link) => parseFloat(d[attr]));
             }
 
-            // TODO: add histogram code
-
             xScale = scaleLinear()
               .domain([min(currentData), max(currentData) + 1])
               .range([this.yAxisPadding, variableSvgWidth]);
