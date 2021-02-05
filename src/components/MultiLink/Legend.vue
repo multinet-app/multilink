@@ -1,10 +1,13 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { min, max } from 'd3-array';
+import {
+  min, max, histogram,
+} from 'd3-array';
 import { select } from 'd3-selection';
-import { scaleLinear, scaleBand, ScaleBand } from 'd3-scale';
+import {
+  scaleLinear, scaleBand, ScaleBand,
+} from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX } from 'd3-brush';
 import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
@@ -28,8 +31,8 @@ export default Vue.extend({
 
   data() {
     return {
-      svgHeight: 150,
-      yAxisPadding: 10,
+      svgHeight: 50,
+      yAxisPadding: 25, // Gives enough width for hundreds on the y axis
       varPadding: 10,
     };
   },
@@ -123,105 +126,99 @@ export default Vue.extend({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let currentData: any[];
 
-          if (type === 'node') {
-            currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]);
+          // Process data for bars/histogram
+          if (this.isQuantitative(attr, type)) {
+            if (type === 'node') {
+              currentData = this.graphStructure.nodes.map((d: Node | Link) => parseFloat(d[attr]));
+            } else {
+              currentData = this.graphStructure.edges.map((d: Node | Link) => parseFloat(d[attr]));
+            }
+
+            const xScale = scaleLinear()
+              .domain([min(currentData), max(currentData) + 1])
+              .range([this.yAxisPadding, variableSvgWidth]);
+
+            const binGenerator = histogram()
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .domain((xScale as any).domain()) // then the domain of the graphic
+              .thresholds(xScale.ticks(15)); // then the numbers of bins
+
+            const bins = binGenerator(currentData);
+
+            if (type === 'node') {
+              store.commit.addAttributeRange({ attr, min: parseFloat(min(currentData) || '0'), max: parseFloat(max(currentData) || '0') });
+            }
+
+            const yScale = scaleLinear()
+              .domain([0, max(bins, (d) => d.length) || 0])
+              .range([this.svgHeight, 0]);
+
+            variableSvg
+              .selectAll('rect')
+              .data(bins)
+              .enter()
+              .append('rect')
+              .attr('x', (d) => xScale(d.x0 || 0))
+              .attr('y', (d) => yScale(d.length))
+              .attr('height', (d) => this.svgHeight - yScale(d.length))
+              .attr('width', (d) => xScale(d.x1 || 0) - xScale(d.x0 || 0))
+              .attr('fill', '#82B1FF');
+
+            // Add the axis scales onto the chart
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(${this.yAxisPadding},0)`)
+              .call(axisLeft(yScale).ticks(4, 's'));
+
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(0, ${this.svgHeight})`)
+              .call(axisBottom(xScale).ticks(4, 's'));
           } else {
-            currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]);
+            if (type === 'node') {
+              currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
+            } else {
+              currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]).sort();
+            }
+
+            const bins = new Map([...new Set(currentData)].map(
+              (x) => [x, currentData.filter((y) => y === x).length],
+            ));
+
+            const binLabels: string[] = Array.from(bins.keys());
+            const binValues: number[] = Array.from(bins.values());
+
+            // Generate axis scales
+            const yScale = scaleLinear()
+              .domain([min(binValues) || 0, max(binValues) || 0])
+              .range([this.svgHeight, 0]);
+
+            const xScale = scaleBand()
+              .domain(binLabels)
+              .range([this.yAxisPadding, variableSvgWidth]);
+
+            variableSvg
+              .selectAll('rect')
+              .data(currentData)
+              .enter()
+              .append('rect')
+              .attr('x', (d: string) => xScale(d) || 0)
+              .attr('y', (d: string) => yScale(bins.get(d) || 0))
+              .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
+              .attr('width', xScale.bandwidth())
+              .attr('fill', (d: string) => this.nodeColorScale(d));
+
+            // Add the axis scales onto the chart
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(${this.yAxisPadding},0)`)
+              .call(axisLeft(yScale).ticks(4, 's'));
+
+            variableSvg
+              .append('g')
+              .attr('transform', `translate(0, ${this.svgHeight})`)
+              .call(axisBottom(xScale).ticks(4, 's'));
           }
-          const bins = new Map([...new Set(currentData)].map(
-            (x) => [x, currentData.filter((y) => y === x).length],
-          ));
-
-          const binLabels: string[] = [];
-          const binValues: number[] = [];
-          bins.forEach((value, label) => {
-            binLabels.push(label);
-            binValues.push(value);
-          });
-
-          // Add the domain of values to attributeScales
-          if (type === 'node' && this.isQuantitative(attr, type)) {
-            store.commit.addAttributeRange({ attr, min: parseFloat(min(binLabels) || '0'), max: parseFloat(max(binLabels) || '0') });
-          }
-
-          // Generate axis scales
-          const yScale = scaleLinear()
-            .domain([min(binValues) || 0, max(binValues) || 0])
-            .range([this.svgHeight, 0]);
-
-          const xScale = scaleBand()
-            .domain(binLabels)
-            .range([this.yAxisPadding, variableSvgWidth]);
-
-          // Add the axis scales onto the chart
-          variableSvg
-            .append('g')
-            .attr('transform', `translate(${this.yAxisPadding},0)`)
-            .call(axisLeft(yScale));
-
-          variableSvg
-            .append('g')
-            .attr('transform', `translate(0, ${this.svgHeight})`)
-            .call(axisBottom(xScale));
-
-          // Add the bars
-          const variableSvgEnter = (variableSvg
-            .selectAll()
-            .data(binLabels)
-            .enter()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .append('rect') as any)
-            .attr('x', (d: string) => xScale(d))
-            .attr('y', (d: string) => yScale(bins.get(d) || 0))
-            .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
-            .attr('width', xScale.bandwidth())
-            .attr('fill', (d: string) => (this.isQuantitative(attr, type) ? '#82B1FF' : this.nodeColorScale(d)));
-
-          // Add the brush
-          const brush = brushX()
-            .extent([[this.yAxisPadding, 0], [variableSvgWidth, this.svgHeight]])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .on('start brush', (event: any) => {
-              const extent = event.selection;
-
-              // Set the brush highlighting on the legend svg
-              variableSvgEnter
-                .attr('stroke', (d: string) => ((xScale(d) || 0) >= extent[0] - xScale.bandwidth() && (xScale(d) || 0) <= extent[1] ? '#000000' : ''));
-
-              // TODO: Update the nested bars domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
-
-              // TODO: Update the nested glyph domain
-              // if (attr === this.barVariables[0]) {
-              //   const new_domain = [
-              //     this.ordinalInvert(extent[0], xScale, binLabels)[0],
-              //     this.ordinalInvert(extent[1], xScale, binLabels)[0]
-              //   ]
-              //   this.linkWidthScale.domain(new_domain).range([2,20])
-              // }
-
-              // Update the link width domain
-              if (attr === this.linkVariables.width) {
-                const newDomain = [
-                  this.ordinalInvert(extent[0], xScale, binLabels),
-                  this.ordinalInvert(extent[1], xScale, binLabels),
-                ];
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                store.commit.updateLinkWidthDomain(newDomain as number[]);
-              }
-            });
-
-          variableSvg
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .call((brush as any))
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .call((brush.move as any), xScale.range());
         });
       });
     },
@@ -605,11 +602,7 @@ export default Vue.extend({
           width="100%"
         />
         <br>
-        <br>
       </div>
-
-      <br>
-      <br>
 
       <h2>Link Attributes</h2>
       <br>
@@ -643,9 +636,6 @@ export default Vue.extend({
 .v-card {
     height: calc(66vh - 24px);
     overflow-y: scroll
-}
-svg >>> text {
-  text-anchor: start;
 }
 svg >>> .selected{
   stroke: "#000000";
