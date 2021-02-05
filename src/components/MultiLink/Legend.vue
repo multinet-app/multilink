@@ -178,12 +178,8 @@ export default Vue.extend({
               (x) => [x, currentData.filter((y) => y === x).length],
             )) as Map<string, number>;
 
-            const binLabels: string[] = [];
-            const binValues: number[] = [];
-            bins.forEach((value, label) => {
-              binLabels.push(label);
-              binValues.push(value);
-            });
+            const binLabels: string[] = Array.from(bins.keys());
+            const binValues: number[] = Array.from(bins.values());
 
             // Generate axis scales
             yScale = scaleLinear()
