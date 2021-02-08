@@ -370,6 +370,24 @@ export default Vue.extend({
       :height="displayCharts ? 9 * sticky.rowHeight : 6 * sticky.rowHeight"
       width="100%"
     >
+
+      <!-- Define some recurring elements -->
+      <defs>
+        <g id="plus">
+          <rect
+            :width="sticky.plusBackgroundSize"
+            :height="sticky.plusBackgroundSize"
+            fill="#FFFFFF"
+          />
+          <path
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="2px"
+            :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+          />
+        </g>
+      </defs>
+
       <rect
         width="100%"
         height="440"
@@ -438,17 +456,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.barHeight"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, 50)`"
-              />
+              <use xlink:href="#plus" />
             </g>
           </g>
 
@@ -501,17 +509,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
           </g>
         </g>
@@ -532,17 +530,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
 
             <g v-else>
@@ -568,17 +556,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
 
             <g v-else>
@@ -642,17 +620,7 @@ export default Vue.extend({
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
-            <rect
-              :width="sticky.plusBackgroundSize"
-              :height="sticky.plusBackgroundSize"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="2px"
-              :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-            />
+            <use xlink:href="#plus" />
           </g>
 
           <g v-else>
@@ -676,17 +644,7 @@ export default Vue.extend({
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
-            <rect
-              :width="sticky.plusBackgroundSize"
-              :height="sticky.plusBackgroundSize"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="2px"
-              transform="translate(15,15)"
-            />
+            <use xlink:href="#plus" />
           </g>
 
           <g v-else>
