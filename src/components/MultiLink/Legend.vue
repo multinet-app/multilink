@@ -339,8 +339,7 @@ export default Vue.extend({
         .range([this.sticky.barHeight, 0]);
       const axis = axisRight(scale).ticks(4, 's');
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      select(`#node_${barVar}_scale`).call((axis as any));
+      select(`#node_${barVar}_scale`).append('g').call(axis);
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
