@@ -63,8 +63,12 @@ export default Vue.extend({
       return new Set();
     },
 
-    nodeColorScale() {
-      return store.getters.nodeColorScale;
+    nodeBarColorScale() {
+      return store.getters.nodeBarColorScale;
+    },
+
+    nodeGlyphColorScale() {
+      return store.getters.nodeGlyphColorScale;
     },
 
     tooltipStyle(): string {
@@ -367,14 +371,14 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
-      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeColorScale(link[this.linkVariables.color]);
+      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
       return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
     },
 
     glyphStyle(value: string) {
-      return `fill: ${this.nodeColorScale(value)};`;
+      return `fill: ${this.nodeGlyphColorScale(value)};`;
     },
 
     calculateNodeSize(node: Node) {
@@ -439,7 +443,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="!displayCharts ? nodeColorScale(node[nodeColorVariable]) : '1f77b4'"
+            :fill="!displayCharts ? nodeGlyphColorScale(node[nodeColorVariable]) : '#DDDDDD'"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"
@@ -472,7 +476,7 @@ export default Vue.extend({
               class="bar"
               :width="nestedBarWidth"
               :height="nestedBarHeight"
-              style="fill: white;"
+              fill="#FFFFFF"
               :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
               y="20"
             />
@@ -484,7 +488,7 @@ export default Vue.extend({
               class="bar"
               :width="nestedBarWidth"
               :height="attributeScales[barVar](node[barVar])"
-              style="fill: blue;"
+              :fill="nodeBarColorScale(barVar)"
               :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
               :y="20 + nestedBarHeight - attributeScales[barVar](node[barVar])"
             />

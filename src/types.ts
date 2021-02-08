@@ -57,7 +57,7 @@ export interface LinkStyleVariables {
 }
 
 export interface AttributeRanges {
-  [key: string]: {attr: string; min: number; max: number};
+  [key: string]: {attr: string; min: number; max: number; binLabels: string[]; binValues: number[]};
 }
 
 export interface NetworkMetadata { [tableName: string]: TableMetadata }
@@ -80,7 +80,8 @@ export interface State {
   nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
-  nodeColorScale: ScaleOrdinal<string, string>;
+  nodeBarColorScale: ScaleOrdinal<string, string>;
+  nodeGlyphColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
   directionalEdges: boolean;

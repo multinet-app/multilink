@@ -7,7 +7,7 @@ import { select } from 'd3-selection';
 import {
   scaleLinear, scaleBand, ScaleBand,
 } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
+import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
@@ -33,6 +33,16 @@ export default Vue.extend({
     return {
       svgHeight: 50,
       yAxisPadding: 25, // Gives enough width for hundreds on the y axis
+      sticky: {
+        barHeight: 100,
+        barHorizSpacing: 60,
+        barWidth: 30,
+        colorMapSquareSize: 15,
+        padding: 15,
+        plusBackgroundSize: 30,
+        rowHeight: 50,
+        varNameIndent: 50,
+      },
       varPadding: 10,
     };
   },
@@ -67,8 +77,12 @@ export default Vue.extend({
       return store.getters.nodeColorVariable;
     },
 
-    nodeColorScale() {
-      return store.getters.nodeColorScale;
+    nodeBarColorScale() {
+      return store.getters.nodeBarColorScale;
+    },
+
+    nodeGlyphColorScale() {
+      return store.getters.nodeGlyphColorScale;
     },
 
     columnTypes() {
@@ -95,6 +109,10 @@ export default Vue.extend({
 
     displayCharts() {
       return store.getters.displayCharts;
+    },
+
+    attributeRanges() {
+      return store.getters.attributeRanges;
     },
   },
 
@@ -145,9 +163,13 @@ export default Vue.extend({
 
             const bins = binGenerator(currentData);
 
-            if (type === 'node') {
-              store.commit.addAttributeRange({ attr, min: parseFloat(min(currentData) || '0'), max: parseFloat(max(currentData) || '0') });
-            }
+            store.commit.addAttributeRange({
+              attr,
+              min: xScale.domain()[0] || 0,
+              max: xScale.domain()[1] || 0,
+              binLabels: xScale.domain().map((label) => label.toString()),
+              binValues: xScale.range(),
+            });
 
             const yScale = scaleLinear()
               .domain([0, max(bins, (d) => d.length) || 0])
@@ -188,6 +210,14 @@ export default Vue.extend({
             const binLabels: string[] = Array.from(bins.keys());
             const binValues: number[] = Array.from(bins.values());
 
+            store.commit.addAttributeRange({
+              attr,
+              min: parseFloat(min(binLabels) || '0'),
+              max: parseFloat(max(binLabels) || '0'),
+              binLabels,
+              binValues,
+            });
+
             // Generate axis scales
             const yScale = scaleLinear()
               .domain([min(binValues) || 0, max(binValues) || 0])
@@ -206,7 +236,7 @@ export default Vue.extend({
               .attr('y', (d: string) => yScale(bins.get(d) || 0))
               .attr('height', (d: string) => this.svgHeight - yScale(bins.get(d) || 0))
               .attr('width', xScale.bandwidth())
-              .attr('fill', (d: string) => this.nodeColorScale(d));
+              .attr('fill', (d: string) => this.nodeGlyphColorScale(d));
 
             // Add the axis scales onto the chart
             variableSvg
@@ -272,6 +302,9 @@ export default Vue.extend({
           glyph: this.nestedVariables.glyph,
         };
         store.commit.setNestedVariables(updatedNestedVars);
+
+        // Render the scales
+        Vue.nextTick(() => this.renderScales(droppedElText));
       } else if (type === 'node' && targetEl === 'glyphElements') {
         const updatedNestedVars = {
           bar: this.nestedVariables.bar,
@@ -295,6 +328,18 @@ export default Vue.extend({
         };
         store.commit.setLinkVariables(updatedLinkVars);
       }
+    },
+
+    renderScales(barVar: string) {
+      const varMin = this.attributeRanges[barVar].min;
+      const varMax = this.attributeRanges[barVar].max;
+
+      const scale = scaleLinear()
+        .domain([varMin, varMax])
+        .range([this.sticky.barHeight, 0]);
+      const axis = axisRight(scale).ticks(4, 's');
+
+      select(`#node_${barVar}_scale`).append('g').call(axis);
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -322,257 +367,361 @@ export default Vue.extend({
     <!-- Sticky SVG to drag variables onto -->
     <svg
       class="sticky"
-      height="33%"
+      :height="displayCharts ? 9 * sticky.rowHeight : 6 * sticky.rowHeight"
       width="100%"
     >
       <rect
         width="100%"
-        height="100%"
+        height="440"
         fill="#DDDDDD"
         opacity="1"
       />
 
       <!-- Node elements when displayCharts === true -->
       <g
-        v-if="displayCharts"
         id="nodeMapping"
       >
         <text
           font-size="16pt"
-          y="-102"
+          :y="sticky.padding"
+          :x="sticky.padding"
           dominant-baseline="hanging"
+          text-anchor="start"
         >Node Mapping</text>
-        <circle
-          r="70"
-          fill="#82B1FF"
-        />
 
-        <!-- Bar adding elements -->
         <g
-          id="barElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
+          v-if="displayCharts"
         >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Bars</text>
-          <path
-            v-if="nestedVariables.bar.length === 0"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            v-for="(barVar, i) of nestedVariables.bar"
-            :key="barVar"
-            :transform="`translate(0,${i * 15 + 15})`"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ barVar }}</text>
+          <!-- Bar adding elements -->
+          <g
+            :transform="`translate(${sticky.padding}, ${sticky.rowHeight})`"
+          >
+            <g
+              v-for="(barVar, index) of nestedVariables.bar"
+              :key="barVar"
+            >
+              <rect
+                :x="index * sticky.barHorizSpacing"
+                :width="sticky.barWidth"
+                :height="sticky.barHeight"
+                fill="#FFFFFF"
+              />
+              <rect
+                :x="index * sticky.barHorizSpacing"
+                y="50"
+                :width="sticky.barWidth"
+                height="50"
+                :fill="nodeBarColorScale(barVar)"
+              />
+              <foreignObject
+                :x="index * sticky.barHorizSpacing"
+                :y="sticky.barHeight"
+                width="50"
+                height="20"
+              >
+                <p
+                  class="barLabel"
+                  :title="barVar"
+                >
+                  {{ barVar }}
+                </p>
+              </foreignObject>
+              <g
+                :id="`node_${barVar}_scale`"
+                :transform="`translate(${sticky.barWidth + (index * sticky.barHorizSpacing)}, 0)`"
+              />
+            </g>
+            <g
+              id="barElements"
+              :transform="`translate(${nestedVariables.bar.length * sticky.barHorizSpacing}, 0)`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.barHeight"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, 50)`"
+              />
+            </g>
+          </g>
+
+          <!-- Glyph adding elements -->
+          <g
+            :transform="`translate(${sticky.padding}, 180)`"
+          >
+            <text dominant-baseline="hanging">Glyph:</text>
+            <g
+              v-for="(glyphVar, outerIndex) of nestedVariables.glyph"
+              :key="glyphVar"
+            >
+              <text
+                :x="sticky.varNameIndent"
+                :y="sticky.padding + outerIndex * (sticky.rowHeight + 10)"
+              >
+                {{ glyphVar }}
+              </text>
+              <g
+                v-for="(glyphDatum, innerIndex) of attributeRanges[glyphVar].binLabels"
+                :key="glyphDatum"
+              >
+                <rect
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="(sticky.colorMapSquareSize + 5) + outerIndex * (sticky.rowHeight + 10)"
+                  :width="sticky.colorMapSquareSize"
+                  :height="sticky.colorMapSquareSize"
+                  :fill="nodeGlyphColorScale(glyphDatum)"
+                />
+                <foreignObject
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="30 + outerIndex * (sticky.rowHeight + 10)"
+                  :width="sticky.colorMapSquareSize"
+                  height="20"
+                >
+                  <p
+                    class="glyphLabel"
+                    :title="glyphDatum"
+                  >
+                    {{ glyphDatum }}
+                  </p>
+                </foreignObject>
+              </g>
+            </g>
+            <g
+              v-if="nestedVariables.glyph.length !== 2"
+              id="glyphElements"
+              :transform="`translate(${sticky.varNameIndent}, ${nestedVariables.glyph.length * (sticky.rowHeight + 10)})`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+              />
+            </g>
+          </g>
         </g>
 
-        <!-- Glyph adding elements -->
         <g
-          id="glyphElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
+          v-else
         >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Glyphs</text>
-          <path
-            v-if="nestedVariables.glyph.length === 0"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            v-for="(glyphVar, i) of nestedVariables.glyph"
-            :key="glyphVar"
-            :transform="`translate(0,${i * 15 + 15})`"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ glyphVar }}</text>
-        </g>
-      </g>
+          <!-- Node size elements -->
+          <g
+            :transform="`translate(${sticky.padding}, ${sticky.rowHeight})`"
+          >
+            <text dominant-baseline="hanging">Size:</text>
+            <g
+              v-if="nodeSizeVariable === ''"
+              id="nodeSizeElements"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+              />
+            </g>
 
-      <!-- Node elements when displayCharts === false -->
-      <g
-        v-else
-        id="nodeMapping"
-      >
-        <text
-          font-size="16pt"
-          y="-102"
-          dominant-baseline="hanging"
-        >Node Mapping</text>
-        <circle
-          r="70"
-          fill="#82B1FF"
-        />
+            <g v-else>
+              <text
+                :transform="`translate(${sticky.varNameIndent}, 0)`"
+                dominant-baseline="hanging"
+              >
+                {{ nodeSizeVariable }}
+              </text>
+            </g>
+          </g>
 
-        <!-- Bar adding elements -->
-        <g
-          id="nodeSizeElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="nodeSizeLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Size</text>
-          <path
-            v-if="nodeSizeVariable === ''"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ nodeSizeVariable }}</text>
-        </g>
+          <!-- Node color elements -->
+          <g
+            :transform="`translate(${sticky.padding}, ${2 * sticky.rowHeight})`"
+          >
+            <text dominant-baseline="hanging">Color:</text>
+            <g
+              v-if="nodeColorVariable === ''"
+              id="nodeColorElements"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
+              @dragenter="(e) => e.preventDefault()"
+              @dragover="(e) => e.preventDefault()"
+              @drop="rectDrop"
+            >
+              <rect
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
+                fill="#FFFFFF"
+              />
+              <path
+                d="M0,-10 V10 M-10,0 H10"
+                stroke="black"
+                stroke-width="2px"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+              />
+            </g>
 
-        <!-- Glyph adding elements -->
-        <g
-          id="nodeColorElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Color</text>
-          <path
-            v-if="nodeColorVariable === ''"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ nodeColorVariable }}</text>
+            <g v-else>
+              <text
+                :transform="`translate(${sticky.varNameIndent}, 0)`"
+                dominant-baseline="hanging"
+              >
+                {{ nodeColorVariable }}
+              </text>
+              <g
+                v-for="(glyphDatum, innerIndex) of attributeRanges[nodeColorVariable].binLabels"
+                :key="glyphDatum"
+              >
+                <rect
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="sticky.colorMapSquareSize + 5"
+                  :width="sticky.colorMapSquareSize"
+                  :height="sticky.colorMapSquareSize"
+                  :fill="nodeGlyphColorScale(glyphDatum)"
+                />
+                <foreignObject
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="30"
+                  :width="sticky.colorMapSquareSize"
+                  height="20"
+                >
+                  <p
+                    class="glyphLabel"
+                    :title="glyphDatum"
+                  >
+                    {{ glyphDatum }}
+                  </p>
+                </foreignObject>
+              </g>
+            </g>
+          </g>
         </g>
       </g>
 
       <!-- Link elements -->
-      <g id="linkMapping">
+      <g
+        id="linkMapping"
+        :transform="displayCharts ?
+          `translate(${sticky.padding}, ${6 * sticky.rowHeight})` :
+          `translate(${sticky.padding}, ${3 * sticky.rowHeight})`"
+      >
         <text
           font-size="16pt"
-          y="-102"
           dominant-baseline="hanging"
+          text-anchor="start"
         >Link Mapping</text>
-        <rect
-          x="-70"
-          y="-70"
-          width="140"
-          height="140"
-          fill="#82B1FF"
-        />
 
-        <!-- Width adding elements -->
-        <g
-          id="widthElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Width</text>
-          <path
-            v-if="!linkVariables.width"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ linkVariables.width }}</text>
+        <!-- Link width elements -->
+        <g :transform="`translate(0, ${sticky.varNameIndent - sticky.padding})`">
+          <text dominant-baseline="hanging">Width:</text>
+          <g
+            v-if="linkVariables.width === ''"
+            id="widthElements"
+            :transform="`translate(${sticky.varNameIndent}, 0)`"
+            @dragenter="(e) => e.preventDefault()"
+            @dragover="(e) => e.preventDefault()"
+            @drop="rectDrop"
+          >
+            <rect
+              :width="sticky.plusBackgroundSize"
+              :height="sticky.plusBackgroundSize"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M0,-10 V10 M-10,0 H10"
+              stroke="black"
+              stroke-width="2px"
+              :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+            />
+          </g>
+
+          <g v-else>
+            <text
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
+              dominant-baseline="hanging"
+            >
+              {{ linkVariables.width }}
+            </text>
+          </g>
         </g>
 
-        <!-- Color adding elements -->
-        <g
-          id="colorElements"
-          @dragenter="(e) => e.preventDefault()"
-          @dragover="(e) => e.preventDefault()"
-          @drop="rectDrop"
-        >
-          <rect
-            width="10%"
-            height="40%"
-            fill="#EEEEEE"
-          />
-          <text
-            class="barLabel"
-            font-size="10pt"
-            dominant-baseline="hanging"
-          >Color</text>
-          <path
-            v-if="!linkVariables.color"
-            class="plus"
-            d="M0,-10 V10 M-10,0 H10"
-            stroke="black"
-            stroke-width="3px"
-          />
-          <text
-            transform="translate(0,15)"
-            dominant-baseline="hanging"
-            style="text-anchor: start;"
-            font-size="9pt"
-          >{{ linkVariables.color }}</text>
+        <!-- Link color elements -->
+        <g :transform="`translate(0, ${2 * sticky.varNameIndent - sticky.padding})`">
+          <text dominant-baseline="hanging">Color:</text>
+          <g
+            v-if="linkVariables.color === ''"
+            id="colorElements"
+            :transform="`translate(${sticky.varNameIndent}, 0)`"
+            @dragenter="(e) => e.preventDefault()"
+            @dragover="(e) => e.preventDefault()"
+            @drop="rectDrop"
+          >
+            <rect
+              :width="sticky.plusBackgroundSize"
+              :height="sticky.plusBackgroundSize"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M0,-10 V10 M-10,0 H10"
+              stroke="black"
+              stroke-width="2px"
+              transform="translate(15,15)"
+            />
+          </g>
+
+          <g v-else>
+            <text
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
+              dominant-baseline="hanging"
+            >
+              {{ linkVariables.color }}
+            </text>
+            <g
+              v-for="(glyphDatum, innerIndex) of attributeRanges[linkVariables.color].binLabels"
+              :key="glyphDatum"
+            >
+              <rect
+                :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                :y="20"
+                :width="sticky.colorMapSquareSize"
+                :height="sticky.colorMapSquareSize"
+                :fill="nodeGlyphColorScale(glyphDatum)"
+              />
+              <foreignObject
+                :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                :y="30"
+                :width="sticky.colorMapSquareSize"
+                height="20"
+              >
+                <p
+                  class="glyphLabel"
+                  :title="glyphDatum"
+                >
+                  {{ glyphDatum }}
+                </p>
+              </foreignObject>
+            </g>
+          </g>
         </g>
       </g>
     </svg>
@@ -633,41 +782,18 @@ export default Vue.extend({
 </template>
 
 <style scoped>
-.v-card {
-    height: calc(66vh - 24px);
-    overflow-y: scroll
-}
-svg >>> .selected{
-  stroke: "#000000";
-}
 .sticky {
-   position: sticky;
-   top: 0;
-   z-index: 2;
-}
-.sticky >>> text {
-  text-anchor: middle;
-}
-.barLabel, .nodeSizeLabel {
-  transform: translate(5%, 0);
-}
-#nodeMapping {
-  transform: translate(20%, 50%);
-}
-#linkMapping {
-  transform: translate(80%, 50%);
-}
-#barElements, #widthElements, #nodeSizeElements {
-  transform: translate(-12%, -20%);
-}
-#glyphElements, #colorElements, #nodeColorElements {
-  transform: translate(2%, -20%);
-}
-.plus {
-  transform: translate(5%, 20%);
-  width: 5%;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 .draggable {
   cursor: pointer;
+}
+.barLabel, .glyphLabel{
+  display: block;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

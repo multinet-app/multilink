@@ -56,7 +56,8 @@ const {
     nodeSizeVariable: '',
     nodeColorVariable: '',
     attributeRanges: {},
-    nodeColorScale: scaleOrdinal(schemeCategory10),
+    nodeBarColorScale: scaleOrdinal(schemeCategory10),
+    nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
     provenance: null,
     directionalEdges: false,
@@ -134,8 +135,12 @@ const {
       return state.attributeRanges;
     },
 
-    nodeColorScale(state: State) {
-      return state.nodeColorScale;
+    nodeBarColorScale(state: State) {
+      return state.nodeBarColorScale;
+    },
+
+    nodeGlyphColorScale(state: State) {
+      return state.nodeBarColorScale;
     },
 
     linkWidthScale(state: State) {
@@ -306,7 +311,7 @@ const {
       }
     },
 
-    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number }) {
+    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number; binLabels: string[]; binValues: number[] }) {
       state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
     },
 
