@@ -33,14 +33,16 @@ export default Vue.extend({
     return {
       svgHeight: 50,
       yAxisPadding: 25, // Gives enough width for hundreds on the y axis
-      stickyBarHeight: 100,
-      stickyBarHorizSpacing: 60,
-      stickyBarWidth: 30,
-      stickyColorMapSquareSize: 15,
-      stickyPadding: 15,
-      stickyPlusBackgroundSize: 30,
-      stickyRowHeight: 50,
-      stickyVarNameIndent: 50,
+      sticky: {
+        barHeight: 100,
+        barHorizSpacing: 60,
+        barWidth: 30,
+        colorMapSquareSize: 15,
+        padding: 15,
+        plusBackgroundSize: 30,
+        rowHeight: 50,
+        varNameIndent: 50,
+      },
       varPadding: 10,
     };
   },
@@ -334,7 +336,7 @@ export default Vue.extend({
 
       const scale = scaleLinear()
         .domain([varMin, varMax])
-        .range([this.stickyBarHeight, 0]);
+        .range([this.sticky.barHeight, 0]);
       const axis = axisRight(scale).ticks(4, 's');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -366,7 +368,7 @@ export default Vue.extend({
     <!-- Sticky SVG to drag variables onto -->
     <svg
       class="sticky"
-      :height="displayCharts ? 9 * stickyRowHeight : 6 * stickyRowHeight"
+      :height="displayCharts ? 9 * sticky.rowHeight : 6 * sticky.rowHeight"
       width="100%"
     >
       <rect
@@ -382,8 +384,8 @@ export default Vue.extend({
       >
         <text
           font-size="16pt"
-          :y="stickyPadding"
-          :x="stickyPadding"
+          :y="sticky.padding"
+          :x="sticky.padding"
           dominant-baseline="hanging"
           text-anchor="start"
         >Node Mapping</text>
@@ -393,28 +395,28 @@ export default Vue.extend({
         >
           <!-- Bar adding elements -->
           <g
-            :transform="`translate(${stickyPadding}, ${stickyRowHeight})`"
+            :transform="`translate(${sticky.padding}, ${sticky.rowHeight})`"
           >
             <g
               v-for="(barVar, index) of nestedVariables.bar"
               :key="barVar"
             >
               <rect
-                :x="index * stickyBarHorizSpacing"
-                :width="stickyBarWidth"
-                :height="stickyBarHeight"
+                :x="index * sticky.barHorizSpacing"
+                :width="sticky.barWidth"
+                :height="sticky.barHeight"
                 fill="#FFFFFF"
               />
               <rect
-                :x="index * stickyBarHorizSpacing"
+                :x="index * sticky.barHorizSpacing"
                 y="50"
-                :width="stickyBarWidth"
+                :width="sticky.barWidth"
                 height="50"
                 :fill="nodeBarColorScale(barVar)"
               />
               <foreignObject
-                :x="index * stickyBarHorizSpacing"
-                :y="stickyBarHeight"
+                :x="index * sticky.barHorizSpacing"
+                :y="sticky.barHeight"
                 width="50"
                 height="20"
               >
@@ -427,33 +429,33 @@ export default Vue.extend({
               </foreignObject>
               <g
                 :id="`node_${barVar}_scale`"
-                :transform="`translate(${stickyBarWidth + (index * stickyBarHorizSpacing)}, 0)`"
+                :transform="`translate(${sticky.barWidth + (index * sticky.barHorizSpacing)}, 0)`"
               />
             </g>
             <g
               id="barElements"
-              :transform="`translate(${nestedVariables.bar.length * stickyBarHorizSpacing}, 0)`"
+              :transform="`translate(${nestedVariables.bar.length * sticky.barHorizSpacing}, 0)`"
               @dragenter="(e) => e.preventDefault()"
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
               <rect
-                :width="stickyPlusBackgroundSize"
-                :height="stickyBarHeight"
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.barHeight"
                 fill="#FFFFFF"
               />
               <path
                 d="M0,-10 V10 M-10,0 H10"
                 stroke="black"
                 stroke-width="2px"
-                :transform="`translate(${stickyPlusBackgroundSize / 2}, 50)`"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, 50)`"
               />
             </g>
           </g>
 
           <!-- Glyph adding elements -->
           <g
-            :transform="`translate(${stickyPadding}, 180)`"
+            :transform="`translate(${sticky.padding}, 180)`"
           >
             <text dominant-baseline="hanging">Glyph:</text>
             <g
@@ -461,8 +463,8 @@ export default Vue.extend({
               :key="glyphVar"
             >
               <text
-                :x="stickyVarNameIndent"
-                :y="stickyPadding + outerIndex * (stickyRowHeight + 10)"
+                :x="sticky.varNameIndent"
+                :y="sticky.padding + outerIndex * (sticky.rowHeight + 10)"
               >
                 {{ glyphVar }}
               </text>
@@ -471,16 +473,16 @@ export default Vue.extend({
                 :key="glyphDatum"
               >
                 <rect
-                  :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
-                  :y="(stickyColorMapSquareSize + 5) + outerIndex * (stickyRowHeight + 10)"
-                  :width="stickyColorMapSquareSize"
-                  :height="stickyColorMapSquareSize"
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="(sticky.colorMapSquareSize + 5) + outerIndex * (sticky.rowHeight + 10)"
+                  :width="sticky.colorMapSquareSize"
+                  :height="sticky.colorMapSquareSize"
                   :fill="nodeGlyphColorScale(glyphDatum)"
                 />
                 <foreignObject
-                  :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
-                  :y="30 + outerIndex * (stickyRowHeight + 10)"
-                  :width="stickyColorMapSquareSize"
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="30 + outerIndex * (sticky.rowHeight + 10)"
+                  :width="sticky.colorMapSquareSize"
                   height="20"
                 >
                   <p
@@ -495,21 +497,21 @@ export default Vue.extend({
             <g
               v-if="nestedVariables.glyph.length !== 2"
               id="glyphElements"
-              :transform="`translate(${stickyVarNameIndent}, ${nestedVariables.glyph.length * (stickyRowHeight + 10)})`"
+              :transform="`translate(${sticky.varNameIndent}, ${nestedVariables.glyph.length * (sticky.rowHeight + 10)})`"
               @dragenter="(e) => e.preventDefault()"
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
               <rect
-                :width="stickyPlusBackgroundSize"
-                :height="stickyPlusBackgroundSize"
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
                 fill="#FFFFFF"
               />
               <path
                 d="M0,-10 V10 M-10,0 H10"
                 stroke="black"
                 stroke-width="2px"
-                :transform="`translate(${stickyPlusBackgroundSize / 2}, ${stickyPlusBackgroundSize / 2})`"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
               />
             </g>
           </g>
@@ -520,33 +522,33 @@ export default Vue.extend({
         >
           <!-- Node size elements -->
           <g
-            :transform="`translate(${stickyPadding}, ${stickyRowHeight})`"
+            :transform="`translate(${sticky.padding}, ${sticky.rowHeight})`"
           >
             <text dominant-baseline="hanging">Size:</text>
             <g
               v-if="nodeSizeVariable === ''"
               id="nodeSizeElements"
-              :transform="`translate(${stickyVarNameIndent}, 0)`"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
               @dragenter="(e) => e.preventDefault()"
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
               <rect
-                :width="stickyPlusBackgroundSize"
-                :height="stickyPlusBackgroundSize"
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
                 fill="#FFFFFF"
               />
               <path
                 d="M0,-10 V10 M-10,0 H10"
                 stroke="black"
                 stroke-width="2px"
-                :transform="`translate(${stickyPlusBackgroundSize / 2}, ${stickyPlusBackgroundSize / 2})`"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
               />
             </g>
 
             <g v-else>
               <text
-                :transform="`translate(${stickyVarNameIndent}, 0)`"
+                :transform="`translate(${sticky.varNameIndent}, 0)`"
                 dominant-baseline="hanging"
               >
                 {{ nodeSizeVariable }}
@@ -556,33 +558,33 @@ export default Vue.extend({
 
           <!-- Node color elements -->
           <g
-            :transform="`translate(${stickyPadding}, ${2 * stickyRowHeight})`"
+            :transform="`translate(${sticky.padding}, ${2 * sticky.rowHeight})`"
           >
             <text dominant-baseline="hanging">Color:</text>
             <g
               v-if="nodeColorVariable === ''"
               id="nodeColorElements"
-              :transform="`translate(${stickyVarNameIndent}, 0)`"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
               @dragenter="(e) => e.preventDefault()"
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
               <rect
-                :width="stickyPlusBackgroundSize"
-                :height="stickyPlusBackgroundSize"
+                :width="sticky.plusBackgroundSize"
+                :height="sticky.plusBackgroundSize"
                 fill="#FFFFFF"
               />
               <path
                 d="M0,-10 V10 M-10,0 H10"
                 stroke="black"
                 stroke-width="2px"
-                :transform="`translate(${stickyPlusBackgroundSize / 2}, ${stickyPlusBackgroundSize / 2})`"
+                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
               />
             </g>
 
             <g v-else>
               <text
-                :transform="`translate(${stickyVarNameIndent}, 0)`"
+                :transform="`translate(${sticky.varNameIndent}, 0)`"
                 dominant-baseline="hanging"
               >
                 {{ nodeColorVariable }}
@@ -592,16 +594,16 @@ export default Vue.extend({
                 :key="glyphDatum"
               >
                 <rect
-                  :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
-                  :y="stickyColorMapSquareSize + 5"
-                  :width="stickyColorMapSquareSize"
-                  :height="stickyColorMapSquareSize"
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="sticky.colorMapSquareSize + 5"
+                  :width="sticky.colorMapSquareSize"
+                  :height="sticky.colorMapSquareSize"
                   :fill="nodeGlyphColorScale(glyphDatum)"
                 />
                 <foreignObject
-                  :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
+                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
                   :y="30"
-                  :width="stickyColorMapSquareSize"
+                  :width="sticky.colorMapSquareSize"
                   height="20"
                 >
                   <p
@@ -621,8 +623,8 @@ export default Vue.extend({
       <g
         id="linkMapping"
         :transform="displayCharts ?
-          `translate(${stickyPadding}, ${6 * stickyRowHeight})` :
-          `translate(${stickyPadding}, ${3 * stickyRowHeight})`"
+          `translate(${sticky.padding}, ${6 * sticky.rowHeight})` :
+          `translate(${sticky.padding}, ${3 * sticky.rowHeight})`"
       >
         <text
           font-size="16pt"
@@ -631,32 +633,32 @@ export default Vue.extend({
         >Link Mapping</text>
 
         <!-- Link width elements -->
-        <g :transform="`translate(0, ${stickyVarNameIndent - stickyPadding})`">
+        <g :transform="`translate(0, ${sticky.varNameIndent - sticky.padding})`">
           <text dominant-baseline="hanging">Width:</text>
           <g
             v-if="linkVariables.width === ''"
             id="widthElements"
-            :transform="`translate(${stickyVarNameIndent}, 0)`"
+            :transform="`translate(${sticky.varNameIndent}, 0)`"
             @dragenter="(e) => e.preventDefault()"
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
             <rect
-              :width="stickyPlusBackgroundSize"
-              :height="stickyPlusBackgroundSize"
+              :width="sticky.plusBackgroundSize"
+              :height="sticky.plusBackgroundSize"
               fill="#FFFFFF"
             />
             <path
               d="M0,-10 V10 M-10,0 H10"
               stroke="black"
               stroke-width="2px"
-              :transform="`translate(${stickyPlusBackgroundSize / 2}, ${stickyPlusBackgroundSize / 2})`"
+              :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
             />
           </g>
 
           <g v-else>
             <text
-              :transform="`translate(${stickyVarNameIndent}, 0)`"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
               dominant-baseline="hanging"
             >
               {{ linkVariables.width }}
@@ -665,19 +667,19 @@ export default Vue.extend({
         </g>
 
         <!-- Link color elements -->
-        <g :transform="`translate(0, ${2 * stickyVarNameIndent - stickyPadding})`">
+        <g :transform="`translate(0, ${2 * sticky.varNameIndent - sticky.padding})`">
           <text dominant-baseline="hanging">Color:</text>
           <g
             v-if="linkVariables.color === ''"
             id="colorElements"
-            :transform="`translate(${stickyVarNameIndent}, 0)`"
+            :transform="`translate(${sticky.varNameIndent}, 0)`"
             @dragenter="(e) => e.preventDefault()"
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
             <rect
-              :width="stickyPlusBackgroundSize"
-              :height="stickyPlusBackgroundSize"
+              :width="sticky.plusBackgroundSize"
+              :height="sticky.plusBackgroundSize"
               fill="#FFFFFF"
             />
             <path
@@ -690,7 +692,7 @@ export default Vue.extend({
 
           <g v-else>
             <text
-              :transform="`translate(${stickyVarNameIndent}, 0)`"
+              :transform="`translate(${sticky.varNameIndent}, 0)`"
               dominant-baseline="hanging"
             >
               {{ linkVariables.color }}
@@ -700,16 +702,16 @@ export default Vue.extend({
               :key="glyphDatum"
             >
               <rect
-                :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
+                :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
                 :y="20"
-                :width="stickyColorMapSquareSize"
-                :height="stickyColorMapSquareSize"
+                :width="sticky.colorMapSquareSize"
+                :height="sticky.colorMapSquareSize"
                 :fill="nodeGlyphColorScale(glyphDatum)"
               />
               <foreignObject
-                :x="stickyVarNameIndent + innerIndex * (stickyColorMapSquareSize + 5)"
+                :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
                 :y="30"
-                :width="stickyColorMapSquareSize"
+                :width="sticky.colorMapSquareSize"
                 height="20"
               >
                 <p
