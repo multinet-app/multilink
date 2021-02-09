@@ -593,6 +593,11 @@ export default Vue.extend({
               >
                 {{ nodeSizeVariable }}
               </text>
+              <use
+                xlink:href="#removeX"
+                transform="translate(0, 15)"
+                @click="removeMapping('nodeSize')"
+              />
             </g>
           </g>
 
@@ -643,6 +648,11 @@ export default Vue.extend({
                     {{ glyphDatum }}
                   </p>
                 </foreignObject>
+                <use
+                  xlink:href="#removeX"
+                  transform="translate(0, 15)"
+                  @click="removeMapping('nodeColor')"
+                />
               </g>
             </g>
           </g>
@@ -683,6 +693,11 @@ export default Vue.extend({
             >
               {{ linkVariables.width }}
             </text>
+            <use
+              xlink:href="#removeX"
+              transform="translate(0, 15)"
+              @click="removeMapping('linkWidth')"
+            />
           </g>
         </g>
 
@@ -707,6 +722,11 @@ export default Vue.extend({
             >
               {{ linkVariables.color }}
             </text>
+            <use
+              xlink:href="#removeX"
+              transform="translate(0, 15)"
+              @click="removeMapping('linkColor')"
+            />
             <g
               v-for="(glyphDatum, innerIndex) of attributeRanges[linkVariables.color].binLabels"
               :key="glyphDatum"
