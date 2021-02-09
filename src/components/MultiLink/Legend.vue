@@ -501,6 +501,11 @@ export default Vue.extend({
                 :id="`node_${barVar}_scale`"
                 :transform="`translate(${sticky.barWidth + (index * sticky.barHorizSpacing)}, 0)`"
               />
+              <use
+                xlink:href="#removeX"
+                :transform="`translate(${index * sticky.barHorizSpacing}, 0)`"
+                @click="removeMapping('nodeBar', barVar)"
+              />
             </g>
             <g
               id="barElements"
