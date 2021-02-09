@@ -358,6 +358,45 @@ export default Vue.extend({
 
       return cleanedVariables;
     },
+
+    removeMapping(
+      type: 'nodeBar' | 'nodeGlyph' | 'nodeSize' | 'nodeColor' | 'linkWidth' | 'linkColor',
+      varName?: string,
+    ) {
+      if (type === 'nodeBar' && varName !== undefined) {
+        const newBarVars = this.nestedVariables.bar.filter(
+          (barVar) => barVar !== varName,
+        );
+
+        store.commit.setNestedVariables({
+          bar: newBarVars,
+          glyph: this.nestedVariables.glyph,
+        });
+      } else if (type === 'nodeGlyph' && varName !== undefined) {
+        const newGlyphVars = this.nestedVariables.glyph.filter(
+          (glyphVar) => glyphVar !== varName,
+        );
+
+        store.commit.setNestedVariables({
+          bar: this.nestedVariables.bar,
+          glyph: newGlyphVars,
+        });
+      } else if (type === 'nodeSize') {
+        store.commit.setNodeSizeVariable('');
+      } else if (type === 'nodeColor') {
+        store.commit.setNodeColorVariable('');
+      } else if (type === 'linkWidth') {
+        store.commit.setLinkVariables({
+          width: '',
+          color: this.linkVariables.color,
+        });
+      } else if (type === 'linkColor') {
+        store.commit.setLinkVariables({
+          width: this.linkVariables.width,
+          color: '',
+        });
+      }
+    },
   },
 });
 </script>
@@ -370,6 +409,38 @@ export default Vue.extend({
       :height="displayCharts ? 9 * sticky.rowHeight : 6 * sticky.rowHeight"
       width="100%"
     >
+
+      <!-- Define some recurring elements -->
+      <defs>
+        <g id="plus">
+          <rect
+            :width="sticky.plusBackgroundSize"
+            :height="sticky.plusBackgroundSize"
+            fill="#FFFFFF"
+          />
+          <path
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="2px"
+            :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
+          />
+        </g>
+
+        <g id="removeX">
+          <rect
+            width="16"
+            height="16"
+            fill="white"
+          />
+          <path
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="2px"
+            transform="translate(8,8)rotate(45)scale(.5)"
+          />
+        </g>
+      </defs>
+
       <rect
         width="100%"
         height="440"
@@ -430,6 +501,11 @@ export default Vue.extend({
                 :id="`node_${barVar}_scale`"
                 :transform="`translate(${sticky.barWidth + (index * sticky.barHorizSpacing)}, 0)`"
               />
+              <use
+                xlink:href="#removeX"
+                :transform="`translate(${index * sticky.barHorizSpacing}, 0)`"
+                @click="removeMapping('nodeBar', barVar)"
+              />
             </g>
             <g
               id="barElements"
@@ -438,17 +514,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.barHeight"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, 50)`"
-              />
+              <use xlink:href="#plus" />
             </g>
           </g>
 
@@ -460,27 +526,30 @@ export default Vue.extend({
             <g
               v-for="(glyphVar, outerIndex) of nestedVariables.glyph"
               :key="glyphVar"
+              :transform="`translate(${sticky.varNameIndent}, ${sticky.padding + outerIndex * (sticky.rowHeight + 10)})`"
             >
-              <text
-                :x="sticky.varNameIndent"
-                :y="sticky.padding + outerIndex * (sticky.rowHeight + 10)"
-              >
+              <text>
                 {{ glyphVar }}
               </text>
+              <use
+                xlink:href="#removeX"
+                transform="translate(-20, 0)"
+                @click="removeMapping('nodeGlyph', glyphVar)"
+              />
               <g
                 v-for="(glyphDatum, innerIndex) of attributeRanges[glyphVar].binLabels"
                 :key="glyphDatum"
               >
                 <rect
-                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
-                  :y="(sticky.colorMapSquareSize + 5) + outerIndex * (sticky.rowHeight + 10)"
+                  :x="innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="5"
                   :width="sticky.colorMapSquareSize"
                   :height="sticky.colorMapSquareSize"
                   :fill="nodeGlyphColorScale(glyphDatum)"
                 />
                 <foreignObject
-                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
-                  :y="30 + outerIndex * (sticky.rowHeight + 10)"
+                  :x="innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="20"
                   :width="sticky.colorMapSquareSize"
                   height="20"
                 >
@@ -501,17 +570,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
           </g>
         </g>
@@ -532,17 +591,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
 
             <g v-else>
@@ -552,6 +601,11 @@ export default Vue.extend({
               >
                 {{ nodeSizeVariable }}
               </text>
+              <use
+                xlink:href="#removeX"
+                transform="translate(0, 15)"
+                @click="removeMapping('nodeSize')"
+              />
             </g>
           </g>
 
@@ -568,17 +622,7 @@ export default Vue.extend({
               @dragover="(e) => e.preventDefault()"
               @drop="rectDrop"
             >
-              <rect
-                :width="sticky.plusBackgroundSize"
-                :height="sticky.plusBackgroundSize"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M0,-10 V10 M-10,0 H10"
-                stroke="black"
-                stroke-width="2px"
-                :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-              />
+              <use xlink:href="#plus" />
             </g>
 
             <g v-else>
@@ -612,6 +656,11 @@ export default Vue.extend({
                     {{ glyphDatum }}
                   </p>
                 </foreignObject>
+                <use
+                  xlink:href="#removeX"
+                  transform="translate(0, 15)"
+                  @click="removeMapping('nodeColor')"
+                />
               </g>
             </g>
           </g>
@@ -642,17 +691,7 @@ export default Vue.extend({
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
-            <rect
-              :width="sticky.plusBackgroundSize"
-              :height="sticky.plusBackgroundSize"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="2px"
-              :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
-            />
+            <use xlink:href="#plus" />
           </g>
 
           <g v-else>
@@ -662,6 +701,11 @@ export default Vue.extend({
             >
               {{ linkVariables.width }}
             </text>
+            <use
+              xlink:href="#removeX"
+              transform="translate(0, 15)"
+              @click="removeMapping('linkWidth')"
+            />
           </g>
         </g>
 
@@ -676,17 +720,7 @@ export default Vue.extend({
             @dragover="(e) => e.preventDefault()"
             @drop="rectDrop"
           >
-            <rect
-              :width="sticky.plusBackgroundSize"
-              :height="sticky.plusBackgroundSize"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M0,-10 V10 M-10,0 H10"
-              stroke="black"
-              stroke-width="2px"
-              transform="translate(15,15)"
-            />
+            <use xlink:href="#plus" />
           </g>
 
           <g v-else>
@@ -696,6 +730,11 @@ export default Vue.extend({
             >
               {{ linkVariables.color }}
             </text>
+            <use
+              xlink:href="#removeX"
+              transform="translate(0, 15)"
+              @click="removeMapping('linkColor')"
+            />
             <g
               v-for="(glyphDatum, innerIndex) of attributeRanges[linkVariables.color].binLabels"
               :key="glyphDatum"
