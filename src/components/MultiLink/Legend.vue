@@ -526,27 +526,30 @@ export default Vue.extend({
             <g
               v-for="(glyphVar, outerIndex) of nestedVariables.glyph"
               :key="glyphVar"
+              :transform="`translate(${sticky.varNameIndent}, ${sticky.padding + outerIndex * (sticky.rowHeight + 10)})`"
             >
-              <text
-                :x="sticky.varNameIndent"
-                :y="sticky.padding + outerIndex * (sticky.rowHeight + 10)"
-              >
+              <text>
                 {{ glyphVar }}
               </text>
+              <use
+                xlink:href="#removeX"
+                transform="translate(-20, 0)"
+                @click="removeMapping('nodeGlyph', glyphVar)"
+              />
               <g
                 v-for="(glyphDatum, innerIndex) of attributeRanges[glyphVar].binLabels"
                 :key="glyphDatum"
               >
                 <rect
-                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
-                  :y="(sticky.colorMapSquareSize + 5) + outerIndex * (sticky.rowHeight + 10)"
+                  :x="innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="5"
                   :width="sticky.colorMapSquareSize"
                   :height="sticky.colorMapSquareSize"
                   :fill="nodeGlyphColorScale(glyphDatum)"
                 />
                 <foreignObject
-                  :x="sticky.varNameIndent + innerIndex * (sticky.colorMapSquareSize + 5)"
-                  :y="30 + outerIndex * (sticky.rowHeight + 10)"
+                  :x="innerIndex * (sticky.colorMapSquareSize + 5)"
+                  :y="20"
                   :width="sticky.colorMapSquareSize"
                   height="20"
                 >
