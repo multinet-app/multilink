@@ -358,6 +358,45 @@ export default Vue.extend({
 
       return cleanedVariables;
     },
+
+    removeMapping(
+      type: 'nodeBar' | 'nodeGlyph' | 'nodeSize' | 'nodeColor' | 'linkWidth' | 'linkColor',
+      varName?: string,
+    ) {
+      if (type === 'nodeBar' && varName !== undefined) {
+        const newBarVars = this.nestedVariables.bar.filter(
+          (barVar) => barVar !== varName,
+        );
+
+        store.commit.setNestedVariables({
+          bar: newBarVars,
+          glyph: this.nestedVariables.glyph,
+        });
+      } else if (type === 'nodeGlyph' && varName !== undefined) {
+        const newGlyphVars = this.nestedVariables.glyph.filter(
+          (glyphVar) => glyphVar !== varName,
+        );
+
+        store.commit.setNestedVariables({
+          bar: this.nestedVariables.bar,
+          glyph: newGlyphVars,
+        });
+      } else if (type === 'nodeSize') {
+        store.commit.setNodeSizeVariable('');
+      } else if (type === 'nodeColor') {
+        store.commit.setNodeColorVariable('');
+      } else if (type === 'linkWidth') {
+        store.commit.setLinkVariables({
+          width: '',
+          color: this.linkVariables.color,
+        });
+      } else if (type === 'linkColor') {
+        store.commit.setLinkVariables({
+          width: this.linkVariables.width,
+          color: '',
+        });
+      }
+    },
   },
 });
 </script>
