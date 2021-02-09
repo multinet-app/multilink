@@ -425,6 +425,20 @@ export default Vue.extend({
             :transform="`translate(${sticky.plusBackgroundSize / 2}, ${sticky.plusBackgroundSize / 2})`"
           />
         </g>
+
+        <g id="removeX">
+          <rect
+            width="16"
+            height="16"
+            fill="white"
+          />
+          <path
+            d="M0,-10 V10 M-10,0 H10"
+            stroke="black"
+            stroke-width="2px"
+            transform="translate(8,8)rotate(45)scale(.5)"
+          />
+        </g>
       </defs>
 
       <rect
