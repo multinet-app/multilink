@@ -398,6 +398,80 @@ export default Vue.extend({
 
       return this.nodeSizeScale(node[this.nodeSizeVariable]);
     },
+
+    rectSelectDrag(event: MouseEvent) {
+      // Set initial location for box (pins one corner)
+      this.rectSelect = {
+        x: event.x - this.controlsWidth,
+        y: event.y,
+        width: 0,
+        height: 0,
+        transformX: 0,
+        transformY: 0,
+      };
+
+      const moveFn = (evt: Event) => {
+        // Get event location
+        const mouseX = (evt as MouseEvent).x - this.controlsWidth;
+        const mouseY = (evt as MouseEvent).y;
+
+        // Check if we need to translate (case when mouse is left/above initial click)
+        const translateX = mouseX < this.rectSelect.x;
+        const translateY = mouseY < this.rectSelect.y;
+
+        // Set the parameters
+        this.rectSelect = {
+          x: this.rectSelect.x,
+          y: this.rectSelect.y,
+          width: Math.abs(this.rectSelect.x - mouseX),
+          height: Math.abs(this.rectSelect.y - mouseY),
+          transformX: translateX ? -Math.abs(this.rectSelect.x - mouseX) : 0,
+          transformY: translateY ? -Math.abs(this.rectSelect.y - mouseY) : 0,
+        };
+      };
+
+      const stopFn = () => {
+        console.log(this.rectSelect.x, this.rectSelect.transformX);
+        const boxX1 = Math.min(this.rectSelect.x + this.rectSelect.transformX, this.rectSelect.x);
+        const boxX2 = boxX1 + this.rectSelect.width;
+        const boxY1 = Math.min(this.rectSelect.y + this.rectSelect.transformY, this.rectSelect.y);
+        const boxY2 = boxY1 + this.rectSelect.height;
+
+        // Find which nodes are in the box
+        let nodesInRect: Node[] = [];
+        if (this.network !== null) {
+          nodesInRect = this.network.nodes.filter((node) => {
+            const nodeSize = this.calculateNodeSize(node) / 2;
+            return (node.x || 0) + nodeSize > boxX1
+              && (node.x || 0) + nodeSize < boxX2
+              && (node.y || 0) + nodeSize > boxY1
+              && (node.y || 0) + nodeSize < boxY2;
+          });
+        }
+
+        // Select the nodes inside the box if there are any
+        nodesInRect.forEach((node) => {
+          store.commit.addSelectedNode(node._id);
+        });
+
+        // Remove the listeners so that the box stops updating location
+        (this.$refs.svg as Element).removeEventListener('mousemove', moveFn);
+        (this.$refs.svg as Element).removeEventListener('mouseup', stopFn);
+
+        // Remove the selection box
+        this.rectSelect = {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          transformX: 0,
+          transformY: 0,
+        };
+      };
+
+      (this.$refs.svg as Element).addEventListener('mousemove', moveFn);
+      (this.$refs.svg as Element).addEventListener('mouseup', stopFn);
+    },
   },
 });
 </script>
@@ -408,6 +482,7 @@ export default Vue.extend({
       ref="svg"
       :width="svgDimensions.width"
       :height="svgDimensions.height"
+      @mousedown="rectSelectDrag"
     >
       <rect
         id="rect-select"
