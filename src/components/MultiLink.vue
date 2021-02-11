@@ -20,6 +20,14 @@ export default Vue.extend({
       el: null as Element | null,
       simulation: null as Simulation<Node, SimulationLink> | null,
       nestedPadding: 5,
+      rectSelect: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        transformX: 0,
+        transformY: 0,
+      },
     };
   },
 
@@ -401,6 +409,19 @@ export default Vue.extend({
       :width="svgDimensions.width"
       :height="svgDimensions.height"
     >
+      <rect
+        id="rect-select"
+        :x="rectSelect.x"
+        :y="rectSelect.y"
+        :width="rectSelect.width"
+        :height="rectSelect.height"
+        :transform="`translate(${rectSelect.transformX}, ${rectSelect.transformY})`"
+        fill="none"
+        stroke="black"
+        stroke-width="2px"
+        stroke-dasharray="5,5"
+      />
+
       <g
         class="links"
       >
