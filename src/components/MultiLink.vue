@@ -431,7 +431,6 @@ export default Vue.extend({
       };
 
       const stopFn = () => {
-        console.log(this.rectSelect.x, this.rectSelect.transformX);
         const boxX1 = Math.min(this.rectSelect.x + this.rectSelect.transformX, this.rectSelect.x);
         const boxX2 = boxX1 + this.rectSelect.width;
         const boxY1 = Math.min(this.rectSelect.y + this.rectSelect.transformY, this.rectSelect.y);
