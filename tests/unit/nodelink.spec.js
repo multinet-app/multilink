@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import MultiLink from '@/components/MultiLink/MultiLink.vue';
+import MultiLink from '@/components/MultiLink.vue';
 import App from '@/App.vue';
 import {
   describe, expect, it, beforeEach,

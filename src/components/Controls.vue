@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
-import Legend from '@/components/MultiLink/Legend.vue';
+import Legend from '@/components/Legend.vue';
 
 import store from '@/store';
 import { Node, Link, Network } from '@/types';
