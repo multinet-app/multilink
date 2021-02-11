@@ -6,7 +6,7 @@ import {
 } from '@vue/composition-api';
 
 import Controls from './components/Controls.vue';
-import MultiLink from './components/MultiLink/MultiLink.vue';
+import MultiLink from './components/MultiLink.vue';
 import ProvVis from './components/ProvVis.vue';
 
 export default {
