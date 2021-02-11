@@ -253,7 +253,7 @@ export default Vue.extend({
     },
 
     dragNode(node: Node, event: MouseEvent) {
-      event.preventDefault();
+      event.stopPropagation();
 
       const moveFn = (evt: Event) => {
         // eslint-disable-next-line no-param-reassign
