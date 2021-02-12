@@ -193,7 +193,7 @@ export default Vue.extend({
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
-        .force('charge', forceManyBody<Node>().strength(-300))
+        .force('charge', forceManyBody<Node>().strength(-250))
         .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
         .force('collision', forceCollide((this.markerSize / 2) * 1.5));
 
