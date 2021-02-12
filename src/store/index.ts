@@ -208,7 +208,7 @@ const {
 
     startSimulation(state) {
       if (state.simulation !== null) {
-        state.simulation.alpha(0.5);
+        state.simulation.alpha(0.2);
         state.simulation.restart();
         state.simulationRunning = true;
       }
