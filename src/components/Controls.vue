@@ -185,7 +185,6 @@ export default Vue.extend({
       } else if (type === 'linkLength') {
         // Scale value to between -500, 0
         const newLinkLength = (value * -5);
-        console.log(newLinkLength);
 
         store.dispatch.updateSimulationForce({ forceType: 'charge', forceValue: forceManyBody<Node>().strength(newLinkLength), restart: true });
       }
