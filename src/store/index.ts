@@ -339,16 +339,6 @@ const {
       }
     },
 
-    updateSimulationForce(state: State, payload: {
-      forceType: 'center' | 'charge' | 'link' | 'collision';
-      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
-    }) {
-      if (state.simulation !== null) {
-        const { forceType, forceValue } = payload;
-        state.simulation.force(forceType, forceValue);
-      }
-    },
-
     toggleShowProvenanceVis(state: State) {
       state.showProvenanceVis = !state.showProvenanceVis;
     },
@@ -495,6 +485,22 @@ const {
 
       // Add keydown listener for undo/redo
       document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
+    },
+
+    updateSimulationForce(context, payload: {
+      forceType: 'center' | 'charge' | 'link' | 'collision';
+      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
+      restart: boolean;
+    }) {
+      const { commit } = rootActionContext(context);
+      if (context.state.simulation !== null) {
+        const { forceType, forceValue, restart } = payload;
+        context.state.simulation.force(forceType, forceValue);
+
+        if (restart) {
+          commit.startSimulation();
+        }
+      }
     },
   },
 });
