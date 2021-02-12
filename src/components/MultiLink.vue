@@ -154,7 +154,7 @@ export default Vue.extend({
       const { height } = this.$vuetify.breakpoint;
       const width = this.$vuetify.breakpoint.width - this.controlsWidth;
 
-      store.commit.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2) });
+      store.dispatch.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2), restart: false });
 
       return {
         height,
