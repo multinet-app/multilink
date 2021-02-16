@@ -249,6 +249,8 @@ export default Vue.extend({
     },
 
     dragNode(node: Node, event: MouseEvent) {
+      if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+
       event.stopPropagation();
 
       const moveFn = (evt: Event) => {
@@ -265,12 +267,13 @@ export default Vue.extend({
       };
 
       const stopFn = () => {
-        (this.$refs.svg as Element).removeEventListener('mousemove', moveFn);
-        (this.$refs.svg as Element).removeEventListener('mouseup', stopFn);
+        if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+        this.$refs.svg.removeEventListener('mousemove', moveFn);
+        this.$refs.svg.removeEventListener('mouseup', stopFn);
       };
 
-      (this.$refs.svg as Element).addEventListener('mousemove', moveFn);
-      (this.$refs.svg as Element).addEventListener('mouseup', stopFn);
+      this.$refs.svg.addEventListener('mousemove', moveFn);
+      this.$refs.svg.addEventListener('mouseup', stopFn);
     },
 
     showTooltip(element: Node | Link, event: MouseEvent) {
@@ -464,8 +467,9 @@ export default Vue.extend({
         });
 
         // Remove the listeners so that the box stops updating location
-        (this.$refs.svg as Element).removeEventListener('mousemove', moveFn);
-        (this.$refs.svg as Element).removeEventListener('mouseup', stopFn);
+        if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+        this.$refs.svg.removeEventListener('mousemove', moveFn);
+        this.$refs.svg.removeEventListener('mouseup', stopFn);
 
         // Remove the selection box
         this.rectSelect = {
@@ -478,8 +482,9 @@ export default Vue.extend({
         };
       };
 
-      (this.$refs.svg as Element).addEventListener('mousemove', moveFn);
-      (this.$refs.svg as Element).addEventListener('mouseup', stopFn);
+      if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+      this.$refs.svg.addEventListener('mousemove', moveFn);
+      this.$refs.svg.addEventListener('mouseup', stopFn);
     },
   },
 });
