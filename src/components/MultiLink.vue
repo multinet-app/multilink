@@ -20,6 +20,14 @@ export default Vue.extend({
       el: null as Element | null,
       simulation: null as Simulation<Node, SimulationLink> | null,
       nestedPadding: 5,
+      rectSelect: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        transformX: 0,
+        transformY: 0,
+      },
     };
   },
 
@@ -241,23 +249,35 @@ export default Vue.extend({
     },
 
     dragNode(node: Node, event: MouseEvent) {
-      event.preventDefault();
+      if (!(this.$refs.svg instanceof Element)) {
+        throw new Error('SVG is not of type Element');
+      }
+
+      event.stopPropagation();
 
       const moveFn = (evt: Event) => {
+        // Check we have a mouse event
+        if (!(evt instanceof MouseEvent)) {
+          throw new Error('event is not MouseEvent');
+        }
+
         // eslint-disable-next-line no-param-reassign
-        node.x = (evt as MouseEvent).clientX - this.controlsWidth - (this.calculateNodeSize(node) / 2);
+        node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
         // eslint-disable-next-line no-param-reassign
-        node.y = (evt as MouseEvent).clientY - (this.calculateNodeSize(node) / 2);
+        node.y = evt.y - (this.calculateNodeSize(node) / 2);
         this.$forceUpdate();
       };
 
       const stopFn = () => {
-        (this.$refs.svg as Element).removeEventListener('mousemove', moveFn);
-        (this.$refs.svg as Element).removeEventListener('mouseup', stopFn);
+        if (!(this.$refs.svg instanceof Element)) {
+          throw new Error('SVG is not of type Element');
+        }
+        this.$refs.svg.removeEventListener('mousemove', moveFn);
+        this.$refs.svg.removeEventListener('mouseup', stopFn);
       };
 
-      (this.$refs.svg as Element).addEventListener('mousemove', moveFn);
-      (this.$refs.svg as Element).addEventListener('mouseup', stopFn);
+      this.$refs.svg.addEventListener('mousemove', moveFn);
+      this.$refs.svg.addEventListener('mouseup', stopFn);
     },
 
     showTooltip(element: Node | Link, event: MouseEvent) {
@@ -386,6 +406,90 @@ export default Vue.extend({
 
       return this.nodeSizeScale(node[this.nodeSizeVariable]);
     },
+
+    rectSelectDrag(event: MouseEvent) {
+      // Set initial location for box (pins one corner)
+      this.rectSelect = {
+        x: event.x - this.controlsWidth,
+        y: event.y,
+        width: 0,
+        height: 0,
+        transformX: 0,
+        transformY: 0,
+      };
+
+      const moveFn = (evt: Event) => {
+        // Check we have a mouse event
+        if (!(evt instanceof MouseEvent)) {
+          throw new Error('event is not MouseEvent');
+        }
+
+        // Get event location
+        const mouseX = evt.x - this.controlsWidth;
+        const mouseY = evt.y;
+
+        // Check if we need to translate (case when mouse is left/above initial click)
+        const translateX = mouseX < this.rectSelect.x;
+        const translateY = mouseY < this.rectSelect.y;
+
+        // Set the parameters
+        this.rectSelect = {
+          x: this.rectSelect.x,
+          y: this.rectSelect.y,
+          width: Math.abs(this.rectSelect.x - mouseX),
+          height: Math.abs(this.rectSelect.y - mouseY),
+          transformX: translateX ? -Math.abs(this.rectSelect.x - mouseX) : 0,
+          transformY: translateY ? -Math.abs(this.rectSelect.y - mouseY) : 0,
+        };
+      };
+
+      const stopFn = () => {
+        const boxX1 = Math.min(this.rectSelect.x + this.rectSelect.transformX, this.rectSelect.x);
+        const boxX2 = boxX1 + this.rectSelect.width;
+        const boxY1 = Math.min(this.rectSelect.y + this.rectSelect.transformY, this.rectSelect.y);
+        const boxY2 = boxY1 + this.rectSelect.height;
+
+        // Find which nodes are in the box
+        let nodesInRect: Node[] = [];
+        if (this.network !== null) {
+          nodesInRect = this.network.nodes.filter((node) => {
+            const nodeSize = this.calculateNodeSize(node) / 2;
+            return (node.x || 0) + nodeSize > boxX1
+              && (node.x || 0) + nodeSize < boxX2
+              && (node.y || 0) + nodeSize > boxY1
+              && (node.y || 0) + nodeSize < boxY2;
+          });
+        }
+
+        // Select the nodes inside the box if there are any
+        nodesInRect.forEach((node) => {
+          store.commit.addSelectedNode(node._id);
+        });
+
+        // Remove the listeners so that the box stops updating location
+        if (!(this.$refs.svg instanceof Element)) {
+          throw new Error('SVG is not of type Element');
+        }
+        this.$refs.svg.removeEventListener('mousemove', moveFn);
+        this.$refs.svg.removeEventListener('mouseup', stopFn);
+
+        // Remove the selection box
+        this.rectSelect = {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          transformX: 0,
+          transformY: 0,
+        };
+      };
+
+      if (!(this.$refs.svg instanceof Element)) {
+        throw new Error('SVG is not of type Element');
+      }
+      this.$refs.svg.addEventListener('mousemove', moveFn);
+      this.$refs.svg.addEventListener('mouseup', stopFn);
+    },
   },
 });
 </script>
@@ -396,7 +500,21 @@ export default Vue.extend({
       ref="svg"
       :width="svgDimensions.width"
       :height="svgDimensions.height"
+      @mousedown="rectSelectDrag"
     >
+      <rect
+        id="rect-select"
+        :x="rectSelect.x"
+        :y="rectSelect.y"
+        :width="rectSelect.width"
+        :height="rectSelect.height"
+        :transform="`translate(${rectSelect.transformX}, ${rectSelect.transformY})`"
+        fill="none"
+        stroke="black"
+        stroke-width="2px"
+        stroke-dasharray="5,5"
+      />
+
       <g
         class="links"
       >
