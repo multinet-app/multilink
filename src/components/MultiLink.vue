@@ -256,10 +256,15 @@ export default Vue.extend({
       event.stopPropagation();
 
       const moveFn = (evt: Event) => {
+        // Check we have a mouse event
+        if (!this.isMouseEvent(evt)) {
+          return;
+        }
+
         // eslint-disable-next-line no-param-reassign
-        node.x = (evt as MouseEvent).clientX - this.controlsWidth - (this.calculateNodeSize(node) / 2);
+        node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
         // eslint-disable-next-line no-param-reassign
-        node.y = (evt as MouseEvent).clientY - (this.calculateNodeSize(node) / 2);
+        node.y = evt.y - (this.calculateNodeSize(node) / 2);
         this.$forceUpdate();
       };
 
@@ -399,6 +404,10 @@ export default Vue.extend({
       return this.nodeSizeScale(node[this.nodeSizeVariable]);
     },
 
+    isMouseEvent(event: Event): event is MouseEvent {
+      return (event as MouseEvent).x !== undefined && (event as MouseEvent).y !== undefined;
+    },
+
     rectSelectDrag(event: MouseEvent) {
       // Set initial location for box (pins one corner)
       this.rectSelect = {
@@ -411,9 +420,14 @@ export default Vue.extend({
       };
 
       const moveFn = (evt: Event) => {
+        // Check we have a mouse event
+        if (!this.isMouseEvent(evt)) {
+          return;
+        }
+
         // Get event location
-        const mouseX = (evt as MouseEvent).x - this.controlsWidth;
-        const mouseY = (evt as MouseEvent).y;
+        const mouseX = evt.x - this.controlsWidth;
+        const mouseY = evt.y;
 
         // Check if we need to translate (case when mouse is left/above initial click)
         const translateX = mouseX < this.rectSelect.x;
