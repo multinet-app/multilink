@@ -255,9 +255,7 @@ export default Vue.extend({
 
       const moveFn = (evt: Event) => {
         // Check we have a mouse event
-        if (!this.isMouseEvent(evt)) {
-          return;
-        }
+        if (!(evt instanceof MouseEvent)) { throw new Error('event is not MouseEvent'); }
 
         // eslint-disable-next-line no-param-reassign
         node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
@@ -403,10 +401,6 @@ export default Vue.extend({
       return this.nodeSizeScale(node[this.nodeSizeVariable]);
     },
 
-    isMouseEvent(event: Event): event is MouseEvent {
-      return (event as MouseEvent).x !== undefined && (event as MouseEvent).y !== undefined;
-    },
-
     rectSelectDrag(event: MouseEvent) {
       // Set initial location for box (pins one corner)
       this.rectSelect = {
@@ -420,9 +414,7 @@ export default Vue.extend({
 
       const moveFn = (evt: Event) => {
         // Check we have a mouse event
-        if (!this.isMouseEvent(evt)) {
-          return;
-        }
+        if (!(evt instanceof MouseEvent)) { throw new Error('event is not MouseEvent'); }
 
         // Get event location
         const mouseX = evt.x - this.controlsWidth;
