@@ -249,13 +249,17 @@ export default Vue.extend({
     },
 
     dragNode(node: Node, event: MouseEvent) {
-      if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+      if (!(this.$refs.svg instanceof Element)) {
+        throw new Error('SVG is not of type Element');
+      }
 
       event.stopPropagation();
 
       const moveFn = (evt: Event) => {
         // Check we have a mouse event
-        if (!(evt instanceof MouseEvent)) { throw new Error('event is not MouseEvent'); }
+        if (!(evt instanceof MouseEvent)) {
+          throw new Error('event is not MouseEvent');
+        }
 
         // eslint-disable-next-line no-param-reassign
         node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
@@ -265,7 +269,9 @@ export default Vue.extend({
       };
 
       const stopFn = () => {
-        if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+        if (!(this.$refs.svg instanceof Element)) {
+          throw new Error('SVG is not of type Element');
+        }
         this.$refs.svg.removeEventListener('mousemove', moveFn);
         this.$refs.svg.removeEventListener('mouseup', stopFn);
       };
@@ -414,7 +420,9 @@ export default Vue.extend({
 
       const moveFn = (evt: Event) => {
         // Check we have a mouse event
-        if (!(evt instanceof MouseEvent)) { throw new Error('event is not MouseEvent'); }
+        if (!(evt instanceof MouseEvent)) {
+          throw new Error('event is not MouseEvent');
+        }
 
         // Get event location
         const mouseX = evt.x - this.controlsWidth;
@@ -459,7 +467,9 @@ export default Vue.extend({
         });
 
         // Remove the listeners so that the box stops updating location
-        if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+        if (!(this.$refs.svg instanceof Element)) {
+          throw new Error('SVG is not of type Element');
+        }
         this.$refs.svg.removeEventListener('mousemove', moveFn);
         this.$refs.svg.removeEventListener('mouseup', stopFn);
 
@@ -474,7 +484,9 @@ export default Vue.extend({
         };
       };
 
-      if (!(this.$refs.svg instanceof Element)) { throw new Error('SVG is not of type Element'); }
+      if (!(this.$refs.svg instanceof Element)) {
+        throw new Error('SVG is not of type Element');
+      }
       this.$refs.svg.addEventListener('mousemove', moveFn);
       this.$refs.svg.addEventListener('mouseup', stopFn);
     },
