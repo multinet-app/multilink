@@ -101,10 +101,6 @@ export default Vue.extend({
       return this.markerSize - 24;
     },
 
-    forceRadius(): number {
-      return (this.markerSize / 2) * 1.5;
-    },
-
     displayCharts() {
       return store.getters.displayCharts;
     },
@@ -166,7 +162,7 @@ export default Vue.extend({
       const { height } = this.$vuetify.breakpoint;
       const width = this.$vuetify.breakpoint.width - this.controlsWidth;
 
-      store.commit.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2) });
+      store.dispatch.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2), restart: false });
 
       return {
         height,
@@ -205,9 +201,9 @@ export default Vue.extend({
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
-        .force('charge', forceManyBody<Node>().strength(-300))
+        .force('charge', forceManyBody<Node>().strength(-250))
         .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
-        .force('collision', forceCollide(this.forceRadius));
+        .force('collision', forceCollide((this.markerSize / 2) * 1.5));
 
       simulation
         .nodes(this.network.nodes);
