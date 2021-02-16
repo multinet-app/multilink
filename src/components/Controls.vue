@@ -4,6 +4,7 @@ import Legend from '@/components/Legend.vue';
 
 import store from '@/store';
 import { Node, Link, Network } from '@/types';
+import { forceCollide, forceManyBody } from 'd3-force';
 
 export default Vue.extend({
   components: {
@@ -14,6 +15,7 @@ export default Vue.extend({
     return {
       searchTerm: '' as string,
       searchErrors: [] as string[],
+      linkLength: '50',
     };
   },
 
@@ -174,11 +176,17 @@ export default Vue.extend({
       this.searchErrors = searchErrors;
     },
 
-    updateSliderProv(value: number, type: 'markerSize' | 'fontSize') {
+    updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
+        store.dispatch.updateSimulationForce({ forceType: 'collision', forceValue: forceCollide((this.markerSize / 2) * 1.5), restart: true });
       } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
+      } else if (type === 'linkLength') {
+        // Scale value to between -500, 0
+        const newLinkLength = (value * -5);
+
+        store.dispatch.updateSimulationForce({ forceType: 'charge', forceValue: forceManyBody<Node>().strength(newLinkLength), restart: true });
       }
     },
 
@@ -332,6 +340,19 @@ export default Vue.extend({
             inverse-label
             hide-details
             @change="(value) => updateSliderProv(value, 'fontSize')"
+          />
+
+          <v-card-subtitle class="pb-0 pl-0">
+            Link Length
+          </v-card-subtitle>
+          <v-slider
+            v-model="linkLength"
+            :min="0"
+            :max="100"
+            :label="linkLength.toString()"
+            inverse-label
+            hide-details
+            @change="(value) => updateSliderProv(linkLength, 'linkLength')"
           />
 
           <v-row>
