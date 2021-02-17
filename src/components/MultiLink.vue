@@ -535,6 +535,7 @@ export default Vue.extend({
           <text
             v-if="directionalEdges"
             dominant-baseline="middle"
+            y="1"
           >
             <textPath
               :href="`#${link._key}_path`"
@@ -649,6 +650,10 @@ export default Vue.extend({
   -webkit-box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   max-width: 400px
+}
+
+textPath {
+  fill: #888888;
 }
 
 .links >>> path,
