@@ -535,6 +535,7 @@ export default Vue.extend({
           <text
             v-if="directionalEdges"
             dominant-baseline="middle"
+            y="1"
           >
             <textPath
               :href="`#${link._key}_path`"
