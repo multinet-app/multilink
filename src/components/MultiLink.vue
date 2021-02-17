@@ -651,6 +651,10 @@ export default Vue.extend({
   max-width: 400px
 }
 
+textPath {
+  fill: #888888;
+}
+
 .links >>> path,
 .edgeLegend {
     fill: none;
