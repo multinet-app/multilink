@@ -826,9 +826,11 @@ export default Vue.extend({
   top: 0;
   z-index: 2;
 }
+
 .draggable {
   cursor: pointer;
 }
+
 .barLabel, .glyphLabel{
   display: block;
   max-width: 50px;
