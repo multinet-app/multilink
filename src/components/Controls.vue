@@ -439,6 +439,7 @@ export default Vue.extend({
 .app-logo {
   width: 36px;
 }
+
 .v-icon {
   padding-top: 2px;
 }
