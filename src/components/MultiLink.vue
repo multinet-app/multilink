@@ -374,7 +374,7 @@ export default Vue.extend({
       const selected = this.isSelected(node._id);
       const selectedClass = selected ? 'selected' : '';
 
-      return `node nodeBox nodeBorder ${selectedClass}`;
+      return `node nodeBox ${selectedClass}`;
     },
 
     linkGroupClass(link: Link): string {
@@ -517,6 +517,8 @@ export default Vue.extend({
 
       <g
         class="links"
+        fill="none"
+        alpha="0.8"
       >
         <g
           v-for="link of network.edges"
@@ -540,6 +542,7 @@ export default Vue.extend({
             <textPath
               :href="`#${link._key}_path`"
               startOffset="50%"
+              fill="#888888"
             >
               ▶
             </textPath>
@@ -574,6 +577,9 @@ export default Vue.extend({
           />
           <text
             class="label"
+            dominant-baseline="middle"
+            fill="#3a3a3a"
+            text-anchor="middle"
             :dy="!displayCharts ? calculateNodeSize(node) / 2 + 2: 10"
             :dx="calculateNodeSize(node) / 2"
             :style="nodeTextStyle"
@@ -581,7 +587,6 @@ export default Vue.extend({
 
           <g
             v-if="displayCharts"
-            class="nested"
           >
 
             <!-- White background bar -->
@@ -652,156 +657,28 @@ export default Vue.extend({
   max-width: 400px
 }
 
-textPath {
-  fill: #888888;
-}
-
-.links >>> path,
-.edgeLegend {
-    fill: none;
-    opacity: .8;
-}
-
-.bar, .glyph, .nested {
+.label,
+.labelBackground,
+.bar,
+.glyph {
   pointer-events: none;
 }
 
-.axisLine {
-    stroke-width: 2px;
-    stroke: black;
-}
-
-.sizeCircle {
-    fill: rgb(110, 110, 110);
-}
-
-.nodeBorder {
-    stroke-width: 7px;
-    stroke: white;
-}
-
-.label {
-    fill: #3a3a3a;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: -moz-none;
-    -o-user-select: none;
-    user-select: none;
-}
-
-.selectBox {
-    stroke: rgb(94, 94, 94);
-    fill: white;
-    stroke-width: 2px;
-}
-
-.label,
-.selectBox,
-.labelBackground {
-    pointer-events: none;
-}
-
-.legendLabel,
-.catLegend {
-    font-size: 1em;
-}
-
 .muted {
-    opacity: .2;
-}
-
-.hideLabel {
-    visibility: hidden;
-}
-
-.frame {
-    fill: white;
-    stroke-width: 1px;
-    stroke: black;
-}
-
-.barGroup>.bar {
-    stroke-width: 2px;
-    stroke: white;
-    fill: rgb(167, 197, 158);
+  opacity: 0.2;
 }
 
 .nodeGroup {
-    cursor: pointer;
-}
-
-#node-link-svg {
-    display: inline-flex;
-}
-
-#disableInteraction {
-    fill: white;
-    opacity: .7;
-}
-
-.input {
-    width: 60% !important;
-}
-
-.input.searchInput {
-    width: 65% !important;
-}
-
-.node {
-    stroke-width: 1px;
-    stroke: rgb(200, 200, 200);
+  cursor: pointer;
 }
 
 .node.selected {
-    stroke-width: 6px;
-    stroke: #F8CF91;
-}
-
-.selected .labelBackground.nested {
-    fill: #ea9b0f;
-    opacity: .6;
-}
-
-#finished,
-#next,
-#previous {
-    margin: 50px 0px 0px 0px;
-    padding: 10px;
-    background-color: rgb(3, 93, 158);
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.button.clicked {
-    color: rgb(217, 99, 3) !important;
-}
-
-.button.condition {
-    margin: 0px 0px 0px 10px;
-    background-color: rgb(192, 192, 192);
-    color: rgb(57, 57, 57);
-    font-weight: bold;
-}
-
-.labelBackground.nested {
-    opacity: .2;
-    fill: rgb(112, 112, 112);
+  stroke-width: 6px;
+  stroke: #F8CF91;
 }
 
 .labelBackground {
-    opacity: .4;
-    fill: rgb(255, 255, 255);
+  opacity: .4;
+  fill: rgb(255, 255, 255);
 }
-
-#vis {
-    display: flex;
-}
-
-.ticks {
-    font-size: 12px;
-}
-
 </style>
