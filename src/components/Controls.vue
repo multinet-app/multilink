@@ -272,18 +272,6 @@ export default Vue.extend({
           </v-list-item>
 
           <v-list-item class="px-0">
-            <v-btn
-              color="primary"
-              depressed
-              small
-              block
-              @click="clearSelection"
-            >
-              Clear Selection
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item class="px-0">
             <v-list-item-action class="mr-3">
               <v-switch
                 v-model="displayCharts"
