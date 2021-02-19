@@ -190,10 +190,6 @@ export default Vue.extend({
       }
     },
 
-    clearSelection() {
-      store.commit.setSelected(new Set());
-    },
-
     toggleProvVis() {
       store.commit.toggleShowProvenanceVis();
     },
