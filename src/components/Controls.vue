@@ -126,7 +126,7 @@ export default Vue.extend({
 
     autocompleteItems(): string[] {
       if (this.network !== null) {
-        return this.network.nodes.map((node) => node._key);
+        return this.network.nodes.map((node) => node[this.labelVariable]);
       }
       return [];
     },
@@ -164,7 +164,7 @@ export default Vue.extend({
     search() {
       const searchErrors: string[] = [];
       if (this.network !== null) {
-        const nodeToSelect = this.network.nodes.find((node) => node._key === this.searchTerm);
+        const nodeToSelect = this.network.nodes.find((node) => node[this.labelVariable] === this.searchTerm);
 
         if (nodeToSelect !== undefined) {
           store.commit.addSelectedNode(nodeToSelect._id);
