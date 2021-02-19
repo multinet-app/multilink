@@ -414,6 +414,11 @@ export default Vue.extend({
     },
 
     rectSelectDrag(event: MouseEvent) {
+      // Only drag on left clicks
+      if (event.button !== 0) {
+        return;
+      }
+
       // Set initial location for box (pins one corner)
       this.rectSelect = {
         x: event.x - this.controlsWidth,
