@@ -64,6 +64,11 @@ const {
     controlsWidth: 256,
     simulationRunning: false,
     showProvenanceVis: false,
+    rightClickMenu: {
+      show: false,
+      top: 0,
+      left: 0,
+    },
   } as State,
 
   getters: {
@@ -165,6 +170,10 @@ const {
 
     showProvenanceVis(state: State) {
       return state.showProvenanceVis;
+    },
+
+    rightClickMenu(state: State) {
+      return state.rightClickMenu;
     },
   },
   mutations: {
@@ -341,6 +350,10 @@ const {
 
     toggleShowProvenanceVis(state: State) {
       state.showProvenanceVis = !state.showProvenanceVis;
+    },
+
+    updateRightClickMenu(state: State, payload: { show: boolean; top: number; left: number }) {
+      state.rightClickMenu = payload;
     },
   },
   actions: {
