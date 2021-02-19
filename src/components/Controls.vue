@@ -261,6 +261,7 @@ export default Vue.extend({
               v-model="labelVariable"
               label="Label Variable"
               :items="Array.from(multiVariableList)"
+              :hide-details="true"
               clearable
               outlined
               dense
