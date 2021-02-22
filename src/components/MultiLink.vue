@@ -28,6 +28,7 @@ export default Vue.extend({
         transformX: 0,
         transformY: 0,
       },
+      linkStyles: {} as { [linkID: string]: string },
     };
   },
 
@@ -188,6 +189,12 @@ export default Vue.extend({
     },
   },
 
+  watch: {
+    linkVariables() {
+      this.updateLinkStyles();
+    },
+  },
+
   created() {
     if (this.network !== null) {
       this.generateNodePositions(this.network.nodes);
@@ -198,6 +205,9 @@ export default Vue.extend({
     this.el = this.$el;
 
     if (this.network !== null) {
+      // Set initial link styles
+      this.updateLinkStyles();
+
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
         .force('center', forceCenter(this.svgDimensions.width / 2, this.svgDimensions.height / 2))
@@ -386,12 +396,19 @@ export default Vue.extend({
       return 'linkGroup';
     },
 
-    linkStyle(link: Link): string {
-      console.log('updating linkStyle');
-      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
-      const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
+    updateLinkStyles() {
+      if (this.network === null) {
+        return;
+      }
 
-      return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
+      this.network.edges.forEach((link) => {
+        const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
+        const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
+
+        this.linkStyles[link._id] = `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
+      });
+
+      this.$forceUpdate();
     },
 
     glyphStyle(value: string) {
@@ -530,7 +547,7 @@ export default Vue.extend({
             :id="`${link._key}_path`"
             class="link"
             :d="arcPath(link)"
-            :style="linkStyle(link)"
+            :style="linkStyles[link._id]"
           />
 
           <text
