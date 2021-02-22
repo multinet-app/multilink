@@ -32,6 +32,7 @@ export default Vue.extend({
       glyphStyles: {} as {
         [glyphVar: string]: { [nodeID: string]: string };
       },
+      nodeSizes: {} as { [nodeID: string]: number },
     };
   },
 
@@ -200,11 +201,21 @@ export default Vue.extend({
     nestedVariables() {
       this.updateGlyphStyles();
     },
+
+    markerSize() {
+      this.updateNodeSizes();
+    },
+
+    nodeSizeVariable() {
+      this.updateNodeSizes();
+    },
   },
 
   created() {
     if (this.network !== null) {
+      // Initialize node positions and node sizes
       this.generateNodePositions(this.network.nodes);
+      this.updateNodeSizes();
     }
   },
 
@@ -280,9 +291,9 @@ export default Vue.extend({
         }
 
         // eslint-disable-next-line no-param-reassign
-        node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
+        node.x = evt.x - this.controlsWidth - (this.nodeSizes[node._id] / 2);
         // eslint-disable-next-line no-param-reassign
-        node.y = evt.y - (this.calculateNodeSize(node) / 2);
+        node.y = evt.y - (this.nodeSizes[node._id] / 2);
         this.$forceUpdate();
       };
 
@@ -321,8 +332,8 @@ export default Vue.extend({
 
       const minimumX = svgEdgePadding;
       const minimumY = svgEdgePadding;
-      const maximumX = this.svgDimensions.width - this.calculateNodeSize(node) - svgEdgePadding;
-      const maximumY = this.svgDimensions.height - this.calculateNodeSize(node) - svgEdgePadding;
+      const maximumX = this.svgDimensions.width - this.nodeSizes[node._id] - svgEdgePadding;
+      const maximumY = this.svgDimensions.height - this.nodeSizes[node._id] - svgEdgePadding;
 
       // Ideally we would update node.x and node.y, but those variables are being changed
       // by the simulation. My solution was to use these forcedX and forcedY variables.
@@ -354,10 +365,10 @@ export default Vue.extend({
           throw new Error('_from or _to node didn\'t have an x or a y position.');
         }
 
-        const x1 = fromNode.x + this.calculateNodeSize(fromNode) / 2;
-        const y1 = fromNode.y + this.calculateNodeSize(fromNode) / 2;
-        const x2 = toNode.x + this.calculateNodeSize(toNode) / 2;
-        const y2 = toNode.y + this.calculateNodeSize(toNode) / 2;
+        const x1 = fromNode.x + this.nodeSizes[fromNode._id] / 2;
+        const y1 = fromNode.y + this.nodeSizes[fromNode._id] / 2;
+        const x2 = toNode.x + this.nodeSizes[toNode._id] / 2;
+        const y2 = toNode.y + this.nodeSizes[toNode._id] / 2;
 
         const dx = x2 - x1;
         const dy = y2 - y1;
@@ -436,14 +447,19 @@ export default Vue.extend({
       });
     },
 
-    calculateNodeSize(node: Node) {
+    updateNodeSizes() {
+      if (this.network === null) {
+        return;
+      }
       // Don't render dynamic node size if the size variable is empty or
       // we want to display charts
-      if (this.nodeSizeVariable === '' || this.displayCharts || this.nodeSizeScale === null) {
-        return this.markerSize;
-      }
+      const constantSize = this.nodeSizeVariable === '' || this.displayCharts;
 
-      return this.nodeSizeScale(node[this.nodeSizeVariable]);
+      this.network.nodes.forEach((node) => {
+        this.nodeSizes[node._id] = !constantSize && this.nodeSizeScale !== null
+          ? this.nodeSizeScale(node[this.nodeSizeVariable])
+          : this.markerSize;
+      });
     },
 
     rectSelectDrag(event: MouseEvent) {
@@ -492,7 +508,7 @@ export default Vue.extend({
         let nodesInRect: Node[] = [];
         if (this.network !== null) {
           nodesInRect = this.network.nodes.filter((node) => {
-            const nodeSize = this.calculateNodeSize(node) / 2;
+            const nodeSize = this.nodeSizes[node._id] / 2;
             return (node.x || 0) + nodeSize > boxX1
               && (node.x || 0) + nodeSize < boxX2
               && (node.y || 0) + nodeSize > boxY1
@@ -596,11 +612,11 @@ export default Vue.extend({
         >
           <rect
             :class="nodeClass(node)"
-            :width="calculateNodeSize(node)"
-            :height="calculateNodeSize(node)"
+            :width="nodeSizes[node._id]"
+            :height="nodeSizes[node._id]"
             :fill="!displayCharts ? nodeGlyphColorScale(node[nodeColorVariable]) : '#DDDDDD'"
-            :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
-            :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
+            :rx="!displayCharts ? (nodeSizes[node._id] / 2) : 0"
+            :ry="!displayCharts ? (nodeSizes[node._id] / 2) : 0"
             @click="selectNode(node)"
             @mouseover="showTooltip(node, $event)"
             @mouseout="hideTooltip"
@@ -609,16 +625,16 @@ export default Vue.extend({
           <rect
             class="labelBackground"
             height="1em"
-            :y="!displayCharts ? (calculateNodeSize(node) / 2) - 8 : 0"
-            :width="calculateNodeSize(node)"
+            :y="!displayCharts ? (nodeSizes[node._id] / 2) - 8 : 0"
+            :width="nodeSizes[node._id]"
           />
           <text
             class="label"
             dominant-baseline="middle"
             fill="#3a3a3a"
             text-anchor="middle"
-            :dy="!displayCharts ? calculateNodeSize(node) / 2 + 2: 10"
-            :dx="calculateNodeSize(node) / 2"
+            :dy="!displayCharts ? nodeSizes[node._id] / 2 + 2: 10"
+            :dx="nodeSizes[node._id] / 2"
             :style="nodeTextStyle"
           >{{ node[labelVariable] }}</text>
 
