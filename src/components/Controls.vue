@@ -126,7 +126,7 @@ export default Vue.extend({
 
     autocompleteItems(): string[] {
       if (this.network !== null) {
-        return this.network.nodes.map((node) => node._key);
+        return this.network.nodes.map((node) => node[this.labelVariable]);
       }
       return [];
     },
@@ -164,7 +164,7 @@ export default Vue.extend({
     search() {
       const searchErrors: string[] = [];
       if (this.network !== null) {
-        const nodeToSelect = this.network.nodes.find((node) => node._key === this.searchTerm);
+        const nodeToSelect = this.network.nodes.find((node) => node[this.labelVariable] === this.searchTerm);
 
         if (nodeToSelect !== undefined) {
           store.commit.addSelectedNode(nodeToSelect._id);
@@ -188,10 +188,6 @@ export default Vue.extend({
 
         store.dispatch.updateSimulationForce({ forceType: 'charge', forceValue: forceManyBody<Node>().strength(newLinkLength), restart: true });
       }
-    },
-
-    clearSelection() {
-      store.commit.setSelected(new Set());
     },
 
     toggleProvVis() {
@@ -265,22 +261,11 @@ export default Vue.extend({
               v-model="labelVariable"
               label="Label Variable"
               :items="Array.from(multiVariableList)"
+              :hide-details="true"
               clearable
               outlined
               dense
             />
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-btn
-              color="primary"
-              depressed
-              small
-              block
-              @click="clearSelection"
-            >
-              Clear Selection
-            </v-btn>
           </v-list-item>
 
           <v-list-item class="px-0">
@@ -379,7 +364,7 @@ export default Vue.extend({
                 color="primary"
                 depressed
                 small
-                width="85"
+                width="75"
                 @click="simulationRunning ? stopSimulation() : startSimulation()"
               >
                 <v-icon
