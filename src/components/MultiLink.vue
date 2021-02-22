@@ -249,6 +249,7 @@ export default Vue.extend({
 
       simulation
         .on('tick', () => {
+          simulation.nodes().forEach((node) => this.forcePosition(node));
           this.$forceUpdate();
         })
         // The next line handles the start stop button change in the controls.
@@ -302,6 +303,7 @@ export default Vue.extend({
         node.x = evt.x - this.controlsWidth - (this.nodeSizes[node._id] / 2);
         // eslint-disable-next-line no-param-reassign
         node.y = evt.y - (this.nodeSizes[node._id] / 2);
+        this.forcePosition(node);
         this.$forceUpdate();
       };
 
@@ -332,32 +334,26 @@ export default Vue.extend({
       this.toggleTooltip = false;
     },
 
-    nodeTranslate(node: Node): string {
-      let forcedX = node.x || 0;
-      let forcedY = node.y || 0;
-
+    forcePosition(node: Node) {
       const svgEdgePadding = 5;
-
       const minimumX = svgEdgePadding;
       const minimumY = svgEdgePadding;
+      if (node.x === undefined || node.y === undefined) {
+        return;
+      }
       const maximumX = this.svgDimensions.width - this.nodeSizes[node._id] - svgEdgePadding;
       const maximumY = this.svgDimensions.height - this.nodeSizes[node._id] - svgEdgePadding;
 
       // Ideally we would update node.x and node.y, but those variables are being changed
       // by the simulation. My solution was to use these forcedX and forcedY variables.
-      if (forcedX < minimumX) { forcedX = minimumX; }
-      if (forcedX > maximumX) { forcedX = maximumX; }
-      if (forcedY < minimumY) { forcedY = minimumY; }
-      if (forcedY > maximumY) { forcedY = maximumY; }
-
-      // Update the node position with this forced position
       // eslint-disable-next-line no-param-reassign
-      node.x = forcedX;
+      if (node.x < minimumX) { node.x = minimumX; }
       // eslint-disable-next-line no-param-reassign
-      node.y = forcedY;
-
-      // Use the forced position, because the node.x is updated by simulation
-      return `translate(${forcedX}, ${forcedY})`;
+      if (node.x > maximumX) { node.x = maximumX; }
+      // eslint-disable-next-line no-param-reassign
+      if (node.y < minimumY) { node.y = minimumY; }
+      // eslint-disable-next-line no-param-reassign
+      if (node.y > maximumY) { node.y = maximumY; }
     },
 
     arcPath(link: Link): string {
@@ -618,7 +614,7 @@ export default Vue.extend({
         <g
           v-for="node of network.nodes"
           :key="node._id"
-          :transform="nodeTranslate(node)"
+          :transform="`translate(${node.x}, ${node.y})`"
           :class="nodeGroupClasses[node._id]"
         >
           <rect
