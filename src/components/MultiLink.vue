@@ -33,6 +33,7 @@ export default Vue.extend({
         [glyphVar: string]: { [nodeID: string]: string };
       },
       nodeSizes: {} as { [nodeID: string]: number },
+      nodeGroupClasses: {} as { [nodeID: string]: string },
     };
   },
 
@@ -226,6 +227,7 @@ export default Vue.extend({
       // Initialize link sytles, glyph styles
       this.updateLinkStyles();
       this.updateGlyphStyles();
+      this.updateNodeGroupClasses();
 
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
@@ -275,6 +277,8 @@ export default Vue.extend({
       } else {
         store.commit.addSelectedNode([node._id]);
       }
+
+      this.updateNodeGroupClasses();
     },
 
     dragNode(node: Node, event: MouseEvent) {
@@ -389,21 +393,23 @@ export default Vue.extend({
       return this.selectedNodes.has(nodeID);
     },
 
-    nodeGroupClass(node: Node): string {
-      if (this.selectedNodes.size > 0) {
-        const selected = this.isSelected(node._id);
-        const inOneHop = this.selectNeighbors ? this.oneHop.has(node._id) : false;
-        const selectedClass = selected || inOneHop ? '' : 'muted';
-        return `nodeGroup ${selectedClass}`;
+    updateNodeGroupClasses() {
+      if (this.network === null) {
+        return;
       }
-      return 'nodeGroup';
-    },
 
-    nodeClass(node: Node): string {
-      const selected = this.isSelected(node._id);
-      const selectedClass = selected ? 'selected' : '';
+      this.network.nodes.forEach((node) => {
+        let muted = '';
+        let selected = '';
 
-      return `node nodeBox ${selectedClass}`;
+        if (this.selectedNodes.size > 0) {
+          selected = this.isSelected(node._id) ? 'selected' : '';
+          const inOneHop = this.selectNeighbors ? this.oneHop.has(node._id) : false;
+          muted = selected || inOneHop ? '' : 'muted';
+        }
+
+        this.nodeGroupClasses[node._id] = `nodeGroup ${selected} ${muted}`;
+      });
     },
 
     linkGroupClass(link: Link): string {
@@ -608,10 +614,10 @@ export default Vue.extend({
           v-for="node of network.nodes"
           :key="node._id"
           :transform="nodeTranslate(node)"
-          :class="nodeGroupClass(node)"
+          :class="nodeGroupClasses[node._id]"
         >
           <rect
-            :class="nodeClass(node)"
+            class="node"
             :width="nodeSizes[node._id]"
             :height="nodeSizes[node._id]"
             :fill="!displayCharts ? nodeGlyphColorScale(node[nodeColorVariable]) : '#DDDDDD'"
@@ -725,7 +731,7 @@ export default Vue.extend({
   cursor: pointer;
 }
 
-.node.selected {
+.selected >>> .node {
   stroke-width: 6px;
   stroke: #F8CF91;
 }
