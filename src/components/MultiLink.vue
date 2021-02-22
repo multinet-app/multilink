@@ -210,6 +210,10 @@ export default Vue.extend({
     nodeSizeVariable() {
       this.updateNodeSizes();
     },
+
+    selectedNodes() {
+      this.updateNodeGroupClasses();
+    },
   },
 
   created() {
