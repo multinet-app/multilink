@@ -167,7 +167,7 @@ export default Vue.extend({
         const nodeToSelect = this.network.nodes.find((node) => node[this.labelVariable] === this.searchTerm);
 
         if (nodeToSelect !== undefined) {
-          store.commit.addSelectedNode(nodeToSelect._id);
+          store.commit.addSelectedNode([nodeToSelect._id]);
         } else {
           searchErrors.push('Enter a node to search');
         }
