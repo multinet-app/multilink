@@ -29,6 +29,9 @@ export default Vue.extend({
         transformY: 0,
       },
       linkStyles: {} as { [linkID: string]: string },
+      glyphStyles: {} as {
+        [glyphVar: string]: { [nodeID: string]: string };
+      },
     };
   },
 
@@ -193,6 +196,10 @@ export default Vue.extend({
     linkVariables() {
       this.updateLinkStyles();
     },
+
+    nestedVariables() {
+      this.updateGlyphStyles();
+    },
   },
 
   created() {
@@ -205,8 +212,9 @@ export default Vue.extend({
     this.el = this.$el;
 
     if (this.network !== null) {
-      // Set initial link styles
+      // Initialize link sytles, glyph styles
       this.updateLinkStyles();
+      this.updateGlyphStyles();
 
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
@@ -411,8 +419,21 @@ export default Vue.extend({
       this.$forceUpdate();
     },
 
-    glyphStyle(value: string) {
-      return `fill: ${this.nodeGlyphColorScale(value)};`;
+    updateGlyphStyles() {
+      this.nestedVariables.glyph.forEach((glyphVar) => {
+        // Check network exists
+        if (this.network === null) {
+          return;
+        }
+
+        // Initialize empty object
+        this.glyphStyles[glyphVar] = {};
+
+        // Compute the style string for each node for one glyphVar
+        this.network.nodes.forEach((node) => {
+          this.glyphStyles[glyphVar][node._id] = `fill: ${this.nodeGlyphColorScale(node[glyphVar])};`;
+        });
+      });
     },
 
     calculateNodeSize(node: Node) {
@@ -640,7 +661,7 @@ export default Vue.extend({
               :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
               rx="100"
               ry="100"
-              :style="glyphStyle(node[glyphVar])"
+              :style="glyphStyles[glyphVar][node._id]"
             />
             <g />
           </g>
