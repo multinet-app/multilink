@@ -244,7 +244,7 @@ export default Vue.extend({
       if (this.selectedNodes.has(node._id)) {
         store.commit.removeSelectedNode(node._id);
       } else {
-        store.commit.addSelectedNode(node._id);
+        store.commit.addSelectedNode([node._id]);
       }
     },
 
@@ -387,6 +387,7 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
+      console.log('updating linkStyle');
       const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
@@ -462,9 +463,7 @@ export default Vue.extend({
         }
 
         // Select the nodes inside the box if there are any
-        nodesInRect.forEach((node) => {
-          store.commit.addSelectedNode(node._id);
-        });
+        store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
 
         // Remove the listeners so that the box stops updating location
         if (!(this.$refs.svg instanceof Element)) {
