@@ -375,22 +375,21 @@ export default Vue.extend({
           throw new Error('_from or _to node didn\'t have an x or a y position.');
         }
 
-        const x1 = fromNode.x + this.nodeSizes[fromNode._id] / 2;
-        const y1 = fromNode.y + this.nodeSizes[fromNode._id] / 2;
-        const x2 = toNode.x + this.nodeSizes[toNode._id] / 2;
-        const y2 = toNode.y + this.nodeSizes[toNode._id] / 2;
+        const fromRadius = this.nodeSizes[fromNode._id] / 2;
+        const toRadius = this.nodeSizes[toNode._id] / 2;
+        const x1 = fromNode.x + fromRadius;
+        const y1 = fromNode.y + fromRadius;
+        const x2 = toNode.x + toRadius;
+        const y2 = toNode.y + toRadius;
 
         const dx = x2 - x1;
         const dy = y2 - y1;
         const dr = Math.sqrt(dx * dx + dy * dy);
-        const sweep = 1;
-        const xRotation = 0;
-        const largeArc = 0;
 
         if (this.straightEdges) {
           return (`M ${x1} ${y1} L ${x2} ${y2}`);
         }
-        return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+        return (`M ${x1}, ${y1} A ${dr}, ${dr} 0, 0, 1 ${x2},${y2}`);
       }
       return '';
     },
