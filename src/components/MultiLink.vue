@@ -597,7 +597,14 @@ export default Vue.extend({
           @mouseover="showTooltip(link, $event)"
           @mouseout="hideTooltip"
         >
-          <path
+          <line
+            :x1="link.source.x + 25"
+            :y1="link.source.y + 25"
+            :x2="link.target.x + 25"
+            :y2="link.target.y + 25"
+            :style="linkStyles[link._id]"
+          />
+          <!-- <path
             :id="`${link._key}_path`"
             class="link"
             :d="arcPath(link)"
@@ -616,7 +623,7 @@ export default Vue.extend({
             >
               ▶
             </textPath>
-          </text>
+          </text> -->
         </g>
       </g>
 
