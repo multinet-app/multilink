@@ -34,6 +34,7 @@ export default Vue.extend({
       },
       nodeSizes: {} as { [nodeID: string]: number },
       nodeGroupClasses: {} as { [nodeID: string]: string },
+      linkGroupClasses: {} as { [linkID: string]: string },
     };
   },
 
@@ -213,6 +214,7 @@ export default Vue.extend({
 
     selectedNodes() {
       this.updateNodeGroupClasses();
+      this.updateLinkGroupClasses();
     },
   },
 
@@ -228,10 +230,11 @@ export default Vue.extend({
     this.el = this.$el;
 
     if (this.network !== null) {
-      // Initialize link sytles, glyph styles
+      // Initialize link sytles, glyph styles, node group style, and link group style
       this.updateLinkStyles();
       this.updateGlyphStyles();
       this.updateNodeGroupClasses();
+      this.updateLinkGroupClasses();
 
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
@@ -412,13 +415,22 @@ export default Vue.extend({
       });
     },
 
-    linkGroupClass(link: Link): string {
-      if (this.selectedNodes.size > 0) {
-        const selected = this.isSelected(link._from) || this.isSelected(link._to);
-        const selectedClass = selected && this.selectNeighbors ? '' : 'muted';
-        return `linkGroup ${selectedClass}`;
+    updateLinkGroupClasses() {
+      if (this.network === null) {
+        return;
       }
-      return 'linkGroup';
+
+      this.network.edges.forEach((link) => {
+        let muted = '';
+        let selected = false;
+
+        if (this.selectedNodes.size > 0) {
+          selected = this.isSelected(link._from) || this.isSelected(link._to);
+          muted = selected && this.selectNeighbors ? '' : 'muted';
+        }
+
+        this.linkGroupClasses[link._id] = `linkGroup ${muted}`;
+      });
     },
 
     updateLinkStyles() {
@@ -583,7 +595,7 @@ export default Vue.extend({
         <g
           v-for="link of network.edges"
           :key="link._id"
-          :class="linkGroupClass(link)"
+          :class="linkGroupClasses[link._id]"
           @mouseover="showTooltip(link, $event)"
           @mouseout="hideTooltip"
         >
