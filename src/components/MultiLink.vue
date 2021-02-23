@@ -35,6 +35,7 @@ export default Vue.extend({
       nodeSizes: {} as { [nodeID: string]: number },
       nodeGroupClasses: {} as { [nodeID: string]: string },
       linkGroupClasses: {} as { [linkID: string]: string },
+      dragging: false,
     };
   },
 
@@ -287,6 +288,7 @@ export default Vue.extend({
       event.stopPropagation();
 
       const moveFn = (evt: Event) => {
+        this.dragging = true;
         // Check we have a mouse event
         if (!(evt instanceof MouseEvent)) {
           throw new Error('event is not MouseEvent');
@@ -306,6 +308,7 @@ export default Vue.extend({
         }
         this.$refs.svg.removeEventListener('mousemove', moveFn);
         this.$refs.svg.removeEventListener('mouseup', stopFn);
+        this.dragging = false;
       };
 
       this.$refs.svg.addEventListener('mousemove', moveFn);
@@ -313,6 +316,10 @@ export default Vue.extend({
     },
 
     showTooltip(element: Node | Link, event: MouseEvent) {
+      if (this.dragging) {
+        return;
+      }
+
       this.tooltipPosition = {
         x: event.clientX - this.controlsWidth,
         y: event.clientY,
@@ -480,6 +487,8 @@ export default Vue.extend({
       };
 
       const moveFn = (evt: Event) => {
+        this.dragging = true;
+
         // Check we have a mouse event
         if (!(evt instanceof MouseEvent)) {
           throw new Error('event is not MouseEvent');
@@ -541,6 +550,8 @@ export default Vue.extend({
           transformX: 0,
           transformY: 0,
         };
+
+        this.dragging = false;
       };
 
       if (!(this.$refs.svg instanceof Element)) {
