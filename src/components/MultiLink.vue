@@ -345,8 +345,6 @@ export default Vue.extend({
       const maximumX = this.svgDimensions.width - this.nodeSizes[node._id] - svgEdgePadding;
       const maximumY = this.svgDimensions.height - this.nodeSizes[node._id] - svgEdgePadding;
 
-      // Ideally we would update node.x and node.y, but those variables are being changed
-      // by the simulation. My solution was to use these forcedX and forcedY variables.
       // eslint-disable-next-line no-param-reassign
       if (node.x < minimumX) { node.x = minimumX; }
       // eslint-disable-next-line no-param-reassign
