@@ -354,22 +354,10 @@ export default Vue.extend({
       if (node.y > maximumY) { node.y = maximumY; }
     },
 
-    arcPath(link: Link): string {
+    arcPath(link: SimulationLink): string {
       if (this.network !== null) {
-        let fromNode: Node | undefined;
-        let toNode: Node | undefined;
-        this.network.nodes.forEach((node) => {
-          if (node._id === link._from) {
-            fromNode = node;
-          }
-          if (node._id === link._to) {
-            toNode = node;
-          }
-        });
-
-        if (fromNode === undefined || toNode === undefined) {
-          throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
-        }
+        const fromNode = link.source;
+        const toNode = link.target;
 
         if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
           throw new Error('_from or _to node didn\'t have an x or a y position.');
@@ -598,7 +586,7 @@ export default Vue.extend({
         alpha="0.8"
       >
         <g
-          v-for="link of network.edges"
+          v-for="link of simulationLinks"
           :key="link._id"
           :class="linkGroupClasses[link._id]"
           @mouseover="showTooltip(link, $event)"

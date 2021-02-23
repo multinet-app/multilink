@@ -15,8 +15,8 @@ export interface Link extends TableRow {
 }
 
 export interface SimulationLink extends Link {
-  source: string;
-  target: string;
+  source: Node;
+  target: Node;
 }
 
 export interface Network {
