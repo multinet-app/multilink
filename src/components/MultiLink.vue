@@ -86,14 +86,6 @@ export default Vue.extend({
       return store.getters.nodeGlyphColorScale;
     },
 
-    tooltipStyle(): string {
-      return `left: ${this.tooltipPosition.x}px; top: ${this.tooltipPosition.y}px`;
-    },
-
-    nodeTextStyle(): string {
-      return `font-size: ${this.fontSize}pt;`;
-    },
-
     nestedBarWidth(): number {
       const hasGlyphs = this.nestedVariables.glyph.length !== 0;
       const totalColumns = this.nestedVariables.bar.length + (hasGlyphs ? 1 : 0);
@@ -649,7 +641,7 @@ export default Vue.extend({
             text-anchor="middle"
             :dy="!displayCharts ? nodeSizes[node._id] / 2 + 2: 10"
             :dx="nodeSizes[node._id] / 2"
-            :style="nodeTextStyle"
+            :style=" `font-size: ${fontSize}pt;`"
           >{{ node[labelVariable] }}</text>
 
           <g
@@ -702,7 +694,7 @@ export default Vue.extend({
     <div
       v-if="toggleTooltip"
       class="tooltip"
-      :style="tooltipStyle"
+      :style="`left: ${tooltipPosition.x}px; top: ${tooltipPosition.y}px`"
     >
       ID: {{ tooltipMessage }}
     </div>
