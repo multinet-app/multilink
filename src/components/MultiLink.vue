@@ -356,8 +356,16 @@ export default Vue.extend({
 
     arcPath(link: Link): string {
       if (this.network !== null) {
-        const fromNode = this.network.nodes.find((node) => node._id === link._from);
-        const toNode = this.network.nodes.find((node) => node._id === link._to);
+        let fromNode: Node | undefined;
+        let toNode: Node | undefined;
+        this.network.nodes.forEach((node) => {
+          if (node._id === link._from) {
+            fromNode = node;
+          }
+          if (node._id === link._to) {
+            toNode = node;
+          }
+        });
 
         if (fromNode === undefined || toNode === undefined) {
           throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
