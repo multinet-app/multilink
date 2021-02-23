@@ -191,23 +191,28 @@ export default Vue.extend({
   watch: {
     linkVariables() {
       this.updateLinkStyles();
+      this.$forceUpdate();
     },
 
     nestedVariables() {
       this.updateGlyphStyles();
+      this.$forceUpdate();
     },
 
     markerSize() {
       this.updateNodeSizes();
+      this.$forceUpdate();
     },
 
     nodeSizeVariable() {
       this.updateNodeSizes();
+      this.$forceUpdate();
     },
 
     selectedNodes() {
       this.updateNodeGroupClasses();
       this.updateLinkGroupClasses();
+      this.$forceUpdate();
     },
   },
 
@@ -434,8 +439,6 @@ export default Vue.extend({
 
         this.linkStyles[link._id] = `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
       });
-
-      this.$forceUpdate();
     },
 
     updateGlyphStyles() {
