@@ -361,19 +361,21 @@ export default Vue.extend({
 
     arcPath(link: SimulationLink): string {
       if (this.network !== null) {
-        const fromNode = link.source;
-        const toNode = link.target;
+        if (typeof link.source === 'string' || typeof link.target === 'string') {
+          // Silently fail if the nodes haven't been initialized yet (this only happens on first render and resolves itself quickly)
+          return '';
+        }
 
-        if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
+        if (link.source.x === undefined || link.source.y === undefined || link.target.x === undefined || link.target.y === undefined) {
           throw new Error('_from or _to node didn\'t have an x or a y position.');
         }
 
-        const fromRadius = this.nodeSizes[fromNode._id] / 2;
-        const toRadius = this.nodeSizes[toNode._id] / 2;
-        const x1 = fromNode.x + fromRadius;
-        const y1 = fromNode.y + fromRadius;
-        const x2 = toNode.x + toRadius;
-        const y2 = toNode.y + toRadius;
+        const fromRadius = this.nodeSizes[link.source._id] / 2;
+        const toRadius = this.nodeSizes[link.target._id] / 2;
+        const x1 = link.source.x + fromRadius;
+        const y1 = link.source.y + fromRadius;
+        const x2 = link.target.x + toRadius;
+        const y2 = link.target.y + toRadius;
 
         const dx = x2 - x1;
         const dy = y2 - y1;
