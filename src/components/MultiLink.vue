@@ -285,8 +285,6 @@ export default Vue.extend({
       } else {
         store.commit.addSelectedNode([node._id]);
       }
-
-      this.updateNodeGroupClasses();
     },
 
     dragNode(node: Node, event: MouseEvent) {
@@ -536,7 +534,6 @@ export default Vue.extend({
 
         // Select the nodes inside the box if there are any
         store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
-        this.updateNodeGroupClasses();
 
         // Remove the listeners so that the box stops updating location
         if (!(this.$refs.svg instanceof Element)) {
