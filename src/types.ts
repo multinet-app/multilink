@@ -96,7 +96,7 @@ export interface State {
 }
 
 export type ProvenanceEventTypes =
-  'Select Node' |
+  'Select Node(s)' |
   'De-select Node' |
   'Clear Selection' |
   'Set Display Charts' |
