@@ -230,11 +230,11 @@ const {
       }
     },
 
-    addSelectedNode(state, nodeID: string) {
-      state.selectedNodes = new Set(state.selectedNodes.add(nodeID));
+    addSelectedNode(state, nodesToAdd: string[]) {
+      state.selectedNodes = new Set([...state.selectedNodes, ...nodesToAdd]);
 
       if (state.provenance !== null) {
-        updateProvenanceState(state, 'Select Node');
+        updateProvenanceState(state, 'Select Node(s)');
       }
     },
 
