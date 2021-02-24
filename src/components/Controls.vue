@@ -164,12 +164,14 @@ export default Vue.extend({
     search() {
       const searchErrors: string[] = [];
       if (this.network !== null) {
-        const nodeToSelect = this.network.nodes.find((node) => node[this.labelVariable] === this.searchTerm);
+        const nodeIDsToSelect = this.network.nodes
+          .filter((node) => node[this.labelVariable] === this.searchTerm)
+          .map((node) => node._id);
 
-        if (nodeToSelect !== undefined) {
-          store.commit.addSelectedNode(nodeToSelect._id);
+        if (nodeIDsToSelect.length > 0) {
+          store.commit.addSelectedNode(nodeIDsToSelect);
         } else {
-          searchErrors.push('Enter a node to search');
+          searchErrors.push('Enter a valid node to search');
         }
       }
 
