@@ -387,7 +387,6 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
-      console.log('updating linkStyle');
       const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
