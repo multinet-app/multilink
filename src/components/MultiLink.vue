@@ -244,7 +244,7 @@ export default Vue.extend({
       if (this.selectedNodes.has(node._id)) {
         store.commit.removeSelectedNode(node._id);
       } else {
-        store.commit.addSelectedNode(node._id);
+        store.commit.addSelectedNode([node._id]);
       }
     },
 
@@ -462,9 +462,7 @@ export default Vue.extend({
         }
 
         // Select the nodes inside the box if there are any
-        nodesInRect.forEach((node) => {
-          store.commit.addSelectedNode(node._id);
-        });
+        store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
 
         // Remove the listeners so that the box stops updating location
         if (!(this.$refs.svg instanceof Element)) {
