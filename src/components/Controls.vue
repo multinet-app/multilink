@@ -245,6 +245,7 @@ export default Vue.extend({
               label="Search for Node"
               :items="autocompleteItems"
               :error-messages="searchErrors"
+              auto-select-first
             />
 
             <v-btn
