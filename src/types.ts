@@ -88,6 +88,11 @@ export interface State {
   controlsWidth: number;
   simulationRunning: boolean;
   showProvenanceVis: boolean;
+  rightClickMenu: {
+    show: boolean;
+    top: number;
+    left: number;
+  };
 }
 
 export type ProvenanceEventTypes =

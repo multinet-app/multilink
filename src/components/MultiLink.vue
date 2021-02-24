@@ -10,7 +10,13 @@ import {
   Node, Link, SimulationLink, Dimensions,
 } from '@/types';
 
+import ContextMenu from '@/components/ContextMenu.vue';
+
 export default Vue.extend({
+  components: {
+    ContextMenu,
+  },
+
   data() {
     return {
       straightEdges: false,
@@ -408,6 +414,11 @@ export default Vue.extend({
     },
 
     rectSelectDrag(event: MouseEvent) {
+      // Only drag on left clicks
+      if (event.button !== 0) {
+        return;
+      }
+
       // Set initial location for box (pins one corner)
       this.rectSelect = {
         x: event.x - this.controlsWidth,
@@ -488,6 +499,16 @@ export default Vue.extend({
       this.$refs.svg.addEventListener('mousemove', moveFn);
       this.$refs.svg.addEventListener('mouseup', stopFn);
     },
+
+    showContextMenu(event: MouseEvent) {
+      store.commit.updateRightClickMenu({
+        show: true,
+        top: event.y,
+        left: event.x,
+      });
+
+      event.preventDefault();
+    },
   },
 });
 </script>
@@ -499,6 +520,7 @@ export default Vue.extend({
       :width="svgDimensions.width"
       :height="svgDimensions.height"
       @mousedown="rectSelectDrag"
+      @contextmenu="showContextMenu"
     >
       <rect
         id="rect-select"
@@ -637,6 +659,8 @@ export default Vue.extend({
     >
       ID: {{ tooltipMessage }}
     </div>
+
+    <context-menu />
   </div>
 </template>
 
