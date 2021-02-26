@@ -372,15 +372,15 @@ const {
           commit.setLoadError({
             message: error.statusText,
             buttonText: 'Back to MultiNet',
-            href: '/',
+            href: 'https://multinet.app',
+          });
+        } else {
+          commit.setLoadError({
+            message: 'An unexpected error ocurred',
+            buttonText: 'Back to MultiNet',
+            href: 'https://multinet.app',
           });
         }
-
-        commit.setLoadError({
-          message: 'An unexpected error ocurred',
-          buttonText: 'Back to MultiNet',
-          href: '/',
-        });
       }
 
       if (networkTables === undefined) {
