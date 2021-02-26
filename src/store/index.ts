@@ -372,15 +372,24 @@ const {
           commit.setLoadError({
             message: error.statusText,
             buttonText: 'Back to MultiNet',
-            href: '/',
+            href: 'https://multinet.app',
+          });
+        } else {
+          commit.setLoadError({
+            message: 'An unexpected error ocurred',
+            buttonText: 'Back to MultiNet',
+            href: 'https://multinet.app',
           });
         }
-
-        commit.setLoadError({
-          message: 'An unexpected error ocurred',
-          buttonText: 'Back to MultiNet',
-          href: '/',
-        });
+      } finally {
+        if (store.getters.loadError.message === '' && typeof networkTables === 'undefined') {
+          // Catches CORS errors, issues when DB/API are down, etc.
+          commit.setLoadError({
+            message: 'There was a network issue when getting data',
+            buttonText: 'Refresh the page',
+            href: `./?workspace=${workspaceName}&graph=${networkName}`,
+          });
+        }
       }
 
       if (networkTables === undefined) {
