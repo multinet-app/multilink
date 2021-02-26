@@ -381,6 +381,15 @@ const {
             href: 'https://multinet.app',
           });
         }
+      } finally {
+        if (store.getters.loadError.message === '' && typeof networkTables === 'undefined') {
+          // Catches CORS errors, issues when DB/API are down, etc.
+          commit.setLoadError({
+            message: 'There was a network issue when getting data',
+            buttonText: 'Refresh the page',
+            href: `./?workspace=${workspaceName}&graph=${networkName}`,
+          });
+        }
       }
 
       if (networkTables === undefined) {
