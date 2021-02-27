@@ -31,7 +31,6 @@ export default {
     const buttonHref: Ref<string> = ref(loadError.value.href);
     const buttonText: Ref<string> = ref(loadError.value.href);
     watchEffect(async () => {
-      console.log(workspace.value, network.value);
       if (workspace.value !== null && network.value !== null) {
         buttonHref.value = `./?workspace=${workspace.value}&graph=${network.value}`;
         buttonText.value = 'Go To Graph';
