@@ -6,9 +6,9 @@ import {
 } from '@vue/composition-api';
 
 import Alert from '@/components/Alert.vue';
-import Controls from './components/Controls.vue';
-import MultiLink from './components/MultiLink.vue';
-import ProvVis from './components/ProvVis.vue';
+import Controls from '@/components/Controls.vue';
+import MultiLink from '@/components/MultiLink.vue';
+import ProvVis from '@/components/ProvVis.vue';
 
 export default {
   name: 'App',
