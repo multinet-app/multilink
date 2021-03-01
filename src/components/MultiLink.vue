@@ -11,6 +11,7 @@ import {
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
+import { select, selectAll } from 'd3-selection';
 
 export default Vue.extend({
   components: {
@@ -34,6 +35,10 @@ export default Vue.extend({
         transformX: 0,
         transformY: 0,
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      nodes: undefined as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      links: undefined as any,
     };
   },
 
@@ -203,6 +208,61 @@ export default Vue.extend({
   mounted() {
     this.el = this.$el;
 
+    if (this.network !== null && this.simulationLinks !== null) {
+      // Make the nodes
+      this.nodes = select('.nodes')
+        .selectAll('.nodeGroup')
+        .data(this.network.nodes);
+
+      const nodesEnter = this.nodes
+        .enter()
+        .append('g')
+        .attr('class', 'nodeGroup')
+        .attr('transform', (d: Node) => `translate(${d.x}, ${d.y})`);
+
+      nodesEnter
+        .append('rect')
+        .attr('class', 'node')
+        .attr('width', '50')
+        .attr('height', '50')
+        .attr('rx', '25')
+        .attr('ry', '25')
+        .attr('fill', '#DDDDDD');
+
+      nodesEnter
+        .append('rect')
+        .attr('class', 'labelBackground')
+        .attr('height', '1em')
+        .attr('width', '50')
+        .attr('y', 25 - 8);
+
+      nodesEnter
+        .append('text')
+        .attr('class', 'label')
+        .attr('dominant-baseline', 'middle')
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#3a3a3a')
+        .attr('dx', '25')
+        .attr('dy', 25 + 2)
+        .text((d: Node) => d[this.labelVariable]);
+
+      console.log(this.simulationLinks);
+
+      // Make the links
+      this.links = select('.links')
+        .selectAll('.link')
+        .data(this.simulationLinks);
+
+      this.links
+        .enter()
+        .append('line')
+        .attr('class', 'link')
+        .attr('x1', (d) => d.source.x)
+        .attr('x2', (d) => d.target.x)
+        .attr('y1', (d) => d.source.y)
+        .attr('y2', (d) => d.target.y);
+    }
+
     if (this.network !== null) {
       // Make the simulation
       const simulation = forceSimulation<Node, SimulationLink>()
@@ -220,7 +280,18 @@ export default Vue.extend({
 
       simulation
         .on('tick', () => {
-          this.$forceUpdate();
+          if (this.network !== null && this.simulationLinks !== null) {
+            selectAll('.nodeGroup')
+              .data(this.network.nodes)
+              .attr('transform', (d: Node) => this.nodeTranslate(d));
+
+            selectAll('.link')
+              .data(this.simulationLinks)
+              .attr('x1', (d) => d.source.x + 25)
+              .attr('x2', (d) => d.target.x + 25)
+              .attr('y1', (d) => d.source.y + 25)
+              .attr('y2', (d) => d.target.y + 25);
+          }
         })
         // The next line handles the start stop button change in the controls.
         // It's not explicitly necessary for the simulation to work
@@ -271,7 +342,7 @@ export default Vue.extend({
         node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
         // eslint-disable-next-line no-param-reassign
         node.y = evt.y - (this.calculateNodeSize(node) / 2);
-        this.$forceUpdate();
+        // this.$forceUpdate();
       };
 
       const stopFn = () => {
@@ -539,117 +610,10 @@ export default Vue.extend({
         class="links"
         fill="none"
         alpha="0.8"
-      >
-        <g
-          v-for="link of network.edges"
-          :key="link._id"
-          :class="linkGroupClass(link)"
-          @mouseover="showTooltip(link, $event)"
-          @mouseout="hideTooltip"
-        >
-          <path
-            :id="`${link._key}_path`"
-            class="link"
-            :d="arcPath(link)"
-            :style="linkStyle(link)"
-          />
+        stroke="black"
+      />
 
-          <text
-            v-if="directionalEdges"
-            dominant-baseline="middle"
-            y="1"
-          >
-            <textPath
-              :href="`#${link._key}_path`"
-              startOffset="50%"
-              fill="#888888"
-            >
-              ▶
-            </textPath>
-          </text>
-        </g>
-      </g>
-
-      <g class="nodes">
-        <g
-          v-for="node of network.nodes"
-          :key="node._id"
-          :transform="nodeTranslate(node)"
-          :class="nodeGroupClass(node)"
-        >
-          <rect
-            :class="nodeClass(node)"
-            :width="calculateNodeSize(node)"
-            :height="calculateNodeSize(node)"
-            :fill="!displayCharts ? nodeGlyphColorScale(node[nodeColorVariable]) : '#DDDDDD'"
-            :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
-            :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
-            @click="selectNode(node)"
-            @mouseover="showTooltip(node, $event)"
-            @mouseout="hideTooltip"
-            @mousedown="dragNode(node, $event)"
-          />
-          <rect
-            class="labelBackground"
-            height="1em"
-            :y="!displayCharts ? (calculateNodeSize(node) / 2) - 8 : 0"
-            :width="calculateNodeSize(node)"
-          />
-          <text
-            class="label"
-            dominant-baseline="middle"
-            fill="#3a3a3a"
-            text-anchor="middle"
-            :dy="!displayCharts ? calculateNodeSize(node) / 2 + 2: 10"
-            :dx="calculateNodeSize(node) / 2"
-            :style="nodeTextStyle"
-          >{{ node[labelVariable] }}</text>
-
-          <g
-            v-if="displayCharts"
-          >
-
-            <!-- White background bar -->
-            <rect
-              v-for="(barVar, i) of nestedVariables.bar"
-              :key="`${node}_${barVar}_background`"
-              class="bar"
-              :width="nestedBarWidth"
-              :height="nestedBarHeight"
-              fill="#FFFFFF"
-              :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
-              y="20"
-            />
-
-            <!-- Foreground colored bar -->
-            <rect
-              v-for="(barVar, i) of nestedVariables.bar"
-              :key="`${node}_${barVar}_foreground`"
-              class="bar"
-              :width="nestedBarWidth"
-              :height="attributeScales[barVar](node[barVar])"
-              :fill="nodeBarColorScale(barVar)"
-              :x="((nestedBarWidth + nestedPadding) * i) + nestedPadding"
-              :y="20 + nestedBarHeight - attributeScales[barVar](node[barVar])"
-            />
-
-            <!-- Glyphs -->
-            <rect
-              v-for="(glyphVar, i) of nestedVariables.glyph"
-              :key="`${node}_${glyphVar}_glyph`"
-              class="glyph"
-              :width="nestedBarWidth"
-              :height="nestedBarHeight/2/nestedVariables.glyph.length"
-              :y="20 + (i * (nestedBarHeight/2/nestedVariables.glyph.length + 5))"
-              :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
-              rx="100"
-              ry="100"
-              :style="glyphStyle(node[glyphVar])"
-            />
-            <g />
-          </g>
-        </g>
-      </g>
+      <g class="nodes" />
     </svg>
 
     <div
