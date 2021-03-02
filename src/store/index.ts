@@ -374,6 +374,12 @@ const {
             buttonText: 'Back to MultiNet',
             href: 'https://multinet.app',
           });
+        } else if (error.status === 401) {
+          commit.setLoadError({
+            message: 'You are not authorized to view this workspace',
+            buttonText: 'Back to MultiNet',
+            href: 'https://multinet.app',
+          });
         } else {
           commit.setLoadError({
             message: 'An unexpected error ocurred',
