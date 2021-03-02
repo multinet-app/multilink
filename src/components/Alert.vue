@@ -58,6 +58,7 @@ export default {
     <v-alert
       type="error"
       prominent
+      tile
     >
       <v-row align="center">
         <v-col class="grow">
