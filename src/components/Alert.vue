@@ -71,7 +71,7 @@ export default {
           </small>
 
           <small v-else>
-            Select a workspace or network you'd like to return to.
+            Select a workspace and network you'd like to view.
           </small>
         </v-col>
 
