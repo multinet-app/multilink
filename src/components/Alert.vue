@@ -63,6 +63,16 @@ export default {
       <v-row align="center">
         <v-col class="grow">
           {{ loadError.message }}
+
+          <br>
+
+          <small v-if="loadError.message === 'You are not authorized to view this workspace'">
+            If you are already logged in, please check with the workspace owner to verify your permissions.
+          </small>
+
+          <small v-else>
+            Select a workspace or network you'd like to return to.
+          </small>
         </v-col>
 
         <v-col
