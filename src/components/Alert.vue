@@ -66,10 +66,10 @@ export default {
 
         <v-col
           v-if="loadError.buttonText === 'Back to MultiNet'"
-          class="grow"
+          class="grow, py-0"
         >
           <v-row>
-            <v-col>
+            <v-col class="py-0">
               <v-select
                 v-model="workspace"
                 label="Workspace"
@@ -77,7 +77,7 @@ export default {
               />
             </v-col>
 
-            <v-col>
+            <v-col class="py-0">
               <v-select
                 v-model="network"
                 label="Graph"
