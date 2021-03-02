@@ -33,7 +33,7 @@ export default {
     watchEffect(async () => {
       if (workspace.value !== null && network.value !== null) {
         buttonHref.value = `./?workspace=${workspace.value}&graph=${network.value}`;
-        buttonText.value = 'Go To Graph';
+        buttonText.value = 'Go To Network';
       } else {
         buttonHref.value = loadError.value.href;
         buttonText.value = loadError.value.buttonText;
@@ -81,7 +81,7 @@ export default {
             <v-col class="py-0">
               <v-select
                 v-model="network"
-                label="Graph"
+                label="Network"
                 :items="networkOptions"
               />
             </v-col>
