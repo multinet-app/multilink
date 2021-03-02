@@ -369,11 +369,19 @@ const {
         networkTables = await api.graph(workspaceName, networkName);
       } catch (error) {
         if (error.status === 404) {
-          commit.setLoadError({
-            message: error.statusText,
-            buttonText: 'Back to MultiNet',
-            href: 'https://multinet.app',
-          });
+          if (workspaceName === undefined || networkName === undefined) {
+            commit.setLoadError({
+              message: 'Workspace and/or network were not defined in the url',
+              buttonText: 'Back to MultiNet',
+              href: 'https://multinet.app',
+            });
+          } else {
+            commit.setLoadError({
+              message: error.statusText,
+              buttonText: 'Back to MultiNet',
+              href: 'https://multinet.app',
+            });
+          }
         } else if (error.status === 401) {
           commit.setLoadError({
             message: 'You are not authorized to view this workspace',
