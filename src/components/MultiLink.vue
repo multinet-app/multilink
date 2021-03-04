@@ -1,6 +1,8 @@
 <script lang="ts">
 import Vue from 'vue';
-import { scaleLinear, ScaleLinear } from 'd3-scale';
+import {
+  scaleLinear, ScaleLinear, scaleSequential, ScaleSequential,
+} from 'd3-scale';
 import {
   forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation,
 } from 'd3-force';
@@ -11,6 +13,7 @@ import {
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
+import { interpolateReds } from 'd3-scale-chromatic';
 
 export default Vue.extend({
   components: {
@@ -191,6 +194,20 @@ export default Vue.extend({
       return scaleLinear()
         .domain([Math.min(...values), Math.max(...values)])
         .range([10, 100]);
+    },
+
+    linkColorScale(): ScaleSequential<string> {
+      let minLinkValue = 0;
+      let maxLinkValue = 1;
+
+      if (this.network !== null) {
+        const values = this.network.edges.map((link) => link[this.linkVariables.color]);
+        minLinkValue = Math.min(...values);
+        maxLinkValue = Math.max(...values);
+      }
+
+      return scaleSequential(interpolateReds)
+        .domain([minLinkValue, maxLinkValue]);
     },
   },
 
@@ -393,7 +410,7 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
-      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
+      const linkColor = this.linkVariables.color === '' ? '#888888' : this.linkColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
       return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
