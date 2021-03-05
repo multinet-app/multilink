@@ -1,6 +1,8 @@
 <script lang="ts">
 import Vue from 'vue';
-import { scaleLinear, ScaleLinear } from 'd3-scale';
+import {
+  scaleLinear, ScaleLinear,
+} from 'd3-scale';
 import {
   forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation,
 } from 'd3-force';
@@ -191,6 +193,10 @@ export default Vue.extend({
       return scaleLinear()
         .domain([Math.min(...values), Math.max(...values)])
         .range([10, 100]);
+    },
+
+    linkColorScale() {
+      return store.getters.linkColorScale;
     },
   },
 
@@ -393,7 +399,7 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
-      const linkColor = this.linkVariables.color === '' ? '#888888' : this.nodeGlyphColorScale(link[this.linkVariables.color]);
+      const linkColor = this.linkVariables.color === '' ? '#888888' : this.linkColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
       return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;

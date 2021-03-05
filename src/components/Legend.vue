@@ -8,7 +8,6 @@ import {
   scaleLinear, scaleBand, ScaleBand,
 } from 'd3-scale';
 import { axisBottom, axisLeft, axisRight } from 'd3-axis';
-import { TableMetadata } from 'multinet';
 
 import { Node, Link, Network } from '@/types';
 import store from '@/store';
@@ -86,17 +85,7 @@ export default Vue.extend({
     },
 
     columnTypes() {
-      const typeMapping: { [key: string]: string } = {};
-
-      if (store.getters.networkMetadata !== null) {
-        Object.values(store.getters.networkMetadata).forEach((metadata) => {
-          (metadata as TableMetadata).table.columns.forEach((columnType) => {
-            typeMapping[columnType.key] = columnType.type;
-          });
-        });
-      }
-
-      return typeMapping;
+      return store.getters.columnTypes;
     },
 
     cleanedNodeVariables(): Set<string> {
