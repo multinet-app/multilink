@@ -13,9 +13,9 @@ import {
   GraphSpec, RowsSpec, TableMetadata, TableRow,
 } from 'multinet';
 import {
-  scaleLinear, scaleOrdinal,
+  scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 
@@ -60,6 +60,7 @@ const {
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
+    linkColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -155,6 +156,24 @@ const {
 
     linkWidthScale(state: State) {
       return state.linkWidthScale;
+    },
+
+    linkColorScale(state: State) {
+      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
+        let minLinkValue = 0;
+        let maxLinkValue = 1;
+
+        if (state.network !== null) {
+          const values = state.network.edges.map((link) => link[state.linkVariables.color]);
+          minLinkValue = Math.min(...values);
+          maxLinkValue = Math.max(...values);
+        }
+
+        return scaleSequential(interpolateReds)
+          .domain([minLinkValue, maxLinkValue]);
+      }
+
+      return scaleOrdinal(schemeCategory10);
     },
 
     directionalEdges(state: State) {

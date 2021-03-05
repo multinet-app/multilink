@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import {
-  scaleLinear, ScaleLinear, scaleSequential, ScaleSequential,
+  scaleLinear, ScaleLinear,
 } from 'd3-scale';
 import {
   forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, Simulation,
@@ -13,7 +13,6 @@ import {
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
-import { interpolateReds } from 'd3-scale-chromatic';
 
 export default Vue.extend({
   components: {
@@ -196,18 +195,8 @@ export default Vue.extend({
         .range([10, 100]);
     },
 
-    linkColorScale(): ScaleSequential<string> {
-      let minLinkValue = 0;
-      let maxLinkValue = 1;
-
-      if (this.network !== null) {
-        const values = this.network.edges.map((link) => link[this.linkVariables.color]);
-        minLinkValue = Math.min(...values);
-        maxLinkValue = Math.max(...values);
-      }
-
-      return scaleSequential(interpolateReds)
-        .domain([minLinkValue, maxLinkValue]);
+    linkColorScale() {
+      return store.getters.linkColorScale;
     },
   },
 
