@@ -67,6 +67,7 @@ export interface State {
   networkName: string | null;
   network: Network | null;
   networkMetadata: NetworkMetadata | null;
+  columnTypes: { [key: string]: string };
   selectedNodes: Set<string>;
   loadError: LoadError;
   displayCharts: boolean;

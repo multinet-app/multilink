@@ -33,6 +33,7 @@ const {
     networkName: null,
     network: null,
     networkMetadata: null,
+    columnTypes: {},
     selectedNodes: new Set(),
     loadError: {
       message: '',
@@ -86,6 +87,10 @@ const {
 
     networkMetadata(state: State) {
       return state.networkMetadata;
+    },
+
+    columnTypes(state: State) {
+      return state.columnTypes;
     },
 
     selectedNodes(state: State) {
@@ -191,6 +196,20 @@ const {
 
     setNetworkMetadata(state, networkMetadata: NetworkMetadata) {
       state.networkMetadata = networkMetadata;
+    },
+
+    setColumnTypes(state, networkMetadata: NetworkMetadata) {
+      const typeMapping: { [key: string]: string } = {};
+
+      if (networkMetadata !== null) {
+        Object.values(networkMetadata).forEach((metadata) => {
+          (metadata as TableMetadata).table.columns.forEach((columnType) => {
+            typeMapping[columnType.key] = columnType.type;
+          });
+        });
+      }
+
+      state.columnTypes = typeMapping;
     },
 
     setSelected(state, selectedNodes: Set<string>) {
@@ -438,6 +457,7 @@ const {
       });
 
       commit.setNetworkMetadata(networkMetadata);
+      commit.setColumnTypes(networkMetadata);
     },
 
     releaseNodes(context) {
