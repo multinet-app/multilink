@@ -29,14 +29,17 @@ export default {
     });
 
     const buttonHref: Ref<string> = ref(loadError.value.href);
-    const buttonText: Ref<string> = ref(loadError.value.href);
+    const buttonText: Ref<string> = ref('');
     watchEffect(async () => {
       if (workspace.value !== null && network.value !== null) {
         buttonHref.value = `./?workspace=${workspace.value}&graph=${network.value}`;
         buttonText.value = 'Go To Network';
+      } else if (loadError.value.message === 'There was a network issue when getting data') {
+        buttonHref.value = loadError.value.href;
+        buttonText.value = 'Refresh the page';
       } else {
         buttonHref.value = loadError.value.href;
-        buttonText.value = loadError.value.buttonText;
+        buttonText.value = 'Back to MultiNet';
       }
     });
 
@@ -76,7 +79,7 @@ export default {
         </v-col>
 
         <v-col
-          v-if="loadError.buttonText === 'Back to MultiNet'"
+          v-if="buttonText !== 'Refresh the page'"
           class="grow, py-0"
         >
           <v-row>

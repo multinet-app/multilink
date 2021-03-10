@@ -36,7 +36,6 @@ const {
     selectedNodes: new Set(),
     loadError: {
       message: '',
-      buttonText: '',
       href: '',
     },
     simulation: null,
@@ -206,7 +205,6 @@ const {
     setLoadError(state, loadError: LoadError) {
       state.loadError = {
         message: loadError.message,
-        buttonText: loadError.buttonText,
         href: loadError.href,
       };
     },
@@ -372,26 +370,22 @@ const {
           if (workspaceName === undefined || networkName === undefined) {
             commit.setLoadError({
               message: 'Workspace and/or network were not defined in the url',
-              buttonText: 'Back to MultiNet',
               href: 'https://multinet.app',
             });
           } else {
             commit.setLoadError({
               message: error.statusText,
-              buttonText: 'Back to MultiNet',
               href: 'https://multinet.app',
             });
           }
         } else if (error.status === 401) {
           commit.setLoadError({
             message: 'You are not authorized to view this workspace',
-            buttonText: 'Back to MultiNet',
             href: 'https://multinet.app',
           });
         } else {
           commit.setLoadError({
             message: 'An unexpected error ocurred',
-            buttonText: 'Back to MultiNet',
             href: 'https://multinet.app',
           });
         }
@@ -400,7 +394,6 @@ const {
           // Catches CORS errors, issues when DB/API are down, etc.
           commit.setLoadError({
             message: 'There was a network issue when getting data',
-            buttonText: 'Refresh the page',
             href: `./?workspace=${workspaceName}&graph=${networkName}`,
           });
         }

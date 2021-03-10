@@ -42,7 +42,6 @@ export interface Cell {
 
 export interface LoadError {
   message: string;
-  buttonText: string;
   href: string;
 }
 
