@@ -5,14 +5,16 @@ import {
   ref, computed, Ref,
 } from '@vue/composition-api';
 
-import Controls from './components/Controls.vue';
-import MultiLink from './components/MultiLink.vue';
-import ProvVis from './components/ProvVis.vue';
+import Alert from '@/components/Alert.vue';
+import Controls from '@/components/Controls.vue';
+import MultiLink from '@/components/MultiLink.vue';
+import ProvVis from '@/components/ProvVis.vue';
 
 export default {
   name: 'App',
 
   components: {
+    Alert,
     Controls,
     MultiLink,
     ProvVis,
@@ -65,22 +67,7 @@ export default {
         v-if="network !== null && selectedNodes !== null"
       />
 
-      <v-alert
-        type="error"
-        :value="loadError.message !== ''"
-        prominent
-      >
-        <v-row align="center">
-          <v-col class="grow">
-            {{ loadError.message }}
-          </v-col>
-          <v-col class="shrink">
-            <v-btn :href="loadError.href">
-              {{ loadError.buttonText }}
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-alert>
+      <alert v-if="loadError.message !== ''" />
     </v-main>
 
     <prov-vis v-if="showProvenanceVis" />
