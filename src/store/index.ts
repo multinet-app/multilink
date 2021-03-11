@@ -13,9 +13,9 @@ import {
   GraphSpec, RowsSpec, TableMetadata, TableRow,
 } from 'multinet';
 import {
-  scaleLinear, scaleOrdinal,
+  scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 
@@ -33,6 +33,7 @@ const {
     networkName: null,
     network: null,
     networkMetadata: null,
+    columnTypes: {},
     selectedNodes: new Set(),
     loadError: {
       message: '',
@@ -58,6 +59,7 @@ const {
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
+    linkColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -85,6 +87,10 @@ const {
 
     networkMetadata(state: State) {
       return state.networkMetadata;
+    },
+
+    columnTypes(state: State) {
+      return state.columnTypes;
     },
 
     selectedNodes(state: State) {
@@ -151,6 +157,24 @@ const {
       return state.linkWidthScale;
     },
 
+    linkColorScale(state: State) {
+      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
+        let minLinkValue = 0;
+        let maxLinkValue = 1;
+
+        if (state.network !== null) {
+          const values = state.network.edges.map((link) => link[state.linkVariables.color]);
+          minLinkValue = Math.min(...values);
+          maxLinkValue = Math.max(...values);
+        }
+
+        return scaleSequential(interpolateReds)
+          .domain([minLinkValue, maxLinkValue]);
+      }
+
+      return scaleOrdinal(schemeCategory10);
+    },
+
     directionalEdges(state: State) {
       return state.directionalEdges;
     },
@@ -190,6 +214,20 @@ const {
 
     setNetworkMetadata(state, networkMetadata: NetworkMetadata) {
       state.networkMetadata = networkMetadata;
+    },
+
+    setColumnTypes(state, networkMetadata: NetworkMetadata) {
+      const typeMapping: { [key: string]: string } = {};
+
+      if (networkMetadata !== null) {
+        Object.values(networkMetadata).forEach((metadata) => {
+          (metadata as TableMetadata).table.columns.forEach((columnType) => {
+            typeMapping[columnType.key] = columnType.type;
+          });
+        });
+      }
+
+      state.columnTypes = typeMapping;
     },
 
     setSelected(state, selectedNodes: Set<string>) {
@@ -445,6 +483,7 @@ const {
       });
 
       commit.setNetworkMetadata(networkMetadata);
+      commit.setColumnTypes(networkMetadata);
     },
 
     releaseNodes(context) {
