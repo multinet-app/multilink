@@ -59,7 +59,8 @@ export default {
 <template>
   <div>
     <v-alert
-      type="error"
+      type="warning"
+      border="left"
       prominent
       tile
     >
@@ -102,7 +103,12 @@ export default {
         </v-col>
 
         <v-col class="shrink">
-          <v-btn :href="buttonHref">
+          <v-btn
+            :href="buttonHref"
+            depressed
+            dark
+            color="grey darken-3"
+          >
             {{ buttonText }}
           </v-btn>
         </v-col>
