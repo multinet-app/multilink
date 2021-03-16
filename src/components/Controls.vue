@@ -30,6 +30,7 @@ export default Vue.extend({
         const allVars: Set<string> = new Set();
         this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
         allVars.delete('_id');
+        allVars.delete('_key');
         allVars.delete('_rev');
         allVars.delete('vx');
         allVars.delete('vy');
@@ -48,6 +49,9 @@ export default Vue.extend({
         this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
         allVars.delete('_id');
+        allVars.delete('_key');
+        allVars.delete('_from');
+        allVars.delete('_to');
         allVars.delete('_rev');
         allVars.delete('source');
         allVars.delete('target');
@@ -410,7 +414,7 @@ export default Vue.extend({
           Legend
         </v-subheader>
         <Legend
-          v-if="multiVariableList.has('_key') && networkMetadata"
+          v-if="graphStructure !== null"
           ref="legend"
           class="mt-4"
           v-bind="{
