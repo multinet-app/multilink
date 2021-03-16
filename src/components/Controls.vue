@@ -22,15 +22,11 @@ export default Vue.extend({
   },
 
   computed: {
-    graphStructure() {
-      return store.getters.network;
-    },
-
     multiVariableList(): Set<string | null> {
-      if (this.graphStructure !== null) {
+      if (this.network !== null) {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        this.network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
@@ -44,10 +40,10 @@ export default Vue.extend({
     },
 
     linkVariableList(): Set<string | null> {
-      if (this.graphStructure !== null) {
+      if (this.network !== null) {
         // Loop through all links, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
+        this.network.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('source');
@@ -146,15 +142,15 @@ export default Vue.extend({
       store.dispatch.releaseNodes();
     },
 
-    exportGraph() {
+    exportNetwork() {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(
         new Blob(
-          [JSON.stringify(this.graphStructure)],
+          [JSON.stringify(this.network)],
           { type: 'text/json' },
         ),
       );
-      a.download = `${store.getters.networkName || 'unknown_graph'}.json`;
+      a.download = `${store.getters.networkName || 'unknown_network'}.json`;
       a.click();
     },
 
@@ -385,9 +381,9 @@ export default Vue.extend({
               class="ml-0"
               color="grey darken-3 white--text"
               depressed
-              @click="exportGraph"
+              @click="exportNetwork"
             >
-              Export Graph
+              Export Network
             </v-btn>
           </v-list-item>
 
@@ -407,11 +403,11 @@ export default Vue.extend({
           Legend
         </v-subheader>
         <Legend
-          v-if="graphStructure !== null"
+          v-if="network !== null"
           ref="legend"
           class="mt-4"
           v-bind="{
-            graphStructure,
+            network,
             multiVariableList,
             linkVariableList,
           }"
