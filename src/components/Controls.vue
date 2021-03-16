@@ -125,8 +125,8 @@ export default Vue.extend({
     },
 
     autocompleteItems(): string[] {
-      if (this.network !== null) {
-        return this.network.nodes.map((node) => node[this.labelVariable]);
+      if (this.network !== null && this.labelVariable !== undefined) {
+        return this.network.nodes.map((node) => node[this.labelVariable as string]);
       }
       return [];
     },
@@ -163,9 +163,9 @@ export default Vue.extend({
 
     search() {
       const searchErrors: string[] = [];
-      if (this.network !== null) {
+      if (this.network !== null && this.labelVariable !== undefined) {
         const nodeIDsToSelect = this.network.nodes
-          .filter((node) => node[this.labelVariable] === this.searchTerm)
+          .filter((node) => node[this.labelVariable as string] === this.searchTerm)
           .map((node) => node._id);
 
         if (nodeIDsToSelect.length > 0) {
@@ -245,6 +245,7 @@ export default Vue.extend({
               label="Search for Node"
               :items="autocompleteItems"
               :error-messages="searchErrors"
+              no-data-text="Select a label variable"
               auto-select-first
             />
 

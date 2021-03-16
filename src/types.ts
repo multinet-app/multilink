@@ -72,7 +72,7 @@ export interface State {
   displayCharts: boolean;
   markerSize: number;
   fontSize: number;
-  labelVariable: string;
+  labelVariable: string | undefined;
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
