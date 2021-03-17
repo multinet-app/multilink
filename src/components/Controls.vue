@@ -131,10 +131,6 @@ export default Vue.extend({
       }
       return [];
     },
-
-    networkMetadata() {
-      return store.getters.networkMetadata;
-    },
   },
 
   methods: {
