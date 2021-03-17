@@ -3,7 +3,9 @@ import Vue from 'vue';
 import Legend from '@/components/Legend.vue';
 
 import store from '@/store';
-import { Node, Link, Network } from '@/types';
+import {
+  Node, Link, Network, internalFieldNames,
+} from '@/types';
 import { forceCollide, forceManyBody } from 'd3-force';
 
 export default Vue.extend({
@@ -29,9 +31,8 @@ export default Vue.extend({
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
         this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
-        allVars.delete('_id');
-        allVars.delete('_key');
-        allVars.delete('_rev');
+
+        internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
         allVars.delete('vy');
         allVars.delete('x');
@@ -48,11 +49,7 @@ export default Vue.extend({
         const allVars: Set<string> = new Set();
         this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
-        allVars.delete('_id');
-        allVars.delete('_key');
-        allVars.delete('_from');
-        allVars.delete('_to');
-        allVars.delete('_rev');
+        internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('source');
         allVars.delete('target');
         allVars.delete('index');
