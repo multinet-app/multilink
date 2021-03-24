@@ -87,7 +87,7 @@ export default Vue.extend({
     },
 
     labelVariable: {
-      get() {
+      get(): string | undefined {
         return store.getters.labelVariable;
       },
       set(value: string) {
@@ -126,8 +126,8 @@ export default Vue.extend({
     },
 
     autocompleteItems(): string[] {
-      if (this.network !== null && this.labelVariable !== undefined) {
-        return this.network.nodes.map((node) => node[this.labelVariable as string]);
+      if (this.network !== null) {
+        return this.network.nodes.map((node) => (this.labelVariable !== undefined ? node[this.labelVariable] : ''));
       }
       return [];
     },
@@ -160,9 +160,9 @@ export default Vue.extend({
 
     search() {
       const searchErrors: string[] = [];
-      if (this.network !== null && this.labelVariable !== undefined) {
+      if (this.network !== null) {
         const nodeIDsToSelect = this.network.nodes
-          .filter((node) => node[this.labelVariable as string] === this.searchTerm)
+          .filter((node) => (this.labelVariable !== undefined ? node[this.labelVariable] === this.searchTerm : false))
           .map((node) => node._id);
 
         if (nodeIDsToSelect.length > 0) {
