@@ -109,7 +109,8 @@ export type ProvenanceEventTypes =
   'Set Node Color Variable' |
   'Set Node Size Variable' |
   'Set Select Neighbors'|
-  'Set Directional Edges';
+  'Set Directional Edges' |
+  'Set Link Length';
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev'] as const;
 export type InternalField = (typeof internalFieldNames)[number];

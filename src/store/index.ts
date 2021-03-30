@@ -588,8 +588,11 @@ const {
             'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
+            'linkLength',
           ].forEach((primitiveVariable) => {
-            if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
+            if (primitiveVariable === 'linkLength') {
+              commit.setLinkLength({ linkLength: provenanceState[primitiveVariable], updateProv: false });
+            } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
             }
           });

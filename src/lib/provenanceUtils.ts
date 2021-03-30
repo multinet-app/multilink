@@ -25,6 +25,9 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.selectNeighbors = newProvState.selectNeighbors;
     } else if (label === 'Set Directional Edges') {
       provState.directionalEdges = newProvState.directionalEdges;
+    } else if (label === 'Set Link Length') {
+      // eslint-disable-next-line no-param-reassign
+      provState.linkLength = newProvState.linkLength;
     }
 
     /* eslint-enable no-param-reassign */
