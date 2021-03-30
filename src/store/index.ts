@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import Vuex, { Store } from 'vuex';
+import Vuex from 'vuex';
 import { createDirectStore } from 'direct-vuex';
 import {
-  ForceCenter, ForceCollide, ForceLink, ForceManyBody, Simulation,
+  forceCollide, forceManyBody, Simulation,
 } from 'd3-force';
 
 import {
@@ -19,6 +19,7 @@ import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
+import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 
 Vue.use(Vuex);
 
@@ -303,9 +304,18 @@ const {
     },
 
     setMarkerSize(state, payload: { markerSize: number; updateProv: boolean }) {
-      state.markerSize = payload.markerSize;
+      const { markerSize, updateProv } = payload;
+      state.markerSize = markerSize;
 
-      if (state.provenance !== null && payload.updateProv) {
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        state.simulation,
+        'collision',
+        forceCollide((markerSize / 2) * 1.5),
+      );
+      store.commit.startSimulation();
+
+      if (state.provenance !== null && updateProv) {
         updateProvenanceState(state, 'Set Marker Size');
       }
     },
@@ -392,6 +402,17 @@ const {
     setLinkLength(state, payload: { linkLength: number; updateProv: boolean }) {
       const { linkLength, updateProv } = payload;
       state.linkLength = linkLength;
+
+      // Scale value to between -500, 0 for d3
+      const linkLengthForce = (linkLength * -5);
+
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        state.simulation,
+        'charge',
+        forceManyBody<Node>().strength(linkLengthForce),
+      );
+      store.commit.startSimulation();
 
       if (state.provenance !== null && updateProv) {
         updateProvenanceState(state, 'Set Link Length');
@@ -590,7 +611,9 @@ const {
             'directionalEdges',
             'linkLength',
           ].forEach((primitiveVariable) => {
-            if (primitiveVariable === 'linkLength') {
+            if (primitiveVariable === 'markerSize') {
+              commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
+            } else if (primitiveVariable === 'linkLength') {
               commit.setLinkLength({ linkLength: provenanceState[primitiveVariable], updateProv: false });
             } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
@@ -603,22 +626,6 @@ const {
 
       // Add keydown listener for undo/redo
       document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
-    },
-
-    updateSimulationForce(context, payload: {
-      forceType: 'center' | 'charge' | 'link' | 'collision';
-      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
-      restart: boolean;
-    }) {
-      const { commit } = rootActionContext(context);
-      if (context.state.simulation !== null) {
-        const { forceType, forceValue, restart } = payload;
-        context.state.simulation.force(forceType, forceValue);
-
-        if (restart) {
-          commit.startSimulation();
-        }
-      }
     },
 
     guessLabel(context) {

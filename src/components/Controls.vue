@@ -8,7 +8,6 @@ import store from '@/store';
 import {
   Node, Link, Network, internalFieldNames,
 } from '@/types';
-import { forceCollide } from 'd3-force';
 
 export default Vue.extend({
   components: {
@@ -188,7 +187,6 @@ export default Vue.extend({
     updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
-        store.dispatch.updateSimulationForce({ forceType: 'collision', forceValue: forceCollide((this.markerSize / 2) * 1.5), restart: true });
       } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
       } else if (type === 'linkLength') {
