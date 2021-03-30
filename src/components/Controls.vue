@@ -8,7 +8,7 @@ import store from '@/store';
 import {
   Node, Link, Network, internalFieldNames,
 } from '@/types';
-import { forceCollide, forceManyBody } from 'd3-force';
+import { forceCollide } from 'd3-force';
 
 export default Vue.extend({
   components: {
@@ -21,7 +21,6 @@ export default Vue.extend({
     return {
       searchTerm: '' as string,
       searchErrors: [] as string[],
-      linkLength: '50',
       showTabs: false,
       tab: undefined,
     };
@@ -115,6 +114,15 @@ export default Vue.extend({
       },
     },
 
+    linkLength: {
+      get() {
+        return store.getters.linkLength;
+      },
+      set(value: number) {
+        store.commit.setLinkLength({ linkLength: value, updateProv: false });
+      },
+    },
+
     controlsWidth(): number {
       return store.getters.controlsWidth;
     },
@@ -184,10 +192,7 @@ export default Vue.extend({
       } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
       } else if (type === 'linkLength') {
-        // Scale value to between -500, 0
-        const newLinkLength = (value * -5);
-
-        store.dispatch.updateSimulationForce({ forceType: 'charge', forceValue: forceManyBody<Node>().strength(newLinkLength), restart: true });
+        store.commit.setLinkLength({ linkLength: value, updateProv: true });
       }
     },
 

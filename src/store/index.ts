@@ -72,6 +72,7 @@ const {
       left: 0,
     },
     userInfo: null,
+    linkLength: 50,
   } as State,
 
   getters: {
@@ -179,6 +180,10 @@ const {
 
     directionalEdges(state: State) {
       return state.directionalEdges;
+    },
+
+    linkLength(state: State) {
+      return state.linkLength;
     },
 
     controlsWidth(state: State) {
@@ -381,6 +386,15 @@ const {
 
       if (state.provenance !== null) {
         updateProvenanceState(state, 'Set Directional Edges');
+      }
+    },
+
+    setLinkLength(state, payload: { linkLength: number; updateProv: boolean }) {
+      const { linkLength, updateProv } = payload;
+      state.linkLength = linkLength;
+
+      if (state.provenance !== null && updateProv) {
+        updateProvenanceState(state, 'Set Link Length');
       }
     },
 

@@ -95,6 +95,7 @@ export interface State {
     left: number;
   };
   userInfo: UserSpec | null;
+  linkLength: number;
 }
 
 export type ProvenanceEventTypes =
