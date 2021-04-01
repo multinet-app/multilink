@@ -441,6 +441,36 @@ const {
       state.userInfo = userInfo;
     },
 
+    applyNumericLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; firstLayout: boolean }) {
+      store.commit.stopSimulation();
+
+      if (state.network !== null) {
+        const { varName, axis, firstLayout } = payload;
+        const range = state.attributeRanges[varName];
+        const positionScale = scaleLinear()
+          .domain([range.min, range.max])
+          .range([0, axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height]);
+
+        state.network.nodes.forEach((node) => {
+          // eslint-disable-next-line no-param-reassign
+          node[axis] = positionScale(node[varName]);
+
+          if (firstLayout) {
+            const otherAxis = axis === 'x' ? 'y' : 'x';
+            const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
+            // eslint-disable-next-line no-param-reassign
+            node[otherAxis] = otherSvgDimension / 2;
+          }
+        });
+
+        // Set node size smaller
+        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+        // Clear the label variable
+        store.commit.setLabelVariable('');
+      }
+    },
+
     setSvgDimensions(state: State, payload: Dimensions) {
       state.svgDimensions = payload;
     },

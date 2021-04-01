@@ -1,6 +1,6 @@
 <script lang="ts">
 import store from '@/store';
-import { computed } from '@vue/composition-api';
+import { computed, ref, watchEffect } from '@vue/composition-api';
 
 export default {
   setup() {
@@ -46,12 +46,35 @@ export default {
       }
     }
 
+    // Track whether the layout has been applied before, reset when simulation starts again
+    // If so, we won't want to reset the "other axis" to a constant value
+    const firstLayout = ref(true);
+    watchEffect(() => {
+      if (store.getters.simulationRunning && !firstLayout.value) {
+        firstLayout.value = true;
+      }
+    });
+
+    function changeLayout(numVar: string, axis: 'x' | 'y') {
+      // Close the menu
+      store.commit.updateRightClickMenu({
+        show: false,
+        top: rightClickMenu.value.top,
+        left: rightClickMenu.value.left,
+      });
+
+      store.commit.applyNumericLayout({ varName: numVar, axis, firstLayout: firstLayout.value });
+
+      firstLayout.value = false;
+    }
+
     return {
       rightClickMenu,
       numericVariables,
       clearSelection,
       pinSelectedNodes,
       unPinSelectedNodes,
+      changeLayout,
     };
   },
 };
