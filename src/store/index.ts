@@ -6,7 +6,7 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions,
 } from '@/types';
 import api from '@/api';
 import {
@@ -74,6 +74,10 @@ const {
     },
     userInfo: null,
     linkLength: 50,
+    svgDimensions: {
+      height: 0,
+      width: 0,
+    },
   } as State,
 
   getters: {
@@ -435,6 +439,10 @@ const {
 
     setUserInfo(state, userInfo: UserSpec | null) {
       state.userInfo = userInfo;
+    },
+
+    setSvgDimensions(state: State, payload: Dimensions) {
+      state.svgDimensions = payload;
     },
   },
   actions: {

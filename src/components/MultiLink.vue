@@ -178,10 +178,14 @@ export default Vue.extend({
       );
       store.commit.startSimulation();
 
-      return {
+      const dimensions = {
         height,
         width,
       };
+
+      store.commit.setSvgDimensions(dimensions);
+
+      return dimensions;
     },
 
     directionalEdges() {
