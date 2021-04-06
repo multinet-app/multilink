@@ -225,7 +225,7 @@ export default Vue.extend({
           </div>
         </v-toolbar-title>
         <v-spacer />
-        <!-- login-menu / -->
+        <login-menu />
       </v-toolbar>
 
       <!-- control panel content -->
