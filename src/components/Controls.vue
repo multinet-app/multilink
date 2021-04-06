@@ -218,6 +218,9 @@ export default Vue.extend({
               <v-col class="text-left">
                 MultiLink
               </v-col>
+              <v-col class="pa-0">
+                <about-dialog />
+              </v-col>
             </v-row>
           </div>
         </v-toolbar-title>
