@@ -18,6 +18,8 @@ export default Vue.extend({
       searchTerm: '' as string,
       searchErrors: [] as string[],
       linkLength: '50',
+      showTabs: false,
+      tab: undefined,
     };
   },
 
@@ -204,7 +206,10 @@ export default Vue.extend({
       :width="controlsWidth"
     >
       <v-toolbar color="grey lighten-2">
-        <v-toolbar-title class="d-flex align-center">
+        <v-toolbar-title
+          class="d-flex align-center"
+          flat
+        >
           <div>
             <v-row class="mx-0 align-center">
               <v-col class="pb-0 pt-2 px-0">
@@ -227,11 +232,149 @@ export default Vue.extend({
 
       <!-- control panel content -->
       <v-list class="pa-0">
-        <v-subheader class="grey darken-3 py-0 white--text">
-          Controls
+        <v-subheader class="grey darken-3 py-0 pr-0 white--text">
+          Visualization Options
+
+          <v-spacer />
+
+          <v-btn
+            :min-width="40"
+            :height="48"
+            depressed
+            tile
+            :class="showTabs? `grey darken-2 pa-0` : `grey darken-3 pa-0`"
+            @click="showTabs = !showTabs"
+          >
+            <v-icon color="white">
+              mdi-cog
+            </v-icon>
+          </v-btn>
         </v-subheader>
 
-        <div class="pa-4">
+        <v-tabs
+          v-if="showTabs"
+          v-model="tab"
+          background-color="grey darken-2"
+          dark
+          grow
+          slider-color="blue darken-1"
+        >
+          <v-tab>
+            Visualization
+          </v-tab>
+          <v-tab>
+            Advanced
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-items
+          v-if="showTabs"
+          v-model="tab"
+          dark
+        >
+          <v-tab-item>
+            <v-card
+              flat
+              color="grey darken-3"
+            >
+              <v-list-item>
+                <v-select
+                  v-model="labelVariable"
+                  label="Label Variable"
+                  :items="Array.from(multiVariableList)"
+                  :hide-details="true"
+                  class="mt-3"
+                  clearable
+                  outlined
+                  dense
+                />
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content> Display Charts </v-list-item-content>
+                <v-list-item-action>
+                  <v-switch
+                    v-model="displayCharts"
+                    hide-details
+                    color="blue darken-1"
+                  />
+                </v-list-item-action>
+              </v-list-item>
+
+              <v-list-item>
+                <v-list-item-content> Directional Edges </v-list-item-content>
+                <v-list-item-action>
+                  <v-switch
+                    v-model="directionalEdges"
+                    hide-details
+                    color="blue darken-1"
+                  />
+                </v-list-item-action>
+              </v-list-item>
+
+              <v-list-item>
+                <v-list-item-content> Autoselect Neighbors </v-list-item-content>
+                <v-list-item-action>
+                  <v-switch
+                    v-model="selectNeighbors"
+                    hide-details
+                    color="blue darken-1"
+                  />
+                </v-list-item-action>
+              </v-list-item>
+            </v-card>
+          </v-tab-item>
+
+          <v-tab-item>
+            <v-card flat>
+              <v-card-subtitle class="pb-0">
+                Marker Size
+              </v-card-subtitle>
+              <v-slider
+                v-model="markerSize"
+                :min="10"
+                :max="100"
+                :label="String(markerSize)"
+                class="px-2"
+                inverse-label
+                hide-details
+                color="blue darken-1"
+                @change="(value) => updateSliderProv(value, 'markerSize')"
+              />
+
+              <v-card-subtitle class="pb-0">
+                Font Size
+              </v-card-subtitle>
+              <v-slider
+                v-model="fontSize"
+                :min="6"
+                :max="20"
+                :label="String(fontSize)"
+                class="px-2"
+                inverse-label
+                hide-details
+                color="blue darken-1"
+                @change="(value) => updateSliderProv(value, 'fontSize')"
+              />
+
+              <v-card-subtitle class="pb-0">
+                Link Length
+              </v-card-subtitle>
+              <v-slider
+                v-model="linkLength"
+                :min="0"
+                :max="100"
+                :label="linkLength.toString()"
+                class="px-2"
+                inverse-label
+                hide-details
+                color="blue darken-1"
+                @change="(value) => updateSliderProv(linkLength, 'linkLength')"
+              />
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
+
+        <div class="px-4">
           <v-list-item class="px-0">
             <v-autocomplete
               v-model="searchTerm"
@@ -239,106 +382,16 @@ export default Vue.extend({
               :items="autocompleteItems"
               :error-messages="searchErrors"
               no-data-text="Select a label variable"
+              class="pt-4"
               auto-select-first
-            />
-
-            <v-btn
-              class="ml-2"
-              color="primary"
-              depressed
-              small
-              @click="search"
-            >
-              Search
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-select
-              v-model="labelVariable"
-              label="Label Variable"
-              :items="Array.from(multiVariableList)"
-              :hide-details="true"
-              clearable
               outlined
               dense
+              @input="search"
             />
           </v-list-item>
 
-          <v-list-item class="px-0">
-            <v-list-item-action class="mr-3">
-              <v-switch
-                v-model="displayCharts"
-                class="ma-0"
-                hide-details
-              />
-            </v-list-item-action>
-            <v-list-item-content> Display Charts </v-list-item-content>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-list-item-action class="mr-3">
-              <v-switch
-                v-model="directionalEdges"
-                class="ma-0"
-                hide-details
-              />
-            </v-list-item-action>
-            <v-list-item-content> Directional Edges </v-list-item-content>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-list-item-action class="mr-3">
-              <v-switch
-                v-model="selectNeighbors"
-                class="ma-0"
-                hide-details
-              />
-            </v-list-item-action>
-            <v-list-item-content> Autoselect Neighbors </v-list-item-content>
-          </v-list-item>
-
-          <v-card-subtitle class="pb-0 pl-0">
-            Marker Size
-          </v-card-subtitle>
-          <v-slider
-            v-model="markerSize"
-            :min="10"
-            :max="100"
-            :label="String(markerSize)"
-            inverse-label
-            hide-details
-            @change="(value) => updateSliderProv(value, 'markerSize')"
-          />
-
-          <v-card-subtitle class="pb-0 pl-0">
-            Font Size
-          </v-card-subtitle>
-          <v-slider
-            v-model="fontSize"
-            :min="6"
-            :max="20"
-            :label="String(fontSize)"
-            inverse-label
-            hide-details
-            @change="(value) => updateSliderProv(value, 'fontSize')"
-          />
-
-          <v-card-subtitle class="pb-0 pl-0">
-            Link Length
-          </v-card-subtitle>
-          <v-slider
-            v-model="linkLength"
-            :min="0"
-            :max="100"
-            :label="linkLength.toString()"
-            inverse-label
-            hide-details
-            @change="(value) => updateSliderProv(linkLength, 'linkLength')"
-          />
-
           <v-row>
-            <v-col>
+            <v-col class="pt-0">
               <v-btn
                 color="grey darken-3"
                 depressed
@@ -356,7 +409,7 @@ export default Vue.extend({
               </v-btn>
             </v-col>
             <v-spacer />
-            <v-col>
+            <v-col class="pt-0">
               <v-btn
                 color="primary"
                 depressed
