@@ -3,7 +3,9 @@ import Vue from 'vue';
 import Legend from '@/components/Legend.vue';
 
 import store from '@/store';
-import { Node, Link, Network } from '@/types';
+import {
+  Node, Link, Network, internalFieldNames,
+} from '@/types';
 import { forceCollide, forceManyBody } from 'd3-force';
 
 export default Vue.extend({
@@ -29,8 +31,8 @@ export default Vue.extend({
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
         this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
-        allVars.delete('_id');
-        allVars.delete('_rev');
+
+        internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
         allVars.delete('vy');
         allVars.delete('x');
@@ -47,8 +49,7 @@ export default Vue.extend({
         const allVars: Set<string> = new Set();
         this.graphStructure.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
-        allVars.delete('_id');
-        allVars.delete('_rev');
+        internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('source');
         allVars.delete('target');
         allVars.delete('index');
@@ -86,7 +87,7 @@ export default Vue.extend({
     },
 
     labelVariable: {
-      get() {
+      get(): string | undefined {
         return store.getters.labelVariable;
       },
       set(value: string) {
@@ -125,14 +126,10 @@ export default Vue.extend({
     },
 
     autocompleteItems(): string[] {
-      if (this.network !== null) {
-        return this.network.nodes.map((node) => node[this.labelVariable]);
+      if (this.network !== null && this.labelVariable !== undefined) {
+        return this.network.nodes.map((node) => (node[this.labelVariable || '']));
       }
       return [];
-    },
-
-    networkMetadata() {
-      return store.getters.networkMetadata;
     },
   },
 
@@ -165,7 +162,7 @@ export default Vue.extend({
       const searchErrors: string[] = [];
       if (this.network !== null) {
         const nodeIDsToSelect = this.network.nodes
-          .filter((node) => node[this.labelVariable] === this.searchTerm)
+          .filter((node) => (this.labelVariable !== undefined ? node[this.labelVariable] === this.searchTerm : false))
           .map((node) => node._id);
 
         if (nodeIDsToSelect.length > 0) {
@@ -245,6 +242,7 @@ export default Vue.extend({
               label="Search for Node"
               :items="autocompleteItems"
               :error-messages="searchErrors"
+              no-data-text="Select a label variable"
               auto-select-first
             />
 
@@ -409,7 +407,7 @@ export default Vue.extend({
           Legend
         </v-subheader>
         <Legend
-          v-if="multiVariableList.has('_key') && networkMetadata"
+          v-if="graphStructure !== null"
           ref="legend"
           class="mt-4"
           v-bind="{

@@ -43,7 +43,7 @@ const {
     displayCharts: false,
     markerSize: 50,
     fontSize: 12,
-    labelVariable: '_key',
+    labelVariable: undefined,
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
