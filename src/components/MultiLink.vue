@@ -273,10 +273,31 @@ export default Vue.extend({
           throw new Error('event is not MouseEvent');
         }
 
+        const eventX = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
+        const eventY = evt.y - (this.calculateNodeSize(node) / 2);
+
+        if (this.selectedNodes.has(node._id)) {
+          const nodeX = Math.floor(node.x || 0);
+          const nodeY = Math.floor(node.y || 0);
+          const dx = eventX - nodeX;
+          const dy = eventY - nodeY;
+
+          if (this.network !== null) {
+            this.network.nodes
+              .filter((innerNode) => this.selectedNodes.has(innerNode._id) && innerNode._id !== node._id)
+              .forEach((innerNode) => {
+              // eslint-disable-next-line no-param-reassign
+                innerNode.x = (innerNode.x || 0) + dx;
+                // eslint-disable-next-line no-param-reassign
+                innerNode.y = (innerNode.y || 0) + dy;
+              });
+          }
+        }
+
         // eslint-disable-next-line no-param-reassign
-        node.x = evt.x - this.controlsWidth - (this.calculateNodeSize(node) / 2);
+        node.x = eventX;
         // eslint-disable-next-line no-param-reassign
-        node.y = evt.y - (this.calculateNodeSize(node) / 2);
+        node.y = eventY;
         this.$forceUpdate();
       };
 

@@ -126,8 +126,8 @@ export default Vue.extend({
     },
 
     autocompleteItems(): string[] {
-      if (this.network !== null) {
-        return this.network.nodes.map((node) => (this.labelVariable !== undefined ? node[this.labelVariable] : ''));
+      if (this.network !== null && this.labelVariable !== undefined) {
+        return this.network.nodes.map((node) => (node[this.labelVariable || '']));
       }
       return [];
     },
