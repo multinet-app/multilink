@@ -485,6 +485,14 @@ const {
 
       commit.setNetworkMetadata(networkMetadata);
       commit.setColumnTypes(networkMetadata);
+
+      // Guess the best label variable and set it
+      const allVars: Set<string> = new Set();
+      network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+
+      const bestLabelVar = [...allVars]
+        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+      commit.setLabelVariable(bestLabelVar);
     },
 
     releaseNodes(context) {

@@ -14,7 +14,7 @@ import store from '@/store';
 
 export default Vue.extend({
   props: {
-    graphStructure: {
+    network: {
       type: Object as PropType<Network | null>,
       default: null,
     },
@@ -49,12 +49,12 @@ export default Vue.extend({
   computed: {
     properties() {
       const {
-        graphStructure,
+        network,
         multiVariableList,
         linkVariableList,
       } = this;
       return {
-        graphStructure,
+        network,
         multiVariableList,
         linkVariableList,
       };
@@ -126,7 +126,7 @@ export default Vue.extend({
             .width - this.yAxisPadding - this.varPadding;
 
           // Get the data and generate the bins
-          if (this.graphStructure === null) {
+          if (this.network === null) {
             return;
           }
 
@@ -136,9 +136,9 @@ export default Vue.extend({
           // Process data for bars/histogram
           if (this.isQuantitative(attr, type)) {
             if (type === 'node') {
-              currentData = this.graphStructure.nodes.map((d: Node | Link) => parseFloat(d[attr]));
+              currentData = this.network.nodes.map((d: Node | Link) => parseFloat(d[attr]));
             } else {
-              currentData = this.graphStructure.edges.map((d: Node | Link) => parseFloat(d[attr]));
+              currentData = this.network.edges.map((d: Node | Link) => parseFloat(d[attr]));
             }
 
             const xScale = scaleLinear()
@@ -187,9 +187,9 @@ export default Vue.extend({
               .call(axisBottom(xScale).ticks(4, 's'));
           } else {
             if (type === 'node') {
-              currentData = this.graphStructure.nodes.map((d: Node | Link) => d[attr]).sort();
+              currentData = this.network.nodes.map((d: Node | Link) => d[attr]).sort();
             } else {
-              currentData = this.graphStructure.edges.map((d: Node | Link) => d[attr]).sort();
+              currentData = this.network.edges.map((d: Node | Link) => d[attr]).sort();
             }
 
             const bins = new Map([...new Set(currentData)].map(
@@ -252,8 +252,8 @@ export default Vue.extend({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let nodesOrLinks: any[];
 
-      if (this.graphStructure !== null) {
-        nodesOrLinks = type === 'node' ? this.graphStructure.nodes : this.graphStructure.edges;
+      if (this.network !== null) {
+        nodesOrLinks = type === 'node' ? this.network.nodes : this.network.edges;
         const uniqueValues = [...new Set(nodesOrLinks.map((element) => parseFloat(element[varName])))];
         return uniqueValues.length > 5;
       }
