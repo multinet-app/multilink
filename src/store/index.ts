@@ -579,9 +579,13 @@ const {
       const allVars: Set<string> = new Set();
       context.getters.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
+      // Remove _key from the search
+      allVars.delete('_key');
       const bestLabelVar = [...allVars]
         .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
-      commit.setLabelVariable(bestLabelVar);
+
+      // Use the label variable we found or _key if we didn't find one
+      commit.setLabelVariable(bestLabelVar || '_key');
     },
   },
 });
