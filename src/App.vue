@@ -41,7 +41,10 @@ export default {
     store.dispatch.fetchNetwork({
       workspaceName: workspace,
       networkName: graph,
-    }).then(() => store.dispatch.createProvenance());
+    }).then(() => {
+      store.dispatch.createProvenance();
+      store.dispatch.guessLabel();
+    });
 
     // Provenance vis boolean
     const showProvenanceVis = computed(() => store.getters.showProvenanceVis);

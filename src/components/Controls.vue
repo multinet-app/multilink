@@ -30,7 +30,7 @@ export default Vue.extend({
       if (this.graphStructure !== null) {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.graphStructure.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        this.graphStructure.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
