@@ -18,6 +18,7 @@ import {
 import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
+import { isInternalField } from '@/lib/typeUtils';
 
 Vue.use(Vuex);
 
@@ -43,7 +44,7 @@ const {
     displayCharts: false,
     markerSize: 50,
     fontSize: 12,
-    labelVariable: '_key',
+    labelVariable: undefined,
     selectNeighbors: true,
     nestedVariables: {
       bar: [],
@@ -307,7 +308,7 @@ const {
       }
     },
 
-    setLabelVariable(state, labelVariable: string) {
+    setLabelVariable(state, labelVariable: string | undefined) {
       state.labelVariable = labelVariable;
 
       if (state.provenance !== null) {
@@ -484,6 +485,14 @@ const {
 
       commit.setNetworkMetadata(networkMetadata);
       commit.setColumnTypes(networkMetadata);
+
+      // Guess the best label variable and set it
+      const allVars: Set<string> = new Set();
+      network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+
+      const bestLabelVar = [...allVars]
+        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+      commit.setLabelVariable(bestLabelVar);
     },
 
     releaseNodes(context) {
@@ -569,6 +578,22 @@ const {
           commit.startSimulation();
         }
       }
+    },
+
+    guessLabel(context) {
+      const { commit } = rootActionContext(context);
+
+      // Guess the best label variable and set it
+      const allVars: Set<string> = new Set();
+      context.getters.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+
+      // Remove _key from the search
+      allVars.delete('_key');
+      const bestLabelVar = [...allVars]
+        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+
+      // Use the label variable we found or _key if we didn't find one
+      commit.setLabelVariable(bestLabelVar || '_key');
     },
   },
 });

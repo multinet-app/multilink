@@ -72,7 +72,7 @@ export interface State {
   displayCharts: boolean;
   markerSize: number;
   fontSize: number;
-  labelVariable: string;
+  labelVariable: string | undefined;
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
   linkVariables: LinkStyleVariables;
@@ -108,3 +108,6 @@ export type ProvenanceEventTypes =
   'Set Node Size Variable' |
   'Set Select Neighbors'|
   'Set Directional Edges';
+
+export const internalFieldNames = ['_from', '_to', '_id', '_rev'] as const;
+export type InternalField = (typeof internalFieldNames)[number];

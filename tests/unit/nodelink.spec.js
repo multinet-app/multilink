@@ -12,7 +12,7 @@ describe('Node-Link Utils', () => {
     beforeEach(() => {
       wrapper = mount(MultiLink, {
         propsData: {
-          graphStructure: { nodes: [], links: [{ source: { x: 100, y: 150 }, target: { x: 400, y: 450 } }] },
+          network: { nodes: [], links: [{ source: { x: 100, y: 150 }, target: { x: 400, y: 450 } }] },
           app: App,
         },
       });
@@ -29,7 +29,7 @@ describe('Node-Link Utils', () => {
     it('A straight arc returns the expected path', () => {
       // Arrange
       wrapper.vm.straightEdges = true;
-      const link = wrapper.vm.graphStructure.links[0];
+      const link = wrapper.vm.network.links[0];
 
       // Act
       const arc = wrapper.vm.arcPath(true, link, false);
@@ -41,7 +41,7 @@ describe('Node-Link Utils', () => {
     it('A curved arc returns the expected path', () => {
       // Arrange
       wrapper.vm.straightEdges = false;
-      const link = wrapper.vm.graphStructure.links[0];
+      const link = wrapper.vm.network.links[0];
       const dx = link.source.x - link.target.x;
       const dy = link.source.y - link.target.y;
       const dr = Math.sqrt(dx * dx + dy * dy);
