@@ -4,8 +4,7 @@ import { createAction } from '@visdesignlab/trrack';
 export function updateProvenanceState(vuexState: State, label: ProvenanceEventTypes) {
   /* eslint-disable no-param-reassign */
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const stateUpdateActions = createAction<State, any[], ProvenanceEventTypes>((provState, newProvState) => {
+  const stateUpdateActions = createAction<State, State[], ProvenanceEventTypes>((provState, newProvState) => {
     if (label === 'Select Node(s)' || label === 'De-select Node' || label === 'Clear Selection') {
       // TODO: #148 remove cast back to set
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
