@@ -5,9 +5,7 @@ import AboutDialog from '@/components/AboutDialog.vue';
 import LoginMenu from '@/components/LoginMenu.vue';
 
 import store from '@/store';
-import {
-  Node, Link, Network, internalFieldNames,
-} from '@/types';
+import { Node, Network, internalFieldNames } from '@/types';
 import { forceCollide, forceManyBody } from 'd3-force';
 
 export default Vue.extend({
@@ -40,22 +38,6 @@ export default Vue.extend({
         allVars.delete('x');
         allVars.delete('y');
         allVars.delete('index');
-        return allVars;
-      }
-      return new Set();
-    },
-
-    linkVariableList(): Set<string | null> {
-      if (this.network !== null) {
-        // Loop through all links, flatten the 2d array, and turn it into a set
-        const allVars: Set<string> = new Set();
-        this.network.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
-
-        internalFieldNames.forEach((field) => allVars.delete(field));
-        allVars.delete('source');
-        allVars.delete('target');
-        allVars.delete('index');
-
         return allVars;
       }
       return new Set();
@@ -125,6 +107,10 @@ export default Vue.extend({
 
     network(): Network | null {
       return store.getters.network;
+    },
+
+    networkMetadata() {
+      return store.getters.networkMetadata;
     },
 
     autocompleteItems(): string[] {
@@ -465,16 +451,7 @@ export default Vue.extend({
         <v-subheader class="grey darken-3 py-0 white--text">
           Legend
         </v-subheader>
-        <Legend
-          v-if="network !== null"
-          ref="legend"
-          class="mt-4"
-          v-bind="{
-            network,
-            multiVariableList,
-            linkVariableList,
-          }"
-        />
+        <Legend v-if="networkMetadata !== null" />
       </v-list>
     </v-navigation-drawer>
   </div>
