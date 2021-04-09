@@ -352,6 +352,12 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
+
+      if (state.network !== null) {
+        const values = state.network.edges.map((d) => parseFloat(d[state.linkVariables.width])) || [];
+        const domain = [Math.min(...values), Math.max(...values)];
+        state.linkWidthScale.domain(domain);
+      }
     },
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
@@ -364,12 +370,6 @@ const {
 
     addAttributeRange(state, attributeRange: { attr: string; min: number; max: number; binLabels: string[]; binValues: number[] }) {
       state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
-    },
-
-    updateLinkWidthDomain(state, domain: number[]) {
-      if (domain.length === 2) {
-        state.linkWidthScale.domain(domain).range([1, 20]);
-      }
     },
 
     setProvenance(state, provenance: Provenance<State, ProvenanceEventTypes, unknown>) {
