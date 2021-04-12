@@ -450,6 +450,17 @@ export default Vue.extend({
 
         <v-subheader class="grey darken-3 py-0 white--text">
           Legend
+
+          <v-spacer />
+
+          <v-switch
+            v-model="displayCharts"
+            append-icon="mdi-chart-bar"
+            class="mr-0"
+            dense
+            dark
+            color="blue darken-1"
+          />
         </v-subheader>
         <Legend v-if="networkMetadata !== null" />
       </v-list>
