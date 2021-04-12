@@ -276,6 +276,7 @@ export default Vue.extend({
             <v-card
               flat
               color="grey darken-3"
+              class="pb-4 pt-2"
             >
               <v-list-item>
                 <v-select
@@ -373,7 +374,11 @@ export default Vue.extend({
           </v-tab-item>
 
           <v-tab-item>
-            <v-card flat>
+            <v-card
+              flat
+              color="grey darken-3"
+              class="pb-4 pt-2"
+            >
               <v-card-subtitle class="pb-0">
                 Marker Size
               </v-card-subtitle>
