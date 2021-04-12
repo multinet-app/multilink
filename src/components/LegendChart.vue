@@ -249,13 +249,16 @@ export default defineComponent({
     >
       <div
         :id="`drag-${varName}`"
-        class="px-2 grey lighten-3"
+        class="pl-2 grey lighten-3"
         draggable
         @dragstart="dragStart"
       >
         {{ varName }}
-        <v-icon class="icon">
-          mdi-drag
+        <v-icon
+          small
+          class="icon"
+        >
+          mdi-drag-vertical
         </v-icon>
       </div>
 
@@ -275,6 +278,8 @@ export default defineComponent({
 }
 
 .icon {
+  padding-top: 6px;
+  padding-right: 4px;
   margin-right: 0;
   float: right;
 }
