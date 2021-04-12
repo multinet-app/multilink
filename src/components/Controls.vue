@@ -321,6 +321,54 @@ export default Vue.extend({
                   />
                 </v-list-item-action>
               </v-list-item>
+
+              <v-row class="px-4">
+                <v-col class="pt-0">
+                  <v-btn
+                    color="grey darken-2"
+                    depressed
+                    small
+                    @click="releaseNodes"
+                  >
+                    <v-icon
+                      left
+                      small
+                    >
+                      mdi-pin-off
+                    </v-icon>
+                    Release
+                  </v-btn>
+                </v-col>
+                <v-spacer />
+                <v-col class="pt-0">
+                  <v-btn
+                    color="primary"
+                    depressed
+                    small
+                    width="75"
+                    @click="simulationRunning ? stopSimulation() : startSimulation()"
+                  >
+                    <v-icon
+                      left
+                      small
+                    >
+                      {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
+                    </v-icon>
+                    {{ simulationRunning ? 'Stop' : 'Start' }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+              <v-list-item>
+                <v-btn
+                  color="primary"
+                  block
+                  depressed
+                  @click="toggleProvVis"
+                >
+                  Provenance Vis
+                </v-btn>
+              </v-list-item>
             </v-card>
           </v-tab-item>
 
@@ -370,6 +418,17 @@ export default Vue.extend({
                 color="blue darken-1"
                 @change="(value) => updateSliderProv(linkLength, 'linkLength')"
               />
+
+              <v-list-item>
+                <v-btn
+                  block
+                  color="grey darken-2 white--text"
+                  depressed
+                  @click="exportNetwork"
+                >
+                  Export Network
+                </v-btn>
+              </v-list-item>
             </v-card>
           </v-tab-item>
         </v-tabs-items>
@@ -388,67 +447,6 @@ export default Vue.extend({
               dense
               @input="search"
             />
-          </v-list-item>
-
-          <v-row>
-            <v-col class="pt-0">
-              <v-btn
-                color="grey darken-3"
-                depressed
-                text
-                small
-                @click="releaseNodes"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  mdi-pin-off
-                </v-icon>
-                Release
-              </v-btn>
-            </v-col>
-            <v-spacer />
-            <v-col class="pt-0">
-              <v-btn
-                color="primary"
-                depressed
-                small
-                width="75"
-                @click="simulationRunning ? stopSimulation() : startSimulation()"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
-                </v-icon>
-                {{ simulationRunning ? 'Stop' : 'Start' }}
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-list-item class="px-0">
-            <v-btn
-              block
-              class="ml-0"
-              color="grey darken-3 white--text"
-              depressed
-              @click="exportNetwork"
-            >
-              Export Network
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item class="px-0">
-            <v-btn
-              color="primary"
-              block
-              depressed
-              @click="toggleProvVis"
-            >
-              Provenance Vis
-            </v-btn>
           </v-list-item>
         </div>
 
