@@ -1,7 +1,7 @@
 import { Provenance } from '@visdesignlab/trrack';
 import { Simulation } from 'd3-force';
 import { ScaleLinear, ScaleOrdinal, ScaleSequential } from 'd3-scale';
-import { TableRow, TableMetadata } from 'multinet';
+import { TableRow, TableMetadata, UserSpec } from 'multinet';
 
 export interface Dimensions {
   height: number;
@@ -94,6 +94,7 @@ export interface State {
     top: number;
     left: number;
   };
+  userInfo: UserSpec | null;
 }
 
 export type ProvenanceEventTypes =

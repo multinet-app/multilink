@@ -10,7 +10,7 @@ import {
 } from '@/types';
 import api from '@/api';
 import {
-  GraphSpec, RowsSpec, TableMetadata, TableRow,
+  GraphSpec, RowsSpec, TableMetadata, TableRow, UserSpec,
 } from 'multinet';
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
@@ -71,6 +71,7 @@ const {
       top: 0,
       left: 0,
     },
+    userInfo: null,
   } as State,
 
   getters: {
@@ -198,6 +199,10 @@ const {
 
     rightClickMenu(state: State) {
       return state.rightClickMenu;
+    },
+
+    userInfo(state: State) {
+      return state.userInfo;
     },
   },
   mutations: {
@@ -392,6 +397,10 @@ const {
     updateRightClickMenu(state: State, payload: { show: boolean; top: number; left: number }) {
       state.rightClickMenu = payload;
     },
+
+    setUserInfo(state, userInfo: UserSpec | null) {
+      state.userInfo = userInfo;
+    },
   },
   actions: {
     async fetchNetwork(context, { workspaceName, networkName }) {
@@ -493,6 +502,21 @@ const {
       const bestLabelVar = [...allVars]
         .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
       commit.setLabelVariable(bestLabelVar);
+    },
+
+    async fetchUserInfo(context) {
+      const { commit } = rootActionContext(context);
+
+      const info = await api.userInfo();
+      commit.setUserInfo(info);
+    },
+
+    async logout(context) {
+      const { commit } = rootActionContext(context);
+
+      // Perform the server logout.
+      await api.logout();
+      commit.setUserInfo(null);
     },
 
     releaseNodes(context) {
