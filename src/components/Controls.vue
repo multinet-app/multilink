@@ -1,6 +1,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import Legend from '@/components/Legend.vue';
+import AboutDialog from '@/components/AboutDialog.vue';
+import LoginMenu from '@/components/LoginMenu.vue';
 
 import store from '@/store';
 import {
@@ -11,6 +13,8 @@ import { forceCollide, forceManyBody } from 'd3-force';
 export default Vue.extend({
   components: {
     Legend,
+    AboutDialog,
+    LoginMenu,
   },
 
   data() {
@@ -223,11 +227,14 @@ export default Vue.extend({
               <v-col class="text-left">
                 MultiLink
               </v-col>
+              <v-col class="pa-0">
+                <about-dialog />
+              </v-col>
             </v-row>
           </div>
         </v-toolbar-title>
         <v-spacer />
-        <!-- login-menu / -->
+        <login-menu />
       </v-toolbar>
 
       <!-- control panel content -->
