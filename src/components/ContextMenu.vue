@@ -157,16 +157,19 @@ export default {
                 <v-list-item-content>
                   <v-menu
                     offset-x
+                    :disabled="numericVariables.length === 0"
                   >
                     <template #activator="{ on, attrs }">
                       <v-list-item-title
                         v-bind="attrs"
+                        :class="numericVariables.length === 0 ? 'grey--text text--lighten-1' : ''"
                         v-on="on"
                       >
                         Numerical Variable
                         <v-icon
                           dense
                           right
+                          :color="numericVariables.length === 0 ? 'grey lighten-1' : ''"
                         >
                           mdi-chevron-right
                         </v-icon>
