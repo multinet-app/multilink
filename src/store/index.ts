@@ -442,6 +442,12 @@ const {
     },
 
     applyNumericLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; firstLayout: boolean }) {
+      // Set node size smaller
+      store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+      // Clear the label variable
+      store.commit.setLabelVariable(undefined);
+
       store.commit.stopSimulation();
 
       if (state.network !== null) {
@@ -462,12 +468,6 @@ const {
             node[otherAxis] = otherSvgDimension / 2;
           }
         });
-
-        // Set node size smaller
-        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
-
-        // Clear the label variable
-        store.commit.setLabelVariable('');
       }
     },
 
