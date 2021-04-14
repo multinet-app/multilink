@@ -13,6 +13,17 @@ export default {
 
       const numericColumnsSet = new Set(numericColumns);
       numericColumnsSet.delete('');
+
+      numericColumnsSet.forEach((column) => {
+        if (
+          store.getters.network !== null
+          && store.getters.network.nodes[0] !== null
+          && store.getters.network.nodes[0][column] === undefined
+        ) {
+          numericColumnsSet.delete(column);
+        }
+      });
+
       return [...numericColumnsSet].sort();
     });
 
