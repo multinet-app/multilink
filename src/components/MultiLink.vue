@@ -13,6 +13,7 @@ import {
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
+import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 
 export default Vue.extend({
   components: {
@@ -170,7 +171,12 @@ export default Vue.extend({
       const { height } = this.$vuetify.breakpoint;
       const width = this.$vuetify.breakpoint.width - this.controlsWidth;
 
-      store.dispatch.updateSimulationForce({ forceType: 'center', forceValue: forceCenter<Node>(width / 2, height / 2), restart: false });
+      applyForceToSimulation(
+        store.getters.simulation,
+        'center',
+        forceCenter<Node>(width / 2, height / 2),
+      );
+      store.commit.startSimulation();
 
       return {
         height,
