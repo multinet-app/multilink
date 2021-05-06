@@ -7,25 +7,10 @@ export default {
     const rightClickMenu = computed(() => store.getters.rightClickMenu);
     const selectedNodes = computed(() => store.getters.selectedNodes);
     const network = computed(() => store.getters.network);
-    const numericVariables = computed(() => {
-      const numericColumns = Object.entries(store.getters.columnTypes)
-        .map(([key, value]) => (value === 'number' ? key : ''));
-
-      const numericColumnsSet = new Set(numericColumns);
-      numericColumnsSet.delete('');
-
-      numericColumnsSet.forEach((column) => {
-        if (
-          store.getters.network !== null
-          && store.getters.network.nodes[0] !== null
-          && store.getters.network.nodes[0][column] === undefined
-        ) {
-          numericColumnsSet.delete(column);
-        }
-      });
-
-      return [...numericColumnsSet].sort();
-    });
+    const numericVariables = computed(() => Object.entries(store.getters.columnTypes)
+      .filter(([, value]) => value === 'number')
+      .map(([key]) => key)
+      .sort());
 
     function clearSelection() {
       store.commit.setSelected(new Set());
@@ -140,7 +125,7 @@ export default {
                 v-bind="attrs"
                 v-on="on"
               >
-                Layout By
+                Lay Out By
                 <v-icon
                   dense
                   right
