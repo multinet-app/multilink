@@ -10,6 +10,12 @@ export default {
     const numericVariables = computed(() => Object.entries(store.getters.columnTypes)
       .filter(([, value]) => value === 'number')
       .map(([key]) => key)
+      .filter((key) => {
+        if (network.value !== null) {
+          return network.value.nodes[0][key] !== undefined;
+        }
+        return true;
+      })
       .sort());
 
     function clearSelection() {
