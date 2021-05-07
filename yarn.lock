@@ -3489,10 +3489,21 @@
     typedoc "^0.19.2"
     typestyle "^2.0.4"
 
+"@visdesignlab/trrack@^2.0.0-alpha.10":
+  version "2.0.0-alpha.10"
+  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.10.tgz#2a716700cece24d12927411d563d5b60d84622b0"
+  integrity sha512-X0xp7Fco8dsY98ExjSvRl2sJmdv5zswGFJejghsL3LF8Dn+Yt18uvXI0+uIk6LnPUiSU0thSkSnBiAGp9e4xSw==
+  dependencies:
+    "@types/deep-diff" "^1.0.0"
+    deep-diff "^1.0.2"
+    firebase "^7.15.5"
+    lz-string "^1.4.4"
+    mobx "^6.0.1"
+
 "@visdesignlab/trrack@^2.0.0-alpha.7":
-  version "2.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.7.tgz#90d6931caafd90b641f07532590c15bb97330389"
-  integrity sha512-zSCiX1PMvDCWuATjyvuhj6ef8QtZYPWsuqwH5/MU+vmkHSaqhLjZzBWB8e17Btp8bXByQCCSl8dqiKO0JzC89A==
+  version "2.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.9.tgz#735a99f7c714705795168a7519b663f883359224"
+  integrity sha512-96evURyxuHRyrXxffOAz6Qp36Lmen7uq1psRSU+QLPP3gZnRMJ+SCoa+xT0Cbip+P6RuH8RmdZK7SsEVu6I2jg==
   dependencies:
     "@types/deep-diff" "^1.0.0"
     deep-diff "^1.0.2"

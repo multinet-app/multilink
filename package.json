@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@types/d3": "^5.7.2",
-    "@visdesignlab/trrack": "^2.0.0-alpha.7",
+    "@visdesignlab/trrack": "^2.0.0-alpha.10",
     "@visdesignlab/trrack-vis": "^2.0.0-alpha.9",
     "@vue/composition-api": "^1.0.0-beta.22",
     "core-js": "^3.4.3",
