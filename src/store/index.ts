@@ -457,7 +457,8 @@ const {
           .domain([range.min, range.max])
           .range([0, axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height]);
 
-        state.network.nodes.forEach((node) => {
+        const newNodes = state.network.nodes.map((oldNode) => {
+          const node = { ...oldNode };
           // eslint-disable-next-line no-param-reassign
           node[axis] = positionScale(node[varName]);
           // eslint-disable-next-line no-param-reassign
@@ -471,6 +472,13 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${otherAxis}`] = otherSvgDimension / 2;
           }
+
+          return node;
+        });
+
+        store.commit.setNetwork({
+          nodes: newNodes,
+          edges: state.network.edges,
         });
       }
     },
