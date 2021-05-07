@@ -508,7 +508,7 @@ const {
       const storeState = context.state;
 
       const stateForProv = JSON.parse(JSON.stringify(context.state));
-      stateForProv.selectedNodes = [];
+      stateForProv.selectedNodes = new Set<string>();
 
       commit.setProvenance(initProvenance<State, ProvenanceEventTypes, unknown>(
         stateForProv,
@@ -521,8 +521,7 @@ const {
         () => {
           const provenanceState = context.state.provenance.state;
 
-          // TODO: #148 remove cast back to set
-          const selectedNodes = new Set<string>(provenanceState.selectedNodes);
+          const { selectedNodes } = provenanceState;
 
           // Helper function
           const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
