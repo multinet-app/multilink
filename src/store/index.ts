@@ -460,12 +460,16 @@ const {
         state.network.nodes.forEach((node) => {
           // eslint-disable-next-line no-param-reassign
           node[axis] = positionScale(node[varName]);
+          // eslint-disable-next-line no-param-reassign
+          node[`f${axis}`] = positionScale(node[varName]);
 
           if (firstLayout) {
             const otherAxis = axis === 'x' ? 'y' : 'x';
             const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
             // eslint-disable-next-line no-param-reassign
             node[otherAxis] = otherSvgDimension / 2;
+            // eslint-disable-next-line no-param-reassign
+            node[`f${otherAxis}`] = otherSvgDimension / 2;
           }
         });
       }
