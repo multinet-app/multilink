@@ -42,7 +42,7 @@ export default Vue.extend({
 
   computed: {
     network() {
-      return store.getters.network;
+      return store.state.network;
     },
 
     simulationLinks(): SimulationLink[] | null {
@@ -60,7 +60,7 @@ export default Vue.extend({
     },
 
     selectedNodes() {
-      return store.getters.selectedNodes;
+      return store.state.selectedNodes;
     },
 
     oneHop() {
@@ -81,11 +81,11 @@ export default Vue.extend({
     },
 
     nodeBarColorScale() {
-      return store.getters.nodeBarColorScale;
+      return store.state.nodeBarColorScale;
     },
 
     nodeGlyphColorScale() {
-      return store.getters.nodeGlyphColorScale;
+      return store.state.nodeGlyphColorScale;
     },
 
     tooltipStyle(): string {
@@ -111,43 +111,43 @@ export default Vue.extend({
     },
 
     displayCharts() {
-      return store.getters.displayCharts;
+      return store.state.displayCharts;
     },
 
     markerSize() {
-      return store.getters.markerSize || 0;
+      return store.state.markerSize || 0;
     },
 
     fontSize() {
-      return store.getters.fontSize || 0;
+      return store.state.fontSize || 0;
     },
 
     labelVariable() {
-      return store.getters.labelVariable;
+      return store.state.labelVariable;
     },
 
     nodeColorVariable() {
-      return store.getters.nodeColorVariable;
+      return store.state.nodeColorVariable;
     },
 
     selectNeighbors() {
-      return store.getters.selectNeighbors;
+      return store.state.selectNeighbors;
     },
 
     nestedVariables(): {bar: string[]; glyph: string[]} {
-      return store.getters.nestedVariables;
+      return store.state.nestedVariables;
     },
 
     linkVariables() {
-      return store.getters.linkVariables;
+      return store.state.linkVariables;
     },
 
     nodeSizeVariable() {
-      return store.getters.nodeSizeVariable;
+      return store.state.nodeSizeVariable;
     },
 
     attributeRanges() {
-      return store.getters.attributeRanges;
+      return store.state.attributeRanges;
     },
 
     attributeScales() {
@@ -164,7 +164,7 @@ export default Vue.extend({
     },
 
     linkWidthScale() {
-      return store.getters.linkWidthScale;
+      return store.state.linkWidthScale;
     },
 
     svgDimensions(): Dimensions {
@@ -172,7 +172,7 @@ export default Vue.extend({
       const width = this.$vuetify.breakpoint.width - this.controlsWidth;
 
       applyForceToSimulation(
-        store.getters.simulation,
+        store.state.simulation,
         'center',
         forceCenter<Node>(width / 2, height / 2),
       );
@@ -189,11 +189,11 @@ export default Vue.extend({
     },
 
     directionalEdges() {
-      return store.getters.directionalEdges;
+      return store.state.directionalEdges;
     },
 
     controlsWidth(): number {
-      return store.getters.controlsWidth;
+      return store.state.controlsWidth;
     },
 
     nodeSizeScale(): ScaleLinear<number, number> | null {

@@ -4,10 +4,10 @@ import { computed, ref, watchEffect } from '@vue/composition-api';
 
 export default {
   setup() {
-    const rightClickMenu = computed(() => store.getters.rightClickMenu);
-    const selectedNodes = computed(() => store.getters.selectedNodes);
-    const network = computed(() => store.getters.network);
-    const numericVariables = computed(() => Object.entries(store.getters.columnTypes)
+    const rightClickMenu = computed(() => store.state.rightClickMenu);
+    const selectedNodes = computed(() => store.state.selectedNodes);
+    const network = computed(() => store.state.network);
+    const numericVariables = computed(() => Object.entries(store.state.columnTypes)
       .filter(([, value]) => value === 'number')
       .map(([key]) => key)
       .filter((key) => {
@@ -52,7 +52,7 @@ export default {
     // If so, we won't want to reset the "other axis" to a constant value
     const firstLayout = ref(true);
     watchEffect(() => {
-      if (store.getters.simulationRunning && !firstLayout.value) {
+      if (store.state.simulationRunning && !firstLayout.value) {
         firstLayout.value = true;
       }
     });

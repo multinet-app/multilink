@@ -9,7 +9,7 @@ export default {
   name: 'Alert',
 
   setup() {
-    const loadError = computed(() => store.getters.loadError);
+    const loadError = computed(() => store.state.loadError);
 
     // Vars to store the selected choices in
     const workspace: Ref<string | null> = ref(null);
