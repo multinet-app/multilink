@@ -6,9 +6,7 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
 
   const stateUpdateActions = createAction<State, State[], ProvenanceEventTypes>((provState, newProvState) => {
     if (label === 'Select Node(s)' || label === 'De-select Node' || label === 'Clear Selection') {
-      // TODO: #148 remove cast back to set
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      provState.selectedNodes = [...newProvState.selectedNodes] as any;
+      provState.selectedNodes = newProvState.selectedNodes;
     } else if (label === 'Set Display Charts') {
       provState.displayCharts = newProvState.displayCharts;
     } else if (label === 'Set Marker Size') {
@@ -25,6 +23,8 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.selectNeighbors = newProvState.selectNeighbors;
     } else if (label === 'Set Directional Edges') {
       provState.directionalEdges = newProvState.directionalEdges;
+    } else if (label === 'Set Link Length') {
+      provState.linkLength = newProvState.linkLength;
     }
 
     /* eslint-enable no-param-reassign */

@@ -33,9 +33,9 @@ export default defineComponent({
     const yAxisPadding = 30;
     const svgHeight = 50;
 
-    const network = computed(() => store.getters.network);
-    const columnTypes = computed(() => store.getters.columnTypes);
-    const nodeGlyphColorScale = computed(() => store.getters.nodeGlyphColorScale);
+    const network = computed(() => store.state.network);
+    const columnTypes = computed(() => store.state.columnTypes);
+    const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
 
     // TODO: https://github.com/multinet-app/multilink/issues/176
     // use table name for var selection
@@ -72,11 +72,11 @@ export default defineComponent({
         if (props.mappedTo === 'width') {
           store.commit.setLinkVariables({
             width: '',
-            color: store.getters.linkVariables.color,
+            color: store.state.linkVariables.color,
           });
         } else if (props.mappedTo === 'color') {
           store.commit.setLinkVariables({
-            width: store.getters.linkVariables.width,
+            width: store.state.linkVariables.width,
             color: '',
           });
         }

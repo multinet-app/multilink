@@ -6,7 +6,6 @@ import LoginMenu from '@/components/LoginMenu.vue';
 
 import store from '@/store';
 import { Node, Network, internalFieldNames } from '@/types';
-import { forceCollide, forceManyBody } from 'd3-force';
 
 export default Vue.extend({
   components: {
@@ -19,7 +18,6 @@ export default Vue.extend({
     return {
       searchTerm: '' as string,
       searchErrors: [] as string[],
-      linkLength: '50',
       showTabs: false,
       tab: undefined,
     };
@@ -45,7 +43,7 @@ export default Vue.extend({
 
     displayCharts: {
       get() {
-        return store.getters.displayCharts;
+        return store.state.displayCharts;
       },
       set(value: boolean) {
         return store.commit.setDisplayCharts(value);
@@ -54,7 +52,7 @@ export default Vue.extend({
 
     markerSize: {
       get() {
-        return store.getters.markerSize || 0;
+        return store.state.markerSize || 0;
       },
       set(value: number) {
         store.commit.setMarkerSize({ markerSize: value, updateProv: false });
@@ -63,7 +61,7 @@ export default Vue.extend({
 
     fontSize: {
       get() {
-        return store.getters.fontSize || 0;
+        return store.state.fontSize || 0;
       },
       set(value: number) {
         store.commit.setFontSize({ fontSize: value, updateProv: false });
@@ -72,7 +70,7 @@ export default Vue.extend({
 
     labelVariable: {
       get(): string | undefined {
-        return store.getters.labelVariable;
+        return store.state.labelVariable;
       },
       set(value: string) {
         store.commit.setLabelVariable(value);
@@ -81,7 +79,7 @@ export default Vue.extend({
 
     selectNeighbors: {
       get() {
-        return store.getters.selectNeighbors;
+        return store.state.selectNeighbors;
       },
       set(value: boolean) {
         store.commit.setSelectNeighbors(value);
@@ -90,27 +88,36 @@ export default Vue.extend({
 
     directionalEdges: {
       get() {
-        return store.getters.directionalEdges;
+        return store.state.directionalEdges;
       },
       set(value: boolean) {
         store.commit.setDirectionalEdges(value);
       },
     },
 
+    linkLength: {
+      get() {
+        return store.state.linkLength;
+      },
+      set(value: number) {
+        store.commit.setLinkLength({ linkLength: value, updateProv: false });
+      },
+    },
+
     controlsWidth(): number {
-      return store.getters.controlsWidth;
+      return store.state.controlsWidth;
     },
 
     simulationRunning() {
-      return store.getters.simulationRunning;
+      return store.state.simulationRunning;
     },
 
     network(): Network | null {
-      return store.getters.network;
+      return store.state.network;
     },
 
     networkMetadata() {
-      return store.getters.networkMetadata;
+      return store.state.networkMetadata;
     },
 
     autocompleteItems(): string[] {
@@ -142,7 +149,7 @@ export default Vue.extend({
           { type: 'text/json' },
         ),
       );
-      a.download = `${store.getters.networkName || 'unknown_network'}.json`;
+      a.download = `${store.state.networkName || 'unknown_network'}.json`;
       a.click();
     },
 
@@ -166,14 +173,10 @@ export default Vue.extend({
     updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
-        store.dispatch.updateSimulationForce({ forceType: 'collision', forceValue: forceCollide((this.markerSize / 2) * 1.5), restart: true });
       } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
       } else if (type === 'linkLength') {
-        // Scale value to between -500, 0
-        const newLinkLength = (value * -5);
-
-        store.dispatch.updateSimulationForce({ forceType: 'charge', forceValue: forceManyBody<Node>().strength(newLinkLength), restart: true });
+        store.commit.setLinkLength({ linkLength: value, updateProv: true });
       }
     },
 

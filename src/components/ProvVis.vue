@@ -9,7 +9,7 @@ import { Provenance } from '@visdesignlab/trrack';
 export default Vue.extend({
   setup() {
     const provenance: ComputedRef<Provenance<State, ProvenanceEventTypes, unknown> | null> = computed(
-      () => store.getters.provenance,
+      () => store.state.provenance,
     );
 
     onMounted(() => {

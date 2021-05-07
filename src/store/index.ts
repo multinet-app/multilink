@@ -1,12 +1,12 @@
 import Vue from 'vue';
-import Vuex, { Store } from 'vuex';
+import Vuex from 'vuex';
 import { createDirectStore } from 'direct-vuex';
 import {
-  ForceCenter, ForceCollide, ForceLink, ForceManyBody, Simulation,
+  forceCollide, forceManyBody, Simulation,
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions,
 } from '@/types';
 import api from '@/api';
 import {
@@ -19,6 +19,7 @@ import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
+import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 
 Vue.use(Vuex);
 
@@ -72,94 +73,15 @@ const {
       left: 0,
     },
     userInfo: null,
+    linkLength: 50,
+    svgDimensions: {
+      height: 0,
+      width: 0,
+    },
   } as State,
 
   getters: {
-    workspaceName(state: State) {
-      return state.workspaceName;
-    },
-
-    networkName(state: State) {
-      return state.networkName;
-    },
-
-    network(state: State) {
-      return state.network;
-    },
-
-    networkMetadata(state: State) {
-      return state.networkMetadata;
-    },
-
-    columnTypes(state: State) {
-      return state.columnTypes;
-    },
-
-    selectedNodes(state: State) {
-      return state.selectedNodes;
-    },
-
-    loadError(state: State) {
-      return state.loadError;
-    },
-
-    simulation(state: State) {
-      return state.simulation;
-    },
-
-    displayCharts(state: State) {
-      return state.displayCharts;
-    },
-
-    markerSize(state: State) {
-      return state.markerSize;
-    },
-
-    fontSize(state: State) {
-      return state.fontSize;
-    },
-
-    labelVariable(state: State) {
-      return state.labelVariable;
-    },
-
-    nodeColorVariable(state: State) {
-      return state.nodeColorVariable;
-    },
-
-    selectNeighbors(state: State) {
-      return state.selectNeighbors;
-    },
-
-    nestedVariables(state: State) {
-      return state.nestedVariables;
-    },
-
-    linkVariables(state: State) {
-      return state.linkVariables;
-    },
-
-    nodeSizeVariable(state: State) {
-      return state.nodeSizeVariable;
-    },
-
-    attributeRanges(state: State) {
-      return state.attributeRanges;
-    },
-
-    nodeBarColorScale(state: State) {
-      return state.nodeBarColorScale;
-    },
-
-    nodeGlyphColorScale(state: State) {
-      return state.nodeBarColorScale;
-    },
-
-    linkWidthScale(state: State) {
-      return state.linkWidthScale;
-    },
-
-    linkColorScale(state: State) {
+    linkColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
         let minLinkValue = 0;
         let maxLinkValue = 1;
@@ -175,34 +97,6 @@ const {
       }
 
       return scaleOrdinal(schemeCategory10);
-    },
-
-    directionalEdges(state: State) {
-      return state.directionalEdges;
-    },
-
-    controlsWidth(state: State) {
-      return state.controlsWidth;
-    },
-
-    provenance(state: State) {
-      return state.provenance;
-    },
-
-    simulationRunning(state: State) {
-      return state.simulationRunning;
-    },
-
-    showProvenanceVis(state: State) {
-      return state.showProvenanceVis;
-    },
-
-    rightClickMenu(state: State) {
-      return state.rightClickMenu;
-    },
-
-    userInfo(state: State) {
-      return state.userInfo;
     },
   },
   mutations: {
@@ -298,9 +192,18 @@ const {
     },
 
     setMarkerSize(state, payload: { markerSize: number; updateProv: boolean }) {
-      state.markerSize = payload.markerSize;
+      const { markerSize, updateProv } = payload;
+      state.markerSize = markerSize;
 
-      if (state.provenance !== null && payload.updateProv) {
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        state.simulation,
+        'collision',
+        forceCollide((markerSize / 2) * 1.5),
+      );
+      store.commit.startSimulation();
+
+      if (state.provenance !== null && updateProv) {
         updateProvenanceState(state, 'Set Marker Size');
       }
     },
@@ -384,22 +287,88 @@ const {
       }
     },
 
+    setLinkLength(state, payload: { linkLength: number; updateProv: boolean }) {
+      const { linkLength, updateProv } = payload;
+      state.linkLength = linkLength;
+
+      // Scale value to between -500, 0 for d3
+      const linkLengthForce = (linkLength * -5);
+
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        state.simulation,
+        'charge',
+        forceManyBody<Node>().strength(linkLengthForce),
+      );
+      store.commit.startSimulation();
+
+      if (state.provenance !== null && updateProv) {
+        updateProvenanceState(state, 'Set Link Length');
+      }
+    },
+
     goToProvenanceNode(state, node: string) {
       if (state.provenance !== null) {
         state.provenance.goToNode(node);
       }
     },
 
-    toggleShowProvenanceVis(state: State) {
+    toggleShowProvenanceVis(state) {
       state.showProvenanceVis = !state.showProvenanceVis;
     },
 
-    updateRightClickMenu(state: State, payload: { show: boolean; top: number; left: number }) {
+    updateRightClickMenu(state, payload: { show: boolean; top: number; left: number }) {
       state.rightClickMenu = payload;
     },
 
     setUserInfo(state, userInfo: UserSpec | null) {
       state.userInfo = userInfo;
+    },
+
+    applyNumericLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; firstLayout: boolean }) {
+      // Set node size smaller
+      store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+      // Clear the label variable
+      store.commit.setLabelVariable(undefined);
+
+      store.commit.stopSimulation();
+
+      if (state.network !== null) {
+        const { varName, axis, firstLayout } = payload;
+        const range = state.attributeRanges[varName];
+        const positionScale = scaleLinear()
+          .domain([range.min, range.max])
+          .range([0, axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height]);
+
+        const newNodes = state.network.nodes.map((oldNode) => {
+          const node = { ...oldNode };
+          // eslint-disable-next-line no-param-reassign
+          node[axis] = positionScale(node[varName]);
+          // eslint-disable-next-line no-param-reassign
+          node[`f${axis}`] = positionScale(node[varName]);
+
+          if (firstLayout) {
+            const otherAxis = axis === 'x' ? 'y' : 'x';
+            const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
+            // eslint-disable-next-line no-param-reassign
+            node[otherAxis] = otherSvgDimension / 2;
+            // eslint-disable-next-line no-param-reassign
+            node[`f${otherAxis}`] = otherSvgDimension / 2;
+          }
+
+          return node;
+        });
+
+        store.commit.setNetwork({
+          nodes: newNodes,
+          edges: state.network.edges,
+        });
+      }
+    },
+
+    setSvgDimensions(state: State, payload: Dimensions) {
+      state.svgDimensions = payload;
     },
   },
   actions: {
@@ -438,7 +407,7 @@ const {
           });
         }
       } finally {
-        if (store.getters.loadError.message === '' && typeof networkTables === 'undefined') {
+        if (context.state.loadError.message === '' && typeof networkTables === 'undefined') {
           // Catches CORS errors, issues when DB/API are down, etc.
           commit.setLoadError({
             message: 'There was a network issue when getting data',
@@ -500,7 +469,7 @@ const {
       network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
       commit.setLabelVariable(bestLabelVar);
     },
 
@@ -539,7 +508,7 @@ const {
       const storeState = context.state;
 
       const stateForProv = JSON.parse(JSON.stringify(context.state));
-      stateForProv.selectedNodes = [];
+      stateForProv.selectedNodes = new Set<string>();
 
       commit.setProvenance(initProvenance<State, ProvenanceEventTypes, unknown>(
         stateForProv,
@@ -552,8 +521,7 @@ const {
         () => {
           const provenanceState = context.state.provenance.state;
 
-          // TODO: #148 remove cast back to set
-          const selectedNodes = new Set<string>(provenanceState.selectedNodes);
+          const { selectedNodes } = provenanceState;
 
           // Helper function
           const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
@@ -574,8 +542,13 @@ const {
             'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
+            'linkLength',
           ].forEach((primitiveVariable) => {
-            if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
+            if (primitiveVariable === 'markerSize') {
+              commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
+            } else if (primitiveVariable === 'linkLength') {
+              commit.setLinkLength({ linkLength: provenanceState[primitiveVariable], updateProv: false });
+            } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
             }
           });
@@ -588,33 +561,17 @@ const {
       document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
     },
 
-    updateSimulationForce(context, payload: {
-      forceType: 'center' | 'charge' | 'link' | 'collision';
-      forceValue: ForceCenter<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationLink> | ForceCollide<Node>;
-      restart: boolean;
-    }) {
-      const { commit } = rootActionContext(context);
-      if (context.state.simulation !== null) {
-        const { forceType, forceValue, restart } = payload;
-        context.state.simulation.force(forceType, forceValue);
-
-        if (restart) {
-          commit.startSimulation();
-        }
-      }
-    },
-
     guessLabel(context) {
       const { commit } = rootActionContext(context);
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();
-      context.getters.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+      context.state.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       // Remove _key from the search
       allVars.delete('_key');
       const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
 
       // Use the label variable we found or _key if we didn't find one
       commit.setLabelVariable(bestLabelVar || '_key');

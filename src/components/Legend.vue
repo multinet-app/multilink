@@ -31,27 +31,27 @@ export default Vue.extend({
 
   computed: {
     network() {
-      return store.getters.network;
+      return store.state.network;
     },
 
     nestedVariables() {
-      return store.getters.nestedVariables;
+      return store.state.nestedVariables;
     },
 
     linkVariables() {
-      return store.getters.linkVariables;
+      return store.state.linkVariables;
     },
 
     nodeSizeVariable() {
-      return store.getters.nodeSizeVariable;
+      return store.state.nodeSizeVariable;
     },
 
     nodeColorVariable() {
-      return store.getters.nodeColorVariable;
+      return store.state.nodeColorVariable;
     },
 
     columnTypes() {
-      return store.getters.columnTypes;
+      return store.state.columnTypes;
     },
 
     cleanedNodeVariables(): Set<string> {
@@ -88,11 +88,11 @@ export default Vue.extend({
     },
 
     displayCharts() {
-      return store.getters.displayCharts;
+      return store.state.displayCharts;
     },
 
     attributeRanges() {
-      return store.getters.attributeRanges;
+      return store.state.attributeRanges;
     },
   },
 

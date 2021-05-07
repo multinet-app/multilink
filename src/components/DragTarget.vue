@@ -16,7 +16,7 @@ export default Vue.extend({
   },
 
   setup(props) {
-    const linkVariables = computed(() => store.getters.linkVariables);
+    const linkVariables = computed(() => store.state.linkVariables);
 
     function elementDrop(event: DragEvent) {
       if (event.dataTransfer === null) {
