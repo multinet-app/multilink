@@ -96,6 +96,7 @@ export interface State {
   };
   userInfo: UserSpec | null;
   linkLength: number;
+  svgDimensions: Dimensions;
 }
 
 export type ProvenanceEventTypes =

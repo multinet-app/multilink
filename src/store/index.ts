@@ -6,7 +6,7 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions,
 } from '@/types';
 import api from '@/api';
 import {
@@ -74,6 +74,10 @@ const {
     },
     userInfo: null,
     linkLength: 50,
+    svgDimensions: {
+      height: 0,
+      width: 0,
+    },
   } as State,
 
   getters: {
@@ -319,6 +323,52 @@ const {
 
     setUserInfo(state, userInfo: UserSpec | null) {
       state.userInfo = userInfo;
+    },
+
+    applyNumericLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; firstLayout: boolean }) {
+      // Set node size smaller
+      store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+      // Clear the label variable
+      store.commit.setLabelVariable(undefined);
+
+      store.commit.stopSimulation();
+
+      if (state.network !== null) {
+        const { varName, axis, firstLayout } = payload;
+        const range = state.attributeRanges[varName];
+        const positionScale = scaleLinear()
+          .domain([range.min, range.max])
+          .range([0, axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height]);
+
+        const newNodes = state.network.nodes.map((oldNode) => {
+          const node = { ...oldNode };
+          // eslint-disable-next-line no-param-reassign
+          node[axis] = positionScale(node[varName]);
+          // eslint-disable-next-line no-param-reassign
+          node[`f${axis}`] = positionScale(node[varName]);
+
+          if (firstLayout) {
+            const otherAxis = axis === 'x' ? 'y' : 'x';
+            const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
+            // eslint-disable-next-line no-param-reassign
+            node[otherAxis] = otherSvgDimension / 2;
+            // eslint-disable-next-line no-param-reassign
+            node[`f${otherAxis}`] = otherSvgDimension / 2;
+          }
+
+          return node;
+        });
+
+        store.commit.setNetwork({
+          nodes: newNodes,
+          edges: state.network.edges,
+        });
+      }
+    },
+
+    setSvgDimensions(state: State, payload: Dimensions) {
+      state.svgDimensions = payload;
     },
   },
   actions: {
