@@ -21,9 +21,9 @@ export default {
   },
 
   setup() {
-    const network = computed(() => store.getters.network);
-    const selectedNodes = computed(() => store.getters.selectedNodes);
-    const loadError = computed(() => store.getters.loadError);
+    const network = computed(() => store.state.network);
+    const selectedNodes = computed(() => store.state.selectedNodes);
+    const loadError = computed(() => store.state.loadError);
 
     const multilinkContainer: Ref<Element | null> = ref(null);
     const multilinkContainerDimensions = computed(() => {
@@ -47,7 +47,7 @@ export default {
     });
 
     // Provenance vis boolean
-    const showProvenanceVis = computed(() => store.getters.showProvenanceVis);
+    const showProvenanceVis = computed(() => store.state.showProvenanceVis);
 
     return {
       network,

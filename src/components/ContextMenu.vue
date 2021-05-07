@@ -4,9 +4,9 @@ import { computed } from '@vue/composition-api';
 
 export default {
   setup() {
-    const rightClickMenu = computed(() => store.getters.rightClickMenu);
-    const selectedNodes = computed(() => store.getters.selectedNodes);
-    const network = computed(() => store.getters.network);
+    const rightClickMenu = computed(() => store.state.rightClickMenu);
+    const selectedNodes = computed(() => store.state.selectedNodes);
+    const network = computed(() => store.state.network);
 
     function clearSelection() {
       store.commit.setSelected(new Set());

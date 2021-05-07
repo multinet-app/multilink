@@ -77,91 +77,7 @@ const {
   } as State,
 
   getters: {
-    workspaceName(state: State) {
-      return state.workspaceName;
-    },
-
-    networkName(state: State) {
-      return state.networkName;
-    },
-
-    network(state: State) {
-      return state.network;
-    },
-
-    networkMetadata(state: State) {
-      return state.networkMetadata;
-    },
-
-    columnTypes(state: State) {
-      return state.columnTypes;
-    },
-
-    selectedNodes(state: State) {
-      return state.selectedNodes;
-    },
-
-    loadError(state: State) {
-      return state.loadError;
-    },
-
-    simulation(state: State) {
-      return state.simulation;
-    },
-
-    displayCharts(state: State) {
-      return state.displayCharts;
-    },
-
-    markerSize(state: State) {
-      return state.markerSize;
-    },
-
-    fontSize(state: State) {
-      return state.fontSize;
-    },
-
-    labelVariable(state: State) {
-      return state.labelVariable;
-    },
-
-    nodeColorVariable(state: State) {
-      return state.nodeColorVariable;
-    },
-
-    selectNeighbors(state: State) {
-      return state.selectNeighbors;
-    },
-
-    nestedVariables(state: State) {
-      return state.nestedVariables;
-    },
-
-    linkVariables(state: State) {
-      return state.linkVariables;
-    },
-
-    nodeSizeVariable(state: State) {
-      return state.nodeSizeVariable;
-    },
-
-    attributeRanges(state: State) {
-      return state.attributeRanges;
-    },
-
-    nodeBarColorScale(state: State) {
-      return state.nodeBarColorScale;
-    },
-
-    nodeGlyphColorScale(state: State) {
-      return state.nodeBarColorScale;
-    },
-
-    linkWidthScale(state: State) {
-      return state.linkWidthScale;
-    },
-
-    linkColorScale(state: State) {
+    linkColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
         let minLinkValue = 0;
         let maxLinkValue = 1;
@@ -177,38 +93,6 @@ const {
       }
 
       return scaleOrdinal(schemeCategory10);
-    },
-
-    directionalEdges(state: State) {
-      return state.directionalEdges;
-    },
-
-    linkLength(state: State) {
-      return state.linkLength;
-    },
-
-    controlsWidth(state: State) {
-      return state.controlsWidth;
-    },
-
-    provenance(state: State) {
-      return state.provenance;
-    },
-
-    simulationRunning(state: State) {
-      return state.simulationRunning;
-    },
-
-    showProvenanceVis(state: State) {
-      return state.showProvenanceVis;
-    },
-
-    rightClickMenu(state: State) {
-      return state.rightClickMenu;
-    },
-
-    userInfo(state: State) {
-      return state.userInfo;
     },
   },
   mutations: {
@@ -425,11 +309,11 @@ const {
       }
     },
 
-    toggleShowProvenanceVis(state: State) {
+    toggleShowProvenanceVis(state) {
       state.showProvenanceVis = !state.showProvenanceVis;
     },
 
-    updateRightClickMenu(state: State, payload: { show: boolean; top: number; left: number }) {
+    updateRightClickMenu(state, payload: { show: boolean; top: number; left: number }) {
       state.rightClickMenu = payload;
     },
 
@@ -473,7 +357,7 @@ const {
           });
         }
       } finally {
-        if (store.getters.loadError.message === '' && typeof networkTables === 'undefined') {
+        if (context.state.loadError.message === '' && typeof networkTables === 'undefined') {
           // Catches CORS errors, issues when DB/API are down, etc.
           commit.setLoadError({
             message: 'There was a network issue when getting data',
@@ -535,7 +419,7 @@ const {
       network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
       commit.setLabelVariable(bestLabelVar);
     },
 
@@ -633,12 +517,12 @@ const {
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();
-      context.getters.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+      context.state.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       // Remove _key from the search
       allVars.delete('_key');
       const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.getters.columnTypes[colName] === 'label');
+        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
 
       // Use the label variable we found or _key if we didn't find one
       commit.setLabelVariable(bestLabelVar || '_key');

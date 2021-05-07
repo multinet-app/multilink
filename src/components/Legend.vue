@@ -61,31 +61,31 @@ export default Vue.extend({
     },
 
     nestedVariables() {
-      return store.getters.nestedVariables;
+      return store.state.nestedVariables;
     },
 
     linkVariables() {
-      return store.getters.linkVariables;
+      return store.state.linkVariables;
     },
 
     nodeSizeVariable() {
-      return store.getters.nodeSizeVariable;
+      return store.state.nodeSizeVariable;
     },
 
     nodeColorVariable() {
-      return store.getters.nodeColorVariable;
+      return store.state.nodeColorVariable;
     },
 
     nodeBarColorScale() {
-      return store.getters.nodeBarColorScale;
+      return store.state.nodeBarColorScale;
     },
 
     nodeGlyphColorScale() {
-      return store.getters.nodeGlyphColorScale;
+      return store.state.nodeGlyphColorScale;
     },
 
     columnTypes() {
-      return store.getters.columnTypes;
+      return store.state.columnTypes;
     },
 
     cleanedNodeVariables(): Set<string> {
@@ -97,11 +97,11 @@ export default Vue.extend({
     },
 
     displayCharts() {
-      return store.getters.displayCharts;
+      return store.state.displayCharts;
     },
 
     attributeRanges() {
-      return store.getters.attributeRanges;
+      return store.state.attributeRanges;
     },
   },
 

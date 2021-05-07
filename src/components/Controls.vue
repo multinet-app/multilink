@@ -61,7 +61,7 @@ export default Vue.extend({
 
     displayCharts: {
       get() {
-        return store.getters.displayCharts;
+        return store.state.displayCharts;
       },
       set(value: boolean) {
         return store.commit.setDisplayCharts(value);
@@ -70,7 +70,7 @@ export default Vue.extend({
 
     markerSize: {
       get() {
-        return store.getters.markerSize || 0;
+        return store.state.markerSize || 0;
       },
       set(value: number) {
         store.commit.setMarkerSize({ markerSize: value, updateProv: false });
@@ -79,7 +79,7 @@ export default Vue.extend({
 
     fontSize: {
       get() {
-        return store.getters.fontSize || 0;
+        return store.state.fontSize || 0;
       },
       set(value: number) {
         store.commit.setFontSize({ fontSize: value, updateProv: false });
@@ -88,7 +88,7 @@ export default Vue.extend({
 
     labelVariable: {
       get(): string | undefined {
-        return store.getters.labelVariable;
+        return store.state.labelVariable;
       },
       set(value: string) {
         store.commit.setLabelVariable(value);
@@ -97,7 +97,7 @@ export default Vue.extend({
 
     selectNeighbors: {
       get() {
-        return store.getters.selectNeighbors;
+        return store.state.selectNeighbors;
       },
       set(value: boolean) {
         store.commit.setSelectNeighbors(value);
@@ -106,7 +106,7 @@ export default Vue.extend({
 
     directionalEdges: {
       get() {
-        return store.getters.directionalEdges;
+        return store.state.directionalEdges;
       },
       set(value: boolean) {
         store.commit.setDirectionalEdges(value);
@@ -115,7 +115,7 @@ export default Vue.extend({
 
     linkLength: {
       get() {
-        return store.getters.linkLength;
+        return store.state.linkLength;
       },
       set(value: number) {
         store.commit.setLinkLength({ linkLength: value, updateProv: false });
@@ -123,15 +123,15 @@ export default Vue.extend({
     },
 
     controlsWidth(): number {
-      return store.getters.controlsWidth;
+      return store.state.controlsWidth;
     },
 
     simulationRunning() {
-      return store.getters.simulationRunning;
+      return store.state.simulationRunning;
     },
 
     network(): Network | null {
-      return store.getters.network;
+      return store.state.network;
     },
 
     autocompleteItems(): string[] {
@@ -163,7 +163,7 @@ export default Vue.extend({
           { type: 'text/json' },
         ),
       );
-      a.download = `${store.getters.networkName || 'unknown_network'}.json`;
+      a.download = `${store.state.networkName || 'unknown_network'}.json`;
       a.click();
     },
 
