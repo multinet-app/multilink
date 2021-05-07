@@ -161,35 +161,71 @@ export default Vue.extend({
         class="pb-4"
       >
         <div class="sticky">
-          <drag-target
-            v-if="nodeSizeVariable === ''"
-            :title="'size'"
-            :type="'node'"
-          />
+          <div v-if="displayCharts">
+            <drag-target
+              v-if="nestedVariables.bar[0] === undefined"
+              :title="'bars'"
+              :type="'node'"
+            />
 
-          <legend-chart
-            v-else
-            :var-name="nodeSizeVariable"
-            :type="'node'"
-            :selected="true"
-            :mapped-to="'size'"
-          />
+            <legend-chart
+              v-else
+              :var-name="nestedVariables.bar[0]"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'bars'"
+            />
+          </div>
+
+          <div v-else>
+            <drag-target
+              v-if="nodeSizeVariable === ''"
+              :title="'size'"
+              :type="'node'"
+            />
+
+            <legend-chart
+              v-else
+              :var-name="nodeSizeVariable"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'size'"
+            />
+          </div>
 
           <v-divider />
 
-          <drag-target
-            v-if="nodeColorVariable === ''"
-            :title="'color'"
-            :type="'node'"
-          />
+          <div v-if="displayCharts">
+            <drag-target
+              v-if="nestedVariables.glyph[0] === undefined"
+              :title="'glyphs'"
+              :type="'node'"
+            />
 
-          <legend-chart
-            v-else
-            :var-name="nodeColorVariable"
-            :type="'node'"
-            :selected="true"
-            :mapped-to="'color'"
-          />
+            <legend-chart
+              v-else
+              :var-name="nestedVariables.glyph[0]"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'glyphs'"
+            />
+          </div>
+
+          <div v-else>
+            <drag-target
+              v-if="nodeColorVariable === ''"
+              :title="'color'"
+              :type="'node'"
+            />
+
+            <legend-chart
+              v-else
+              :var-name="nodeColorVariable"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'color'"
+            />
+          </div>
 
           <v-divider />
         </div>
