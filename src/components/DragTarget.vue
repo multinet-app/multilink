@@ -17,6 +17,7 @@ export default Vue.extend({
 
   setup(props) {
     const linkVariables = computed(() => store.state.linkVariables);
+    const nestedVariables = computed(() => store.state.nestedVariables);
 
     function elementDrop(event: DragEvent) {
       if (event.dataTransfer === null) {
@@ -25,23 +26,19 @@ export default Vue.extend({
 
       const droppedVarName = event.dataTransfer.getData('attr_id').substring(5);
 
-      // if (props.type === 'node' && props.title === 'bars') {
-      //   const updatedNestedVars = {
-      //     bar: [...this.nestedVariables.bar, droppedElText],
-      //     glyph: this.nestedVariables.glyph,
-      //   };
-      //   store.commit.setNestedVariables(updatedNestedVars);
-
-      //   // Render the scales
-      //   Vue.nextTick(() => this.renderScales(droppedElText));
-      // } else if (props.type === 'node' && targetEl === 'glyphElements') {
-      //   const updatedNestedVars = {
-      //     bar: this.nestedVariables.bar,
-      //     glyph: [...this.nestedVariables.glyph, droppedElText],
-      //   };
-      //   store.commit.setNestedVariables(updatedNestedVars);
-      // } else
-      if (props.type === 'node' && props.title === 'size') {
+      if (props.type === 'node' && props.title === 'bars') {
+        const updatedNestedVars = {
+          bar: [...nestedVariables.value.bar, droppedVarName],
+          glyph: nestedVariables.value.glyph,
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
+      } else if (props.type === 'node' && props.title === 'glyphs') {
+        const updatedNestedVars = {
+          bar: nestedVariables.value.bar,
+          glyph: [...nestedVariables.value.glyph, droppedVarName],
+        };
+        store.commit.setNestedVariables(updatedNestedVars);
+      } else if (props.type === 'node' && props.title === 'size') {
         store.commit.setNodeSizeVariable(droppedVarName);
       } else if (props.type === 'node' && props.title === 'color') {
         store.commit.setNodeColorVariable(droppedVarName);
