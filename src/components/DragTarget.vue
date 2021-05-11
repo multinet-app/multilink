@@ -65,7 +65,7 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="pa-4 white-background">
+  <div class="pa-4">
     {{ title }}
 
     <div
@@ -88,10 +88,6 @@ export default Vue.extend({
 </template>
 
 <style scoped>
-.white-background {
-  background-color: white;
-}
-
 .drag-target {
   display: flex;
   flex-direction: column;
