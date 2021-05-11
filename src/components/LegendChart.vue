@@ -6,7 +6,7 @@ import {
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX } from 'd3-brush';
+import { brushX, D3BrushEvent } from 'd3-brush';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
@@ -214,12 +214,18 @@ export default defineComponent({
 
       if (props.brushable) {
         const brush = brushX()
-          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]);
+          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]])
+          .on('brush', (event: unknown) => {
+            const brushEvent = event as D3BrushEvent<unknown>;
+            const extent = brushEvent.selection;
+            console.log(extent);
+          });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (variableSvg as any)
           .call(brush)
-          .call(brush.move, [yAxisPadding, variableSvgWidth]);
+          // start with the whole graph brushed
+          .call(brush.move, [yAxisPadding, variableSvgWidth - yAxisPadding]);
       }
     });
 
