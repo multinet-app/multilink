@@ -6,10 +6,13 @@ import {
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
+import { brushX } from 'd3-brush';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
 export default defineComponent({
+  name: 'LegendChart',
+
   props: {
     varName: {
       type: String,
@@ -22,6 +25,10 @@ export default defineComponent({
     selected: {
       type: Boolean,
       required: true,
+    },
+    brushable: {
+      type: Boolean,
+      default: false,
     },
     mappedTo: {
       type: String,
@@ -86,10 +93,12 @@ export default defineComponent({
     onMounted(() => {
       const variableSvg = select(`#${props.type}${props.varName}${props.mappedTo}`);
 
-      const variableSvgWidth = (variableSvg
+      let variableSvgWidth = (variableSvg
         .node() as Element)
         .getBoundingClientRect()
         .width - yAxisPadding;
+
+      variableSvgWidth = variableSvgWidth < 0 ? 256 : variableSvgWidth;
 
       if (network.value === null) {
         return;
@@ -202,6 +211,16 @@ export default defineComponent({
           .attr('transform', `translate(0, ${svgHeight})`)
           .call(axisBottom(xScale).ticks(4, 's'));
       }
+
+      if (props.brushable) {
+        console.log('brushable');
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (variableSvg as any).call(
+          brushX()
+            .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]),
+        );
+      }
     });
 
     return {
@@ -218,29 +237,77 @@ export default defineComponent({
     class="pa-4 pb-0"
   >
     <div
-      v-if="selected"
-      class="sticky-legend-chart"
+      v-if="brushable"
+    >
+      <v-row class="px-4">
+        <strong>Filter Values</strong>
+        <v-spacer />
+        <v-icon small>
+          mdi-information
+        </v-icon>
+      </v-row>
+    </div>
+
+    <div
+      v-else-if="selected"
     >
       <div>
         <v-row style="margin-right: 0; margin-left: 0;">
           {{ mappedTo }}:
-          <v-spacer />
-          <strong class="pr-2">{{ varName }}</strong>
+          <strong
+            class="pl-1 label"
+            :title="varName"
+          >{{ varName }}</strong>
           <v-icon
             small
-            class="icon"
+            class="icon pt-0"
+            :height="20"
             @click="unAssignVar"
           >
-            mdi-close
+            mdi-close-circle
           </v-icon>
+
+          <v-spacer />
+
+          <v-menu
+            absolute
+            :position-x="256"
+            eager
+          >
+            <template #activator="{ on, attrs }">
+              <v-btn
+                dark
+                fab
+                x-small
+                depressed
+                height="20"
+                width="20"
+                color="primary"
+                style="padding-left: 2px;"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon
+                  :size="16"
+                  class="icon pt-0"
+                  dark
+                >
+                  mdi-chart-bubble
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-card :width="256">
+              <legend-chart
+                :var-name="varName"
+                :selected="false"
+                :brushable="true"
+                :type="'node'"
+                class="pb-4"
+              />
+            </v-card>
+          </v-menu>
         </v-row>
       </div>
-
-      <svg
-        :id="`${type}${varName}${mappedTo}`"
-        :height="svgHeight + 20"
-        width="100%"
-      />
     </div>
 
     <div
@@ -261,13 +328,14 @@ export default defineComponent({
           mdi-drag-vertical
         </v-icon>
       </div>
-
-      <svg
-        :id="`${type}${varName}${mappedTo}`"
-        :height="svgHeight + 20"
-        width="100%"
-      />
     </div>
+
+    <svg
+      :id="`${type}${varName}${mappedTo}`"
+      :height="svgHeight + 20"
+      width="100%"
+      class="mt-2"
+    />
   </div>
 </template>
 
@@ -278,9 +346,16 @@ export default defineComponent({
 }
 
 .icon {
+  height: 20px;
   padding-top: 6px;
   padding-right: 4px;
   margin-right: 0;
   float: right;
+}
+
+.label {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
