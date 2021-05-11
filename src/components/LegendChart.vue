@@ -213,13 +213,13 @@ export default defineComponent({
       }
 
       if (props.brushable) {
-        console.log('brushable');
+        const brush = brushX()
+          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (variableSvg as any).call(
-          brushX()
-            .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]),
-        );
+        (variableSvg as any)
+          .call(brush)
+          .call(brush.move, [yAxisPadding, variableSvgWidth]);
       }
     });
 
