@@ -80,6 +80,7 @@ export interface State {
   nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationLink> | null;
+  nodeColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
   nodeBarColorScale: ScaleOrdinal<string, string>;
   nodeGlyphColorScale: ScaleOrdinal<string, string>;
   linkWidthScale: ScaleLinear<number, number>;

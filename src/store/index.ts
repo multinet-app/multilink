@@ -15,7 +15,7 @@ import {
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
-import { interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
+import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
@@ -58,6 +58,7 @@ const {
     nodeSizeVariable: '',
     nodeColorVariable: '',
     attributeRanges: {},
+    nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
     linkWidthScale: scaleLinear().range([1, 20]),
@@ -81,6 +82,24 @@ const {
   } as State,
 
   getters: {
+    nodeColorScale(state) {
+      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
+        let minNodeValue = 0;
+        let maxNodeValue = 1;
+
+        if (state.network !== null) {
+          const values = state.network.nodes.map((node) => node[state.nodeColorVariable]);
+          minNodeValue = Math.min(...values);
+          maxNodeValue = Math.max(...values);
+        }
+
+        return scaleSequential(interpolateBlues)
+          .domain([minNodeValue, maxNodeValue]);
+      }
+
+      return scaleOrdinal(schemeCategory10);
+    },
+
     linkColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
         let minLinkValue = 0;

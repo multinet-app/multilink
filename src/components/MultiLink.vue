@@ -80,6 +80,10 @@ export default Vue.extend({
       return new Set();
     },
 
+    nodeColorScale() {
+      return store.getters.nodeColorScale;
+    },
+
     nodeBarColorScale() {
       return store.state.nodeBarColorScale;
     },
@@ -431,10 +435,6 @@ export default Vue.extend({
       return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
     },
 
-    glyphStyle(value: string) {
-      return `fill: ${this.nodeGlyphColorScale(value)};`;
-    },
-
     calculateNodeSize(node: Node) {
       // Don't render dynamic node size if the size variable is empty or
       // we want to display charts
@@ -613,7 +613,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="!displayCharts ? nodeGlyphColorScale(node[nodeColorVariable]) : '#DDDDDD'"
+            :fill="!displayCharts ? nodeColorScale(node[nodeColorVariable]) : '#DDDDDD'"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"
@@ -676,7 +676,7 @@ export default Vue.extend({
               :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
               rx="100"
               ry="100"
-              :style="glyphStyle(node[glyphVar])"
+              :fill="nodeGlyphColorScale(node[glyphVar])"
             />
             <g />
           </g>
