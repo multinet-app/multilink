@@ -186,7 +186,7 @@ export default defineComponent({
             scale = nodeGlyphColorScale.value;
           } else {
             xScale = scaleBand()
-              .domain((linkColorScale.value).domain().map((val: number | string) => val.toString()))
+              .domain((linkColorScale.value).domain() as string[])
               .range([yAxisPadding, variableSvgWidth]);
 
             scale = linkColorScale.value;
