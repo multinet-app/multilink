@@ -7,7 +7,9 @@ import {
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX, D3BrushEvent } from 'd3-brush';
-import { scaleBand, scaleLinear } from 'd3-scale';
+import {
+  ScaleBand, scaleBand, ScaleLinear, scaleLinear,
+} from 'd3-scale';
 import { select } from 'd3-selection';
 
 export default defineComponent({
@@ -42,7 +44,10 @@ export default defineComponent({
 
     const network = computed(() => store.state.network);
     const columnTypes = computed(() => store.state.columnTypes);
+    const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
+    const linkWidthScale = computed(() => store.state.linkWidthScale);
+    const linkColorScale = computed(() => store.getters.linkColorScale);
 
     // TODO: https://github.com/multinet-app/multilink/issues/176
     // use table name for var selection
@@ -100,12 +105,148 @@ export default defineComponent({
 
       variableSvgWidth = variableSvgWidth < 0 ? 256 : variableSvgWidth;
 
+      let xScale: ScaleLinear<number, number> | ScaleBand<string>;
+      let yScale: ScaleLinear<number, number>;
+
       if (network.value === null) {
         return;
       }
 
       // Process data for bars/histogram
-      if (isQuantitative(props.varName, props.type)) {
+      if (props.mappedTo === 'size' && nodeSizeScale.value !== null) { // node size
+        xScale = scaleLinear()
+          .domain(nodeSizeScale.value.domain())
+          .range([yAxisPadding, variableSvgWidth]);
+
+        // Draw circles
+        variableSvg
+          .append('circle')
+          .attr('cx', yAxisPadding)
+          .attr('cy', yAxisPadding + 15)
+          .attr('r', 5)
+          .attr('fill', '#3977AF');
+
+        variableSvg
+          .append('circle')
+          .attr('cx', (variableSvgWidth + yAxisPadding) / 2)
+          .attr('cy', yAxisPadding + 10)
+          .attr('r', 10)
+          .attr('fill', '#3977AF');
+
+        variableSvg
+          .append('circle')
+          .attr('cx', variableSvgWidth)
+          .attr('cy', yAxisPadding)
+          .attr('r', 20)
+          .attr('fill', '#3977AF');
+      } else if (props.mappedTo === 'width') { // link width
+        yScale = scaleLinear()
+          .domain(linkWidthScale.value.domain())
+          .range([svgHeight, 10]);
+
+        const minValue = linkWidthScale.value.range()[0];
+        const maxValue = linkWidthScale.value.range()[1];
+        const middleValue = (linkWidthScale.value.range()[1] + linkWidthScale.value.range()[0]) / 2;
+
+        // Draw width lines
+        variableSvg
+          .append('rect')
+          .attr('height', maxValue)
+          .attr('width', variableSvgWidth)
+          .attr('x', yAxisPadding)
+          .attr('y', 0)
+          .attr('fill', '#888888');
+
+        variableSvg
+          .append('rect')
+          .attr('height', middleValue)
+          .attr('width', variableSvgWidth)
+          .attr('x', yAxisPadding)
+          .attr('y', svgHeight / 2)
+          .attr('fill', '#888888');
+
+        variableSvg
+          .append('rect')
+          .attr('height', minValue)
+          .attr('width', variableSvgWidth)
+          .attr('x', yAxisPadding)
+          .attr('y', svgHeight)
+          .attr('fill', '#888888');
+      } else if (props.mappedTo === 'color') { // node color and link color
+        if (isQuantitative(props.varName, props.type)) {
+          // Gradient
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let scale: any;
+
+          if (props.type === 'node') {
+            xScale = scaleBand()
+              .domain(nodeGlyphColorScale.value.domain())
+              .range([yAxisPadding, variableSvgWidth]);
+
+            scale = nodeGlyphColorScale.value;
+          } else {
+            xScale = scaleBand()
+              .domain((linkColorScale.value).domain().map((val: number | string) => val.toString()))
+              .range([yAxisPadding, variableSvgWidth]);
+
+            scale = linkColorScale.value;
+          }
+
+          const minColor = scale(scale.domain()[0]);
+          const midColor = scale((scale.domain()[0] + scale.domain()[1]) / 2);
+          const maxColor = scale(scale.domain()[1]);
+
+          const gradient = variableSvg
+            .append('defs')
+            .append('linearGradient')
+            .attr('id', 'grad');
+
+          gradient
+            .append('stop')
+            .attr('offset', '0%')
+            .attr('stop-color', minColor);
+
+          gradient
+            .append('stop')
+            .attr('offset', '50%')
+            .attr('stop-color', midColor);
+
+          gradient
+            .append('stop')
+            .attr('offset', '100%')
+            .attr('stop-color', maxColor);
+
+          variableSvg
+            .append('rect')
+            .attr('height', 20)
+            .attr('width', variableSvgWidth - yAxisPadding)
+            .attr('x', yAxisPadding)
+            .attr('y', 20)
+            .attr('fill', 'url(#grad)');
+        } else {
+          // Swatches
+          const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
+
+          xScale = scaleBand()
+            .domain(binLabels)
+            .range([yAxisPadding, variableSvgWidth]);
+
+          // Draw swatches
+          const swatchWidth = (variableSvgWidth - yAxisPadding) / binLabels.length;
+
+          variableSvg
+            .selectAll('rect')
+            .data(binLabels)
+            .enter()
+            .append('rect')
+            .attr('height', 15)
+            .attr('width', swatchWidth)
+            .attr('x', (d, i) => (swatchWidth * i) + yAxisPadding)
+            .attr('y', 25)
+            .attr('fill', (d) => nodeGlyphColorScale.value(d))
+            .classed('swatch', true);
+        }
+      } else if (isQuantitative(props.varName, props.type)) { // main numeric legend charts
         let currentData: number[] = [];
         if (props.type === 'node') {
           currentData = network.value.nodes.map((d: Node | Link) => parseFloat(d[props.varName]));
@@ -113,7 +254,7 @@ export default defineComponent({
           currentData = network.value.edges.map((d: Node | Link) => parseFloat(d[props.varName]));
         }
 
-        const xScale = scaleLinear()
+        xScale = scaleLinear()
           .domain([Math.min(...currentData), Math.max(...currentData) + 1])
           .range([yAxisPadding, variableSvgWidth]);
 
@@ -132,7 +273,7 @@ export default defineComponent({
           binValues: xScale.range(),
         });
 
-        const yScale = scaleLinear()
+        yScale = scaleLinear()
           .domain([0, max(bins, (d) => d.length) || 0])
           .range([svgHeight, 10]);
 
@@ -141,23 +282,14 @@ export default defineComponent({
           .data(bins)
           .enter()
           .append('rect')
-          .attr('x', (d) => xScale(d.x0 || 0))
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .attr('x', (d) => xScale(d.x0 as any) || 0)
           .attr('y', (d) => yScale(d.length))
           .attr('height', (d) => svgHeight - yScale(d.length))
-          .attr('width', (d) => xScale(d.x1 || 0) - xScale(d.x0 || 0))
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .attr('width', (d) => (xScale(d.x1 as any) || 0) - (xScale(d.x0 as any) || 0))
           .attr('fill', '#82B1FF');
-
-        // Add the axis scales onto the chart
-        variableSvg
-          .append('g')
-          .attr('transform', `translate(${yAxisPadding},0)`)
-          .call(axisLeft(yScale).ticks(4, 's'));
-
-        variableSvg
-          .append('g')
-          .attr('transform', `translate(0, ${svgHeight})`)
-          .call(axisBottom(xScale).ticks(4, 's'));
-      } else {
+      } else { // main categorical legend charts
         let currentData: string[] = [];
         if (props.type === 'node') {
           currentData = network.value.nodes.map((d: Node | Link) => d[props.varName]).sort();
@@ -181,11 +313,11 @@ export default defineComponent({
         });
 
         // Generate axis scales
-        const yScale = scaleLinear()
+        yScale = scaleLinear()
           .domain([min(binValues) || 0, max(binValues) || 0])
           .range([svgHeight, 0]);
 
-        const xScale = scaleBand()
+        xScale = scaleBand()
           .domain(binLabels)
           .range([yAxisPadding, variableSvgWidth]);
 
@@ -194,24 +326,34 @@ export default defineComponent({
           .data(currentData)
           .enter()
           .append('rect')
-          .attr('x', (d: string) => xScale(d) || 0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .attr('x', (d: string) => xScale(d as any) || 0)
           .attr('y', (d: string) => yScale(bins.get(d) || 0))
           .attr('height', (d: string) => svgHeight - yScale(bins.get(d) || 0))
           .attr('width', xScale.bandwidth())
           .attr('fill', (d: string) => nodeGlyphColorScale.value(d));
+      }
 
-        // Add the axis scales onto the chart
-        variableSvg
-          .append('g')
-          .attr('transform', `translate(${yAxisPadding},0)`)
-          .call(axisLeft(yScale).ticks(4, 's'));
-
+      // Add the axis scales onto the chart
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (xScale! !== undefined) {
         variableSvg
           .append('g')
           .attr('transform', `translate(0, ${svgHeight})`)
-          .call(axisBottom(xScale).ticks(4, 's'));
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .call((axisBottom as any)(xScale).ticks(4, 's'));
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (yScale! !== undefined) {
+        console.log(props.mappedTo, yScale);
+        variableSvg
+          .append('g')
+          .attr('transform', `translate(${yAxisPadding},0)`)
+          .call(axisLeft(yScale).ticks(3, 's'));
+      }
+
+      // For the brushable charts for filtering add brushing
       if (props.brushable) {
         const brush = brushX()
           .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]])
@@ -219,6 +361,7 @@ export default defineComponent({
             const brushEvent = event as D3BrushEvent<unknown>;
             const extent = brushEvent.selection;
             console.log(extent);
+            // TODO: Fix the brushing logic to update the scales
           });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
