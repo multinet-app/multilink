@@ -196,13 +196,8 @@ export default Vue.extend({
       return store.state.controlsWidth;
     },
 
-    nodeSizeScale(): ScaleLinear<number, number> | null {
-      if (this.network === null) { return null; }
-      const values = this.network.nodes.map((node) => node[this.nodeSizeVariable]);
-
-      return scaleLinear()
-        .domain([Math.min(...values), Math.max(...values)])
-        .range([10, 100]);
+    nodeSizeScale() {
+      return store.getters.nodeSizeScale;
     },
 
     linkColorScale() {

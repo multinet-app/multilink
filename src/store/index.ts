@@ -98,6 +98,17 @@ const {
 
       return scaleOrdinal(schemeCategory10);
     },
+
+    nodeSizeScale(state) {
+      if (state.network === null) {
+        return scaleLinear();
+      }
+      const values = state.network.nodes.map((node) => node[state.nodeSizeVariable]);
+
+      return scaleLinear()
+        .domain([Math.min(...values), Math.max(...values)])
+        .range([10, 40]);
+    },
   },
   mutations: {
     setWorkspaceName(state, workspaceName: string) {
