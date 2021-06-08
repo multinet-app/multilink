@@ -168,10 +168,10 @@ export default defineComponent({
 
         variableSvg
           .append('rect')
-          .attr('height', minValue)
+          .attr('height', minValue + 2)
           .attr('width', variableSvgWidth)
           .attr('x', yAxisPadding)
-          .attr('y', svgHeight)
+          .attr('y', svgHeight - 1)
           .attr('fill', '#888888');
       } else if (props.mappedTo === 'color') { // node color and link color
         if (isQuantitative(props.varName, props.type)) {
