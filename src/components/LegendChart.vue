@@ -220,8 +220,8 @@ export default defineComponent({
           variableSvg
             .append('rect')
             .attr('height', 20)
-            .attr('width', variableSvgWidth - yAxisPadding)
-            .attr('x', yAxisPadding)
+            .attr('width', (xScale(scale.domain()[1]) || 0) - (xScale(scale.domain()[0]) || 0))
+            .attr('x', yAxisPadding + (xScale(scale.domain()[0]) || 0) + 8)
             .attr('y', 20)
             .attr('fill', 'url(#grad)');
         } else {
