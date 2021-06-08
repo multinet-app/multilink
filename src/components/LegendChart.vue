@@ -45,6 +45,7 @@ export default defineComponent({
     const network = computed(() => store.state.network);
     const columnTypes = computed(() => store.state.columnTypes);
     const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
+    const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
     const linkWidthScale = computed(() => store.state.linkWidthScale);
     const linkColorScale = computed(() => store.getters.linkColorScale);
@@ -180,10 +181,10 @@ export default defineComponent({
 
           if (props.type === 'node') {
             xScale = scaleBand()
-              .domain(nodeGlyphColorScale.value.domain())
+              .domain(nodeColorScale.value.domain() as string[])
               .range([yAxisPadding, variableSvgWidth]);
 
-            scale = nodeGlyphColorScale.value;
+            scale = nodeColorScale.value;
           } else {
             xScale = scaleBand()
               .domain((linkColorScale.value).domain() as string[])
