@@ -6,7 +6,7 @@ import {
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX, D3BrushEvent } from 'd3-brush';
+import { brushX } from 'd3-brush';
 import {
   ScaleBand, scaleBand, ScaleLinear, scaleLinear,
 } from 'd3-scale';
@@ -407,7 +407,6 @@ export default defineComponent({
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       if (yScale! !== undefined) {
-        console.log(props.mappedTo, yScale);
         variableSvg
           .append('g')
           .attr('transform', `translate(${yAxisPadding},0)`)
@@ -417,13 +416,13 @@ export default defineComponent({
       // For the brushable charts for filtering add brushing
       if (props.brushable) {
         const brush = brushX()
-          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]])
-          .on('brush', (event: unknown) => {
-            const brushEvent = event as D3BrushEvent<unknown>;
-            const extent = brushEvent.selection;
-            console.log(extent);
-            // TODO: Fix the brushing logic to update the scales
-          });
+          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]);
+          // .on('brush', (event: unknown) => {
+          //   const brushEvent = event as D3BrushEvent<unknown>;
+          //   const extent = brushEvent.selection;
+          //   console.log(extent);
+          //   // TODO: Fix the brushing logic to update the scales
+          // });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (variableSvg as any)
