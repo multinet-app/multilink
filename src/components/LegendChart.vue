@@ -316,7 +316,8 @@ export default defineComponent({
               .append('g')
               .classed('legend-bars', true)
               .attr('transform', `translate(${50 * (index) + 23},0)`)
-              .call(axisLeft(barScale).ticks(4, 's'));
+              .call(axisLeft(barScale).ticks(4, 's'))
+              .call((g) => g.select('path').remove());
           });
         });
       } else if (isQuantitative(props.varName, props.type)) { // main numeric legend charts
@@ -414,7 +415,8 @@ export default defineComponent({
           .append('g')
           .attr('transform', `translate(0, ${svgHeight})`)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .call((axisBottom as any)(xScale).ticks(4, 's'));
+          .call((axisBottom as any)(xScale).ticks(4, 's'))
+          .call((g) => g.select('path').remove());
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -422,7 +424,8 @@ export default defineComponent({
         variableSvg
           .append('g')
           .attr('transform', `translate(${yAxisPadding},0)`)
-          .call(axisLeft(yScale).ticks(3, 's'));
+          .call(axisLeft(yScale).ticks(3, 's'))
+          .call((g) => g.select('path').remove());
       }
 
       // For the brushable charts for filtering add brushing
