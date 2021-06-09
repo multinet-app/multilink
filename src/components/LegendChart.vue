@@ -44,6 +44,7 @@ export default defineComponent({
 
     const network = computed(() => store.state.network);
     const columnTypes = computed(() => store.state.columnTypes);
+    const nestedVariables = computed(() => store.state.nestedVariables);
     const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
     const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
@@ -74,12 +75,30 @@ export default defineComponent({
       }
     }
 
-    function unAssignVar() {
+    function unAssignVar(variable?: string) {
       if (props.type === 'node') {
         if (props.mappedTo === 'size') {
           store.commit.setNodeSizeVariable('');
         } else if (props.mappedTo === 'color') {
           store.commit.setNodeColorVariable('');
+        } else if (props.mappedTo === 'bars') {
+          const newBarVars = nestedVariables.value.bar.filter(
+            (barVar) => barVar !== variable,
+          );
+
+          store.commit.setNestedVariables({
+            bar: newBarVars,
+            glyph: nestedVariables.value.glyph,
+          });
+        } else if (props.mappedTo === 'glyphs') {
+          const newGlyphVars = nestedVariables.value.glyph.filter(
+            (glyphVar) => glyphVar !== props.varName,
+          );
+
+          store.commit.setNestedVariables({
+            bar: nestedVariables.value.bar,
+            glyph: newGlyphVars,
+          });
         }
       } else if (props.type === 'link') {
         if (props.mappedTo === 'width') {

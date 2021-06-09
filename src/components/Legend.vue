@@ -108,31 +108,6 @@ export default Vue.extend({
 
       return cleanedVariables;
     },
-
-    removeMapping(
-      type: 'nodeBar' | 'nodeGlyph' | 'nodeSize' | 'nodeColor' | 'linkWidth' | 'linkColor',
-      varName?: string,
-    ) {
-      if (type === 'nodeBar' && varName !== undefined) {
-        const newBarVars = this.nestedVariables.bar.filter(
-          (barVar) => barVar !== varName,
-        );
-
-        store.commit.setNestedVariables({
-          bar: newBarVars,
-          glyph: this.nestedVariables.glyph,
-        });
-      } else if (type === 'nodeGlyph' && varName !== undefined) {
-        const newGlyphVars = this.nestedVariables.glyph.filter(
-          (glyphVar) => glyphVar !== varName,
-        );
-
-        store.commit.setNestedVariables({
-          bar: this.nestedVariables.bar,
-          glyph: newGlyphVars,
-        });
-      }
-    },
   },
 });
 </script>
