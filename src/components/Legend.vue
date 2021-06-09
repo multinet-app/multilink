@@ -121,10 +121,10 @@ export default Vue.extend({
       grow
       slider-color="blue darken-1"
     >
-      <v-tab class="text-subtitle-2">
+      <v-tab>
         Node Attrs.
       </v-tab>
-      <v-tab class="text-subtitle-2">
+      <v-tab>
         Link Attrs.
       </v-tab>
     </v-tabs>
