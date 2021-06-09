@@ -51,6 +51,7 @@ export default defineComponent({
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
     const linkWidthScale = computed(() => store.state.linkWidthScale);
     const linkColorScale = computed(() => store.getters.linkColorScale);
+    const attributeRanges = computed(() => store.state.attributeRanges);
 
     // TODO: https://github.com/multinet-app/multilink/issues/176
     // use table name for var selection
@@ -305,6 +306,17 @@ export default defineComponent({
               .append('xhtml:p')
               .attr('title', barVar)
               .text(barVar);
+
+            // Axis
+            const barScale = scaleLinear()
+              .domain([attributeRanges.value[barVar].min, attributeRanges.value[barVar].max])
+              .range([59, 10]);
+
+            variableSvg
+              .append('g')
+              .classed('legend-bars', true)
+              .attr('transform', `translate(${50 * (index) + 23},0)`)
+              .call(axisLeft(barScale).ticks(4, 's'));
           });
         });
       } else if (isQuantitative(props.varName, props.type)) { // main numeric legend charts
