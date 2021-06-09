@@ -13,6 +13,10 @@ export default Vue.extend({
       type: String as PropType<'node' | 'link'>,
       required: true,
     },
+    showTitle: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   setup(props) {
@@ -66,7 +70,9 @@ export default Vue.extend({
 
 <template>
   <div class="pa-4">
-    {{ title }}
+    <div v-if="showTitle">
+      {{ title }}
+    </div>
 
     <div
       class="drag-target"
