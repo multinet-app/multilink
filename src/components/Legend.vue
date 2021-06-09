@@ -175,6 +175,13 @@ export default Vue.extend({
               :selected="true"
               :mapped-to="'bars'"
             />
+
+            <drag-target
+              v-if="nestedVariables.bar.length < 4 && nestedVariables.bar[0] !== undefined"
+              :title="'bars'"
+              :type="'node'"
+              :show-title="false"
+            />
           </div>
 
           <div v-else>
@@ -205,6 +212,21 @@ export default Vue.extend({
             <legend-chart
               v-else
               :var-name="nestedVariables.glyph[0]"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'glyphs'"
+            />
+
+            <drag-target
+              v-if="nestedVariables.glyph[0] !== undefined && nestedVariables.glyph[1] === undefined"
+              :title="'glyphs'"
+              :type="'node'"
+              :show-title="false"
+            />
+
+            <legend-chart
+              v-else-if="nestedVariables.glyph[0] !== undefined"
+              :var-name="nestedVariables.glyph[1]"
               :type="'node'"
               :selected="true"
               :mapped-to="'glyphs'"
