@@ -2,7 +2,7 @@
 import store from '@/store';
 import { Node, Link } from '@/types';
 import {
-  computed, defineComponent, onMounted, PropType,
+  computed, defineComponent, onMounted, PropType, watchEffect,
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
@@ -10,7 +10,7 @@ import { brushX, D3BrushEvent } from 'd3-brush';
 import {
   ScaleBand, scaleBand, ScaleLinear, scaleLinear,
 } from 'd3-scale';
-import { select } from 'd3-selection';
+import { select, selectAll } from 'd3-selection';
 
 export default defineComponent({
   name: 'LegendChart',
@@ -40,13 +40,14 @@ export default defineComponent({
 
   setup(props) {
     const yAxisPadding = 30;
-    const svgHeight = 50;
+    const svgHeight = props.mappedTo === 'bars' ? 75 : 50;
 
     const network = computed(() => store.state.network);
     const columnTypes = computed(() => store.state.columnTypes);
     const nestedVariables = computed(() => store.state.nestedVariables);
     const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
     const nodeColorScale = computed(() => store.getters.nodeColorScale);
+    const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
     const linkWidthScale = computed(() => store.state.linkWidthScale);
     const linkColorScale = computed(() => store.getters.linkColorScale);
@@ -266,6 +267,46 @@ export default defineComponent({
             .attr('fill', (d) => nodeGlyphColorScale.value(d))
             .classed('swatch', true);
         }
+      } else if (props.mappedTo === 'bars') { // nested bars
+        watchEffect(() => {
+          selectAll('.legend-bars').remove();
+
+          // Draw bars
+          nestedVariables.value.bar.forEach((barVar, index) => {
+            // Bar backgrounds
+            variableSvg
+              .append('rect')
+              .attr('fill', '#EEEEEE')
+              .attr('height', 50)
+              .attr('width', 20)
+              .attr('x', 50 * (index) + 25)
+              .attr('y', 10)
+              .classed('legend-bars', true);
+
+            // Main bar
+            const barHeight = 10 + (Math.random() * 40);
+            variableSvg
+              .append('rect')
+              .attr('fill', nodeBarColorScale.value(barVar))
+              .attr('height', barHeight)
+              .attr('width', 20)
+              .attr('x', 50 * (index) + 25)
+              .attr('y', 60 - barHeight)
+              .classed('legend-bars', true);
+
+            // Label
+            variableSvg
+              .append('foreignObject')
+              .attr('height', 20)
+              .attr('width', 30)
+              .attr('x', 50 * (index) + 15)
+              .attr('y', 60)
+              .classed('legend-bars', true)
+              .append('xhtml:p')
+              .attr('title', barVar)
+              .text(barVar);
+          });
+        });
       } else if (isQuantitative(props.varName, props.type)) { // main numeric legend charts
         let currentData: number[] = [];
         if (props.type === 'node') {
@@ -396,6 +437,7 @@ export default defineComponent({
       svgHeight,
       dragStart,
       unAssignVar,
+      nestedVariables,
     };
   },
 });
@@ -418,7 +460,7 @@ export default defineComponent({
     </div>
 
     <div
-      v-else-if="selected"
+      v-else-if="selected && mappedTo !== 'bars'"
     >
       <div>
         <v-row style="margin-right: 0; margin-left: 0;">
@@ -479,6 +521,10 @@ export default defineComponent({
       </div>
     </div>
 
+    <div v-else-if="mappedTo === 'bars'">
+      {{ mappedTo }}:
+    </div>
+
     <div
       v-else
       class="legend-chart"
@@ -505,6 +551,18 @@ export default defineComponent({
       width="100%"
       class="mt-2"
     />
+
+    <div v-if="mappedTo === 'bars'">
+      <v-icon
+        v-for="(barVar, index) of nestedVariables.bar"
+        :key="barVar"
+        x-small
+        :style="`position: absolute; left: ${50 * (index) + 63}px; top: 110px;`"
+        @click="unAssignVar(barVar)"
+      >
+        mdi-close
+      </v-icon>
+    </div>
   </div>
 </template>
 
