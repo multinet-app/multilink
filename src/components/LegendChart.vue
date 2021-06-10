@@ -268,6 +268,28 @@ export default defineComponent({
             .attr('fill', (d) => nodeGlyphColorScale.value(d))
             .classed('swatch', true);
         }
+      } else if (props.mappedTo === 'glyphs') { // node color and link color
+        // Swatches
+        const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
+
+        xScale = scaleBand()
+          .domain(binLabels)
+          .range([yAxisPadding, variableSvgWidth]);
+
+        // Draw swatches
+        const swatchWidth = (variableSvgWidth - yAxisPadding) / binLabels.length;
+
+        variableSvg
+          .selectAll('rect')
+          .data(binLabels)
+          .enter()
+          .append('rect')
+          .attr('height', 15)
+          .attr('width', swatchWidth)
+          .attr('x', (d, i) => (swatchWidth * i) + yAxisPadding)
+          .attr('y', 25)
+          .attr('fill', (d) => nodeGlyphColorScale.value(d))
+          .classed('swatch', true);
       } else if (props.mappedTo === 'bars') { // nested bars
         watchEffect(() => {
           selectAll('.legend-bars').remove();
