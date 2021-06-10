@@ -6,7 +6,7 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
 import {
@@ -302,7 +302,7 @@ const {
       }
     },
 
-    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number; binLabels: string[]; binValues: number[] }) {
+    addAttributeRange(state, attributeRange: AttributeRange) {
       state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
     },
 
