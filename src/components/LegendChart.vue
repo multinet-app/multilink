@@ -201,14 +201,14 @@ export default defineComponent({
           let scale: any;
 
           if (props.type === 'node') {
-            xScale = scaleBand()
-              .domain(nodeColorScale.value.domain() as string[])
+            xScale = scaleLinear()
+              .domain(nodeColorScale.value.domain() as number[])
               .range([yAxisPadding, variableSvgWidth]);
 
             scale = nodeColorScale.value;
           } else {
-            xScale = scaleBand()
-              .domain((linkColorScale.value).domain() as string[])
+            xScale = scaleLinear()
+              .domain(linkColorScale.value.domain() as number[])
               .range([yAxisPadding, variableSvgWidth]);
 
             scale = linkColorScale.value;
@@ -241,8 +241,8 @@ export default defineComponent({
           variableSvg
             .append('rect')
             .attr('height', 20)
-            .attr('width', (xScale(scale.domain()[1]) || 0) - (xScale(scale.domain()[0]) || 0))
-            .attr('x', yAxisPadding + (xScale(scale.domain()[0]) || 0) + 8)
+            .attr('width', (xScale.range()[1] || 0) - (xScale.range()[0] || 0))
+            .attr('x', xScale.range()[0] || 0)
             .attr('y', 20)
             .attr('fill', 'url(#grad)');
         } else {
