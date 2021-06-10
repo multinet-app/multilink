@@ -6,7 +6,7 @@ import {
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX } from 'd3-brush';
+import { brushX, D3BrushEvent } from 'd3-brush';
 import {
   ScaleBand, scaleBand, ScaleLinear, scaleLinear,
 } from 'd3-scale';
@@ -453,13 +453,26 @@ export default defineComponent({
       // For the brushable charts for filtering add brushing
       if (props.brushable) {
         const brush = brushX()
-          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]);
-          // .on('brush', (event: unknown) => {
-          //   const brushEvent = event as D3BrushEvent<unknown>;
-          //   const extent = brushEvent.selection;
-          //   console.log(extent);
-          //   // TODO: Fix the brushing logic to update the scales
-          // });
+          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]])
+          .on('end', (event: unknown) => {
+            const brushEvent = event as D3BrushEvent<unknown>;
+            const extent = brushEvent.selection as [number, number];
+
+            if (extent === null) {
+              return;
+            }
+
+            // Update the link width domain
+            if (props.filter === 'width' && props.type === 'link') {
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              // Total extent is 30,226
+              const newMin = ((extent[0] - 30) / (226 - 30)) * (currentAttributeRange.max - currentAttributeRange.min);
+              const newMax = ((extent[1] - 30) / (226 - 30)) * (currentAttributeRange.max - currentAttributeRange.min);
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            }
+          });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (variableSvg as any)
