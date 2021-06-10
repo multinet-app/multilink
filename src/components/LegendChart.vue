@@ -36,6 +36,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    filter: {
+      type: String,
+      default: '',
+    },
   },
 
   setup(props) {
@@ -561,7 +565,8 @@ export default defineComponent({
                 :var-name="varName"
                 :selected="false"
                 :brushable="true"
-                :type="'node'"
+                :filter="mappedTo"
+                :type="type"
                 class="pb-4"
               />
             </v-card>
