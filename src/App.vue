@@ -100,4 +100,8 @@ body {
 .v-btn__content {
   padding-bottom: 2px;
 }
+
+.v-input__append-outer {
+  margin-left: 0 !important;
+}
 </style>
