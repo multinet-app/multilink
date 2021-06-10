@@ -49,7 +49,7 @@ export default defineComponent({
     const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
-    const linkWidthScale = computed(() => store.state.linkWidthScale);
+    const linkWidthScale = computed(() => store.getters.linkWidthScale);
     const linkColorScale = computed(() => store.getters.linkColorScale);
     const attributeRanges = computed(() => store.state.attributeRanges);
 

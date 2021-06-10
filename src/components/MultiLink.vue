@@ -168,7 +168,7 @@ export default Vue.extend({
     },
 
     linkWidthScale() {
-      return store.state.linkWidthScale;
+      return store.getters.linkWidthScale;
     },
 
     svgDimensions(): Dimensions {

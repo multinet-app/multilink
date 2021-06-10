@@ -61,7 +61,7 @@ const {
     nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    linkWidthScale: scaleLinear().range([1, 20]),
+    linkWidthScale: scaleLinear(),
     linkColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
@@ -127,6 +127,13 @@ const {
       return scaleLinear()
         .domain([Math.min(...values), Math.max(...values)])
         .range([10, 40]);
+    },
+
+    linkWidthScale(state) {
+      const minValue = state.attributeRanges[state.linkVariables.width].currentMin || state.attributeRanges[state.linkVariables.width].min;
+      const maxValue = state.attributeRanges[state.linkVariables.width].currentMax || state.attributeRanges[state.linkVariables.width].max;
+
+      return state.linkWidthScale.domain([minValue, maxValue]).range([1, 20]);
     },
   },
   mutations: {
@@ -285,12 +292,6 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
-
-      if (state.network !== null) {
-        const values = state.network.edges.map((d) => parseFloat(d[state.linkVariables.width])) || [];
-        const domain = [Math.min(...values), Math.max(...values)];
-        state.linkWidthScale.domain(domain);
-      }
     },
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
