@@ -248,7 +248,8 @@ export default defineComponent({
             .attr('width', (xScale.range()[1] || 0) - (xScale.range()[0] || 0))
             .attr('x', xScale.range()[0] || 0)
             .attr('y', 20)
-            .attr('fill', 'url(#grad)');
+            .attr('fill', 'url(#grad)')
+            .style('opacity', 0.7);
         } else {
           // Swatches
           const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
