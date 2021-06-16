@@ -102,17 +102,11 @@ const {
 
     linkColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
-        let minLinkValue = 0;
-        let maxLinkValue = 1;
-
-        if (state.network !== null) {
-          const values = state.network.edges.map((link) => link[state.linkVariables.color]);
-          minLinkValue = Math.min(...values);
-          maxLinkValue = Math.max(...values);
-        }
+        const minValue = state.attributeRanges[state.linkVariables.color].currentMin || state.attributeRanges[state.linkVariables.color].min;
+        const maxValue = state.attributeRanges[state.linkVariables.color].currentMax || state.attributeRanges[state.linkVariables.color].max;
 
         return scaleSequential(interpolateReds)
-          .domain([minLinkValue, maxLinkValue]);
+          .domain([minValue, maxValue]);
       }
 
       return scaleOrdinal(schemeCategory10);

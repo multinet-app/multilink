@@ -429,10 +429,15 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
+      const linkColorScaleDomain = this.linkColorScale.domain();
       const linkColor = this.linkVariables.color === '' ? '#888888' : this.linkColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
-      return `stroke: ${linkColor}; stroke-width: ${(linkWidth > 20 || linkWidth < 1) ? 0 : linkWidth}px; opacity: 0.7;`;
+      return `
+        stroke: ${(link[this.linkVariables.color] < linkColorScaleDomain[0] || link[this.linkVariables.color] > linkColorScaleDomain[1]) ? '#888888' : linkColor};
+        stroke-width: ${(linkWidth > 20 || linkWidth < 1) ? 0 : linkWidth}px;
+        opacity: 0.7;
+      `;
     },
 
     calculateNodeSize(node: Node) {
