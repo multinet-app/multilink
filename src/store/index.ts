@@ -113,13 +113,11 @@ const {
     },
 
     nodeSizeScale(state) {
-      if (state.network === null) {
-        return scaleLinear();
-      }
-      const values = state.network.nodes.map((node) => node[state.nodeSizeVariable]);
+      const minValue = state.attributeRanges[state.nodeSizeVariable].currentMin || state.attributeRanges[state.nodeSizeVariable].min;
+      const maxValue = state.attributeRanges[state.nodeSizeVariable].currentMax || state.attributeRanges[state.nodeSizeVariable].max;
 
       return scaleLinear()
-        .domain([Math.min(...values), Math.max(...values)])
+        .domain([minValue, maxValue])
         .range([10, 40]);
     },
 

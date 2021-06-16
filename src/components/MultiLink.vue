@@ -447,7 +447,9 @@ export default Vue.extend({
         return this.markerSize;
       }
 
-      return this.nodeSizeScale(node[this.nodeSizeVariable]);
+      const calculatedValue = this.nodeSizeScale(node[this.nodeSizeVariable]);
+
+      return calculatedValue > 40 || calculatedValue < 10 ? 0 : calculatedValue;
     },
 
     rectSelectDrag(event: MouseEvent) {
