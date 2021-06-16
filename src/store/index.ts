@@ -84,17 +84,11 @@ const {
   getters: {
     nodeColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
-        let minNodeValue = 0;
-        let maxNodeValue = 1;
-
-        if (state.network !== null) {
-          const values = state.network.nodes.map((node) => node[state.nodeColorVariable]);
-          minNodeValue = Math.min(...values);
-          maxNodeValue = Math.max(...values);
-        }
+        const minValue = state.attributeRanges[state.nodeColorVariable].currentMin || state.attributeRanges[state.nodeColorVariable].min;
+        const maxValue = state.attributeRanges[state.nodeColorVariable].currentMax || state.attributeRanges[state.nodeColorVariable].max;
 
         return scaleSequential(interpolateBlues)
-          .domain([minNodeValue, maxNodeValue]);
+          .domain([minValue, maxValue]);
       }
 
       return scaleOrdinal(schemeCategory10);

@@ -419,6 +419,13 @@ export default Vue.extend({
       return `node nodeBox ${selectedClass}`;
     },
 
+    nodeFill(node: Node) {
+      const calculatedValue = node[this.nodeColorVariable];
+      const useCalculatedValue = !(this.displayCharts || calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1]) && this.nodeColorVariable !== '';
+
+      return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#DDDDDD';
+    },
+
     linkGroupClass(link: Link): string {
       if (this.selectedNodes.size > 0) {
         const selected = this.isSelected(link._from) || this.isSelected(link._to);
@@ -620,7 +627,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="!displayCharts ? nodeColorScale(node[nodeColorVariable]) : '#DDDDDD'"
+            :fill="nodeFill(node)"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"

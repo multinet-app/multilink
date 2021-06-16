@@ -475,6 +475,15 @@ export default defineComponent({
               const newMax = ((extent[1] - 30) / (226 - 30)) * (currentAttributeRange.max - currentAttributeRange.min);
 
               store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            } else if (props.filter === 'color' && props.type === 'node') {
+              // Update the link width domain
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              // Total extent is 30,226
+              const newMin = ((extent[0] - 30) / (226 - 30)) * (currentAttributeRange.max - currentAttributeRange.min);
+              const newMax = ((extent[1] - 30) / (226 - 30)) * (currentAttributeRange.max - currentAttributeRange.min);
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
             } else if (props.filter === 'width' && props.type === 'link') {
               // Update the link width domain
               const currentAttributeRange = attributeRanges.value[props.varName];
