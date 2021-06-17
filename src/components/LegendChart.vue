@@ -467,8 +467,19 @@ export default defineComponent({
               return;
             }
 
-            if (props.filter === 'size' && props.type === 'node') {
-              // Update the link width domain
+            if (props.filter === 'glyphs' && props.type === 'node') {
+              const currentAttributeRange = attributeRanges.value[props.varName];
+              // Update the glyph domain
+              const firstIndex = Math.floor(((extent[0] - 30) / (226 - 30)) * attributeRanges.value[props.varName].binLabels.length);
+              const secondIndex = Math.ceil(((extent[1] - 30) / (226 - 30)) * attributeRanges.value[props.varName].binLabels.length);
+
+              store.commit.addAttributeRange({
+                ...currentAttributeRange,
+                currentBinLabels: currentAttributeRange.binLabels.slice(firstIndex, secondIndex),
+                currentBinValues: currentAttributeRange.binValues.slice(firstIndex, secondIndex),
+              });
+            } else if (props.filter === 'size' && props.type === 'node') {
+              // Update the node size domain
               const currentAttributeRange = attributeRanges.value[props.varName];
 
               // Total extent is 30,226
@@ -477,7 +488,7 @@ export default defineComponent({
 
               store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
             } else if (props.filter === 'color' && props.type === 'node') {
-              // Update the link width domain
+              // Update the node color domain
               const currentAttributeRange = attributeRanges.value[props.varName];
 
               // Total extent is 30,226

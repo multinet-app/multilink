@@ -447,6 +447,20 @@ export default Vue.extend({
       `;
     },
 
+    glyphFill(node: Node, glyphVar: string) {
+      // Figure out what values should be mapped to colors
+      const possibleValues = [
+        ...(this.attributeRanges[this.nestedVariables.glyph[0]].currentBinLabels || this.attributeRanges[this.nestedVariables.glyph[0]].binLabels),
+      ];
+      if (this.nestedVariables.glyph[1]) {
+        possibleValues.push(...(this.attributeRanges[this.nestedVariables.glyph[1]].currentBinLabels || this.attributeRanges[this.nestedVariables.glyph[1]].binLabels));
+      }
+      const scaleContainsValue = possibleValues.find((domainElement) => domainElement === node[glyphVar]);
+
+      // If outside the doamin, return black
+      return scaleContainsValue ? this.nodeGlyphColorScale(node[glyphVar]) : '#000000';
+    },
+
     calculateNodeSize(node: Node) {
       // Don't render dynamic node size if the size variable is empty or
       // we want to display charts
@@ -690,7 +704,7 @@ export default Vue.extend({
               :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
               rx="100"
               ry="100"
-              :fill="nodeGlyphColorScale(node[glyphVar])"
+              :fill="glyphFill(node, glyphVar)"
             />
             <g />
           </g>

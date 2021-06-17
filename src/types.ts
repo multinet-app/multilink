@@ -63,6 +63,8 @@ export interface AttributeRange {
   binValues: number[];
   currentMax?: number;
   currentMin?: number;
+  currentBinLabels?: string[];
+  currentBinValues?: number[];
 }
 
 export interface AttributeRanges {
