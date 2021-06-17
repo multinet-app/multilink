@@ -521,7 +521,7 @@ export default defineComponent({
         (variableSvg as any)
           .call(brush)
           // start with the whole graph brushed
-          .call(brush.move, [yAxisPadding, variableSvgWidth - yAxisPadding]);
+          .call(brush.move, [yAxisPadding, variableSvgWidth]);
       }
     });
 
@@ -599,7 +599,7 @@ export default defineComponent({
                 </v-icon>
               </v-btn>
             </template>
-            <v-card :width="256">
+            <v-card :width="300">
               <legend-chart
                 :var-name="varName"
                 :selected="false"
