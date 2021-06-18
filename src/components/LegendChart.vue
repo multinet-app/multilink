@@ -6,7 +6,7 @@ import {
 } from '@vue/composition-api';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX } from 'd3-brush';
+import { brushX, D3BrushEvent } from 'd3-brush';
 import {
   ScaleBand, scaleBand, ScaleLinear, scaleLinear,
 } from 'd3-scale';
@@ -36,6 +36,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    filter: {
+      type: String,
+      default: '',
+    },
   },
 
   setup(props) {
@@ -49,7 +53,7 @@ export default defineComponent({
     const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
-    const linkWidthScale = computed(() => store.state.linkWidthScale);
+    const linkWidthScale = computed(() => store.getters.linkWidthScale);
     const linkColorScale = computed(() => store.getters.linkColorScale);
     const attributeRanges = computed(() => store.state.attributeRanges);
 
@@ -244,7 +248,8 @@ export default defineComponent({
             .attr('width', (xScale.range()[1] || 0) - (xScale.range()[0] || 0))
             .attr('x', xScale.range()[0] || 0)
             .attr('y', 20)
-            .attr('fill', 'url(#grad)');
+            .attr('fill', 'url(#grad)')
+            .style('opacity', 0.7);
         } else {
           // Swatches
           const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
@@ -453,19 +458,66 @@ export default defineComponent({
       // For the brushable charts for filtering add brushing
       if (props.brushable) {
         const brush = brushX()
-          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]]);
-          // .on('brush', (event: unknown) => {
-          //   const brushEvent = event as D3BrushEvent<unknown>;
-          //   const extent = brushEvent.selection;
-          //   console.log(extent);
-          //   // TODO: Fix the brushing logic to update the scales
-          // });
+          .extent([[yAxisPadding, 0], [variableSvgWidth, svgHeight]])
+          .on('end', (event: unknown) => {
+            const brushEvent = event as D3BrushEvent<unknown>;
+            const extent = brushEvent.selection as [number, number];
+
+            if (extent === null) {
+              return;
+            }
+
+            if (props.filter === 'glyphs' && props.type === 'node') {
+              const currentAttributeRange = attributeRanges.value[props.varName];
+              // Update the glyph domain
+              const firstIndex = Math.floor(((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+              const secondIndex = Math.ceil(((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+
+              store.commit.addAttributeRange({
+                ...currentAttributeRange,
+                currentBinLabels: currentAttributeRange.binLabels.slice(firstIndex, secondIndex),
+                currentBinValues: currentAttributeRange.binValues.slice(firstIndex, secondIndex),
+              });
+            } else if (props.filter === 'size' && props.type === 'node') {
+              // Update the node size domain
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            } else if (props.filter === 'color' && props.type === 'node') {
+              // Update the node color domain
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            } else if (props.filter === 'width' && props.type === 'link') {
+              // Update the link width domain
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            } else if (props.filter === 'color' && props.type === 'link') {
+              // Update the link color domain
+              const currentAttributeRange = attributeRanges.value[props.varName];
+
+              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+
+              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+            }
+          });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (variableSvg as any)
           .call(brush)
           // start with the whole graph brushed
-          .call(brush.move, [yAxisPadding, variableSvgWidth - yAxisPadding]);
+          .call(brush.move, [yAxisPadding, variableSvgWidth]);
       }
     });
 
@@ -543,12 +595,13 @@ export default defineComponent({
                 </v-icon>
               </v-btn>
             </template>
-            <v-card :width="256">
+            <v-card :width="300">
               <legend-chart
                 :var-name="varName"
                 :selected="false"
                 :brushable="true"
-                :type="'node'"
+                :filter="mappedTo"
+                :type="type"
                 class="pb-4"
               />
             </v-card>

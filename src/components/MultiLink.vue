@@ -168,7 +168,7 @@ export default Vue.extend({
     },
 
     linkWidthScale() {
-      return store.state.linkWidthScale;
+      return store.getters.linkWidthScale;
     },
 
     svgDimensions(): Dimensions {
@@ -419,6 +419,13 @@ export default Vue.extend({
       return `node nodeBox ${selectedClass}`;
     },
 
+    nodeFill(node: Node) {
+      const calculatedValue = node[this.nodeColorVariable];
+      const useCalculatedValue = !(this.displayCharts || calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1]) && this.nodeColorVariable !== '';
+
+      return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#DDDDDD';
+    },
+
     linkGroupClass(link: Link): string {
       if (this.selectedNodes.size > 0) {
         const selected = this.isSelected(link._from) || this.isSelected(link._to);
@@ -429,10 +436,29 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
+      const linkColorScaleDomain = this.linkColorScale.domain();
       const linkColor = this.linkVariables.color === '' ? '#888888' : this.linkColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
-      return `stroke: ${linkColor}; stroke-width: ${linkWidth}px;`;
+      return `
+        stroke: ${(link[this.linkVariables.color] < linkColorScaleDomain[0] || link[this.linkVariables.color] > linkColorScaleDomain[1]) ? '#888888' : linkColor};
+        stroke-width: ${(linkWidth > 20 || linkWidth < 1) ? 0 : linkWidth}px;
+        opacity: 0.7;
+      `;
+    },
+
+    glyphFill(node: Node, glyphVar: string) {
+      // Figure out what values should be mapped to colors
+      const possibleValues = [
+        ...(this.attributeRanges[this.nestedVariables.glyph[0]].currentBinLabels || this.attributeRanges[this.nestedVariables.glyph[0]].binLabels),
+      ];
+      if (this.nestedVariables.glyph[1]) {
+        possibleValues.push(...(this.attributeRanges[this.nestedVariables.glyph[1]].currentBinLabels || this.attributeRanges[this.nestedVariables.glyph[1]].binLabels));
+      }
+      const scaleContainsValue = possibleValues.find((domainElement) => domainElement === node[glyphVar]);
+
+      // If outside the doamin, return black
+      return scaleContainsValue ? this.nodeGlyphColorScale(node[glyphVar]) : '#000000';
     },
 
     calculateNodeSize(node: Node) {
@@ -442,7 +468,9 @@ export default Vue.extend({
         return this.markerSize;
       }
 
-      return this.nodeSizeScale(node[this.nodeSizeVariable]);
+      const calculatedValue = this.nodeSizeScale(node[this.nodeSizeVariable]);
+
+      return calculatedValue > 40 || calculatedValue < 10 ? 0 : calculatedValue;
     },
 
     rectSelectDrag(event: MouseEvent) {
@@ -613,7 +641,7 @@ export default Vue.extend({
             :class="nodeClass(node)"
             :width="calculateNodeSize(node)"
             :height="calculateNodeSize(node)"
-            :fill="!displayCharts ? nodeColorScale(node[nodeColorVariable]) : '#DDDDDD'"
+            :fill="nodeFill(node)"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             @click="selectNode(node)"
@@ -676,7 +704,7 @@ export default Vue.extend({
               :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
               rx="100"
               ry="100"
-              :fill="nodeGlyphColorScale(node[glyphVar])"
+              :fill="glyphFill(node, glyphVar)"
             />
             <g />
           </g>
