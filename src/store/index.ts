@@ -6,7 +6,7 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions,
+  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
 import {
@@ -61,7 +61,7 @@ const {
     nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    linkWidthScale: scaleLinear().range([1, 20]),
+    linkWidthScale: scaleLinear(),
     linkColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
@@ -84,17 +84,11 @@ const {
   getters: {
     nodeColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
-        let minNodeValue = 0;
-        let maxNodeValue = 1;
-
-        if (state.network !== null) {
-          const values = state.network.nodes.map((node) => node[state.nodeColorVariable]);
-          minNodeValue = Math.min(...values);
-          maxNodeValue = Math.max(...values);
-        }
+        const minValue = state.attributeRanges[state.nodeColorVariable].currentMin || state.attributeRanges[state.nodeColorVariable].min;
+        const maxValue = state.attributeRanges[state.nodeColorVariable].currentMax || state.attributeRanges[state.nodeColorVariable].max;
 
         return scaleSequential(interpolateBlues)
-          .domain([minNodeValue, maxNodeValue]);
+          .domain([minValue, maxValue]);
       }
 
       return scaleOrdinal(schemeCategory10);
@@ -102,31 +96,30 @@ const {
 
     linkColorScale(state) {
       if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
-        let minLinkValue = 0;
-        let maxLinkValue = 1;
-
-        if (state.network !== null) {
-          const values = state.network.edges.map((link) => link[state.linkVariables.color]);
-          minLinkValue = Math.min(...values);
-          maxLinkValue = Math.max(...values);
-        }
+        const minValue = state.attributeRanges[state.linkVariables.color].currentMin || state.attributeRanges[state.linkVariables.color].min;
+        const maxValue = state.attributeRanges[state.linkVariables.color].currentMax || state.attributeRanges[state.linkVariables.color].max;
 
         return scaleSequential(interpolateReds)
-          .domain([minLinkValue, maxLinkValue]);
+          .domain([minValue, maxValue]);
       }
 
       return scaleOrdinal(schemeCategory10);
     },
 
     nodeSizeScale(state) {
-      if (state.network === null) {
-        return scaleLinear();
-      }
-      const values = state.network.nodes.map((node) => node[state.nodeSizeVariable]);
+      const minValue = state.attributeRanges[state.nodeSizeVariable].currentMin || state.attributeRanges[state.nodeSizeVariable].min;
+      const maxValue = state.attributeRanges[state.nodeSizeVariable].currentMax || state.attributeRanges[state.nodeSizeVariable].max;
 
       return scaleLinear()
-        .domain([Math.min(...values), Math.max(...values)])
+        .domain([minValue, maxValue])
         .range([10, 40]);
+    },
+
+    linkWidthScale(state) {
+      const minValue = state.attributeRanges[state.linkVariables.width].currentMin || state.attributeRanges[state.linkVariables.width].min;
+      const maxValue = state.attributeRanges[state.linkVariables.width].currentMax || state.attributeRanges[state.linkVariables.width].max;
+
+      return state.linkWidthScale.domain([minValue, maxValue]).range([1, 20]);
     },
   },
   mutations: {
@@ -285,12 +278,6 @@ const {
 
     setLinkVariables(state, linkVariables: LinkStyleVariables) {
       state.linkVariables = linkVariables;
-
-      if (state.network !== null) {
-        const values = state.network.edges.map((d) => parseFloat(d[state.linkVariables.width])) || [];
-        const domain = [Math.min(...values), Math.max(...values)];
-        state.linkWidthScale.domain(domain);
-      }
     },
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
@@ -301,7 +288,7 @@ const {
       }
     },
 
-    addAttributeRange(state, attributeRange: { attr: string; min: number; max: number; binLabels: string[]; binValues: number[] }) {
+    addAttributeRange(state, attributeRange: AttributeRange) {
       state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
     },
 

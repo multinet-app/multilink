@@ -55,8 +55,20 @@ export interface LinkStyleVariables {
   color: string;
 }
 
+export interface AttributeRange {
+  attr: string;
+  min: number;
+  max: number;
+  binLabels: string[];
+  binValues: number[];
+  currentMax?: number;
+  currentMin?: number;
+  currentBinLabels?: string[];
+  currentBinValues?: number[];
+}
+
 export interface AttributeRanges {
-  [key: string]: {attr: string; min: number; max: number; binLabels: string[]; binValues: number[]};
+  [key: string]: AttributeRange;
 }
 
 export interface NetworkMetadata { [tableName: string]: TableMetadata }
