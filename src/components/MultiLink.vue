@@ -154,6 +154,10 @@ export default Vue.extend({
       return store.state.attributeRanges;
     },
 
+    columnTypes() {
+      return store.state.columnTypes;
+    },
+
     attributeScales() {
       const scales: {[key: string]: ScaleLinear<number, number>} = {};
 
@@ -421,7 +425,22 @@ export default Vue.extend({
 
     nodeFill(node: Node) {
       const calculatedValue = node[this.nodeColorVariable];
-      const useCalculatedValue = !(this.displayCharts || calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1]) && this.nodeColorVariable !== '';
+      const useCalculatedValue = !this.displayCharts
+      && (
+        // Numeric check
+        (
+          this.columnTypes[this.nodeColorVariable] === 'number'
+          && !(calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1])
+          && this.nodeColorVariable !== ''
+        )
+        // Categorical check
+        || (
+          this.columnTypes[this.nodeColorVariable] !== 'number'
+          && this.attributeRanges[this.nodeColorVariable]
+          && (this.attributeRanges[this.nodeColorVariable].currentBinLabels || this.attributeRanges[this.nodeColorVariable].binLabels)
+            .find((label) => label.toString() === calculatedValue.toString())
+        )
+      );
 
       return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#DDDDDD';
     },
