@@ -91,7 +91,8 @@ const {
           .domain([minValue, maxValue]);
       }
 
-      return scaleOrdinal(schemeCategory10);
+      const { binLabels } = state.attributeRanges[state.nodeColorVariable];
+      return scaleOrdinal(schemeCategory10).domain(binLabels);
     },
 
     linkColorScale(state) {
