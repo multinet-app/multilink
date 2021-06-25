@@ -251,8 +251,10 @@ export default defineComponent({
             .attr('fill', 'url(#grad)')
             .style('opacity', 0.7);
         } else {
+          const currentData = props.type === 'node' ? network.value.nodes : network.value.edges;
+
           // Swatches
-          const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
+          const binLabels = [...new Set(currentData.map((d) => d[props.varName]))];
 
           xScale = scaleBand()
             .domain(binLabels)
