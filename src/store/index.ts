@@ -91,8 +91,7 @@ const {
           .domain([minValue, maxValue]);
       }
 
-      const { binLabels } = state.attributeRanges[state.nodeColorVariable];
-      return scaleOrdinal(schemeCategory10).domain(binLabels);
+      return state.nodeGlyphColorScale;
     },
 
     linkColorScale(state) {
@@ -104,7 +103,7 @@ const {
           .domain([minValue, maxValue]);
       }
 
-      return scaleOrdinal(schemeCategory10);
+      return state.nodeGlyphColorScale;
     },
 
     nodeSizeScale(state) {
