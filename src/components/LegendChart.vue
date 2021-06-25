@@ -254,7 +254,8 @@ export default defineComponent({
           const currentData = props.type === 'node' ? network.value.nodes : network.value.edges;
 
           // Swatches
-          const binLabels = [...new Set(currentData.map((d) => d[props.varName]))];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const binLabels: string[] = [...new Set<string>((currentData as any).map((d: Node | Link) => d[props.varName]))];
 
           xScale = scaleBand()
             .domain(binLabels)
