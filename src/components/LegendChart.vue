@@ -251,8 +251,11 @@ export default defineComponent({
             .attr('fill', 'url(#grad)')
             .style('opacity', 0.7);
         } else {
+          const currentData = props.type === 'node' ? network.value.nodes : network.value.edges;
+
           // Swatches
-          const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const binLabels: string[] = [...new Set<string>((currentData as any).map((d: Node | Link) => d[props.varName]))];
 
           xScale = scaleBand()
             .domain(binLabels)
@@ -487,13 +490,26 @@ export default defineComponent({
 
               store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
             } else if (props.filter === 'color' && props.type === 'node') {
+              if (isQuantitative(props.varName, props.type)) {
               // Update the node color domain
-              const currentAttributeRange = attributeRanges.value[props.varName];
+                const currentAttributeRange = attributeRanges.value[props.varName];
 
-              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
-              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+                const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+                const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
 
-              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+                store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+              } else {
+                const currentAttributeRange = attributeRanges.value[props.varName];
+                // Update the glyph domain
+                const firstIndex = Math.floor(((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+                const secondIndex = Math.ceil(((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+
+                store.commit.addAttributeRange({
+                  ...currentAttributeRange,
+                  currentBinLabels: currentAttributeRange.binLabels.slice(firstIndex, secondIndex),
+                  currentBinValues: currentAttributeRange.binValues.slice(firstIndex, secondIndex),
+                });
+              }
             } else if (props.filter === 'width' && props.type === 'link') {
               // Update the link width domain
               const currentAttributeRange = attributeRanges.value[props.varName];
@@ -503,13 +519,26 @@ export default defineComponent({
 
               store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
             } else if (props.filter === 'color' && props.type === 'link') {
-              // Update the link color domain
-              const currentAttributeRange = attributeRanges.value[props.varName];
+              if (isQuantitative(props.varName, props.type)) {
+              // Update the node color domain
+                const currentAttributeRange = attributeRanges.value[props.varName];
 
-              const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
-              const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+                const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
+                const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
 
-              store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+                store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+              } else {
+                const currentAttributeRange = attributeRanges.value[props.varName];
+                // Update the glyph domain
+                const firstIndex = Math.floor(((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+                const secondIndex = Math.ceil(((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
+
+                store.commit.addAttributeRange({
+                  ...currentAttributeRange,
+                  currentBinLabels: currentAttributeRange.binLabels.slice(firstIndex, secondIndex),
+                  currentBinValues: currentAttributeRange.binValues.slice(firstIndex, secondIndex),
+                });
+              }
             }
           });
 

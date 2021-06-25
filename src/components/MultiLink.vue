@@ -154,6 +154,10 @@ export default Vue.extend({
       return store.state.attributeRanges;
     },
 
+    columnTypes() {
+      return store.state.columnTypes;
+    },
+
     attributeScales() {
       const scales: {[key: string]: ScaleLinear<number, number>} = {};
 
@@ -421,7 +425,22 @@ export default Vue.extend({
 
     nodeFill(node: Node) {
       const calculatedValue = node[this.nodeColorVariable];
-      const useCalculatedValue = !(this.displayCharts || calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1]) && this.nodeColorVariable !== '';
+      const useCalculatedValue = !this.displayCharts
+      && (
+        // Numeric check
+        (
+          this.columnTypes[this.nodeColorVariable] === 'number'
+          && !(calculatedValue < this.nodeColorScale.domain()[0] || calculatedValue > this.nodeColorScale.domain()[1])
+          && this.nodeColorVariable !== ''
+        )
+        // Categorical check
+        || (
+          this.columnTypes[this.nodeColorVariable] !== 'number'
+          && this.attributeRanges[this.nodeColorVariable]
+          && (this.attributeRanges[this.nodeColorVariable].currentBinLabels || this.attributeRanges[this.nodeColorVariable].binLabels)
+            .find((label) => label.toString() === calculatedValue.toString())
+        )
+      );
 
       return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#DDDDDD';
     },
@@ -436,12 +455,27 @@ export default Vue.extend({
     },
 
     linkStyle(link: Link): string {
-      const linkColorScaleDomain = this.linkColorScale.domain();
-      const linkColor = this.linkVariables.color === '' ? '#888888' : this.linkColorScale(link[this.linkVariables.color]);
       const linkWidth = this.linkVariables.width === '' ? 1 : this.linkWidthScale(link[this.linkVariables.width]);
 
+      const calculatedColorValue = link[this.linkVariables.color];
+      const useCalculatedColorValue = this.linkVariables.color !== ''
+      && (
+        // Numeric check
+        (
+          this.columnTypes[this.linkVariables.color] === 'number'
+          && !(calculatedColorValue < this.linkColorScale.domain()[0] || calculatedColorValue > this.linkColorScale.domain()[1])
+        )
+        // Categorical check
+        || (
+          this.columnTypes[this.linkVariables.color] !== 'number'
+          && this.attributeRanges[this.linkVariables.color]
+          && (this.attributeRanges[this.linkVariables.color].currentBinLabels || this.attributeRanges[this.linkVariables.color].binLabels)
+            .find((label) => label.toString() === calculatedColorValue.toString())
+        )
+      );
+
       return `
-        stroke: ${(link[this.linkVariables.color] < linkColorScaleDomain[0] || link[this.linkVariables.color] > linkColorScaleDomain[1]) ? '#888888' : linkColor};
+        stroke: ${useCalculatedColorValue ? this.linkColorScale(calculatedColorValue) : '#888888'};
         stroke-width: ${(linkWidth > 20 || linkWidth < 1) ? 0 : linkWidth}px;
         opacity: 0.7;
       `;

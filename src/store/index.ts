@@ -91,7 +91,7 @@ const {
           .domain([minValue, maxValue]);
       }
 
-      return scaleOrdinal(schemeCategory10);
+      return state.nodeGlyphColorScale;
     },
 
     linkColorScale(state) {
@@ -103,7 +103,7 @@ const {
           .domain([minValue, maxValue]);
       }
 
-      return scaleOrdinal(schemeCategory10);
+      return state.nodeGlyphColorScale;
     },
 
     nodeSizeScale(state) {
