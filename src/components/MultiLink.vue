@@ -442,7 +442,7 @@ export default Vue.extend({
         )
       );
 
-      return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#DDDDDD';
+      return useCalculatedValue ? this.nodeColorScale(calculatedValue) : '#EEEEEE';
     },
 
     linkGroupClass(link: Link): string {
@@ -733,11 +733,9 @@ export default Vue.extend({
               :key="`${node}_${glyphVar}_glyph`"
               class="glyph"
               :width="nestedBarWidth"
-              :height="nestedBarHeight/2/nestedVariables.glyph.length"
-              :y="20 + (i * (nestedBarHeight/2/nestedVariables.glyph.length + 5))"
+              :height="nestedBarHeight / 2 - 1"
+              :y="20 + (i * ((nestedBarHeight / 2) + 1))"
               :x="((nestedBarWidth + nestedPadding) * nestedVariables.bar.length) + nestedPadding"
-              rx="100"
-              ry="100"
               :fill="glyphFill(node, glyphVar)"
             />
             <g />
@@ -788,13 +786,19 @@ export default Vue.extend({
   cursor: pointer;
 }
 
+.node {
+  stroke-width: 1px;
+  stroke: #9E9E9E;
+}
+
 .node.selected {
   stroke-width: 6px;
   stroke: #F8CF91;
 }
 
 .labelBackground {
-  opacity: .4;
-  fill: rgb(255, 255, 255);
+  fill: #E0E0E0;
+  stroke-width: 1px;
+  stroke: #9E9E9E;
 }
 </style>
