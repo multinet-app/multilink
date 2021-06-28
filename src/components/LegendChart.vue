@@ -604,23 +604,22 @@ export default defineComponent({
           >
             <template #activator="{ on, attrs }">
               <v-btn
-                dark
-                fab
                 x-small
                 depressed
-                height="20"
-                width="20"
-                color="primary"
-                style="padding-left: 2px;"
+                text
+                tile
+                max-width="20"
+                class="pa-0 pl-1"
                 v-bind="attrs"
                 v-on="on"
               >
                 <v-icon
-                  :size="16"
+                  :size="24"
                   class="icon pt-0"
+                  color="primary"
                   dark
                 >
-                  mdi-chart-bubble
+                  mdi-chart-box
                 </v-icon>
               </v-btn>
             </template>
