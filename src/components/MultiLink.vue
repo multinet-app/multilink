@@ -299,10 +299,14 @@ export default Vue.extend({
             this.network.nodes
               .filter((innerNode) => this.selectedNodes.has(innerNode._id) && innerNode._id !== node._id)
               .forEach((innerNode) => {
-              // eslint-disable-next-line no-param-reassign
+                // eslint-disable-next-line no-param-reassign
                 innerNode.x = (innerNode.x || 0) + dx;
                 // eslint-disable-next-line no-param-reassign
                 innerNode.y = (innerNode.y || 0) + dy;
+                // eslint-disable-next-line no-param-reassign
+                innerNode.fx = (innerNode.x || 0) + dx;
+                // eslint-disable-next-line no-param-reassign
+                innerNode.fy = (innerNode.y || 0) + dy;
               });
           }
         }
@@ -311,6 +315,11 @@ export default Vue.extend({
         node.x = eventX;
         // eslint-disable-next-line no-param-reassign
         node.y = eventY;
+        // eslint-disable-next-line no-param-reassign
+        node.fx = eventX;
+        // eslint-disable-next-line no-param-reassign
+        node.fy = eventY;
+
         this.$forceUpdate();
       };
 
