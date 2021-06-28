@@ -652,7 +652,7 @@ export default defineComponent({
 }
 
 .label {
-  max-width: 130px;
+  max-width: 110px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
