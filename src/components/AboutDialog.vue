@@ -54,12 +54,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent, ref } from '@vue/composition-api';
 
-export default Vue.extend({
-  data() {
+export default defineComponent({
+  setup() {
+    const dialog = ref(false);
+
     return {
-      dialog: false,
+      dialog,
     };
   },
 });

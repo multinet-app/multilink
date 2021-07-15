@@ -1,64 +1,43 @@
 <script lang="ts">
-import Vue from 'vue';
 import store from '@/store';
 import { internalFieldNames, Link, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
+import { computed, defineComponent, ref } from '@vue/composition-api';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     DragTarget,
     LegendChart,
   },
 
-  data() {
-    return {
-      yAxisPadding: 25, // Gives enough width for hundreds on the y axis
-      sticky: {
-        barHeight: 100,
-        barHorizSpacing: 60,
-        barWidth: 30,
-        colorMapSquareSize: 15,
-        padding: 15,
-        plusBackgroundSize: 30,
-        rowHeight: 50,
-        varNameIndent: 50,
-      },
-      varPadding: 10,
-      tab: undefined,
-    };
-  },
+  setup() {
+    const tab = ref(undefined);
 
-  computed: {
-    network() {
-      return store.state.network;
-    },
+    const network = computed(() => store.state.network);
+    const nestedVariables = computed(() => store.state.nestedVariables);
+    const linkVariables = computed(() => store.state.linkVariables);
+    const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
+    const nodeColorVariable = computed(() => store.state.nodeColorVariable);
+    const columnTypes = computed(() => store.state.columnTypes);
 
-    nestedVariables() {
-      return store.state.nestedVariables;
-    },
+    function cleanVariableList(list: Set<string>): Set<string> {
+      const cleanedVariables = new Set<string>();
 
-    linkVariables() {
-      return store.state.linkVariables;
-    },
+      list.forEach((variable) => {
+        if (columnTypes.value[variable] !== 'label') {
+          cleanedVariables.add(variable);
+        }
+      });
 
-    nodeSizeVariable() {
-      return store.state.nodeSizeVariable;
-    },
+      return cleanedVariables;
+    }
 
-    nodeColorVariable() {
-      return store.state.nodeColorVariable;
-    },
-
-    columnTypes() {
-      return store.state.columnTypes;
-    },
-
-    cleanedNodeVariables(): Set<string> {
-      if (this.network !== null) {
+    const cleanedNodeVariables = computed(() => {
+      if (network.value !== null) {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
@@ -66,48 +45,39 @@ export default Vue.extend({
         allVars.delete('x');
         allVars.delete('y');
         allVars.delete('index');
-        return this.cleanVariableList(allVars);
+        return cleanVariableList(allVars);
       }
       return new Set();
-    },
+    });
 
-    cleanedLinkVariables(): Set<string> {
-      if (this.network !== null) {
+    const cleanedLinkVariables = computed(() => {
+      if (network.value !== null) {
         // Loop through all links, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.network.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
+        network.value.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('source');
         allVars.delete('target');
         allVars.delete('index');
 
-        return this.cleanVariableList(allVars);
+        return cleanVariableList(allVars);
       }
       return new Set();
-    },
+    });
 
-    displayCharts() {
-      return store.state.displayCharts;
-    },
+    const displayCharts = computed(() => store.state.displayCharts);
 
-    attributeRanges() {
-      return store.state.attributeRanges;
-    },
-  },
-
-  methods: {
-    cleanVariableList(list: Set<string>): Set<string> {
-      const cleanedVariables = new Set<string>();
-
-      list.forEach((variable) => {
-        if (this.columnTypes[variable] !== 'label') {
-          cleanedVariables.add(variable);
-        }
-      });
-
-      return cleanedVariables;
-    },
+    return {
+      tab,
+      nestedVariables,
+      linkVariables,
+      nodeSizeVariable,
+      nodeColorVariable,
+      displayCharts,
+      cleanedNodeVariables,
+      cleanedLinkVariables,
+    };
   },
 });
 </script>
