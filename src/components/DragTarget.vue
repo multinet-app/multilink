@@ -1,9 +1,8 @@
 <script lang="ts">
 import store from '@/store';
-import { computed } from '@vue/composition-api';
-import Vue, { PropType } from 'vue';
+import { computed, defineComponent, PropType } from '@vue/composition-api';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     title: {
       type: String,

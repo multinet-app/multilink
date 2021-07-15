@@ -1,8 +1,10 @@
 <script lang="ts">
 import store from '@/store';
-import { computed, ref, watchEffect } from '@vue/composition-api';
+import {
+  computed, defineComponent, ref, watchEffect,
+} from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   setup() {
     const rightClickMenu = computed(() => store.state.rightClickMenu);
     const selectedNodes = computed(() => store.state.selectedNodes);
@@ -79,7 +81,7 @@ export default {
       changeLayout,
     };
   },
-};
+});
 </script>
 
 <template>
