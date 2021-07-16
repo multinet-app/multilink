@@ -1,34 +1,33 @@
 <script lang="ts">
-import Vue from 'vue';
 import Legend from '@/components/Legend.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 import LoginMenu from '@/components/LoginMenu.vue';
 
 import store from '@/store';
-import { Node, Network, internalFieldNames } from '@/types';
+import { Node, internalFieldNames } from '@/types';
+import {
+  computed, defineComponent, Ref, ref,
+} from '@vue/composition-api';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     Legend,
     AboutDialog,
     LoginMenu,
   },
 
-  data() {
-    return {
-      searchTerm: '' as string,
-      searchErrors: [] as string[],
-      showTabs: false,
-      tab: undefined,
-    };
-  },
+  setup() {
+    const searchTerm = ref('');
+    const searchErrors: Ref<string[]> = ref([]);
+    const showTabs = ref(false);
+    const tab = ref(undefined);
+    const network = computed(() => store.state.network);
 
-  computed: {
-    multiVariableList(): Set<string | null> {
-      if (this.network !== null) {
+    const multiVariableList = computed(() => {
+      if (network.value !== null) {
         // Loop through all nodes, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        this.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('vx');
@@ -39,122 +38,107 @@ export default Vue.extend({
         return allVars;
       }
       return new Set();
-    },
+    });
 
-    displayCharts: {
+    const displayCharts = computed({
       get() {
         return store.state.displayCharts;
       },
       set(value: boolean) {
         return store.commit.setDisplayCharts(value);
       },
-    },
+    });
 
-    markerSize: {
+    const markerSize = computed({
       get() {
         return store.state.markerSize || 0;
       },
       set(value: number) {
         store.commit.setMarkerSize({ markerSize: value, updateProv: false });
       },
-    },
+    });
 
-    fontSize: {
+    const fontSize = computed({
       get() {
         return store.state.fontSize || 0;
       },
       set(value: number) {
         store.commit.setFontSize({ fontSize: value, updateProv: false });
       },
-    },
+    });
 
-    labelVariable: {
-      get(): string | undefined {
+    const labelVariable = computed({
+      get() {
         return store.state.labelVariable;
       },
-      set(value: string) {
+      set(value: string | undefined) {
         store.commit.setLabelVariable(value);
       },
-    },
+    });
 
-    selectNeighbors: {
+    const selectNeighbors = computed({
       get() {
         return store.state.selectNeighbors;
       },
       set(value: boolean) {
         store.commit.setSelectNeighbors(value);
       },
-    },
+    });
 
-    directionalEdges: {
+    const directionalEdges = computed({
       get() {
         return store.state.directionalEdges;
       },
       set(value: boolean) {
         store.commit.setDirectionalEdges(value);
       },
-    },
+    });
 
-    linkLength: {
+    const linkLength = computed({
       get() {
         return store.state.linkLength;
       },
       set(value: number) {
         store.commit.setLinkLength({ linkLength: value, updateProv: false });
       },
-    },
+    });
 
-    controlsWidth(): number {
-      return store.state.controlsWidth;
-    },
-
-    simulationRunning() {
-      return store.state.simulationRunning;
-    },
-
-    network(): Network | null {
-      return store.state.network;
-    },
-
-    networkMetadata() {
-      return store.state.networkMetadata;
-    },
-
-    autocompleteItems(): string[] {
-      if (this.network !== null && this.labelVariable !== undefined) {
-        return this.network.nodes.map((node) => (node[this.labelVariable || '']));
+    const controlsWidth = computed(() => store.state.controlsWidth);
+    const simulationRunning = computed(() => store.state.simulationRunning);
+    const networkMetadata = computed(() => store.state.networkMetadata);
+    const autocompleteItems = computed(() => {
+      if (network.value !== null && labelVariable.value !== undefined) {
+        return network.value.nodes.map((node) => (node[labelVariable.value || '']));
       }
       return [];
-    },
-  },
+    });
 
-  methods: {
-    startSimulation() {
+    function startSimulation() {
       store.commit.startSimulation();
-    },
+    }
 
-    stopSimulation() {
+    function stopSimulation() {
       store.commit.stopSimulation();
-    },
+    }
 
-    releaseNodes() {
+    function releaseNodes() {
       store.dispatch.releaseNodes();
-    },
+    }
 
-    exportNetwork() {
-      if (this.network === null) {
+    function exportNetwork() {
+      if (network.value === null) {
         return;
       }
 
       const networkToExport = {
-        nodes: this.network.nodes.map((node) => {
+        nodes: network.value.nodes.map((node) => {
           const newNode = { ...node };
           newNode.id = newNode._key;
           delete newNode._key;
 
           return newNode;
         }),
-        links: this.network.edges.map((edge) => {
+        links: network.value.edges.map((edge) => {
           const newEdge = { ...edge };
           newEdge.source = `${edge._from.split('/')[1]}`;
           newEdge.target = `${edge._to.split('/')[1]}`;
@@ -170,26 +154,24 @@ export default Vue.extend({
       );
       a.download = `${store.state.networkName}.json`;
       a.click();
-    },
+    }
 
-    search() {
-      const searchErrors: string[] = [];
-      if (this.network !== null) {
-        const nodeIDsToSelect = this.network.nodes
-          .filter((node) => (this.labelVariable !== undefined ? node[this.labelVariable] === this.searchTerm : false))
+    function search() {
+      searchErrors.value = [];
+      if (network.value !== null) {
+        const nodeIDsToSelect = network.value.nodes
+          .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
           .map((node) => node._id);
 
         if (nodeIDsToSelect.length > 0) {
           store.commit.addSelectedNode(nodeIDsToSelect);
         } else {
-          searchErrors.push('Enter a valid node to search');
+          searchErrors.value.push('Enter a valid node to search');
         }
       }
+    }
 
-      this.searchErrors = searchErrors;
-    },
-
-    updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
+    function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
       } else if (type === 'fontSize') {
@@ -197,11 +179,37 @@ export default Vue.extend({
       } else if (type === 'linkLength') {
         store.commit.setLinkLength({ linkLength: value, updateProv: true });
       }
-    },
+    }
 
-    toggleProvVis() {
+    function toggleProvVis() {
       store.commit.toggleShowProvenanceVis();
-    },
+    }
+
+    return {
+      searchTerm,
+      searchErrors,
+      showTabs,
+      tab,
+      displayCharts,
+      networkMetadata,
+      search,
+      autocompleteItems,
+      controlsWidth,
+      multiVariableList,
+      markerSize,
+      fontSize,
+      toggleProvVis,
+      updateSliderProv,
+      exportNetwork,
+      startSimulation,
+      stopSimulation,
+      releaseNodes,
+      simulationRunning,
+      labelVariable,
+      selectNeighbors,
+      directionalEdges,
+      linkLength,
+    };
   },
 });
 </script>

@@ -1,11 +1,11 @@
 <script lang="ts">
 import store from '@/store';
 import {
-  computed, Ref, ref, watchEffect,
+  computed, defineComponent, Ref, ref, watchEffect,
 } from '@vue/composition-api';
 import api from '@/api';
 
-export default {
+export default defineComponent({
   name: 'Alert',
 
   setup() {
@@ -53,7 +53,7 @@ export default {
       workspaceOptions,
     };
   },
-};
+});
 </script>
 
 <template>
