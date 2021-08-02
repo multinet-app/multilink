@@ -3,7 +3,7 @@ import {
   scaleLinear, ScaleLinear,
 } from 'd3-scale';
 import {
-  forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation,
+  forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
 } from 'd3-force';
 
 import store from '@/store';
@@ -117,8 +117,13 @@ export default defineComponent({
 
       applyForceToSimulation(
         store.state.simulation,
-        'center',
-        forceCenter<Node>(width / 2, height / 2),
+        'x',
+        forceX<Node>(width / 2),
+      );
+      applyForceToSimulation(
+        store.state.simulation,
+        'y',
+        forceY<Node>(height / 2),
       );
       store.commit.startSimulation();
 
@@ -505,7 +510,8 @@ export default defineComponent({
       if (network.value !== null) {
       // Make the simulation
         const simulation = forceSimulation<Node, SimulationLink>()
-          .force('center', forceCenter(svgDimensions.value.width / 2, svgDimensions.value.height / 2))
+          .force('x', forceX(svgDimensions.value.width / 2))
+          .force('y', forceY(svgDimensions.value.height / 2))
           .force('charge', forceManyBody<Node>().strength(-250))
           .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
           .force('collision', forceCollide((markerSize.value / 2) * 1.5));
