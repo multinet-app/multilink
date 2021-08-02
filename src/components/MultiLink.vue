@@ -244,8 +244,6 @@ export default defineComponent({
         const totalXMovement = Math.abs(initialX - finalX);
         const totalYMovement = Math.abs(initialY - finalY);
 
-        console.log(totalXMovement, totalYMovement);
-
         if (totalXMovement < 25 && totalYMovement < 25) {
           selectNode(node);
         }
