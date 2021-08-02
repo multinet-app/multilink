@@ -190,6 +190,11 @@ const {
     },
 
     addSelectedNode(state, nodesToAdd: string[]) {
+      // If no nodes, do nothing
+      if (nodesToAdd.length === 0) {
+        return;
+      }
+
       state.selectedNodes = new Set([...state.selectedNodes, ...nodesToAdd]);
 
       if (state.provenance !== null) {
