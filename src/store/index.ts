@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { createDirectStore } from 'direct-vuex';
 import {
-  forceCollide, forceManyBody, Simulation,
+  forceCollide, Simulation,
 } from 'd3-force';
 
 import {
@@ -308,14 +308,12 @@ const {
       const { linkLength, updateProv } = payload;
       state.linkLength = linkLength;
 
-      // Scale value to between -500, 0 for d3
-      const linkLengthForce = (linkLength * -5);
-
       // Apply force to simulation and restart it
       applyForceToSimulation(
         state.simulation,
-        'charge',
-        forceManyBody<Node>().strength(linkLengthForce),
+        'link',
+        undefined,
+        linkLength * 10,
       );
       store.commit.startSimulation();
 
