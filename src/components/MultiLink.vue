@@ -203,9 +203,9 @@ export default defineComponent({
                 // eslint-disable-next-line no-param-reassign
                 innerNode.y = (innerNode.y || 0) + dy;
                 // eslint-disable-next-line no-param-reassign
-                innerNode.fx = (innerNode.x || 0) + dx;
+                innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
                 // eslint-disable-next-line no-param-reassign
-                innerNode.fy = (innerNode.y || 0) + dy;
+                innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
               });
           }
         }
