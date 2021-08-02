@@ -92,7 +92,7 @@ export default defineComponent({
       // Redirect the user to the home page.
       // This is to prevent the logged-out user from continuing to look at, e.g.,
       // workspaces or tables they may have been viewing at the time of logout.
-      // TODO: #260
+      window.location.href = 'https://multinet.app';
     }
 
     // Get user info on created
