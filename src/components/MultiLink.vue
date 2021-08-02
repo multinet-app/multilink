@@ -179,6 +179,9 @@ export default defineComponent({
 
       event.stopPropagation();
 
+      const initialX = event.x - controlsWidth.value - (calculateNodeSize(node) / 2);
+      const initialY = event.y - (calculateNodeSize(node) / 2);
+
       const moveFn = (evt: Event) => {
         // Check we have a mouse event
         if (!(evt instanceof MouseEvent)) {
@@ -224,12 +227,28 @@ export default defineComponent({
         }
       };
 
-      const stopFn = () => {
+      const stopFn = (evt: Event) => {
         if (!(svg.value instanceof Element)) {
           throw new Error('SVG is not of type Element');
         }
         svg.value.removeEventListener('mousemove', moveFn);
         svg.value.removeEventListener('mouseup', stopFn);
+
+        // Check we have a mouse event
+        if (!(evt instanceof MouseEvent)) {
+          throw new Error('event is not MouseEvent');
+        }
+
+        const finalX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
+        const finalY = evt.y - (calculateNodeSize(node) / 2);
+        const totalXMovement = Math.abs(initialX - finalX);
+        const totalYMovement = Math.abs(initialY - finalY);
+
+        console.log(totalXMovement, totalYMovement);
+
+        if (totalXMovement < 25 && totalYMovement < 25) {
+          selectNode(node);
+        }
       };
 
       svg.value.addEventListener('mousemove', moveFn);
@@ -551,7 +570,6 @@ export default defineComponent({
       displayCharts,
       showTooltip,
       hideTooltip,
-      selectNode,
       nodeTextStyle,
       labelVariable,
       tooltipStyle,
@@ -640,7 +658,6 @@ export default defineComponent({
             :fill="nodeFill(node)"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
-            @click="selectNode(node)"
             @mouseover="showTooltip(node, $event)"
             @mouseout="hideTooltip"
             @mousedown="dragNode(node, $event)"
