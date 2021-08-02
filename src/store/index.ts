@@ -559,6 +559,11 @@ const {
             'directionalEdges',
             'linkLength',
           ].forEach((primitiveVariable) => {
+            // If not modified, don't update
+            if (provenanceState[primitiveVariable] === storeState[primitiveVariable]) {
+              return;
+            }
+
             if (primitiveVariable === 'markerSize') {
               commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
             } else if (primitiveVariable === 'linkLength') {
