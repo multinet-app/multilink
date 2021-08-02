@@ -173,6 +173,11 @@ export default defineComponent({
     }
 
     function dragNode(node: Node, event: MouseEvent) {
+      // Only drag on left clicks
+      if (event.button !== 0) {
+        return;
+      }
+
       if (!(svg.value instanceof Element)) {
         throw new Error('SVG is not of type Element');
       }
