@@ -507,21 +507,14 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if (network.value !== null) {
+      if (network.value !== null && simulationLinks.value !== null) {
       // Make the simulation
-        const simulation = forceSimulation<Node, SimulationLink>()
+        const simulation = forceSimulation<Node, SimulationLink>(network.value.nodes)
+          .force('link', forceLink<Node, SimulationLink>(simulationLinks.value).id((d) => { const datum = (d as Link); return datum._id; }).strength(0.5))
           .force('x', forceX(svgDimensions.value.width / 2))
           .force('y', forceY(svgDimensions.value.height / 2))
           .force('charge', forceManyBody<Node>().strength(-250))
-          .force('link', forceLink<Node, SimulationLink>().id((d) => { const datum = (d as Link); return datum._id; }))
           .force('collision', forceCollide((markerSize.value / 2) * 1.5));
-
-        simulation
-          .nodes(network.value.nodes);
-
-        (simulation
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .force('link') as any).links(simulationLinks.value);
 
         simulation
           .on('tick', () => {
