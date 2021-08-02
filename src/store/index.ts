@@ -74,7 +74,7 @@ const {
       left: 0,
     },
     userInfo: null,
-    linkLength: 50,
+    linkLength: 10,
     svgDimensions: {
       height: 0,
       width: 0,
