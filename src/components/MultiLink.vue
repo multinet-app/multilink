@@ -513,10 +513,8 @@ export default defineComponent({
           .force('link', forceLink<Node, SimulationLink>(simulationLinks.value).id((d) => { const datum = (d as Link); return datum._id; }).strength(0.5))
           .force('x', forceX(svgDimensions.value.width / 2))
           .force('y', forceY(svgDimensions.value.height / 2))
-          .force('charge', forceManyBody<Node>().strength(-250))
-          .force('collision', forceCollide((markerSize.value / 2) * 1.5));
-
-        simulation
+          .force('charge', forceManyBody<Node>().strength(-100))
+          .force('collision', forceCollide((markerSize.value / 2) * 1.5))
           .on('tick', () => {
             if (currentInstance !== null) {
               currentInstance.proxy.$forceUpdate();
