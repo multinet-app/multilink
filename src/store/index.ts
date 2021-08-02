@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { createDirectStore } from 'direct-vuex';
 import {
-  forceCollide, forceManyBody, Simulation,
+  forceCollide, Simulation,
 } from 'd3-force';
 
 import {
@@ -74,7 +74,7 @@ const {
       left: 0,
     },
     userInfo: null,
-    linkLength: 50,
+    linkLength: 10,
     svgDimensions: {
       height: 0,
       width: 0,
@@ -190,6 +190,11 @@ const {
     },
 
     addSelectedNode(state, nodesToAdd: string[]) {
+      // If no nodes, do nothing
+      if (nodesToAdd.length === 0) {
+        return;
+      }
+
       state.selectedNodes = new Set([...state.selectedNodes, ...nodesToAdd]);
 
       if (state.provenance !== null) {
@@ -308,14 +313,12 @@ const {
       const { linkLength, updateProv } = payload;
       state.linkLength = linkLength;
 
-      // Scale value to between -500, 0 for d3
-      const linkLengthForce = (linkLength * -5);
-
       // Apply force to simulation and restart it
       applyForceToSimulation(
         state.simulation,
-        'charge',
-        forceManyBody<Node>().strength(linkLengthForce),
+        'link',
+        undefined,
+        linkLength * 10,
       );
       store.commit.startSimulation();
 
@@ -561,6 +564,11 @@ const {
             'directionalEdges',
             'linkLength',
           ].forEach((primitiveVariable) => {
+            // If not modified, don't update
+            if (provenanceState[primitiveVariable] === storeState[primitiveVariable]) {
+              return;
+            }
+
             if (primitiveVariable === 'markerSize') {
               commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
             } else if (primitiveVariable === 'linkLength') {
