@@ -8,20 +8,20 @@ export interface Dimensions {
   width: number;
 }
 
-export interface Link extends TableRow {
+export interface Edge extends TableRow {
   _from: string;
   _to: string;
   [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
-export interface SimulationLink extends Link {
+export interface SimulationEdge extends Edge {
   source: string;
   target: string;
 }
 
 export interface Network {
   nodes: Node[];
-  edges: Link[];
+  edges: Edge[];
 }
 
 export interface Node extends TableRow {
@@ -50,7 +50,7 @@ export interface NestedVariables {
   glyph: string[];
 }
 
-export interface LinkStyleVariables {
+export interface EdgeStyleVariables {
   width: string;
   color: string;
 }
@@ -87,16 +87,16 @@ export interface State {
   labelVariable: string | undefined;
   selectNeighbors: boolean;
   nestedVariables: NestedVariables;
-  linkVariables: LinkStyleVariables;
+  edgeVariables: EdgeStyleVariables;
   nodeSizeVariable: string;
   nodeColorVariable: string;
   attributeRanges: AttributeRanges;
-  simulation: Simulation<Node, SimulationLink> | null;
+  simulation: Simulation<Node, SimulationEdge> | null;
   nodeColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
   nodeBarColorScale: ScaleOrdinal<string, string>;
   nodeGlyphColorScale: ScaleOrdinal<string, string>;
-  linkWidthScale: ScaleLinear<number, number>;
-  linkColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
+  edgeWidthScale: ScaleLinear<number, number>;
+  edgeColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
   directionalEdges: boolean;
   controlsWidth: number;
@@ -108,7 +108,7 @@ export interface State {
     left: number;
   };
   userInfo: UserSpec | null;
-  linkLength: number;
+  edgeLength: number;
   svgDimensions: Dimensions;
 }
 
@@ -124,7 +124,7 @@ export type ProvenanceEventTypes =
   'Set Node Size Variable' |
   'Set Select Neighbors'|
   'Set Directional Edges' |
-  'Set Link Length';
+  'Set Edge Length';
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev'] as const;
 export type InternalField = (typeof internalFieldNames)[number];

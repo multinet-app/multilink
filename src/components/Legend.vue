@@ -1,6 +1,6 @@
 <script lang="ts">
 import store from '@/store';
-import { internalFieldNames, Link, Node } from '@/types';
+import { internalFieldNames, Edge, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
 import { computed, defineComponent, ref } from '@vue/composition-api';
@@ -16,7 +16,7 @@ export default defineComponent({
 
     const network = computed(() => store.state.network);
     const nestedVariables = computed(() => store.state.nestedVariables);
-    const linkVariables = computed(() => store.state.linkVariables);
+    const edgeVariables = computed(() => store.state.edgeVariables);
     const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
     const nodeColorVariable = computed(() => store.state.nodeColorVariable);
     const columnTypes = computed(() => store.state.columnTypes);
@@ -50,11 +50,11 @@ export default defineComponent({
       return new Set();
     });
 
-    const cleanedLinkVariables = computed(() => {
+    const cleanedEdgeVariables = computed(() => {
       if (network.value !== null) {
-        // Loop through all links, flatten the 2d array, and turn it into a set
+        // Loop through all edges, flatten the 2d array, and turn it into a set
         const allVars: Set<string> = new Set();
-        network.value.edges.map((link: Link) => Object.keys(link).forEach((key) => allVars.add(key)));
+        network.value.edges.map((edge: Edge) => Object.keys(edge).forEach((key) => allVars.add(key)));
 
         internalFieldNames.forEach((field) => allVars.delete(field));
         allVars.delete('source');
@@ -71,12 +71,12 @@ export default defineComponent({
     return {
       tab,
       nestedVariables,
-      linkVariables,
+      edgeVariables,
       nodeSizeVariable,
       nodeColorVariable,
       displayCharts,
       cleanedNodeVariables,
-      cleanedLinkVariables,
+      cleanedEdgeVariables,
     };
   },
 });
@@ -95,7 +95,7 @@ export default defineComponent({
         Node Attrs.
       </v-tab>
       <v-tab>
-        Link Attrs.
+        Edge Attrs.
       </v-tab>
     </v-tabs>
 
@@ -219,15 +219,15 @@ export default defineComponent({
       >
         <div class="sticky">
           <drag-target
-            v-if="linkVariables.width === ''"
+            v-if="edgeVariables.width === ''"
             :title="'width'"
-            :type="'link'"
+            :type="'edge'"
           />
 
           <legend-chart
             v-else
-            :var-name="linkVariables.width"
-            :type="'link'"
+            :var-name="edgeVariables.width"
+            :type="'edge'"
             :selected="true"
             :mapped-to="'width'"
           />
@@ -235,15 +235,15 @@ export default defineComponent({
           <v-divider />
 
           <drag-target
-            v-if="linkVariables.color === ''"
+            v-if="edgeVariables.color === ''"
             :title="'color'"
-            :type="'link'"
+            :type="'edge'"
           />
 
           <legend-chart
             v-else
-            :var-name="linkVariables.color"
-            :type="'link'"
+            :var-name="edgeVariables.color"
+            :type="'edge'"
             :selected="true"
             :mapped-to="'color'"
           />
@@ -251,18 +251,18 @@ export default defineComponent({
           <v-divider />
         </div>
 
-        <div v-if="cleanedLinkVariables.size === 0">
-          No link attributes to visualize
+        <div v-if="cleanedEdgeVariables.size === 0">
+          No edge attributes to visualize
         </div>
 
         <div
-          v-for="linkAttr of cleanedLinkVariables"
+          v-for="edgeAttr of cleanedEdgeVariables"
           v-else
-          :key="`link${linkAttr}`"
+          :key="`edge${edgeAttr}`"
         >
           <legend-chart
-            :var-name="linkAttr"
-            :type="'link'"
+            :var-name="edgeAttr"
+            :type="'edge'"
             :selected="false"
           />
         </div>

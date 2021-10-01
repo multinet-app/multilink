@@ -8,7 +8,7 @@ import {
 
 import store from '@/store';
 import {
-  Node, Link, SimulationLink,
+  Node, Edge, SimulationEdge,
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
@@ -41,15 +41,15 @@ export default defineComponent({
     });
 
     const network = computed(() => store.state.network);
-    const simulationLinks = computed(() => {
+    const simulationEdges = computed(() => {
       if (network.value !== null) {
-        return network.value.edges.map((link: Link) => {
-          const newLink: SimulationLink = {
-            ...JSON.parse(JSON.stringify(link)),
-            source: link._from,
-            target: link._to,
+        return network.value.edges.map((edge: Edge) => {
+          const newEdge: SimulationEdge = {
+            ...JSON.parse(JSON.stringify(edge)),
+            source: edge._from,
+            target: edge._to,
           };
-          return newLink;
+          return newEdge;
         });
       }
       return null;
@@ -57,8 +57,8 @@ export default defineComponent({
     const selectedNodes = computed(() => store.state.selectedNodes);
     const oneHop = computed(() => {
       if (network.value !== null) {
-        const inNodes = network.value.edges.map((link) => (selectedNodes.value.has(link._to) ? link._from : null));
-        const outNodes = network.value.edges.map((link) => (selectedNodes.value.has(link._from) ? link._to : null));
+        const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
+        const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
 
         const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
 
@@ -93,7 +93,7 @@ export default defineComponent({
     const labelVariable = computed(() => store.state.labelVariable);
     const nodeColorVariable = computed(() => store.state.nodeColorVariable);
     const selectNeighbors = computed(() => store.state.selectNeighbors);
-    const linkVariables = computed(() => store.state.linkVariables);
+    const edgeVariables = computed(() => store.state.edgeVariables);
     const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
     const attributeRanges = computed(() => store.state.attributeRanges);
     const columnTypes = computed(() => store.state.columnTypes);
@@ -109,7 +109,7 @@ export default defineComponent({
       }
       return scales;
     });
-    const linkWidthScale = computed(() => store.getters.linkWidthScale);
+    const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
     const controlsWidth = computed(() => store.state.controlsWidth);
     const svgDimensions = computed(() => {
       const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
@@ -138,7 +138,7 @@ export default defineComponent({
     });
     const directionalEdges = computed(() => store.state.directionalEdges);
     const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
-    const linkColorScale = computed(() => store.getters.linkColorScale);
+    const edgeColorScale = computed(() => store.getters.edgeColorScale);
 
     function generateNodePositions(nodes: Node[]) {
       nodes.forEach((node) => {
@@ -258,7 +258,7 @@ export default defineComponent({
       svg.value.addEventListener('mouseup', stopFn);
     }
 
-    function showTooltip(element: Node | Link, event: MouseEvent) {
+    function showTooltip(element: Node | Edge, event: MouseEvent) {
       tooltipPosition.value = {
         x: event.clientX - controlsWidth.value,
         y: event.clientY,
@@ -301,13 +301,13 @@ export default defineComponent({
       return `translate(${forcedX}, ${forcedY})`;
     }
 
-    function arcPath(link: Link): string {
+    function arcPath(edge: Edge): string {
       if (network.value !== null) {
-        const fromNode = network.value.nodes.find((node) => node._id === link._from);
-        const toNode = network.value.nodes.find((node) => node._id === link._to);
+        const fromNode = network.value.nodes.find((node) => node._id === edge._from);
+        const toNode = network.value.nodes.find((node) => node._id === edge._to);
 
         if (fromNode === undefined || toNode === undefined) {
-          throw new Error('Couldn\'t find the source or target for a link, didn\'t draw arc.');
+          throw new Error('Couldn\'t find the source or target for a edge, didn\'t draw arc.');
         }
 
         if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
@@ -377,38 +377,38 @@ export default defineComponent({
       return useCalculatedValue ? nodeColorScale.value(calculatedValue) : '#EEEEEE';
     }
 
-    function linkGroupClass(link: Link): string {
+    function edgeGroupClass(edge: Edge): string {
       if (selectedNodes.value.size > 0) {
-        const selected = isSelected(link._from) || isSelected(link._to);
+        const selected = isSelected(edge._from) || isSelected(edge._to);
         const selectedClass = selected && selectNeighbors.value ? '' : 'muted';
-        return `linkGroup ${selectedClass}`;
+        return `edgeGroup ${selectedClass}`;
       }
-      return 'linkGroup';
+      return 'edgeGroup';
     }
 
-    function linkStyle(link: Link): string {
-      const linkWidth = linkVariables.value.width === '' ? 1 : linkWidthScale.value(link[linkVariables.value.width]);
+    function edgeStyle(edge: Edge): string {
+      const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 
-      const calculatedColorValue = link[linkVariables.value.color];
-      const useCalculatedColorValue = linkVariables.value.color !== ''
+      const calculatedColorValue = edge[edgeVariables.value.color];
+      const useCalculatedColorValue = edgeVariables.value.color !== ''
       && (
         // Numeric check
         (
-          columnTypes.value[linkVariables.value.color] === 'number'
-          && !(calculatedColorValue < linkColorScale.value.domain()[0] || calculatedColorValue > linkColorScale.value.domain()[1])
+          columnTypes.value[edgeVariables.value.color] === 'number'
+          && !(calculatedColorValue < edgeColorScale.value.domain()[0] || calculatedColorValue > edgeColorScale.value.domain()[1])
         )
         // Categorical check
         || (
-          columnTypes.value[linkVariables.value.color] !== 'number'
-          && attributeRanges.value[linkVariables.value.color]
-          && (attributeRanges.value[linkVariables.value.color].currentBinLabels || attributeRanges.value[linkVariables.value.color].binLabels)
+          columnTypes.value[edgeVariables.value.color] !== 'number'
+          && attributeRanges.value[edgeVariables.value.color]
+          && (attributeRanges.value[edgeVariables.value.color].currentBinLabels || attributeRanges.value[edgeVariables.value.color].binLabels)
             .find((label) => label.toString() === calculatedColorValue.toString())
         )
       );
 
       return `
-        stroke: ${useCalculatedColorValue ? linkColorScale.value(calculatedColorValue) : '#888888'};
-        stroke-width: ${(linkWidth > 20 || linkWidth < 1) ? 0 : linkWidth}px;
+        stroke: ${useCalculatedColorValue ? edgeColorScale.value(calculatedColorValue) : '#888888'};
+        stroke-width: ${(edgeWidth > 20 || edgeWidth < 1) ? 0 : edgeWidth}px;
         opacity: 0.7;
       `;
     }
@@ -529,10 +529,10 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if (network.value !== null && simulationLinks.value !== null) {
+      if (network.value !== null && simulationEdges.value !== null) {
       // Make the simulation
-        const simulation = forceSimulation<Node, SimulationLink>(network.value.nodes)
-          .force('link', forceLink<Node, SimulationLink>(simulationLinks.value).id((d) => { const datum = (d as Link); return datum._id; }).strength(0.5))
+        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
+          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5))
           .force('x', forceX(svgDimensions.value.width / 2))
           .force('y', forceY(svgDimensions.value.height / 2))
           .force('charge', forceManyBody<Node>().strength(-100))
@@ -558,8 +558,8 @@ export default defineComponent({
       svgDimensions,
       rectSelect,
       network,
-      linkGroupClass,
-      linkStyle,
+      edgeGroupClass,
+      edgeStyle,
       arcPath,
       directionalEdges,
       nodeGroupClass,
@@ -613,22 +613,22 @@ export default defineComponent({
       />
 
       <g
-        class="links"
+        class="edges"
         fill="none"
         alpha="0.8"
       >
         <g
-          v-for="link of network.edges"
-          :key="link._id"
-          :class="linkGroupClass(link)"
-          @mouseover="showTooltip(link, $event)"
+          v-for="edge of network.edges"
+          :key="edge._id"
+          :class="edgeGroupClass(edge)"
+          @mouseover="showTooltip(edge, $event)"
           @mouseout="hideTooltip"
         >
           <path
-            :id="`${link._key}_path`"
-            class="link"
-            :d="arcPath(link)"
-            :style="linkStyle(link)"
+            :id="`${edge._key}_path`"
+            class="edge"
+            :d="arcPath(edge)"
+            :style="edgeStyle(edge)"
           />
 
           <text
@@ -637,7 +637,7 @@ export default defineComponent({
             y="1"
           >
             <textPath
-              :href="`#${link._key}_path`"
+              :href="`#${edge._key}_path`"
               startOffset="50%"
               fill="#888888"
             >

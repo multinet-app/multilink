@@ -6,7 +6,7 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
+  Edge, Node, Network, NetworkMetadata, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
 import {
@@ -51,7 +51,7 @@ const {
       bar: [],
       glyph: [],
     },
-    linkVariables: {
+    edgeVariables: {
       width: '',
       color: '',
     },
@@ -61,8 +61,8 @@ const {
     nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    linkWidthScale: scaleLinear(),
-    linkColorScale: scaleOrdinal(schemeCategory10),
+    edgeWidthScale: scaleLinear(),
+    edgeColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -74,7 +74,7 @@ const {
       left: 0,
     },
     userInfo: null,
-    linkLength: 10,
+    edgeLength: 10,
     svgDimensions: {
       height: 0,
       width: 0,
@@ -94,10 +94,10 @@ const {
       return state.nodeGlyphColorScale;
     },
 
-    linkColorScale(state) {
-      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
-        const minValue = state.attributeRanges[state.linkVariables.color].currentMin || state.attributeRanges[state.linkVariables.color].min;
-        const maxValue = state.attributeRanges[state.linkVariables.color].currentMax || state.attributeRanges[state.linkVariables.color].max;
+    edgeColorScale(state) {
+      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.edgeVariables.color] === 'number') {
+        const minValue = state.attributeRanges[state.edgeVariables.color].currentMin || state.attributeRanges[state.edgeVariables.color].min;
+        const maxValue = state.attributeRanges[state.edgeVariables.color].currentMax || state.attributeRanges[state.edgeVariables.color].max;
 
         return scaleSequential(interpolateReds)
           .domain([minValue, maxValue]);
@@ -115,11 +115,11 @@ const {
         .range([10, 40]);
     },
 
-    linkWidthScale(state) {
-      const minValue = state.attributeRanges[state.linkVariables.width].currentMin || state.attributeRanges[state.linkVariables.width].min;
-      const maxValue = state.attributeRanges[state.linkVariables.width].currentMax || state.attributeRanges[state.linkVariables.width].max;
+    edgeWidthScale(state) {
+      const minValue = state.attributeRanges[state.edgeVariables.width].currentMin || state.attributeRanges[state.edgeVariables.width].min;
+      const maxValue = state.attributeRanges[state.edgeVariables.width].currentMax || state.attributeRanges[state.edgeVariables.width].max;
 
-      return state.linkWidthScale.domain([minValue, maxValue]).range([1, 20]);
+      return state.edgeWidthScale.domain([minValue, maxValue]).range([1, 20]);
     },
   },
   mutations: {
@@ -170,7 +170,7 @@ const {
       };
     },
 
-    setSimulation(state, simulation: Simulation<Node, SimulationLink>) {
+    setSimulation(state, simulation: Simulation<Node, SimulationEdge>) {
       state.simulation = simulation;
     },
 
@@ -281,8 +281,8 @@ const {
       state.nestedVariables = newNestedVars;
     },
 
-    setLinkVariables(state, linkVariables: LinkStyleVariables) {
-      state.linkVariables = linkVariables;
+    setEdgeVariables(state, edgeVariables: EdgeStyleVariables) {
+      state.edgeVariables = edgeVariables;
     },
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
@@ -309,21 +309,21 @@ const {
       }
     },
 
-    setLinkLength(state, payload: { linkLength: number; updateProv: boolean }) {
-      const { linkLength, updateProv } = payload;
-      state.linkLength = linkLength;
+    setEdgeLength(state, payload: { edgeLength: number; updateProv: boolean }) {
+      const { edgeLength, updateProv } = payload;
+      state.edgeLength = edgeLength;
 
       // Apply force to simulation and restart it
       applyForceToSimulation(
         state.simulation,
-        'link',
+        'edge',
         undefined,
-        linkLength * 10,
+        edgeLength * 10,
       );
       store.commit.startSimulation();
 
       if (state.provenance !== null && updateProv) {
-        updateProvenanceState(state, 'Set Link Length');
+        updateProvenanceState(state, 'Set Edge Length');
       }
     },
 
@@ -460,7 +460,7 @@ const {
       // Build the network object and set it as the network in the store
       const network = {
         nodes: nodes as Node[],
-        edges: edges as Link[],
+        edges: edges as Edge[],
       };
       commit.setNetwork(network);
 
@@ -562,7 +562,7 @@ const {
             'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
-            'linkLength',
+            'edgeLength',
           ].forEach((primitiveVariable) => {
             // If not modified, don't update
             if (provenanceState[primitiveVariable] === storeState[primitiveVariable]) {
@@ -571,8 +571,8 @@ const {
 
             if (primitiveVariable === 'markerSize') {
               commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
-            } else if (primitiveVariable === 'linkLength') {
-              commit.setLinkLength({ linkLength: provenanceState[primitiveVariable], updateProv: false });
+            } else if (primitiveVariable === 'edgeLength') {
+              commit.setEdgeLength({ edgeLength: provenanceState[primitiveVariable], updateProv: false });
             } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
             }

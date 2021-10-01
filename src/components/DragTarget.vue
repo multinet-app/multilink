@@ -9,7 +9,7 @@ export default defineComponent({
       required: true,
     },
     type: {
-      type: String as PropType<'node' | 'link'>,
+      type: String as PropType<'node' | 'edge'>,
       required: true,
     },
     showTitle: {
@@ -19,7 +19,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    const linkVariables = computed(() => store.state.linkVariables);
+    const edgeVariables = computed(() => store.state.edgeVariables);
     const nestedVariables = computed(() => store.state.nestedVariables);
 
     function elementDrop(event: DragEvent) {
@@ -45,18 +45,18 @@ export default defineComponent({
         store.commit.setNodeSizeVariable(droppedVarName);
       } else if (props.type === 'node' && props.title === 'color') {
         store.commit.setNodeColorVariable(droppedVarName);
-      } else if (props.type === 'link' && props.title === 'width') {
-        const updatedLinkVars = {
+      } else if (props.type === 'edge' && props.title === 'width') {
+        const updatedEdgeVars = {
           width: droppedVarName,
-          color: linkVariables.value.color,
+          color: edgeVariables.value.color,
         };
-        store.commit.setLinkVariables(updatedLinkVars);
-      } else if (props.type === 'link' && props.title === 'color') {
-        const updatedLinkVars = {
-          width: linkVariables.value.width,
+        store.commit.setEdgeVariables(updatedEdgeVars);
+      } else if (props.type === 'edge' && props.title === 'color') {
+        const updatedEdgeVars = {
+          width: edgeVariables.value.width,
           color: droppedVarName,
         };
-        store.commit.setLinkVariables(updatedLinkVars);
+        store.commit.setEdgeVariables(updatedEdgeVars);
       }
     }
 
