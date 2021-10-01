@@ -18,13 +18,13 @@ export default defineComponent({
     // Compute the workspace/network options
     const workspaceOptions: Ref<string[]> = ref([]);
     watchEffect(async () => {
-      workspaceOptions.value = await api.workspaces();
+      workspaceOptions.value = (await api.workspaces()).results.map((workspaceObj) => workspaceObj.name);
     });
 
     const networkOptions: Ref<string[]> = ref([]);
     watchEffect(async () => {
       if (workspace.value !== null) {
-        networkOptions.value = await api.graphs(workspace.value);
+        networkOptions.value = (await api.networks(workspace.value)).results.map((networkObj) => networkObj.name);
       }
     });
 
