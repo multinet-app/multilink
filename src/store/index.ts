@@ -9,7 +9,7 @@ import {
   Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
-import { ColumnTypes, UserSpec } from 'multinet';
+import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
@@ -380,11 +380,11 @@ const {
       commit.setWorkspaceName(workspaceName);
       commit.setNetworkName(networkName);
 
-      let networkTables: GraphSpec | undefined;
+      let network: NetworkSpec | undefined;
 
       // Get all table names
       try {
-        networkTables = await api.graph(workspaceName, networkName);
+        network = await api.network(workspaceName, networkName);
       } catch (error) {
         if (error.status === 404) {
           if (workspaceName === undefined || networkName === undefined) {
@@ -410,42 +410,43 @@ const {
           });
         }
       } finally {
-        if (context.state.loadError.message === '' && typeof networkTables === 'undefined') {
+        if (store.state.loadError.message === '' && typeof network === 'undefined') {
           // Catches CORS errors, issues when DB/API are down, etc.
           commit.setLoadError({
             message: 'There was a network issue when getting data',
-            href: `./?workspace=${workspaceName}&graph=${networkName}`,
+            href: `./?workspace=${workspaceName}&network=${networkName}`,
           });
         }
       }
 
-      if (networkTables === undefined) {
+      if (network === undefined) {
+        return;
+      }
+
+      // Check network size
+      if (network.node_count > 300) {
+        commit.setLoadError({
+          message: 'The network you are loading is too large',
+          href: 'https://multinet.app',
+        });
+      }
+
+      if (store.state.loadError.message !== '') {
         return;
       }
 
       // Generate all node table promises
-      const nodePromises: Promise<RowsSpec>[] = [];
-      networkTables.nodeTables.forEach((table) => {
-        nodePromises.push(api.table(workspaceName, table, { offset: 0, limit: 1000 }));
-      });
-
-      // Resolve all node table promises and extract the rows
-      const resolvedNodePromises = await Promise.all(nodePromises);
-      const nodes: TableRow[] = [];
-      resolvedNodePromises.forEach((resolvedPromise) => {
-        nodes.push(...resolvedPromise.rows);
-      });
+      const nodes = await api.nodes(workspaceName, networkName, { offset: 0, limit: 300 });
 
       // Generate and resolve edge table promise and extract rows
-      const edgePromise = await api.table(workspaceName, networkTables.edgeTable, { offset: 0, limit: 1000 });
-      const edges = edgePromise.rows;
+      const edges = await api.edges(workspaceName, networkName, { offset: 0, limit: 1000 });
 
       // Build the network object and set it as the network in the store
-      const network = {
-        nodes: nodes as Node[],
-        edges: edges as Edge[],
+      const networkElements = {
+        nodes: nodes.results as Node[],
+        edges: edges.results as Edge[],
       };
-      commit.setNetwork(network);
+      commit.setNetwork(networkElements);
 
       const networkTables = await api.networkTables(workspaceName, networkName);
       // Get the network metadata promises
@@ -467,7 +468,7 @@ const {
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();
-      network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+      networkElements.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       const bestLabelVar = [...allVars]
         .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
