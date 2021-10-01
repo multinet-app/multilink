@@ -105,7 +105,7 @@ export default defineComponent({
 
     const controlsWidth = computed(() => store.state.controlsWidth);
     const simulationRunning = computed(() => store.state.simulationRunning);
-    const networkMetadata = computed(() => store.state.networkMetadata);
+    const columnTypes = computed(() => store.state.columnTypes);
     const autocompleteItems = computed(() => {
       if (network.value !== null && labelVariable.value !== undefined) {
         return network.value.nodes.map((node) => (node[labelVariable.value || '']));
@@ -191,7 +191,7 @@ export default defineComponent({
       showTabs,
       tab,
       displayCharts,
-      networkMetadata,
+      columnTypes,
       search,
       autocompleteItems,
       controlsWidth,
@@ -492,7 +492,7 @@ export default defineComponent({
             color="blue darken-1"
           />
         </v-subheader>
-        <Legend v-if="networkMetadata !== null" />
+        <Legend v-if="columnTypes !== null" />
       </v-list>
     </v-navigation-drawer>
   </div>

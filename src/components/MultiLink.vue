@@ -357,7 +357,7 @@ export default defineComponent({
 
     function nodeFill(node: Node) {
       const calculatedValue = node[nodeColorVariable.value];
-      const useCalculatedValue = !displayCharts.value
+      const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
       && (
         // Numeric check
         (
@@ -390,7 +390,7 @@ export default defineComponent({
       const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 
       const calculatedColorValue = edge[edgeVariables.value.color];
-      const useCalculatedColorValue = edgeVariables.value.color !== ''
+      const useCalculatedColorValue = edgeVariables.value.color !== '' && columnTypes.value !== null
       && (
         // Numeric check
         (

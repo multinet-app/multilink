@@ -1,7 +1,7 @@
 import { Provenance } from '@visdesignlab/trrack';
 import { Simulation } from 'd3-force';
 import { ScaleLinear, ScaleOrdinal, ScaleSequential } from 'd3-scale';
-import { TableRow, TableMetadata, UserSpec } from 'multinet';
+import { TableRow, UserSpec, ColumnTypes } from 'multinet';
 
 export interface Dimensions {
   height: number;
@@ -71,14 +71,11 @@ export interface AttributeRanges {
   [key: string]: AttributeRange;
 }
 
-export interface NetworkMetadata { [tableName: string]: TableMetadata }
-
 export interface State {
   workspaceName: string | null;
   networkName: string | null;
   network: Network | null;
-  networkMetadata: NetworkMetadata | null;
-  columnTypes: { [key: string]: string };
+  columnTypes: ColumnTypes | null;
   selectedNodes: Set<string>;
   loadError: LoadError;
   displayCharts: boolean;

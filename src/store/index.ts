@@ -6,12 +6,10 @@ import {
 } from 'd3-force';
 
 import {
-  Edge, Node, Network, NetworkMetadata, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
+  Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
-import {
-  GraphSpec, RowsSpec, TableMetadata, TableRow, UserSpec,
-} from 'multinet';
+import { ColumnTypes, UserSpec } from 'multinet';
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
@@ -34,8 +32,7 @@ const {
     workspaceName: null,
     networkName: null,
     network: null,
-    networkMetadata: null,
-    columnTypes: {},
+    columnTypes: null,
     selectedNodes: new Set(),
     loadError: {
       message: '',
@@ -83,7 +80,7 @@ const {
 
   getters: {
     nodeColorScale(state) {
-      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
         const minValue = state.attributeRanges[state.nodeColorVariable].currentMin || state.attributeRanges[state.nodeColorVariable].min;
         const maxValue = state.attributeRanges[state.nodeColorVariable].currentMax || state.attributeRanges[state.nodeColorVariable].max;
 
@@ -95,7 +92,7 @@ const {
     },
 
     edgeColorScale(state) {
-      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.edgeVariables.color] === 'number') {
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.edgeVariables.color] === 'number') {
         const minValue = state.attributeRanges[state.edgeVariables.color].currentMin || state.attributeRanges[state.edgeVariables.color].min;
         const maxValue = state.attributeRanges[state.edgeVariables.color].currentMax || state.attributeRanges[state.edgeVariables.color].max;
 
@@ -135,22 +132,8 @@ const {
       state.network = network;
     },
 
-    setNetworkMetadata(state, networkMetadata: NetworkMetadata) {
-      state.networkMetadata = networkMetadata;
-    },
-
-    setColumnTypes(state, networkMetadata: NetworkMetadata) {
-      const typeMapping: { [key: string]: string } = {};
-
-      if (networkMetadata !== null) {
-        Object.values(networkMetadata).forEach((metadata) => {
-          (metadata as TableMetadata).table.columns.forEach((columnType) => {
-            typeMapping[columnType.key] = columnType.type;
-          });
-        });
-      }
-
-      state.columnTypes = typeMapping;
+    setColumnTypes(state, columnTypes: ColumnTypes) {
+      state.columnTypes = columnTypes;
     },
 
     setSelected(state, selectedNodes: Set<string>) {
@@ -464,25 +447,23 @@ const {
       };
       commit.setNetwork(network);
 
+      const networkTables = await api.networkTables(workspaceName, networkName);
       // Get the network metadata promises
-      const metadataPromises: Promise<TableMetadata>[] = [];
-      networkTables.nodeTables.forEach((table) => {
-        metadataPromises.push(api.tableMetadata(workspaceName, table));
+      const metadataPromises: Promise<ColumnTypes>[] = [];
+      networkTables.forEach((table) => {
+        metadataPromises.push(api.columnTypes(workspaceName, table.name));
       });
-      metadataPromises.push(api.tableMetadata(workspaceName, networkTables.edgeTable));
 
       // Resolve network metadata promises
       const resolvedMetadataPromises = await Promise.all(metadataPromises);
 
       // Combine all network metadata
-      const networkMetadata: NetworkMetadata = {};
-      resolvedMetadataPromises.forEach((metadata) => {
-        const tableName = metadata.item_id;
-        networkMetadata[tableName] = metadata;
+      const columnTypes: ColumnTypes = {};
+      resolvedMetadataPromises.forEach((types) => {
+        Object.assign(columnTypes, types);
       });
 
-      commit.setNetworkMetadata(networkMetadata);
-      commit.setColumnTypes(networkMetadata);
+      commit.setColumnTypes(columnTypes);
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();

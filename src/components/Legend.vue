@@ -25,7 +25,7 @@ export default defineComponent({
       const cleanedVariables = new Set<string>();
 
       list.forEach((variable) => {
-        if (columnTypes.value[variable] !== 'label') {
+        if (columnTypes.value !== null && columnTypes.value[variable] !== 'label') {
           cleanedVariables.add(variable);
         }
       });
