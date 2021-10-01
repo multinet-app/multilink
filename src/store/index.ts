@@ -18,6 +18,7 @@ import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
+import oauthClient from '@/oauth';
 
 Vue.use(Vuex);
 
@@ -486,7 +487,7 @@ const {
       const { commit } = rootActionContext(context);
 
       // Perform the server logout.
-      await api.logout();
+      oauthClient.logout();
       commit.setUserInfo(null);
     },
 

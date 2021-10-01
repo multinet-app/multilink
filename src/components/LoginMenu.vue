@@ -41,7 +41,7 @@
               class="google-sign-in"
               dark
               :ripple="false"
-              :href="loginLink"
+              @click="login"
             >
               <span class="google-logo">
                 <img
@@ -61,8 +61,8 @@
 </template>
 
 <script lang="ts">
-import { host } from '@/environment';
 import store from '@/store';
+import oauthClient from '@/oauth';
 import {
   computed, defineComponent, ref, watchEffect,
 } from '@vue/composition-api';
@@ -73,11 +73,7 @@ export default defineComponent({
     const location = ref('');
 
     const userInfo = computed(() => store.state.userInfo);
-    const loginLink = computed(() => {
-      const encodedLocation = encodeURIComponent(location.value);
-      return `${host}/api/user/oauth/google/login?return_url=${encodedLocation}`;
-    });
-    const userInitials = computed(() => (userInfo.value !== null ? `${userInfo.value.given_name[0]}${userInfo.value.family_name[0]}` : ''));
+    const userInitials = computed(() => (userInfo.value !== null ? `${userInfo.value.first_name[0] || ''}${userInfo.value.last_name[0] || ''}` : ''));
 
     watchEffect(() => {
       if (menu.value) {
@@ -95,13 +91,17 @@ export default defineComponent({
       window.location.href = 'https://multinet.app';
     }
 
+    function login(): void {
+      oauthClient.redirectToLogin();
+    }
+
     // Get user info on created
     store.dispatch.fetchUserInfo();
 
     return {
       menu,
       location,
-      loginLink,
+      login,
       userInitials,
       logout,
       userInfo,
