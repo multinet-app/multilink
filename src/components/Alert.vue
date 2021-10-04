@@ -32,7 +32,7 @@ export default defineComponent({
     const buttonText: Ref<string> = ref('');
     watchEffect(async () => {
       if (workspace.value !== null && network.value !== null) {
-        buttonHref.value = `./?workspace=${workspace.value}&graph=${network.value}`;
+        buttonHref.value = `./?workspace=${workspace.value}&network=${network.value}`;
         buttonText.value = 'Go To Network';
       } else if (loadError.value.message === 'There was a network issue when getting data') {
         buttonHref.value = loadError.value.href;
