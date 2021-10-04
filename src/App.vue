@@ -36,11 +36,11 @@ export default {
       return null;
     });
 
-    const { workspace, graph } = getUrlVars();
+    const urlVars = getUrlVars(); // Takes workspacce and network
 
     store.dispatch.fetchNetwork({
-      workspaceName: workspace,
-      networkName: graph,
+      workspaceName: urlVars.workspace,
+      networkName: urlVars.network,
     }).then(() => {
       store.dispatch.createProvenance();
       store.dispatch.guessLabel();
