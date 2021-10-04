@@ -1,6 +1,6 @@
 <script lang="ts">
 import store from '@/store';
-import { Node, Link } from '@/types';
+import { Node, Edge } from '@/types';
 import {
   computed, defineComponent, onMounted, PropType, watchEffect,
 } from '@vue/composition-api';
@@ -21,7 +21,7 @@ export default defineComponent({
       required: true,
     },
     type: {
-      type: String as PropType<'node' | 'link'>,
+      type: String as PropType<'node' | 'edge'>,
       required: true,
     },
     selected: {
@@ -53,23 +53,23 @@ export default defineComponent({
     const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
     const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
-    const linkWidthScale = computed(() => store.getters.linkWidthScale);
-    const linkColorScale = computed(() => store.getters.linkColorScale);
+    const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
+    const edgeColorScale = computed(() => store.getters.edgeColorScale);
     const attributeRanges = computed(() => store.state.attributeRanges);
 
     // TODO: https://github.com/multinet-app/multilink/issues/176
     // use table name for var selection
-    function isQuantitative(varName: string, type: 'node' | 'link') {
-      if (Object.keys(columnTypes.value).length > 0) {
+    function isQuantitative(varName: string, type: 'node' | 'edge') {
+      if (columnTypes.value !== null && Object.keys(columnTypes.value).length > 0) {
         return columnTypes.value[varName] === 'number';
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let nodesOrLinks: any[];
+      let nodesOrEdges: any[];
 
       if (network.value !== null) {
-        nodesOrLinks = type === 'node' ? network.value.nodes : network.value.edges;
-        const uniqueValues = [...new Set(nodesOrLinks.map((element) => parseFloat(element[varName])))];
+        nodesOrEdges = type === 'node' ? network.value.nodes : network.value.edges;
+        const uniqueValues = [...new Set(nodesOrEdges.map((element) => parseFloat(element[varName])))];
         return uniqueValues.length > 5;
       }
       return false;
@@ -106,15 +106,15 @@ export default defineComponent({
             glyph: newGlyphVars,
           });
         }
-      } else if (props.type === 'link') {
+      } else if (props.type === 'edge') {
         if (props.mappedTo === 'width') {
-          store.commit.setLinkVariables({
+          store.commit.setEdgeVariables({
             width: '',
-            color: store.state.linkVariables.color,
+            color: store.state.edgeVariables.color,
           });
         } else if (props.mappedTo === 'color') {
-          store.commit.setLinkVariables({
-            width: store.state.linkVariables.width,
+          store.commit.setEdgeVariables({
+            width: store.state.edgeVariables.width,
             color: '',
           });
         }
@@ -165,14 +165,14 @@ export default defineComponent({
           .attr('cy', yAxisPadding)
           .attr('r', 20)
           .attr('fill', '#3977AF');
-      } else if (props.mappedTo === 'width') { // link width
+      } else if (props.mappedTo === 'width') { // edge width
         yScale = scaleLinear()
-          .domain(linkWidthScale.value.domain())
+          .domain(edgeWidthScale.value.domain())
           .range([svgHeight, 10]);
 
-        const minValue = linkWidthScale.value.range()[0];
-        const maxValue = linkWidthScale.value.range()[1];
-        const middleValue = (linkWidthScale.value.range()[1] + linkWidthScale.value.range()[0]) / 2;
+        const minValue = edgeWidthScale.value.range()[0];
+        const maxValue = edgeWidthScale.value.range()[1];
+        const middleValue = (edgeWidthScale.value.range()[1] + edgeWidthScale.value.range()[0]) / 2;
 
         // Draw width lines
         variableSvg
@@ -198,7 +198,7 @@ export default defineComponent({
           .attr('x', yAxisPadding)
           .attr('y', svgHeight - 1)
           .attr('fill', '#888888');
-      } else if (props.mappedTo === 'color') { // node color and link color
+      } else if (props.mappedTo === 'color') { // node color and edge color
         if (isQuantitative(props.varName, props.type)) {
           // Gradient
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -212,10 +212,10 @@ export default defineComponent({
             scale = nodeColorScale.value;
           } else {
             xScale = scaleLinear()
-              .domain(linkColorScale.value.domain() as number[])
+              .domain(edgeColorScale.value.domain() as number[])
               .range([yAxisPadding, variableSvgWidth]);
 
-            scale = linkColorScale.value;
+            scale = edgeColorScale.value;
           }
 
           const minColor = scale(scale.domain()[0]);
@@ -255,7 +255,7 @@ export default defineComponent({
 
           // Swatches
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const binLabels: string[] = [...new Set<string>((currentData as any).map((d: Node | Link) => d[props.varName]))];
+          const binLabels: string[] = [...new Set<string>((currentData as any).map((d: Node | Edge) => d[props.varName]))];
 
           xScale = scaleBand()
             .domain(binLabels)
@@ -276,9 +276,9 @@ export default defineComponent({
             .attr('fill', (d) => nodeGlyphColorScale.value(d))
             .classed('swatch', true);
         }
-      } else if (props.mappedTo === 'glyphs') { // node color and link color
+      } else if (props.mappedTo === 'glyphs') { // node color and edge color
         // Swatches
-        const binLabels = [...new Set(network.value.nodes.map((d: Node | Link) => d[props.varName]))];
+        const binLabels = [...new Set(network.value.nodes.map((d: Node | Edge) => d[props.varName]))];
 
         xScale = scaleBand()
           .domain(binLabels)
@@ -353,9 +353,9 @@ export default defineComponent({
       } else if (isQuantitative(props.varName, props.type)) { // main numeric legend charts
         let currentData: number[] = [];
         if (props.type === 'node') {
-          currentData = network.value.nodes.map((d: Node | Link) => parseFloat(d[props.varName]));
+          currentData = network.value.nodes.map((d: Node | Edge) => parseFloat(d[props.varName]));
         } else {
-          currentData = network.value.edges.map((d: Node | Link) => parseFloat(d[props.varName]));
+          currentData = network.value.edges.map((d: Node | Edge) => parseFloat(d[props.varName]));
         }
 
         xScale = scaleLinear()
@@ -396,9 +396,9 @@ export default defineComponent({
       } else { // main categorical legend charts
         let currentData: string[] = [];
         if (props.type === 'node') {
-          currentData = network.value.nodes.map((d: Node | Link) => d[props.varName]).sort();
+          currentData = network.value.nodes.map((d: Node | Edge) => d[props.varName]).sort();
         } else {
-          currentData = network.value.edges.map((d: Node | Link) => d[props.varName]).sort();
+          currentData = network.value.edges.map((d: Node | Edge) => d[props.varName]).sort();
         }
 
         const bins = new Map([...new Set(currentData)].map(
@@ -487,7 +487,7 @@ export default defineComponent({
             } else if (
               (props.filter === 'size' && props.type === 'node')
               || (props.filter === 'color' && isQuantitative(props.varName, props.type))
-              || (props.filter === 'width' && props.type === 'link')
+              || (props.filter === 'width' && props.type === 'edge')
             ) {
               const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
               const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;

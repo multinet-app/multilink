@@ -94,18 +94,18 @@ export default defineComponent({
       },
     });
 
-    const linkLength = computed({
+    const edgeLength = computed({
       get() {
-        return store.state.linkLength;
+        return store.state.edgeLength;
       },
       set(value: number) {
-        store.commit.setLinkLength({ linkLength: value, updateProv: false });
+        store.commit.setEdgeLength({ edgeLength: value, updateProv: false });
       },
     });
 
     const controlsWidth = computed(() => store.state.controlsWidth);
     const simulationRunning = computed(() => store.state.simulationRunning);
-    const networkMetadata = computed(() => store.state.networkMetadata);
+    const columnTypes = computed(() => store.state.columnTypes);
     const autocompleteItems = computed(() => {
       if (network.value !== null && labelVariable.value !== undefined) {
         return network.value.nodes.map((node) => (node[labelVariable.value || '']));
@@ -138,7 +138,7 @@ export default defineComponent({
 
           return newNode;
         }),
-        links: network.value.edges.map((edge) => {
+        edges: network.value.edges.map((edge) => {
           const newEdge = { ...edge };
           newEdge.source = `${edge._from.split('/')[1]}`;
           newEdge.target = `${edge._to.split('/')[1]}`;
@@ -171,13 +171,13 @@ export default defineComponent({
       }
     }
 
-    function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'linkLength') {
+    function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
       if (type === 'markerSize') {
         store.commit.setMarkerSize({ markerSize: value, updateProv: true });
       } else if (type === 'fontSize') {
         store.commit.setFontSize({ fontSize: value, updateProv: true });
-      } else if (type === 'linkLength') {
-        store.commit.setLinkLength({ linkLength: value, updateProv: true });
+      } else if (type === 'edgeLength') {
+        store.commit.setEdgeLength({ edgeLength: value, updateProv: true });
       }
     }
 
@@ -191,7 +191,7 @@ export default defineComponent({
       showTabs,
       tab,
       displayCharts,
-      networkMetadata,
+      columnTypes,
       search,
       autocompleteItems,
       controlsWidth,
@@ -208,7 +208,7 @@ export default defineComponent({
       labelVariable,
       selectNeighbors,
       directionalEdges,
-      linkLength,
+      edgeLength,
     };
   },
 });
@@ -433,18 +433,18 @@ export default defineComponent({
               />
 
               <v-card-subtitle class="pb-0">
-                Link Length
+                Edge Length
               </v-card-subtitle>
               <v-slider
-                v-model="linkLength"
+                v-model="edgeLength"
                 :min="0"
                 :max="100"
-                :label="linkLength.toString()"
+                :label="edgeLength.toString()"
                 class="px-2"
                 inverse-label
                 hide-details
                 color="blue darken-1"
-                @change="(value) => updateSliderProv(linkLength, 'linkLength')"
+                @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
               />
 
               <v-list-item>
@@ -492,7 +492,7 @@ export default defineComponent({
             color="blue darken-1"
           />
         </v-subheader>
-        <Legend v-if="networkMetadata !== null" />
+        <Legend v-if="columnTypes !== null" />
       </v-list>
     </v-navigation-drawer>
   </div>

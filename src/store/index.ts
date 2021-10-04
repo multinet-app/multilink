@@ -6,12 +6,10 @@ import {
 } from 'd3-force';
 
 import {
-  Link, Node, Network, NetworkMetadata, SimulationLink, State, LinkStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
+  Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
 } from '@/types';
 import api from '@/api';
-import {
-  GraphSpec, RowsSpec, TableMetadata, TableRow, UserSpec,
-} from 'multinet';
+import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
@@ -20,6 +18,7 @@ import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
+import oauthClient from '@/oauth';
 
 Vue.use(Vuex);
 
@@ -34,8 +33,7 @@ const {
     workspaceName: null,
     networkName: null,
     network: null,
-    networkMetadata: null,
-    columnTypes: {},
+    columnTypes: null,
     selectedNodes: new Set(),
     loadError: {
       message: '',
@@ -51,7 +49,7 @@ const {
       bar: [],
       glyph: [],
     },
-    linkVariables: {
+    edgeVariables: {
       width: '',
       color: '',
     },
@@ -61,8 +59,8 @@ const {
     nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    linkWidthScale: scaleLinear(),
-    linkColorScale: scaleOrdinal(schemeCategory10),
+    edgeWidthScale: scaleLinear(),
+    edgeColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -74,7 +72,7 @@ const {
       left: 0,
     },
     userInfo: null,
-    linkLength: 10,
+    edgeLength: 10,
     svgDimensions: {
       height: 0,
       width: 0,
@@ -83,7 +81,7 @@ const {
 
   getters: {
     nodeColorScale(state) {
-      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeColorVariable] === 'number') {
         const minValue = state.attributeRanges[state.nodeColorVariable].currentMin || state.attributeRanges[state.nodeColorVariable].min;
         const maxValue = state.attributeRanges[state.nodeColorVariable].currentMax || state.attributeRanges[state.nodeColorVariable].max;
 
@@ -94,10 +92,10 @@ const {
       return state.nodeGlyphColorScale;
     },
 
-    linkColorScale(state) {
-      if (Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.linkVariables.color] === 'number') {
-        const minValue = state.attributeRanges[state.linkVariables.color].currentMin || state.attributeRanges[state.linkVariables.color].min;
-        const maxValue = state.attributeRanges[state.linkVariables.color].currentMax || state.attributeRanges[state.linkVariables.color].max;
+    edgeColorScale(state) {
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.edgeVariables.color] === 'number') {
+        const minValue = state.attributeRanges[state.edgeVariables.color].currentMin || state.attributeRanges[state.edgeVariables.color].min;
+        const maxValue = state.attributeRanges[state.edgeVariables.color].currentMax || state.attributeRanges[state.edgeVariables.color].max;
 
         return scaleSequential(interpolateReds)
           .domain([minValue, maxValue]);
@@ -115,11 +113,11 @@ const {
         .range([10, 40]);
     },
 
-    linkWidthScale(state) {
-      const minValue = state.attributeRanges[state.linkVariables.width].currentMin || state.attributeRanges[state.linkVariables.width].min;
-      const maxValue = state.attributeRanges[state.linkVariables.width].currentMax || state.attributeRanges[state.linkVariables.width].max;
+    edgeWidthScale(state) {
+      const minValue = state.attributeRanges[state.edgeVariables.width].currentMin || state.attributeRanges[state.edgeVariables.width].min;
+      const maxValue = state.attributeRanges[state.edgeVariables.width].currentMax || state.attributeRanges[state.edgeVariables.width].max;
 
-      return state.linkWidthScale.domain([minValue, maxValue]).range([1, 20]);
+      return state.edgeWidthScale.domain([minValue, maxValue]).range([1, 20]);
     },
   },
   mutations: {
@@ -135,22 +133,8 @@ const {
       state.network = network;
     },
 
-    setNetworkMetadata(state, networkMetadata: NetworkMetadata) {
-      state.networkMetadata = networkMetadata;
-    },
-
-    setColumnTypes(state, networkMetadata: NetworkMetadata) {
-      const typeMapping: { [key: string]: string } = {};
-
-      if (networkMetadata !== null) {
-        Object.values(networkMetadata).forEach((metadata) => {
-          (metadata as TableMetadata).table.columns.forEach((columnType) => {
-            typeMapping[columnType.key] = columnType.type;
-          });
-        });
-      }
-
-      state.columnTypes = typeMapping;
+    setColumnTypes(state, columnTypes: ColumnTypes) {
+      state.columnTypes = columnTypes;
     },
 
     setSelected(state, selectedNodes: Set<string>) {
@@ -170,7 +154,7 @@ const {
       };
     },
 
-    setSimulation(state, simulation: Simulation<Node, SimulationLink>) {
+    setSimulation(state, simulation: Simulation<Node, SimulationEdge>) {
       state.simulation = simulation;
     },
 
@@ -281,8 +265,8 @@ const {
       state.nestedVariables = newNestedVars;
     },
 
-    setLinkVariables(state, linkVariables: LinkStyleVariables) {
-      state.linkVariables = linkVariables;
+    setEdgeVariables(state, edgeVariables: EdgeStyleVariables) {
+      state.edgeVariables = edgeVariables;
     },
 
     setNodeSizeVariable(state, nodeSizeVariable: string) {
@@ -309,21 +293,21 @@ const {
       }
     },
 
-    setLinkLength(state, payload: { linkLength: number; updateProv: boolean }) {
-      const { linkLength, updateProv } = payload;
-      state.linkLength = linkLength;
+    setEdgeLength(state, payload: { edgeLength: number; updateProv: boolean }) {
+      const { edgeLength, updateProv } = payload;
+      state.edgeLength = edgeLength;
 
       // Apply force to simulation and restart it
       applyForceToSimulation(
         state.simulation,
-        'link',
+        'edge',
         undefined,
-        linkLength * 10,
+        edgeLength * 10,
       );
       store.commit.startSimulation();
 
       if (state.provenance !== null && updateProv) {
-        updateProvenanceState(state, 'Set Link Length');
+        updateProvenanceState(state, 'Set Edge Length');
       }
     },
 
@@ -389,11 +373,11 @@ const {
       commit.setWorkspaceName(workspaceName);
       commit.setNetworkName(networkName);
 
-      let networkTables: GraphSpec | undefined;
+      let network: NetworkSpec | undefined;
 
       // Get all table names
       try {
-        networkTables = await api.graph(workspaceName, networkName);
+        network = await api.network(workspaceName, networkName);
       } catch (error) {
         if (error.status === 404) {
           if (workspaceName === undefined || networkName === undefined) {
@@ -419,66 +403,65 @@ const {
           });
         }
       } finally {
-        if (context.state.loadError.message === '' && typeof networkTables === 'undefined') {
+        if (store.state.loadError.message === '' && typeof network === 'undefined') {
           // Catches CORS errors, issues when DB/API are down, etc.
           commit.setLoadError({
             message: 'There was a network issue when getting data',
-            href: `./?workspace=${workspaceName}&graph=${networkName}`,
+            href: `./?workspace=${workspaceName}&network=${networkName}`,
           });
         }
       }
 
-      if (networkTables === undefined) {
+      if (network === undefined) {
+        return;
+      }
+
+      // Check network size
+      if (network.node_count > 300) {
+        commit.setLoadError({
+          message: 'The network you are loading is too large',
+          href: 'https://multinet.app',
+        });
+      }
+
+      if (store.state.loadError.message !== '') {
         return;
       }
 
       // Generate all node table promises
-      const nodePromises: Promise<RowsSpec>[] = [];
-      networkTables.nodeTables.forEach((table) => {
-        nodePromises.push(api.table(workspaceName, table, { offset: 0, limit: 1000 }));
-      });
-
-      // Resolve all node table promises and extract the rows
-      const resolvedNodePromises = await Promise.all(nodePromises);
-      const nodes: TableRow[] = [];
-      resolvedNodePromises.forEach((resolvedPromise) => {
-        nodes.push(...resolvedPromise.rows);
-      });
+      const nodes = await api.nodes(workspaceName, networkName, { offset: 0, limit: 300 });
 
       // Generate and resolve edge table promise and extract rows
-      const edgePromise = await api.table(workspaceName, networkTables.edgeTable, { offset: 0, limit: 1000 });
-      const edges = edgePromise.rows;
+      const edges = await api.edges(workspaceName, networkName, { offset: 0, limit: 1000 });
 
       // Build the network object and set it as the network in the store
-      const network = {
-        nodes: nodes as Node[],
-        edges: edges as Link[],
+      const networkElements = {
+        nodes: nodes.results as Node[],
+        edges: edges.results as Edge[],
       };
-      commit.setNetwork(network);
+      commit.setNetwork(networkElements);
 
+      const networkTables = await api.networkTables(workspaceName, networkName);
       // Get the network metadata promises
-      const metadataPromises: Promise<TableMetadata>[] = [];
-      networkTables.nodeTables.forEach((table) => {
-        metadataPromises.push(api.tableMetadata(workspaceName, table));
+      const metadataPromises: Promise<ColumnTypes>[] = [];
+      networkTables.forEach((table) => {
+        metadataPromises.push(api.columnTypes(workspaceName, table.name));
       });
-      metadataPromises.push(api.tableMetadata(workspaceName, networkTables.edgeTable));
 
       // Resolve network metadata promises
       const resolvedMetadataPromises = await Promise.all(metadataPromises);
 
       // Combine all network metadata
-      const networkMetadata: NetworkMetadata = {};
-      resolvedMetadataPromises.forEach((metadata) => {
-        const tableName = metadata.item_id;
-        networkMetadata[tableName] = metadata;
+      const columnTypes: ColumnTypes = {};
+      resolvedMetadataPromises.forEach((types) => {
+        Object.assign(columnTypes, types);
       });
 
-      commit.setNetworkMetadata(networkMetadata);
-      commit.setColumnTypes(networkMetadata);
+      commit.setColumnTypes(columnTypes);
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();
-      network.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+      networkElements.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
       const bestLabelVar = [...allVars]
         .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
@@ -496,7 +479,7 @@ const {
       const { commit } = rootActionContext(context);
 
       // Perform the server logout.
-      await api.logout();
+      oauthClient.logout();
       commit.setUserInfo(null);
     },
 
@@ -554,7 +537,7 @@ const {
             'nodeColorVariable',
             'selectNeighbors',
             'directionalEdges',
-            'linkLength',
+            'edgeLength',
           ].forEach((primitiveVariable) => {
             // If not modified, don't update
             if (provenanceState[primitiveVariable] === storeState[primitiveVariable]) {
@@ -563,8 +546,8 @@ const {
 
             if (primitiveVariable === 'markerSize') {
               commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
-            } else if (primitiveVariable === 'linkLength') {
-              commit.setLinkLength({ linkLength: provenanceState[primitiveVariable], updateProv: false });
+            } else if (primitiveVariable === 'edgeLength') {
+              commit.setEdgeLength({ edgeLength: provenanceState[primitiveVariable], updateProv: false });
             } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
             }

@@ -23,8 +23,8 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
       provState.selectNeighbors = newProvState.selectNeighbors;
     } else if (label === 'Set Directional Edges') {
       provState.directionalEdges = newProvState.directionalEdges;
-    } else if (label === 'Set Link Length') {
-      provState.linkLength = newProvState.linkLength;
+    } else if (label === 'Set Edge Length') {
+      provState.edgeLength = newProvState.edgeLength;
     }
 
     /* eslint-enable no-param-reassign */
