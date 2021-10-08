@@ -69,7 +69,7 @@ export default defineComponent({
       }
     });
 
-    function changeLayout(numVar: string, axis: 'x' | 'y') {
+    function changeLayout(varName: string, axis: 'x' | 'y', type: 'numeric' | 'categorical') {
       // Close the menu
       store.commit.updateRightClickMenu({
         show: false,
@@ -77,7 +77,9 @@ export default defineComponent({
         left: rightClickMenu.value.left,
       });
 
-      store.commit.applyNumericLayout({ varName: numVar, axis, firstLayout: firstLayout.value });
+      store.commit.applyVariableLayout({
+        varName, axis, firstLayout: firstLayout.value, type,
+      });
 
       firstLayout.value = false;
     }
@@ -208,7 +210,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'x')"
+                                @click="changeLayout(numVar, 'x', 'numeric')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -219,7 +221,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'y')"
+                                @click="changeLayout(numVar, 'y', 'numeric')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -289,7 +291,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'x')"
+                                @click="changeLayout(catVar, 'x', 'categorical')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -300,7 +302,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'y')"
+                                @click="changeLayout(catVar, 'y', 'categorical')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
