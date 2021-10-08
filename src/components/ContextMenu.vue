@@ -156,7 +156,7 @@ export default defineComponent({
               </v-list-item-title>
             </template>
 
-            <v-list>
+            <v-list :width="175">
               <v-list-item
                 dense
               >
