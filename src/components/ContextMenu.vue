@@ -1,7 +1,7 @@
 <script lang="ts">
 import store from '@/store';
 import {
-  computed, defineComponent, ref, watchEffect,
+  computed, defineComponent,
 } from '@vue/composition-api';
 
 export default defineComponent({
@@ -60,15 +60,6 @@ export default defineComponent({
       }
     }
 
-    // Track whether the layout has been applied before, reset when simulation starts again
-    // If so, we won't want to reset the "other axis" to a constant value
-    const firstLayout = ref(true);
-    watchEffect(() => {
-      if (store.state.simulationRunning && !firstLayout.value) {
-        firstLayout.value = true;
-      }
-    });
-
     function changeLayout(varName: string, axis: 'x' | 'y', type: 'numeric' | 'categorical') {
       // Close the menu
       store.commit.updateRightClickMenu({
@@ -78,10 +69,8 @@ export default defineComponent({
       });
 
       store.commit.applyVariableLayout({
-        varName, axis, firstLayout: firstLayout.value, type,
+        varName, axis, type,
       });
-
-      firstLayout.value = false;
     }
 
     return {
