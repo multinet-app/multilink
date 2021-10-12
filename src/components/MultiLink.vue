@@ -23,62 +23,16 @@ export default defineComponent({
   },
 
   setup() {
+    // Commonly used variables
     const currentInstance = getCurrentInstance();
-
-    const svg: Ref<Element | null> = ref(null);
-    const straightEdges = ref(false);
-    const tooltipMessage = ref('');
-    const toggleTooltip = ref(false);
-    const tooltipPosition = ref({ x: 0, y: 0 });
-    const nestedPadding = ref(5);
-    const rectSelect = ref({
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      transformX: 0,
-      transformY: 0,
-    });
-
     const network = computed(() => store.state.network);
-    const simulationEdges = computed(() => {
-      if (network.value !== null) {
-        return network.value.edges.map((edge: Edge) => {
-          const newEdge: SimulationEdge = {
-            ...JSON.parse(JSON.stringify(edge)),
-            source: edge._from,
-            target: edge._to,
-          };
-          return newEdge;
-        });
-      }
-      return null;
-    });
+    const svg: Ref<Element | null> = ref(null);
     const selectedNodes = computed(() => store.state.selectedNodes);
-    const oneHop = computed(() => {
-      if (network.value !== null) {
-        const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
-        const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
-
-        const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
-
-        // Remove null if it exists
-        if (oneHopNodeIDs.has(null)) {
-          oneHopNodeIDs.delete(null);
-        }
-
-        return oneHopNodeIDs;
-      }
-      return new Set();
-    });
-    const nodeColorScale = computed(() => store.getters.nodeColorScale);
     const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
-    const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
-    const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px`);
-    const fontSize = computed(() => store.state.fontSize || 0);
-    const nodeTextStyle = computed(() => `font-size: ${fontSize.value}pt;`);
+    const nodeTextStyle = computed(() => `font-size: ${store.state.fontSize || 0}pt;`);
     const nestedVariables = computed(() => store.state.nestedVariables);
     const markerSize = computed(() => store.state.markerSize || 0);
+    const nestedPadding = ref(5);
     const nestedBarWidth = computed(() => {
       const hasGlyphs = nestedVariables.value.glyph.length !== 0;
       const totalColumns = nestedVariables.value.bar.length + (hasGlyphs ? 1 : 0);
@@ -91,10 +45,7 @@ export default defineComponent({
     const nestedBarHeight = computed(() => markerSize.value - 24);
     const displayCharts = computed(() => store.state.displayCharts);
     const labelVariable = computed(() => store.state.labelVariable);
-    const nodeColorVariable = computed(() => store.state.nodeColorVariable);
     const selectNeighbors = computed(() => store.state.selectNeighbors);
-    const edgeVariables = computed(() => store.state.edgeVariables);
-    const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
     const attributeRanges = computed(() => store.state.attributeRanges);
     const columnTypes = computed(() => store.state.columnTypes);
     const attributeScales = computed(() => {
@@ -109,8 +60,12 @@ export default defineComponent({
       }
       return scales;
     });
-    const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
     const controlsWidth = computed(() => store.state.controlsWidth);
+    const directionalEdges = computed(() => store.state.directionalEdges);
+    const edgeColorScale = computed(() => store.getters.edgeColorScale);
+
+    // Update height and width as the window size changes
+    // Also update center attraction forces as the size changes
     const svgDimensions = computed(() => {
       const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
       const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
@@ -149,21 +104,6 @@ export default defineComponent({
 
       return dimensions;
     });
-    const directionalEdges = computed(() => store.state.directionalEdges);
-    const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
-    const edgeColorScale = computed(() => store.getters.edgeColorScale);
-
-    function generateNodePositions(nodes: Node[]) {
-      nodes.forEach((node) => {
-        // If the position is not defined for x or y, generate it
-        if (node.x === undefined || node.y === undefined) {
-          // eslint-disable-next-line no-param-reassign
-          node.x = Math.random() * svgDimensions.value.width;
-          // eslint-disable-next-line no-param-reassign
-          node.y = Math.random() * svgDimensions.value.height;
-        }
-      });
-    }
 
     function selectNode(node: Node) {
       if (selectedNodes.value.has(node._id)) {
@@ -173,6 +113,8 @@ export default defineComponent({
       }
     }
 
+    const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
+    const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
     function calculateNodeSize(node: Node) {
       // Don't render dynamic node size if the size variable is empty or
       // we want to display charts
@@ -271,6 +213,10 @@ export default defineComponent({
       svg.value.addEventListener('mouseup', stopFn);
     }
 
+    const tooltipMessage = ref('');
+    const toggleTooltip = ref(false);
+    const tooltipPosition = ref({ x: 0, y: 0 });
+    const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px`);
     function showTooltip(element: Node | Edge, event: MouseEvent) {
       tooltipPosition.value = {
         x: event.clientX - controlsWidth.value,
@@ -339,9 +285,6 @@ export default defineComponent({
         const xRotation = 0;
         const largeArc = 0;
 
-        if (straightEdges.value) {
-          return (`M ${x1} ${y1} L ${x2} ${y2}`);
-        }
         return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
       }
       return '';
@@ -351,6 +294,22 @@ export default defineComponent({
       return selectedNodes.value.has(nodeID);
     }
 
+    const oneHop = computed(() => {
+      if (network.value !== null) {
+        const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
+        const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
+
+        const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
+
+        // Remove null if it exists
+        if (oneHopNodeIDs.has(null)) {
+          oneHopNodeIDs.delete(null);
+        }
+
+        return oneHopNodeIDs;
+      }
+      return new Set();
+    });
     function nodeGroupClass(node: Node): string {
       if (selectedNodes.value.size > 0) {
         const selected = isSelected(node._id);
@@ -368,6 +327,8 @@ export default defineComponent({
       return `node nodeBox ${selectedClass}`;
     }
 
+    const nodeColorVariable = computed(() => store.state.nodeColorVariable);
+    const nodeColorScale = computed(() => store.getters.nodeColorScale);
     function nodeFill(node: Node) {
       const calculatedValue = node[nodeColorVariable.value];
       const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
@@ -399,6 +360,8 @@ export default defineComponent({
       return 'edgeGroup';
     }
 
+    const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
+    const edgeVariables = computed(() => store.state.edgeVariables);
     function edgeStyle(edge: Edge): string {
       const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 
@@ -426,6 +389,7 @@ export default defineComponent({
       `;
     }
 
+    const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
     function glyphFill(node: Node, glyphVar: string) {
       // Figure out what values should be mapped to colors
       const possibleValues = [
@@ -440,6 +404,14 @@ export default defineComponent({
       return scaleContainsValue ? nodeGlyphColorScale.value(node[glyphVar]) : '#000000';
     }
 
+    const rectSelect = ref({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      transformX: 0,
+      transformY: 0,
+    });
     function rectSelectDrag(event: MouseEvent) {
       // Only drag on left clicks
       if (event.button !== 0) {
@@ -537,13 +509,35 @@ export default defineComponent({
       event.preventDefault();
     }
 
-    if (network.value !== null) {
-      generateNodePositions(network.value.nodes);
+    function generateNodePositions(nodes: Node[]) {
+      nodes.forEach((node) => {
+        // If the position is not defined for x or y, generate it
+        if (node.x === undefined || node.y === undefined) {
+          // eslint-disable-next-line no-param-reassign
+          node.x = Math.random() * svgDimensions.value.width;
+          // eslint-disable-next-line no-param-reassign
+          node.y = Math.random() * svgDimensions.value.height;
+        }
+      });
     }
-
+    const simulationEdges = computed(() => {
+      if (network.value !== null) {
+        return network.value.edges.map((edge: Edge) => {
+          const newEdge: SimulationEdge = {
+            ...JSON.parse(JSON.stringify(edge)),
+            source: edge._from,
+            target: edge._to,
+          };
+          return newEdge;
+        });
+      }
+      return null;
+    });
     onMounted(() => {
       if (network.value !== null && simulationEdges.value !== null) {
-      // Make the simulation
+        generateNodePositions(network.value.nodes);
+
+        // Make the simulation
         const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
           .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5))
           .force('x', forceX(svgDimensions.value.width / 2))
