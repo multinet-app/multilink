@@ -18,13 +18,13 @@ export default defineComponent({
     // Compute the workspace/network options
     const workspaceOptions: Ref<string[]> = ref([]);
     watchEffect(async () => {
-      workspaceOptions.value = await api.workspaces();
+      workspaceOptions.value = (await api.workspaces()).results.map((workspaceObj) => workspaceObj.name);
     });
 
     const networkOptions: Ref<string[]> = ref([]);
     watchEffect(async () => {
       if (workspace.value !== null) {
-        networkOptions.value = await api.graphs(workspace.value);
+        networkOptions.value = (await api.networks(workspace.value)).results.map((networkObj) => networkObj.name);
       }
     });
 
@@ -32,7 +32,7 @@ export default defineComponent({
     const buttonText: Ref<string> = ref('');
     watchEffect(async () => {
       if (workspace.value !== null && network.value !== null) {
-        buttonHref.value = `./?workspace=${workspace.value}&graph=${network.value}`;
+        buttonHref.value = `./?workspace=${workspace.value}&network=${network.value}`;
         buttonText.value = 'Go To Network';
       } else if (loadError.value.message === 'There was a network issue when getting data') {
         buttonHref.value = loadError.value.href;

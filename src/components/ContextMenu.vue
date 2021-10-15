@@ -9,7 +9,7 @@ export default defineComponent({
     const rightClickMenu = computed(() => store.state.rightClickMenu);
     const selectedNodes = computed(() => store.state.selectedNodes);
     const network = computed(() => store.state.network);
-    const numericVariables = computed(() => Object.entries(store.state.columnTypes)
+    const numericVariables = computed(() => Object.entries(store.state.columnTypes || {})
       .filter(([, value]) => value === 'number')
       .map(([key]) => key)
       .filter((key) => {
