@@ -19,6 +19,16 @@ export default defineComponent({
         return true;
       })
       .sort());
+    const categoricalVariables = computed(() => Object.entries(store.state.columnTypes || {})
+      .filter(([, value]) => value !== 'number' && value !== 'label')
+      .map(([key]) => key)
+      .filter((key) => {
+        if (network.value !== null) {
+          return network.value.nodes[0][key] !== undefined;
+        }
+        return true;
+      })
+      .sort());
 
     function clearSelection() {
       store.commit.setSelected(new Set());
@@ -59,7 +69,7 @@ export default defineComponent({
       }
     });
 
-    function changeLayout(numVar: string, axis: 'x' | 'y') {
+    function changeLayout(varName: string, axis: 'x' | 'y', type: 'numeric' | 'categorical') {
       // Close the menu
       store.commit.updateRightClickMenu({
         show: false,
@@ -67,7 +77,9 @@ export default defineComponent({
         left: rightClickMenu.value.left,
       });
 
-      store.commit.applyNumericLayout({ varName: numVar, axis, firstLayout: firstLayout.value });
+      store.commit.applyVariableLayout({
+        varName, axis, firstLayout: firstLayout.value, type,
+      });
 
       firstLayout.value = false;
     }
@@ -75,6 +87,7 @@ export default defineComponent({
     return {
       rightClickMenu,
       numericVariables,
+      categoricalVariables,
       clearSelection,
       pinSelectedNodes,
       unPinSelectedNodes,
@@ -143,7 +156,7 @@ export default defineComponent({
               </v-list-item-title>
             </template>
 
-            <v-list>
+            <v-list :width="175">
               <v-list-item
                 dense
               >
@@ -197,7 +210,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'x')"
+                                @click="changeLayout(numVar, 'x', 'numeric')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -208,7 +221,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'y')"
+                                @click="changeLayout(numVar, 'y', 'numeric')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -230,18 +243,20 @@ export default defineComponent({
               >
                 <v-list-item-content>
                   <v-menu
-                    disabled
                     offset-x
+                    :disabled="categoricalVariables.length === 0"
                   >
                     <template #activator="{ on, attrs }">
                       <v-list-item-title
                         v-bind="attrs"
+                        :class="categoricalVariables.length === 0 ? 'grey--text text--lighten-1' : ''"
                         v-on="on"
                       >
                         Categorical Variable
                         <v-icon
                           dense
                           right
+                          :color="categoricalVariables.length === 0 ? 'grey lighten-1' : ''"
                         >
                           mdi-chevron-right
                         </v-icon>
@@ -249,7 +264,56 @@ export default defineComponent({
                     </template>
 
                     <v-list>
-                      This is where the categorical vars go
+                      <v-list-item
+                        v-for="catVar in categoricalVariables"
+                        :key="catVar"
+                        dense
+                      >
+                        <v-list-item-content>
+                          <v-menu
+                            offset-x
+                          >
+                            <template #activator="{ on, attrs }">
+                              <v-list-item-title
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                {{ catVar }}
+                                <v-icon
+                                  dense
+                                  right
+                                >
+                                  mdi-chevron-right
+                                </v-icon>
+                              </v-list-item-title>
+                            </template>
+
+                            <v-list>
+                              <v-list-item
+                                dense
+                                @click="changeLayout(catVar, 'x', 'categorical')"
+                              >
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    X-axis
+                                  </v-list-item-title>
+                                </v-list-item-content>
+                              </v-list-item>
+
+                              <v-list-item
+                                dense
+                                @click="changeLayout(catVar, 'y', 'categorical')"
+                              >
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    Y-axis
+                                  </v-list-item-title>
+                                </v-list-item-content>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </v-list-item-content>
+                      </v-list-item>
                     </v-list>
                   </v-menu>
                 </v-list-item-content>
