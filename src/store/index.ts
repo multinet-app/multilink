@@ -11,7 +11,7 @@ import {
 import api from '@/api';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
-  scaleBand, scaleLinear, scaleOrdinal, scaleSequential,
+  scaleBand, ScaleLinear, scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
@@ -351,11 +351,20 @@ const {
         const range = state.attributeRanges[varName];
         const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height;
         const otherAxis = axis === 'x' ? 'y' : 'x';
+        const axisPadding = axis === 'x' ? 60 : 30;
 
         if (type === 'number') {
-          const positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([0, maxPosition]);
+          let positionScale: ScaleLinear<number, number>;
+
+          if (axis === 'x') {
+            positionScale = scaleLinear()
+              .domain([range.min, range.max])
+              .range([axisPadding, maxPosition]);
+          } else {
+            positionScale = scaleLinear()
+              .domain([range.min, range.max])
+              .range([0, maxPosition - axisPadding]);
+          }
 
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign

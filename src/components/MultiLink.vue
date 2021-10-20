@@ -1,10 +1,12 @@
 <script lang="ts">
 import {
+  scaleBand,
   scaleLinear, ScaleLinear,
 } from 'd3-scale';
 import {
   forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
 } from 'd3-force';
+import { select } from 'd3-selection';
 
 import store from '@/store';
 import {
@@ -14,8 +16,9 @@ import {
 import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import {
-  computed, defineComponent, getCurrentInstance, onMounted, ref, Ref,
+  computed, defineComponent, getCurrentInstance, onMounted, ref, Ref, watch,
 } from '@vue/composition-api';
+import { axisBottom, axisLeft } from 'd3-axis';
 
 export default defineComponent({
   components: {
@@ -560,6 +563,64 @@ export default defineComponent({
       }
     });
 
+    const layoutVars = computed(() => store.state.layoutVars);
+    watch(layoutVars, () => {
+      console.log('updating');
+      select('#axes').selectAll('g').remove();
+
+      // Add x layout
+      if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
+        const type = store.state.columnTypes[layoutVars.value.x];
+        const range = store.state.attributeRanges[layoutVars.value.x];
+        const maxPosition = store.state.svgDimensions.width;
+
+        let positionScale;
+
+        if (type === 'number') {
+          positionScale = scaleLinear()
+            .domain([range.min, range.max])
+            .range([60, maxPosition - 10]);
+        } else {
+          positionScale = scaleBand()
+            .domain(range.binLabels)
+            .range([60, maxPosition - 10]);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const xAxis = axisBottom(positionScale as any);
+        select('#axes')
+          .append('g')
+          .attr('transform', `translate(0, ${svgDimensions.value.height - 30})`)
+          .call(xAxis);
+      }
+
+      // Add y layout
+      if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
+        const type = store.state.columnTypes[layoutVars.value.y];
+        const range = store.state.attributeRanges[layoutVars.value.y];
+        const maxPosition = store.state.svgDimensions.height;
+
+        let positionScale;
+
+        if (type === 'number') {
+          positionScale = scaleLinear()
+            .domain([range.min, range.max])
+            .range([10, maxPosition - 30]);
+        } else {
+          positionScale = scaleBand()
+            .domain(range.binLabels)
+            .range([10, maxPosition - 30]);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const xAxis = axisLeft(positionScale as any);
+        select('#axes')
+          .append('g')
+          .attr('transform', 'translate(60, 0)')
+          .call(xAxis);
+      }
+    });
+
     return {
       svg,
       svgDimensions,
@@ -618,6 +679,8 @@ export default defineComponent({
         stroke-width="2px"
         stroke-dasharray="5,5"
       />
+
+      <g id="axes" />
 
       <g
         class="edges"
