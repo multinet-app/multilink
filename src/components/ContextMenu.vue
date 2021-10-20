@@ -60,7 +60,7 @@ export default defineComponent({
       }
     }
 
-    function changeLayout(varName: string, axis: 'x' | 'y', type: 'numeric' | 'categorical') {
+    function changeLayout(varName: string, axis: 'x' | 'y') {
       // Close the menu
       store.commit.updateRightClickMenu({
         show: false,
@@ -69,7 +69,7 @@ export default defineComponent({
       });
 
       store.commit.applyVariableLayout({
-        varName, axis, type,
+        varName, axis,
       });
     }
 
@@ -199,7 +199,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'x', 'numeric')"
+                                @click="changeLayout(numVar, 'x')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -210,7 +210,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'y', 'numeric')"
+                                @click="changeLayout(numVar, 'y')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -280,7 +280,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'x', 'categorical')"
+                                @click="changeLayout(catVar, 'x')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -291,7 +291,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'y', 'categorical')"
+                                @click="changeLayout(catVar, 'y')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>

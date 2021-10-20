@@ -336,7 +336,7 @@ const {
       state.userInfo = userInfo;
     },
 
-    applyVariableLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; type: 'numeric' | 'categorical'}) {
+    applyVariableLayout(state: State, payload: { varName: string; axis: 'x' | 'y'}) {
       // Set node size smaller
       store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
 
@@ -345,14 +345,16 @@ const {
 
       store.commit.stopSimulation();
 
-      if (state.network !== null) {
+      if (state.network !== null && state.columnTypes !== null) {
         const {
-          varName, axis, type,
+          varName, axis,
         } = payload;
+        const type = state.columnTypes[varName];
         const range = state.attributeRanges[varName];
         const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height;
+        const otherAxis = axis === 'x' ? 'y' : 'x';
 
-        if (type === 'numeric') {
+        if (type === 'number') {
           const positionScale = scaleLinear()
             .domain([range.min, range.max])
             .range([0, maxPosition]);
@@ -364,7 +366,6 @@ const {
             node[`f${axis}`] = positionScale(node[varName]);
 
             if (state.layoutVars.x === null && state.layoutVars.y === null) {
-              const otherAxis = axis === 'x' ? 'y' : 'x';
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
@@ -385,7 +386,6 @@ const {
             node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
 
             if (state.layoutVars.x === null && state.layoutVars.y === null) {
-              const otherAxis = axis === 'x' ? 'y' : 'x';
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
