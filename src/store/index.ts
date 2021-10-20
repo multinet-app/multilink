@@ -220,7 +220,6 @@ const {
         'collision',
         forceCollide((markerSize / 2) * 1.5),
       );
-      store.commit.startSimulation();
 
       if (state.provenance !== null && updateProv) {
         updateProvenanceState(state, 'Set Marker Size');
@@ -395,7 +394,11 @@ const {
           });
         }
 
-        state.layoutVars[axis] = varName;
+        const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
+          x: string | null;
+          y: string | null;
+        };
+        state.layoutVars = updatedLayoutVars;
       }
     },
 
