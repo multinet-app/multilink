@@ -565,7 +565,6 @@ export default defineComponent({
 
     const layoutVars = computed(() => store.state.layoutVars);
     watch(layoutVars, () => {
-      console.log('updating');
       select('#axes').selectAll('g').remove();
 
       // Add x layout
