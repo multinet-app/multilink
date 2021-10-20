@@ -125,14 +125,27 @@ export default defineComponent({
         'y',
         forceY<Node>(height / 2),
       );
-      store.commit.startSimulation();
 
       const dimensions = {
         height,
         width,
       };
-
       store.commit.setSvgDimensions(dimensions);
+
+      // If we're in a static layout, then redraw the layout
+      const xLayout = store.state.layoutVars.x !== null;
+      const yLayout = store.state.layoutVars.y !== null;
+      if (xLayout) {
+        store.commit.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
+      }
+
+      if (yLayout) {
+        store.commit.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
+      }
+
+      if (!xLayout && !yLayout) {
+        store.commit.startSimulation();
+      }
 
       return dimensions;
     });
