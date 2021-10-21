@@ -107,6 +107,7 @@ export interface State {
   userInfo: UserSpec | null;
   edgeLength: number;
   svgDimensions: Dimensions;
+  layoutVars: { x: string | null; y: string | null };
 }
 
 export type ProvenanceEventTypes =

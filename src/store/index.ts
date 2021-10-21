@@ -77,6 +77,10 @@ const {
       height: 0,
       width: 0,
     },
+    layoutVars: {
+      x: null,
+      y: null,
+    },
   } as State,
 
   getters: {
@@ -163,6 +167,9 @@ const {
         state.simulation.alpha(0.2);
         state.simulation.restart();
         state.simulationRunning = true;
+
+        state.layoutVars.x = null;
+        state.layoutVars.y = null;
       }
     },
 
@@ -213,7 +220,6 @@ const {
         'collision',
         forceCollide((markerSize / 2) * 1.5),
       );
-      store.commit.startSimulation();
 
       if (state.provenance !== null && updateProv) {
         updateProvenanceState(state, 'Set Marker Size');
@@ -329,7 +335,7 @@ const {
       state.userInfo = userInfo;
     },
 
-    applyVariableLayout(state: State, payload: { varName: string; axis: 'x' | 'y'; firstLayout: boolean; type: 'numeric' | 'categorical'}) {
+    applyVariableLayout(state: State, payload: { varName: string; axis: 'x' | 'y'}) {
       // Set node size smaller
       store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
 
@@ -338,14 +344,16 @@ const {
 
       store.commit.stopSimulation();
 
-      if (state.network !== null) {
+      if (state.network !== null && state.columnTypes !== null) {
         const {
-          varName, axis, firstLayout, type,
+          varName, axis,
         } = payload;
+        const type = state.columnTypes[varName];
         const range = state.attributeRanges[varName];
         const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height;
+        const otherAxis = axis === 'x' ? 'y' : 'x';
 
-        if (type === 'numeric') {
+        if (type === 'number') {
           const positionScale = scaleLinear()
             .domain([range.min, range.max])
             .range([0, maxPosition]);
@@ -356,8 +364,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = positionScale(node[varName]);
 
-            if (firstLayout) {
-              const otherAxis = axis === 'x' ? 'y' : 'x';
+            if (state.layoutVars.x === null && state.layoutVars.y === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
@@ -377,8 +384,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
 
-            if (firstLayout) {
-              const otherAxis = axis === 'x' ? 'y' : 'x';
+            if (state.layoutVars.x === null && state.layoutVars.y === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
@@ -387,6 +393,12 @@ const {
             }
           });
         }
+
+        const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
+          x: string | null;
+          y: string | null;
+        };
+        state.layoutVars = updatedLayoutVars;
       }
     },
 

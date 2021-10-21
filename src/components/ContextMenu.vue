@@ -1,7 +1,7 @@
 <script lang="ts">
 import store from '@/store';
 import {
-  computed, defineComponent, ref, watchEffect,
+  computed, defineComponent,
 } from '@vue/composition-api';
 
 export default defineComponent({
@@ -60,16 +60,7 @@ export default defineComponent({
       }
     }
 
-    // Track whether the layout has been applied before, reset when simulation starts again
-    // If so, we won't want to reset the "other axis" to a constant value
-    const firstLayout = ref(true);
-    watchEffect(() => {
-      if (store.state.simulationRunning && !firstLayout.value) {
-        firstLayout.value = true;
-      }
-    });
-
-    function changeLayout(varName: string, axis: 'x' | 'y', type: 'numeric' | 'categorical') {
+    function changeLayout(varName: string, axis: 'x' | 'y') {
       // Close the menu
       store.commit.updateRightClickMenu({
         show: false,
@@ -78,10 +69,8 @@ export default defineComponent({
       });
 
       store.commit.applyVariableLayout({
-        varName, axis, firstLayout: firstLayout.value, type,
+        varName, axis,
       });
-
-      firstLayout.value = false;
     }
 
     return {
@@ -210,7 +199,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'x', 'numeric')"
+                                @click="changeLayout(numVar, 'x')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -221,7 +210,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(numVar, 'y', 'numeric')"
+                                @click="changeLayout(numVar, 'y')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -291,7 +280,7 @@ export default defineComponent({
                             <v-list>
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'x', 'categorical')"
+                                @click="changeLayout(catVar, 'x')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
@@ -302,7 +291,7 @@ export default defineComponent({
 
                               <v-list-item
                                 dense
-                                @click="changeLayout(catVar, 'y', 'categorical')"
+                                @click="changeLayout(catVar, 'y')"
                               >
                                 <v-list-item-content>
                                   <v-list-item-title>
