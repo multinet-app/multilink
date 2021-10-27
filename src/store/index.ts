@@ -349,9 +349,9 @@ const {
         } = payload;
         const type = state.columnTypes[varName];
         const range = state.attributeRanges[varName];
-        const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height;
         const otherAxis = axis === 'x' ? 'y' : 'x';
-        const axisPadding = axis === 'x' ? 60 : 30;
+        const otherAxisPadding = axis === 'x' ? 80 : 60;
+        const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height - otherAxisPadding - state.markerSize;
 
         if (type === 'number') {
           let positionScale: ScaleLinear<number, number>;
@@ -359,11 +359,11 @@ const {
           if (axis === 'x') {
             positionScale = scaleLinear()
               .domain([range.min, range.max])
-              .range([axisPadding, maxPosition]);
+              .range([otherAxisPadding, maxPosition - 10]);
           } else {
             positionScale = scaleLinear()
               .domain([range.min, range.max])
-              .range([0, maxPosition - axisPadding]);
+              .range([maxPosition, 10]);
           }
 
           state.network.nodes.forEach((node) => {

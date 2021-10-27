@@ -566,6 +566,8 @@ export default defineComponent({
     const layoutVars = computed(() => store.state.layoutVars);
     watch(layoutVars, () => {
       select('#axes').selectAll('g').remove();
+      const xAxisPadding = 60;
+      const yAxisPadding = 80;
 
       // Add x layout
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
@@ -578,18 +580,21 @@ export default defineComponent({
         if (type === 'number') {
           positionScale = scaleLinear()
             .domain([range.min, range.max])
-            .range([60, maxPosition - 10]);
+            .range([yAxisPadding, maxPosition - 10]);
         } else {
           positionScale = scaleBand()
             .domain(range.binLabels)
-            .range([60, maxPosition - 10]);
+            .range([yAxisPadding, maxPosition - 10]);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const xAxis = axisBottom(positionScale as any);
-        select('#axes')
-          .append('g')
-          .attr('transform', `translate(0, ${svgDimensions.value.height - 30})`)
+        const axisGroup = select('#axes')
+          .append('g');
+
+        // Add the axis
+        axisGroup
+          .attr('transform', `translate(0, ${svgDimensions.value.height - xAxisPadding})`)
           .call(xAxis);
       }
 
@@ -597,26 +602,30 @@ export default defineComponent({
       if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
         const type = store.state.columnTypes[layoutVars.value.y];
         const range = store.state.attributeRanges[layoutVars.value.y];
-        const maxPosition = store.state.svgDimensions.height;
+        const maxPosition = store.state.svgDimensions.height - xAxisPadding;
 
         let positionScale;
 
         if (type === 'number') {
           positionScale = scaleLinear()
             .domain([range.min, range.max])
-            .range([10, maxPosition - 30]);
+            .range([maxPosition, 10]);
         } else {
           positionScale = scaleBand()
             .domain(range.binLabels)
-            .range([10, maxPosition - 30]);
+            .range([maxPosition, 10]);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const xAxis = axisLeft(positionScale as any);
-        select('#axes')
-          .append('g')
-          .attr('transform', 'translate(60, 0)')
-          .call(xAxis);
+        const yAxis = axisLeft(positionScale as any);
+        const axisGroup = select('#axes')
+          .append('g');
+
+        // Add the axis
+        axisGroup
+          .attr('transform', `translate(${yAxisPadding}, 0)`)
+          .call(yAxis);
+
       }
     });
 
