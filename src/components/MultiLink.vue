@@ -787,6 +787,7 @@ export default defineComponent({
             @mousedown="dragNode(node, $event)"
           />
           <rect
+            v-if="labelVariable !== undefined"
             class="labelBackground"
             height="1em"
             :y="!displayCharts ? (calculateNodeSize(node) / 2) - 8 : 0"
