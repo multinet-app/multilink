@@ -596,6 +596,28 @@ export default defineComponent({
         axisGroup
           .attr('transform', `translate(0, ${svgDimensions.value.height - xAxisPadding})`)
           .call(xAxis);
+
+        // Add the axis label
+        const labelGroup = axisGroup
+          .append('g');
+
+        const label = labelGroup
+          .append('text')
+          .text(layoutVars.value.x)
+          .attr('fill', 'currentColor')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .attr('x', (maxPosition - yAxisPadding) / 2)
+          .attr('y', xAxisPadding - 20);
+
+        const labelRectPos = (label.node() as SVGTextElement).getBBox();
+        labelGroup
+          .insert('rect', 'text')
+          .attr('x', labelRectPos.x)
+          .attr('y', labelRectPos.y)
+          .attr('width', labelRectPos.width)
+          .attr('height', labelRectPos.height)
+          .attr('fill', 'white');
       }
 
       // Add y layout
@@ -626,6 +648,27 @@ export default defineComponent({
           .attr('transform', `translate(${yAxisPadding}, 0)`)
           .call(yAxis);
 
+        // Add the axis label
+        const labelGroup = axisGroup
+          .attr('transform', 'rotate(90)');
+
+        const label = labelGroup
+          .append('text')
+          .text(layoutVars.value.y)
+          .attr('fill', 'currentColor')
+          .attr('font-size', '14px')
+          .attr('font-weight', 'bold')
+          .attr('x', (maxPosition) / 2)
+          .attr('y', yAxisPadding - 20);
+
+        const labelRectPos = (label.node() as SVGTextElement).getBBox();
+        labelGroup
+          .insert('rect', 'text')
+          .attr('x', labelRectPos.x)
+          .attr('y', labelRectPos.y)
+          .attr('width', labelRectPos.width)
+          .attr('height', labelRectPos.height)
+          .attr('fill', 'white');
       }
     });
 
