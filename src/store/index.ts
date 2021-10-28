@@ -11,7 +11,7 @@ import {
 import api from '@/api';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
-  scaleBand, ScaleLinear, scaleLinear, scaleOrdinal, scaleSequential,
+  ScaleBand, scaleBand, ScaleLinear, scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
@@ -381,10 +381,20 @@ const {
             }
           });
         } else {
-          const positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([0, maxPosition]);
-          const positionOffset = maxPosition / (2 * range.binLabels.length);
+          let positionScale: ScaleBand<string>;
+
+          if (axis === 'x') {
+            positionScale = scaleBand()
+              .domain(range.binLabels)
+              .range([otherAxisPadding, maxPosition]);
+          } else {
+            positionScale = scaleBand()
+              .domain(range.binLabels)
+              .range([maxPosition, 0]);
+          }
+          const positionOffset = axis === 'x' ? otherAxisPadding : otherAxisPadding / 2;
+
+          console.log('store', positionScale);
 
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign
