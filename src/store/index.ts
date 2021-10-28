@@ -394,8 +394,6 @@ const {
           }
           const positionOffset = axis === 'x' ? otherAxisPadding : otherAxisPadding / 2;
 
-          console.log('store', positionScale);
-
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign
             node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
