@@ -649,9 +649,13 @@ export default defineComponent({
           .attr('transform', `translate(${yAxisPadding}, 0)`)
           .call(yAxis);
 
-        const label = axisGroup
+        // Add the axis label
+        const labelGroup = axisGroup
+          .append('g')
+          .attr('transform', 'rotate(90)');
+
+        const label = labelGroup
           .append('text')
-          .attr('transform', 'rotate(90)')
           .text(layoutVars.value.y)
           .attr('fill', 'currentColor')
           .attr('font-size', '14px')
@@ -660,7 +664,7 @@ export default defineComponent({
           .attr('y', yAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
-        axisGroup
+        labelGroup
           .insert('rect', 'text')
           .attr('x', labelRectPos.x)
           .attr('y', labelRectPos.y)
