@@ -90,6 +90,9 @@ export default defineComponent({
       };
       store.commit.setSvgDimensions(dimensions);
 
+      return dimensions;
+    });
+    watch([svgDimensions], () => {
       // If we're in a static layout, then redraw the layout
       const xLayout = store.state.layoutVars.x !== null;
       const yLayout = store.state.layoutVars.y !== null;
@@ -104,8 +107,6 @@ export default defineComponent({
       if (!xLayout && !yLayout) {
         store.commit.startSimulation();
       }
-
-      return dimensions;
     });
 
     function selectNode(node: Node) {
