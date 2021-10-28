@@ -372,7 +372,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = positionScale(node[varName]);
 
-            if (state.layoutVars.x === null && state.layoutVars.y === null) {
+            if (state.layoutVars[otherAxis] === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
@@ -400,7 +400,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
 
-            if (state.layoutVars.x === null && state.layoutVars.y === null) {
+            if (state.layoutVars[otherAxis] === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
