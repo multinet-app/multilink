@@ -351,7 +351,7 @@ const {
         const range = state.attributeRanges[varName];
         const otherAxis = axis === 'x' ? 'y' : 'x';
         const otherAxisPadding = axis === 'x' ? 80 : 60;
-        const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height - otherAxisPadding - state.markerSize;
+        const maxPosition = axis === 'x' ? state.svgDimensions.width - 10 : state.svgDimensions.height - otherAxisPadding - state.markerSize;
 
         if (type === 'number') {
           let positionScale: ScaleLinear<number, number>;
@@ -359,7 +359,7 @@ const {
           if (axis === 'x') {
             positionScale = scaleLinear()
               .domain([range.min, range.max])
-              .range([otherAxisPadding, maxPosition - 10]);
+              .range([otherAxisPadding, maxPosition]);
           } else {
             positionScale = scaleLinear()
               .domain([range.min, range.max])
@@ -382,17 +382,19 @@ const {
           });
         } else {
           let positionScale: ScaleBand<string>;
+          let positionOffset: number;
 
           if (axis === 'x') {
             positionScale = scaleBand()
               .domain(range.binLabels)
               .range([otherAxisPadding, maxPosition]);
+            positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
           } else {
             positionScale = scaleBand()
               .domain(range.binLabels)
-              .range([maxPosition, 0]);
+              .range([maxPosition, 10]);
+            positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
           }
-          const positionOffset = axis === 'x' ? otherAxisPadding : otherAxisPadding / 2;
 
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign
