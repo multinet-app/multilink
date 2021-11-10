@@ -610,7 +610,7 @@ export default defineComponent({
           .attr('fill', 'currentColor')
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
-          .attr('x', (maxPosition - yAxisPadding) / 2)
+          .attr('x', ((maxPosition - yAxisPadding) / 2) + yAxisPadding)
           .attr('y', xAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -662,7 +662,8 @@ export default defineComponent({
           .attr('fill', 'currentColor')
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
-          .attr('x', (maxPosition) / 2)
+          .attr('text-anchor', 'middle')
+          .attr('x', ((maxPosition - 10) / 2) + 10)
           .attr('y', yAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
