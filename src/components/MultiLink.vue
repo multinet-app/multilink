@@ -524,6 +524,10 @@ export default defineComponent({
         }
       });
     }
+    if (network.value !== null) {
+      generateNodePositions(network.value.nodes);
+    }
+
     const simulationEdges = computed(() => {
       if (network.value !== null) {
         return network.value.edges.map((edge: Edge) => {
@@ -539,8 +543,6 @@ export default defineComponent({
     });
     onMounted(() => {
       if (network.value !== null && simulationEdges.value !== null) {
-        generateNodePositions(network.value.nodes);
-
         // Make the simulation
         const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
           .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5))
@@ -574,18 +576,18 @@ export default defineComponent({
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
         const type = store.state.columnTypes[layoutVars.value.x];
         const range = store.state.attributeRanges[layoutVars.value.x];
-        const maxPosition = store.state.svgDimensions.width;
+        const maxPosition = store.state.svgDimensions.width - 10;
 
         let positionScale;
 
         if (type === 'number') {
           positionScale = scaleLinear()
             .domain([range.min, range.max])
-            .range([yAxisPadding, maxPosition - 10]);
+            .range([yAxisPadding, maxPosition]);
         } else {
           positionScale = scaleBand()
             .domain(range.binLabels)
-            .range([yAxisPadding, maxPosition - 10]);
+            .range([yAxisPadding, maxPosition]);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
