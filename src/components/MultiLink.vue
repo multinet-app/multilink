@@ -19,6 +19,7 @@ import {
   computed, defineComponent, getCurrentInstance, onMounted, ref, Ref, watch,
 } from '@vue/composition-api';
 import { axisBottom, axisLeft } from 'd3-axis';
+import { isInternalField } from '@/lib/typeUtils';
 
 export default defineComponent({
   components: {
@@ -220,14 +221,16 @@ export default defineComponent({
     const tooltipMessage = ref('');
     const toggleTooltip = ref(false);
     const tooltipPosition = ref({ x: 0, y: 0 });
-    const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px`);
+    const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
     function showTooltip(element: Node | Edge, event: MouseEvent) {
       tooltipPosition.value = {
         x: event.clientX - controlsWidth.value,
         y: event.clientY,
       };
 
-      tooltipMessage.value = element._id;
+      tooltipMessage.value = Object.entries(element)
+        .filter(([key]) => !isInternalField(key))
+        .map(([key, value]) => `${key}: ${value}`).reduce((a, b) => `${a}\n${b}`);
       toggleTooltip.value = true;
     }
 
@@ -858,7 +861,7 @@ export default defineComponent({
       class="tooltip"
       :style="tooltipStyle"
     >
-      ID: {{ tooltipMessage }}
+      {{ tooltipMessage }}
     </div>
 
     <context-menu />
