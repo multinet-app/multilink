@@ -6,9 +6,8 @@ import {
 
 export default defineComponent({
   setup() {
-    const rightClickMenu = computed(() => store.state.rightClickMenu);
-    const selectedNodes = computed(() => store.state.selectedNodes);
     const network = computed(() => store.state.network);
+
     const numericVariables = computed(() => Object.entries(store.state.columnTypes || {})
       .filter(([, value]) => value === 'number')
       .map(([key]) => key)
@@ -30,10 +29,10 @@ export default defineComponent({
       })
       .sort());
 
+    const selectedNodes = computed(() => store.state.selectedNodes);
     function clearSelection() {
       store.commit.setSelected(new Set());
     }
-
     function pinSelectedNodes() {
       if (network.value !== null) {
         network.value.nodes
@@ -46,7 +45,6 @@ export default defineComponent({
           });
       }
     }
-
     function unPinSelectedNodes() {
       if (network.value !== null) {
         network.value.nodes
@@ -60,6 +58,7 @@ export default defineComponent({
       }
     }
 
+    const rightClickMenu = computed(() => store.state.rightClickMenu);
     function changeLayout(varName: string, axis: 'x' | 'y') {
       // Close the menu
       store.commit.updateRightClickMenu({

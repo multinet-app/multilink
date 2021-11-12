@@ -11,7 +11,7 @@ import {
 import api from '@/api';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
-  scaleBand, scaleLinear, scaleOrdinal, scaleSequential,
+  ScaleBand, scaleBand, ScaleLinear, scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
@@ -168,8 +168,7 @@ const {
         state.simulation.restart();
         state.simulationRunning = true;
 
-        state.layoutVars.x = null;
-        state.layoutVars.y = null;
+        state.layoutVars = { x: null, y: null };
       }
     },
 
@@ -350,13 +349,22 @@ const {
         } = payload;
         const type = state.columnTypes[varName];
         const range = state.attributeRanges[varName];
-        const maxPosition = axis === 'x' ? state.svgDimensions.width : state.svgDimensions.height;
         const otherAxis = axis === 'x' ? 'y' : 'x';
+        const otherAxisPadding = axis === 'x' ? 80 : 60;
+        const maxPosition = axis === 'x' ? state.svgDimensions.width - 10 : state.svgDimensions.height - otherAxisPadding - state.markerSize;
 
         if (type === 'number') {
-          const positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([0, maxPosition]);
+          let positionScale: ScaleLinear<number, number>;
+
+          if (axis === 'x') {
+            positionScale = scaleLinear()
+              .domain([range.min, range.max])
+              .range([otherAxisPadding, maxPosition]);
+          } else {
+            positionScale = scaleLinear()
+              .domain([range.min, range.max])
+              .range([maxPosition, 10]);
+          }
 
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign
@@ -364,7 +372,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = positionScale(node[varName]);
 
-            if (state.layoutVars.x === null && state.layoutVars.y === null) {
+            if (state.layoutVars[otherAxis] === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
@@ -373,10 +381,20 @@ const {
             }
           });
         } else {
-          const positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([0, maxPosition]);
-          const positionOffset = maxPosition / (2 * range.binLabels.length);
+          let positionScale: ScaleBand<string>;
+          let positionOffset: number;
+
+          if (axis === 'x') {
+            positionScale = scaleBand()
+              .domain(range.binLabels)
+              .range([otherAxisPadding, maxPosition]);
+            positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
+          } else {
+            positionScale = scaleBand()
+              .domain(range.binLabels)
+              .range([maxPosition, 10]);
+            positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
+          }
 
           state.network.nodes.forEach((node) => {
             // eslint-disable-next-line no-param-reassign
@@ -384,7 +402,7 @@ const {
             // eslint-disable-next-line no-param-reassign
             node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
 
-            if (state.layoutVars.x === null && state.layoutVars.y === null) {
+            if (state.layoutVars[otherAxis] === null) {
               const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
               // eslint-disable-next-line no-param-reassign
               node[otherAxis] = otherSvgDimension / 2;
