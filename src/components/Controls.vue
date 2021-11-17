@@ -49,6 +49,7 @@ export default defineComponent({
       },
     });
 
+    const layoutVars = computed(() => store.state.layoutVars);
     const markerSize = computed({
       get() {
         return store.state.markerSize || 0;
@@ -209,6 +210,7 @@ export default defineComponent({
       selectNeighbors,
       directionalEdges,
       edgeLength,
+      layoutVars,
     };
   },
 });
@@ -407,6 +409,7 @@ export default defineComponent({
               </v-card-subtitle>
               <v-slider
                 v-model="markerSize"
+                :disabled="layoutVars.x !== null || layoutVars.y !== null"
                 :min="10"
                 :max="100"
                 :label="String(markerSize)"
@@ -422,6 +425,7 @@ export default defineComponent({
               </v-card-subtitle>
               <v-slider
                 v-model="fontSize"
+                :disabled="!labelVariable"
                 :min="6"
                 :max="20"
                 :label="String(fontSize)"
@@ -437,6 +441,7 @@ export default defineComponent({
               </v-card-subtitle>
               <v-slider
                 v-model="edgeLength"
+                :disabled="layoutVars.x !== null || layoutVars.y !== null"
                 :min="0"
                 :max="100"
                 :label="edgeLength.toString()"
