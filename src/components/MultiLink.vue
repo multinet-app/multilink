@@ -544,6 +544,23 @@ export default defineComponent({
       }
       return null;
     });
+    watch(attributeRanges, () => {
+      if (simulationEdges.value !== null) {
+        const simEdges = simulationEdges.value.filter((edge: Edge) => {
+          if (edgeVariables.value.width !== '') {
+            const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
+            return widthValue < 20 && widthValue > 1;
+          }
+          return true;
+        });
+
+        applyForceToSimulation(
+          store.state.simulation,
+          'edge',
+          forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
+        );
+      }
+    });
     onMounted(() => {
       if (network.value !== null && simulationEdges.value !== null) {
         // Make the simulation
