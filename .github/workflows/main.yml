@@ -3,7 +3,7 @@ name: Lint application using multinet-app/.github generic lint workflow
 on: 
   pull_request:
     branches:
-    - *
+      - '**'
   
   push:
     branches:
