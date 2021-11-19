@@ -1,33 +1,14 @@
-name: CI
+name: Lint application using multinet-app/.github generic lint workflow
 
 on: 
   pull_request:
     branches:
-    - main
+      - '**'
   
   push:
     branches:
     - main
 
 jobs:
-  build-and-test:
-    name: Build and test on Ubuntu - Node 10
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-
-    - uses: actions/cache@v1
-      id: yarn-cache
-      with:
-        path: /home/runner/work/multilink/multilink/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-cache
-
-    - name: Install yarn packages
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
-
-    - run: yarn lint
-    # - run: yarn test
+  lint:
+    uses: multinet-app/.github/.github/workflows/lint.yaml@main
