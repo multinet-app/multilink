@@ -11,4 +11,4 @@ on:
 
 jobs:
   lint:
-    uses: multinet-app/.github/.github/workflows/lint.yaml
+    uses: multinet-app/.github/.github/workflows/lint.yaml@main
