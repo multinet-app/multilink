@@ -565,10 +565,10 @@ export default defineComponent({
       if (network.value !== null && simulationEdges.value !== null) {
         // Make the simulation
         const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
-          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5))
+          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1))
           .force('x', forceX(svgDimensions.value.width / 2))
           .force('y', forceY(svgDimensions.value.height / 2))
-          .force('charge', forceManyBody<Node>().strength(-100))
+          .force('charge', forceManyBody<Node>().strength(-500))
           .force('collision', forceCollide((markerSize.value / 2) * 1.5))
           .on('tick', () => {
             if (currentInstance !== null) {
