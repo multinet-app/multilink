@@ -321,7 +321,7 @@ export default defineComponent({
       if (selectedNodes.value.size > 0) {
         const selected = isSelected(node._id);
         const inOneHop = selectNeighbors.value ? oneHop.value.has(node._id) : false;
-        const selectedClass = selected || inOneHop ? '' : 'muted';
+        const selectedClass = selected || inOneHop || !selectNeighbors.value ? '' : 'muted';
         return `nodeGroup ${selectedClass}`;
       }
       return 'nodeGroup';
@@ -361,7 +361,7 @@ export default defineComponent({
     function edgeGroupClass(edge: Edge): string {
       if (selectedNodes.value.size > 0) {
         const selected = isSelected(edge._from) || isSelected(edge._to);
-        const selectedClass = selected && selectNeighbors.value ? '' : 'muted';
+        const selectedClass = selected || !selectNeighbors.value ? '' : 'muted';
         return `edgeGroup ${selectedClass}`;
       }
       return 'edgeGroup';
