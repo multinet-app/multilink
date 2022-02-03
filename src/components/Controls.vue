@@ -375,8 +375,8 @@ export default defineComponent({
             @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
           />
 
-          <v-row class="px-4">
-            <v-col class="pt-4">
+          <v-row class="px-4 pt-4 pb-1">
+            <v-col>
               <v-btn
                 color="grey darken-2"
                 depressed
@@ -393,7 +393,7 @@ export default defineComponent({
               </v-btn>
             </v-col>
             <v-spacer />
-            <v-col class="pt-4">
+            <v-col>
               <v-btn
                 color="primary"
                 depressed
