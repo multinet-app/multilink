@@ -280,10 +280,10 @@ export default defineComponent({
           flat
           tile
           color="grey darken-3"
-          class="pb-4 pt-2"
+          class="pb-4 pt-0"
         >
           <v-list-item>
-            <v-select
+            <v-autocomplete
               v-model="labelVariable"
               label="Label Variable"
               :items="Array.from(multiVariableList)"
