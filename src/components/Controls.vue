@@ -327,54 +327,6 @@ export default defineComponent({
             </v-list-item-action>
           </v-list-item>
 
-          <v-row class="px-4">
-            <v-col class="pt-0">
-              <v-btn
-                color="grey darken-2"
-                depressed
-                small
-                @click="releaseNodes"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  mdi-pin-off
-                </v-icon>
-                Release
-              </v-btn>
-            </v-col>
-            <v-spacer />
-            <v-col class="pt-0">
-              <v-btn
-                color="primary"
-                depressed
-                small
-                width="75"
-                @click="simulationRunning ? stopSimulation() : startSimulation()"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
-                </v-icon>
-                {{ simulationRunning ? 'Stop' : 'Start' }}
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-list-item>
-            <v-btn
-              color="primary"
-              block
-              depressed
-              @click="toggleProvVis"
-            >
-              Provenance Vis
-            </v-btn>
-          </v-list-item>
-
           <v-card-subtitle class="pb-0">
             Marker Size
           </v-card-subtitle>
@@ -422,6 +374,54 @@ export default defineComponent({
             color="blue darken-1"
             @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
           />
+
+          <v-row class="px-4">
+            <v-col class="pt-4">
+              <v-btn
+                color="grey darken-2"
+                depressed
+                small
+                @click="releaseNodes"
+              >
+                <v-icon
+                  left
+                  small
+                >
+                  mdi-pin-off
+                </v-icon>
+                Release
+              </v-btn>
+            </v-col>
+            <v-spacer />
+            <v-col class="pt-4">
+              <v-btn
+                color="primary"
+                depressed
+                small
+                width="75"
+                @click="simulationRunning ? stopSimulation() : startSimulation()"
+              >
+                <v-icon
+                  left
+                  small
+                >
+                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
+                </v-icon>
+                {{ simulationRunning ? 'Stop' : 'Start' }}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-list-item>
+            <v-btn
+              color="primary"
+              block
+              depressed
+              @click="toggleProvVis"
+            >
+              Provenance Vis
+            </v-btn>
+          </v-list-item>
 
           <v-list-item>
             <v-btn
