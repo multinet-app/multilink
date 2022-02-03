@@ -327,53 +327,44 @@ export default defineComponent({
             </v-list-item-action>
           </v-list-item>
 
-          <v-card-subtitle class="pb-0">
-            Marker Size
-          </v-card-subtitle>
-          <v-slider
-            v-model="markerSize"
-            :disabled="layoutVars.x !== null || layoutVars.y !== null"
-            :min="10"
-            :max="100"
-            :label="String(markerSize)"
-            class="px-2"
-            inverse-label
-            hide-details
-            color="blue darken-1"
-            @change="(value) => updateSliderProv(value, 'markerSize')"
-          />
+          <v-list-item>
+            <v-list-item-content> Marker Size </v-list-item-content>
+            <v-slider
+              v-model="markerSize"
+              :disabled="layoutVars.x !== null || layoutVars.y !== null"
+              :min="10"
+              :max="100"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(value, 'markerSize')"
+            />
+          </v-list-item>
 
-          <v-card-subtitle class="pb-0">
-            Font Size
-          </v-card-subtitle>
-          <v-slider
-            v-model="fontSize"
-            :disabled="!labelVariable"
-            :min="6"
-            :max="20"
-            :label="String(fontSize)"
-            class="px-2"
-            inverse-label
-            hide-details
-            color="blue darken-1"
-            @change="(value) => updateSliderProv(value, 'fontSize')"
-          />
+          <v-list-item>
+            <v-list-item-content> Font Size </v-list-item-content>
+            <v-slider
+              v-model="fontSize"
+              :disabled="!labelVariable"
+              :min="6"
+              :max="20"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(value, 'fontSize')"
+            />
+          </v-list-item>
 
-          <v-card-subtitle class="pb-0">
-            Edge Length
-          </v-card-subtitle>
-          <v-slider
-            v-model="edgeLength"
-            :disabled="layoutVars.x !== null || layoutVars.y !== null"
-            :min="0"
-            :max="100"
-            :label="edgeLength.toString()"
-            class="px-2"
-            inverse-label
-            hide-details
-            color="blue darken-1"
-            @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
-          />
+          <v-list-item>
+            <v-list-item-content> Edge Length </v-list-item-content>
+            <v-slider
+              v-model="edgeLength"
+              :disabled="layoutVars.x !== null || layoutVars.y !== null"
+              :min="0"
+              :max="100"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
+            />
+          </v-list-item>
 
           <v-row class="px-4 pt-4 pb-1">
             <v-col>
