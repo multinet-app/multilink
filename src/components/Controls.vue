@@ -19,8 +19,7 @@ export default defineComponent({
   setup() {
     const searchTerm = ref('');
     const searchErrors: Ref<string[]> = ref([]);
-    const showTabs = ref(false);
-    const tab = ref(undefined);
+    const showMenu = ref(false);
     const network = computed(() => store.state.network);
 
     const multiVariableList = computed(() => {
@@ -189,8 +188,7 @@ export default defineComponent({
     return {
       searchTerm,
       searchErrors,
-      showTabs,
-      tab,
+      showMenu,
       displayCharts,
       columnTypes,
       search,
@@ -267,204 +265,166 @@ export default defineComponent({
             :height="48"
             depressed
             tile
-            :class="showTabs? `grey darken-2 pa-0` : `grey darken-3 pa-0`"
-            @click="showTabs = !showTabs"
+            class="grey darken-3 pa-0"
+            @click="showMenu = !showMenu"
           >
             <v-icon color="white">
-              mdi-cog
+              {{ showMenu ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </v-icon>
           </v-btn>
         </v-subheader>
 
-        <v-tabs
-          v-if="showTabs"
-          v-model="tab"
-          background-color="grey darken-2"
+        <v-card
+          v-if="showMenu"
           dark
-          grow
-          slider-color="blue darken-1"
+          flat
+          tile
+          color="grey darken-3"
+          class="pb-4 pt-0"
         >
-          <v-tab>
-            Visualization
-          </v-tab>
-          <v-tab>
-            Advanced
-          </v-tab>
-        </v-tabs>
+          <v-list-item>
+            <v-autocomplete
+              v-model="labelVariable"
+              label="Label Variable"
+              :items="Array.from(multiVariableList)"
+              :hide-details="true"
+              class="mt-3"
+              clearable
+              outlined
+              dense
+            />
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content> Display Charts </v-list-item-content>
+            <v-list-item-action>
+              <v-switch
+                v-model="displayCharts"
+                hide-details
+                color="blue darken-1"
+              />
+            </v-list-item-action>
+          </v-list-item>
 
-        <v-tabs-items
-          v-if="showTabs"
-          v-model="tab"
-          dark
-        >
-          <v-tab-item>
-            <v-card
-              flat
-              color="grey darken-3"
-              class="pb-4 pt-2"
-            >
-              <v-list-item>
-                <v-select
-                  v-model="labelVariable"
-                  label="Label Variable"
-                  :items="Array.from(multiVariableList)"
-                  :hide-details="true"
-                  class="mt-3"
-                  clearable
-                  outlined
-                  dense
-                />
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-content> Display Charts </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch
-                    v-model="displayCharts"
-                    hide-details
-                    color="blue darken-1"
-                  />
-                </v-list-item-action>
-              </v-list-item>
+          <v-list-item>
+            <v-list-item-content> Directional Edges </v-list-item-content>
+            <v-list-item-action>
+              <v-switch
+                v-model="directionalEdges"
+                hide-details
+                color="blue darken-1"
+              />
+            </v-list-item-action>
+          </v-list-item>
 
-              <v-list-item>
-                <v-list-item-content> Directional Edges </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch
-                    v-model="directionalEdges"
-                    hide-details
-                    color="blue darken-1"
-                  />
-                </v-list-item-action>
-              </v-list-item>
+          <v-list-item>
+            <v-list-item-content> Autoselect Neighbors </v-list-item-content>
+            <v-list-item-action>
+              <v-switch
+                v-model="selectNeighbors"
+                hide-details
+                color="blue darken-1"
+              />
+            </v-list-item-action>
+          </v-list-item>
 
-              <v-list-item>
-                <v-list-item-content> Autoselect Neighbors </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch
-                    v-model="selectNeighbors"
-                    hide-details
-                    color="blue darken-1"
-                  />
-                </v-list-item-action>
-              </v-list-item>
+          <v-list-item>
+            <v-list-item-content> Marker Size </v-list-item-content>
+            <v-slider
+              v-model="markerSize"
+              :disabled="layoutVars.x !== null || layoutVars.y !== null"
+              :min="10"
+              :max="100"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(value, 'markerSize')"
+            />
+          </v-list-item>
 
-              <v-row class="px-4">
-                <v-col class="pt-0">
-                  <v-btn
-                    color="grey darken-2"
-                    depressed
-                    small
-                    @click="releaseNodes"
-                  >
-                    <v-icon
-                      left
-                      small
-                    >
-                      mdi-pin-off
-                    </v-icon>
-                    Release
-                  </v-btn>
-                </v-col>
-                <v-spacer />
-                <v-col class="pt-0">
-                  <v-btn
-                    color="primary"
-                    depressed
-                    small
-                    width="75"
-                    @click="simulationRunning ? stopSimulation() : startSimulation()"
-                  >
-                    <v-icon
-                      left
-                      small
-                    >
-                      {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
-                    </v-icon>
-                    {{ simulationRunning ? 'Stop' : 'Start' }}
-                  </v-btn>
-                </v-col>
-              </v-row>
+          <v-list-item>
+            <v-list-item-content> Font Size </v-list-item-content>
+            <v-slider
+              v-model="fontSize"
+              :disabled="!labelVariable"
+              :min="6"
+              :max="20"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(value, 'fontSize')"
+            />
+          </v-list-item>
 
-              <v-list-item>
-                <v-btn
-                  color="primary"
-                  block
-                  depressed
-                  @click="toggleProvVis"
+          <v-list-item>
+            <v-list-item-content> Edge Length </v-list-item-content>
+            <v-slider
+              v-model="edgeLength"
+              :disabled="layoutVars.x !== null || layoutVars.y !== null"
+              :min="0"
+              :max="100"
+              hide-details
+              color="blue darken-1"
+              @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
+            />
+          </v-list-item>
+
+          <v-row class="px-4 pt-4 pb-1">
+            <v-col>
+              <v-btn
+                color="grey darken-2"
+                depressed
+                small
+                @click="releaseNodes"
+              >
+                <v-icon
+                  left
+                  small
                 >
-                  Provenance Vis
-                </v-btn>
-              </v-list-item>
-            </v-card>
-          </v-tab-item>
-
-          <v-tab-item>
-            <v-card
-              flat
-              color="grey darken-3"
-              class="pb-4 pt-2"
-            >
-              <v-card-subtitle class="pb-0">
-                Marker Size
-              </v-card-subtitle>
-              <v-slider
-                v-model="markerSize"
-                :disabled="layoutVars.x !== null || layoutVars.y !== null"
-                :min="10"
-                :max="100"
-                :label="String(markerSize)"
-                class="px-2"
-                inverse-label
-                hide-details
-                color="blue darken-1"
-                @change="(value) => updateSliderProv(value, 'markerSize')"
-              />
-
-              <v-card-subtitle class="pb-0">
-                Font Size
-              </v-card-subtitle>
-              <v-slider
-                v-model="fontSize"
-                :disabled="!labelVariable"
-                :min="6"
-                :max="20"
-                :label="String(fontSize)"
-                class="px-2"
-                inverse-label
-                hide-details
-                color="blue darken-1"
-                @change="(value) => updateSliderProv(value, 'fontSize')"
-              />
-
-              <v-card-subtitle class="pb-0">
-                Edge Length
-              </v-card-subtitle>
-              <v-slider
-                v-model="edgeLength"
-                :disabled="layoutVars.x !== null || layoutVars.y !== null"
-                :min="0"
-                :max="100"
-                :label="edgeLength.toString()"
-                class="px-2"
-                inverse-label
-                hide-details
-                color="blue darken-1"
-                @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
-              />
-
-              <v-list-item>
-                <v-btn
-                  block
-                  color="grey darken-2 white--text"
-                  depressed
-                  @click="exportNetwork"
+                  mdi-pin-off
+                </v-icon>
+                Release
+              </v-btn>
+            </v-col>
+            <v-spacer />
+            <v-col>
+              <v-btn
+                color="primary"
+                depressed
+                small
+                width="75"
+                @click="simulationRunning ? stopSimulation() : startSimulation()"
+              >
+                <v-icon
+                  left
+                  small
                 >
-                  Export Network
-                </v-btn>
-              </v-list-item>
-            </v-card>
-          </v-tab-item>
-        </v-tabs-items>
+                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
+                </v-icon>
+                {{ simulationRunning ? 'Stop' : 'Start' }}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-list-item>
+            <v-btn
+              color="primary"
+              block
+              depressed
+              @click="toggleProvVis"
+            >
+              Provenance Vis
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn
+              block
+              color="grey darken-2 white--text"
+              depressed
+              @click="exportNetwork"
+            >
+              Export Network
+            </v-btn>
+          </v-list-item>
+        </v-card>
 
         <div class="px-4">
           <v-list-item class="px-0">
