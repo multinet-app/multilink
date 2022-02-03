@@ -811,19 +811,12 @@ export default defineComponent({
             @mouseout="hideTooltip"
             @mousedown="dragNode(node, $event)"
           />
-          <rect
-            v-if="labelVariable !== undefined"
-            class="labelBackground"
-            height="1em"
-            :y="!displayCharts ? (calculateNodeSize(node) / 2) - 8 : 0"
-            :width="calculateNodeSize(node)"
-          />
           <text
             class="label"
             dominant-baseline="middle"
             fill="#3a3a3a"
             text-anchor="middle"
-            :dy="!displayCharts ? calculateNodeSize(node) / 2 + 2: 10"
+            :dy="!displayCharts ? calculateNodeSize(node) / 2: 10"
             :dx="calculateNodeSize(node) / 2"
             :style="nodeTextStyle"
           >{{ node[labelVariable] }}</text>
@@ -901,7 +894,6 @@ export default defineComponent({
 }
 
 .label,
-.labelBackground,
 .bar,
 .glyph {
   pointer-events: none;
@@ -923,11 +915,5 @@ export default defineComponent({
 .node.selected {
   stroke-width: 6px;
   stroke: #F8CF91;
-}
-
-.labelBackground {
-  fill: #E0E0E0;
-  stroke-width: 1px;
-  stroke: #9E9E9E;
 }
 </style>
