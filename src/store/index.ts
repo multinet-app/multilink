@@ -334,90 +334,95 @@ const {
       state.userInfo = userInfo;
     },
 
-    applyVariableLayout(state: State, payload: { varName: string; axis: 'x' | 'y'}) {
+    applyVariableLayout(state: State, payload: { varName: string | null; axis: 'x' | 'y'}) {
+      const {
+        varName, axis,
+      } = payload;
+      const otherAxis = axis === 'x' ? 'y' : 'x';
+
+      if (varName !== null) {
       // Set node size smaller
-      store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
 
-      // Clear the label variable
-      store.commit.setLabelVariable(undefined);
+        // Clear the label variable
+        store.commit.setLabelVariable(undefined);
 
-      store.commit.stopSimulation();
+        store.commit.stopSimulation();
 
-      if (state.network !== null && state.columnTypes !== null) {
-        const {
-          varName, axis,
-        } = payload;
-        const type = state.columnTypes[varName];
-        const range = state.attributeRanges[varName];
-        const otherAxis = axis === 'x' ? 'y' : 'x';
-        const otherAxisPadding = axis === 'x' ? 80 : 60;
-        const maxPosition = axis === 'x' ? state.svgDimensions.width - 10 : state.svgDimensions.height - otherAxisPadding - state.markerSize;
+        if (state.network !== null && state.columnTypes !== null) {
+          const type = state.columnTypes[varName];
+          const range = state.attributeRanges[varName];
+          const otherAxisPadding = axis === 'x' ? 80 : 60;
+          const maxPosition = axis === 'x' ? state.svgDimensions.width - 10 : state.svgDimensions.height - otherAxisPadding - state.markerSize;
 
-        if (type === 'number') {
-          let positionScale: ScaleLinear<number, number>;
+          if (type === 'number') {
+            let positionScale: ScaleLinear<number, number>;
 
-          if (axis === 'x') {
-            positionScale = scaleLinear()
-              .domain([range.min, range.max])
-              .range([otherAxisPadding, maxPosition]);
-          } else {
-            positionScale = scaleLinear()
-              .domain([range.min, range.max])
-              .range([maxPosition, 10]);
-          }
-
-          state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-            node[axis] = positionScale(node[varName]);
-            // eslint-disable-next-line no-param-reassign
-            node[`f${axis}`] = positionScale(node[varName]);
-
-            if (state.layoutVars[otherAxis] === null) {
-              const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
-              // eslint-disable-next-line no-param-reassign
-              node[otherAxis] = otherSvgDimension / 2;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${otherAxis}`] = otherSvgDimension / 2;
+            if (axis === 'x') {
+              positionScale = scaleLinear()
+                .domain([range.min, range.max])
+                .range([otherAxisPadding, maxPosition]);
+            } else {
+              positionScale = scaleLinear()
+                .domain([range.min, range.max])
+                .range([maxPosition, 10]);
             }
-          });
-        } else {
-          let positionScale: ScaleBand<string>;
-          let positionOffset: number;
 
-          if (axis === 'x') {
-            positionScale = scaleBand()
-              .domain(range.binLabels)
-              .range([otherAxisPadding, maxPosition]);
-            positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
+            state.network.nodes.forEach((node) => {
+            // eslint-disable-next-line no-param-reassign
+              node[axis] = positionScale(node[varName]);
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = positionScale(node[varName]);
+
+              if (state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
           } else {
-            positionScale = scaleBand()
-              .domain(range.binLabels)
-              .range([maxPosition, 10]);
-            positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
-          }
+            let positionScale: ScaleBand<string>;
+            let positionOffset: number;
 
-          state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-            node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
-            // eslint-disable-next-line no-param-reassign
-            node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
-
-            if (state.layoutVars[otherAxis] === null) {
-              const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
-              // eslint-disable-next-line no-param-reassign
-              node[otherAxis] = otherSvgDimension / 2;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${otherAxis}`] = otherSvgDimension / 2;
+            if (axis === 'x') {
+              positionScale = scaleBand()
+                .domain(range.binLabels)
+                .range([otherAxisPadding, maxPosition]);
+              positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
+            } else {
+              positionScale = scaleBand()
+                .domain(range.binLabels)
+                .range([maxPosition, 10]);
+              positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
             }
-          });
+
+            state.network.nodes.forEach((node) => {
+            // eslint-disable-next-line no-param-reassign
+              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
+
+              if (state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
+          }
         }
-
-        const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
-          x: string | null;
-          y: string | null;
-        };
-        state.layoutVars = updatedLayoutVars;
+      } else if (state.layoutVars[otherAxis] === null) {
+        store.dispatch.releaseNodes();
       }
+
+      const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
+        x: string | null;
+        y: string | null;
+      };
+      state.layoutVars = updatedLayoutVars;
     },
 
     setSvgDimensions(state: State, payload: Dimensions) {

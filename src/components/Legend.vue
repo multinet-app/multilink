@@ -68,6 +68,8 @@ export default defineComponent({
 
     const displayCharts = computed(() => store.state.displayCharts);
 
+    const layoutVars = computed(() => store.state.layoutVars);
+
     return {
       tab,
       nestedVariables,
@@ -77,6 +79,7 @@ export default defineComponent({
       displayCharts,
       cleanedNodeVariables,
       cleanedEdgeVariables,
+      layoutVars,
     };
   },
 });
@@ -194,6 +197,36 @@ export default defineComponent({
             />
           </div>
 
+          <v-divider />
+
+          <drag-target
+            v-if="layoutVars.x === null"
+            :title="'x variable'"
+            :type="'node'"
+          />
+
+          <legend-chart
+            v-else
+            :var-name="layoutVars.x"
+            :type="'node'"
+            :selected="true"
+            :mapped-to="'x'"
+          />
+          <v-divider />
+
+          <drag-target
+            v-if="layoutVars.y === null"
+            :title="'y variable'"
+            :type="'node'"
+          />
+
+          <legend-chart
+            v-else
+            :var-name="layoutVars.y"
+            :type="'node'"
+            :selected="true"
+            :mapped-to="'y'"
+          />
           <v-divider />
         </div>
 
