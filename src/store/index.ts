@@ -643,6 +643,11 @@ const {
         y: string | null;
       };
       commit.setLayoutVars(updatedLayoutVars);
+
+      // Reapply the layout if there is still a variable
+      if (varName === null && state.layoutVars[otherAxis] !== null) {
+        dispatch.applyVariableLayout({ varName: state.layoutVars[otherAxis], axis: otherAxis });
+      }
     },
   },
 });
