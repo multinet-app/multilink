@@ -646,6 +646,9 @@ const {
 
       // Reapply the layout if there is still a variable
       if (varName === null && state.layoutVars[otherAxis] !== null) {
+        // Set marker size to 11 to trigger re-render (will get reset to 10 in dispatch again)
+        commit.setMarkerSize({ markerSize: 11, updateProv: false });
+
         dispatch.applyVariableLayout({ varName: state.layoutVars[otherAxis], axis: otherAxis });
       }
     },
