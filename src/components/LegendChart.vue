@@ -106,7 +106,7 @@ export default defineComponent({
             glyph: newGlyphVars,
           });
         } else if (props.mappedTo === 'x' || props.mappedTo === 'y') {
-          store.commit.applyVariableLayout({
+          store.dispatch.applyVariableLayout({
             varName: null, axis: props.mappedTo,
           });
         }
