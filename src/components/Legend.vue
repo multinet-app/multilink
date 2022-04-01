@@ -230,6 +230,10 @@ export default defineComponent({
           <v-divider />
         </div>
 
+        <v-subheader class="grey py-0 white--text">
+          Attributes
+        </v-subheader>
+
         <div v-if="cleanedNodeVariables.size === 0">
           No node attributes to visualize
         </div>
@@ -283,6 +287,10 @@ export default defineComponent({
 
           <v-divider />
         </div>
+
+        <v-subheader class="grey py-0 white--text">
+          Attributes
+        </v-subheader>
 
         <div v-if="cleanedEdgeVariables.size === 0">
           No edge attributes to visualize
