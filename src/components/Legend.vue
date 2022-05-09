@@ -66,8 +66,16 @@ export default defineComponent({
       return new Set();
     });
 
-    const displayCharts = computed(() => store.state.displayCharts);
+    const displayCharts = computed({
+      get() {
+        return store.state.displayCharts;
+      },
+      set(value: boolean) {
+        return store.commit.setDisplayCharts(value);
+      },
+    });
 
+    const attributeLayout = ref(false);
     const layoutVars = computed(() => store.state.layoutVars);
 
     return {
@@ -79,6 +87,7 @@ export default defineComponent({
       displayCharts,
       cleanedNodeVariables,
       cleanedEdgeVariables,
+      attributeLayout,
       layoutVars,
     };
   },
@@ -87,6 +96,32 @@ export default defineComponent({
 
 <template>
   <div id="legend">
+    <v-subheader class="grey darken-3 py-0 white--text">
+      Legend
+
+      <v-spacer />
+
+      <v-switch
+        v-model="attributeLayout"
+        append-icon="mdi-chart-scatter-plot"
+        class="mr-0"
+        dense
+        dark
+        color="blue darken-1"
+      />
+
+      <v-spacer />
+
+      <v-switch
+        v-model="displayCharts"
+        append-icon="mdi-chart-bar"
+        class="mr-0"
+        dense
+        dark
+        color="blue darken-1"
+      />
+    </v-subheader>
+
     <v-tabs
       v-model="tab"
       background-color="grey darken-2"
@@ -199,35 +234,37 @@ export default defineComponent({
 
           <v-divider />
 
-          <drag-target
-            v-if="layoutVars.x === null"
-            :title="'x variable'"
-            :type="'node'"
-          />
+          <div v-if="attributeLayout">
+            <drag-target
+              v-if="layoutVars.x === null"
+              :title="'x variable'"
+              :type="'node'"
+            />
 
-          <legend-chart
-            v-else
-            :var-name="layoutVars.x"
-            :type="'node'"
-            :selected="true"
-            :mapped-to="'x'"
-          />
-          <v-divider />
+            <legend-chart
+              v-else
+              :var-name="layoutVars.x"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'x'"
+            />
+            <v-divider />
 
-          <drag-target
-            v-if="layoutVars.y === null"
-            :title="'y variable'"
-            :type="'node'"
-          />
+            <drag-target
+              v-if="layoutVars.y === null"
+              :title="'y variable'"
+              :type="'node'"
+            />
 
-          <legend-chart
-            v-else
-            :var-name="layoutVars.y"
-            :type="'node'"
-            :selected="true"
-            :mapped-to="'y'"
-          />
-          <v-divider />
+            <legend-chart
+              v-else
+              :var-name="layoutVars.y"
+              :type="'node'"
+              :selected="true"
+              :mapped-to="'y'"
+            />
+            <v-divider />
+          </div>
         </div>
 
         <v-subheader class="grey py-0 white--text">
