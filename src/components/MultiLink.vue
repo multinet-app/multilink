@@ -98,11 +98,11 @@ export default defineComponent({
       const xLayout = store.state.layoutVars.x !== null;
       const yLayout = store.state.layoutVars.y !== null;
       if (xLayout) {
-        store.commit.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
+        store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
       }
 
       if (yLayout) {
-        store.commit.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
+        store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
       }
 
       if (!xLayout && !yLayout) {

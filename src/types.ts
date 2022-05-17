@@ -124,5 +124,5 @@ export type ProvenanceEventTypes =
   'Set Directional Edges' |
   'Set Edge Length';
 
-export const internalFieldNames = ['_from', '_to', '_id', '_rev'] as const;
+export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;
 export type InternalField = (typeof internalFieldNames)[number];

@@ -105,6 +105,10 @@ export default defineComponent({
             bar: nestedVariables.value.bar,
             glyph: newGlyphVars,
           });
+        } else if (props.mappedTo === 'x' || props.mappedTo === 'y') {
+          store.dispatch.applyVariableLayout({
+            varName: null, axis: props.mappedTo,
+          });
         }
       } else if (props.type === 'edge') {
         if (props.mappedTo === 'width') {

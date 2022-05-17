@@ -45,6 +45,14 @@ export default defineComponent({
         store.commit.setNodeSizeVariable(droppedVarName);
       } else if (props.type === 'node' && props.title === 'color') {
         store.commit.setNodeColorVariable(droppedVarName);
+      } else if (props.type === 'node' && props.title === 'x variable') {
+        store.dispatch.applyVariableLayout({
+          varName: droppedVarName, axis: 'x',
+        });
+      } else if (props.type === 'node' && props.title === 'y variable') {
+        store.dispatch.applyVariableLayout({
+          varName: droppedVarName, axis: 'y',
+        });
       } else if (props.type === 'edge' && props.title === 'width') {
         const updatedEdgeVars = {
           width: droppedVarName,

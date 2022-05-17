@@ -8,27 +8,6 @@ export default defineComponent({
   setup() {
     const network = computed(() => store.state.network);
 
-    const numericVariables = computed(() => Object.entries(store.state.columnTypes || {})
-      .filter(([, value]) => value === 'number')
-      .map(([key]) => key)
-      .filter((key) => {
-        if (network.value !== null) {
-          return network.value.nodes[0][key] !== undefined;
-        }
-        return true;
-      })
-      .sort());
-    const categoricalVariables = computed(() => Object.entries(store.state.columnTypes || {})
-      .filter(([, value]) => value !== 'number' && value !== 'label')
-      .map(([key]) => key)
-      .filter((key) => {
-        if (network.value !== null) {
-          return network.value.nodes[0][key] !== undefined;
-        }
-        return true;
-      })
-      .sort());
-
     const selectedNodes = computed(() => store.state.selectedNodes);
     function clearSelection() {
       store.commit.setSelected(new Set());
@@ -59,27 +38,12 @@ export default defineComponent({
     }
 
     const rightClickMenu = computed(() => store.state.rightClickMenu);
-    function changeLayout(varName: string, axis: 'x' | 'y') {
-      // Close the menu
-      store.commit.updateRightClickMenu({
-        show: false,
-        top: rightClickMenu.value.top,
-        left: rightClickMenu.value.left,
-      });
-
-      store.commit.applyVariableLayout({
-        varName, axis,
-      });
-    }
 
     return {
       rightClickMenu,
-      numericVariables,
-      categoricalVariables,
       clearSelection,
       pinSelectedNodes,
       unPinSelectedNodes,
-      changeLayout,
     };
   },
 });
@@ -120,194 +84,6 @@ export default defineComponent({
           <v-list-item-content>
             <v-list-item-title>Un-Pin Selected Nodes</v-list-item-title>
           </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item
-          dense
-        >
-          <v-menu
-            allow-overflow
-            offset-x
-          >
-            <template #activator="{ on, attrs }">
-              <v-list-item-title
-                v-bind="attrs"
-                v-on="on"
-              >
-                Lay Out By
-                <v-icon
-                  dense
-                  right
-                >
-                  mdi-chevron-right
-                </v-icon>
-              </v-list-item-title>
-            </template>
-
-            <v-list :width="175">
-              <v-list-item
-                dense
-              >
-                <v-list-item-content>
-                  <v-menu
-                    offset-x
-                    :disabled="numericVariables.length === 0"
-                  >
-                    <template #activator="{ on, attrs }">
-                      <v-list-item-title
-                        v-bind="attrs"
-                        :class="numericVariables.length === 0 ? 'grey--text text--lighten-1' : ''"
-                        v-on="on"
-                      >
-                        Numerical Variable
-                        <v-icon
-                          dense
-                          right
-                          :color="numericVariables.length === 0 ? 'grey lighten-1' : ''"
-                        >
-                          mdi-chevron-right
-                        </v-icon>
-                      </v-list-item-title>
-                    </template>
-
-                    <v-list>
-                      <v-list-item
-                        v-for="numVar in numericVariables"
-                        :key="numVar"
-                        dense
-                      >
-                        <v-list-item-content>
-                          <v-menu
-                            offset-x
-                          >
-                            <template #activator="{ on, attrs }">
-                              <v-list-item-title
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                {{ numVar }}
-                                <v-icon
-                                  dense
-                                  right
-                                >
-                                  mdi-chevron-right
-                                </v-icon>
-                              </v-list-item-title>
-                            </template>
-
-                            <v-list>
-                              <v-list-item
-                                dense
-                                @click="changeLayout(numVar, 'x')"
-                              >
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    X-axis
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-
-                              <v-list-item
-                                dense
-                                @click="changeLayout(numVar, 'y')"
-                              >
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    Y-axis
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-list-item-content>
-              </v-list-item>
-
-              <v-list-item
-                dense
-              >
-                <v-list-item-content>
-                  <v-menu
-                    offset-x
-                    :disabled="categoricalVariables.length === 0"
-                  >
-                    <template #activator="{ on, attrs }">
-                      <v-list-item-title
-                        v-bind="attrs"
-                        :class="categoricalVariables.length === 0 ? 'grey--text text--lighten-1' : ''"
-                        v-on="on"
-                      >
-                        Categorical Variable
-                        <v-icon
-                          dense
-                          right
-                          :color="categoricalVariables.length === 0 ? 'grey lighten-1' : ''"
-                        >
-                          mdi-chevron-right
-                        </v-icon>
-                      </v-list-item-title>
-                    </template>
-
-                    <v-list>
-                      <v-list-item
-                        v-for="catVar in categoricalVariables"
-                        :key="catVar"
-                        dense
-                      >
-                        <v-list-item-content>
-                          <v-menu
-                            offset-x
-                          >
-                            <template #activator="{ on, attrs }">
-                              <v-list-item-title
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                {{ catVar }}
-                                <v-icon
-                                  dense
-                                  right
-                                >
-                                  mdi-chevron-right
-                                </v-icon>
-                              </v-list-item-title>
-                            </template>
-
-                            <v-list>
-                              <v-list-item
-                                dense
-                                @click="changeLayout(catVar, 'x')"
-                              >
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    X-axis
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-
-                              <v-list-item
-                                dense
-                                @click="changeLayout(catVar, 'y')"
-                              >
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    Y-axis
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </v-list-item>
       </v-list>
     </v-menu>
