@@ -10,7 +10,7 @@ import { select } from 'd3-selection';
 
 import store from '@/store';
 import {
-  Node, Edge, SimulationEdge,
+  Node, Edge, SimulationEdge, AttributeRange,
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
@@ -20,6 +20,7 @@ import {
 } from '@vue/composition-api';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { isInternalField } from '@/lib/typeUtils';
+import { ColumnType } from 'multinet';
 
 export default defineComponent({
   components: {
@@ -592,6 +593,27 @@ export default defineComponent({
     });
 
     const layoutVars = computed(() => store.state.layoutVars);
+    function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange, maxPosition: number, yAxisPadding: number) {
+      let positionScale;
+
+      if (type === 'number') {
+        positionScale = scaleLinear()
+          .domain([range.min, range.max]);
+      } else {
+        positionScale = scaleBand()
+          .domain(range.binLabels);
+      }
+
+      if (axis === 'x') {
+        positionScale = scaleLinear()
+          .range([yAxisPadding, maxPosition]);
+      } else {
+        positionScale = scaleBand()
+          .range([maxPosition, 10]);
+      }
+
+      return positionScale;
+    }
     watch(layoutVars, () => {
       select('#axes').selectAll('g').remove();
       const xAxisPadding = 60;
@@ -603,17 +625,7 @@ export default defineComponent({
         const range = store.state.attributeRanges[layoutVars.value.x];
         const maxPosition = store.state.svgDimensions.width - 10;
 
-        let positionScale;
-
-        if (type === 'number') {
-          positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([yAxisPadding, maxPosition]);
-        } else {
-          positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([yAxisPadding, maxPosition]);
-        }
+        const positionScale = makePositionScale('x', type, range, maxPosition, yAxisPadding);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const xAxis = axisBottom(positionScale as any);
@@ -654,17 +666,7 @@ export default defineComponent({
         const range = store.state.attributeRanges[layoutVars.value.y];
         const maxPosition = store.state.svgDimensions.height - xAxisPadding;
 
-        let positionScale;
-
-        if (type === 'number') {
-          positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([maxPosition, 10]);
-        } else {
-          positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([maxPosition, 10]);
-        }
+        const positionScale = makePositionScale('y', type, range, maxPosition, yAxisPadding);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const yAxis = axisLeft(positionScale as any);
