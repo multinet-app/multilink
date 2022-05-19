@@ -466,6 +466,11 @@ export default defineComponent({
         const boxY1 = Math.min(rectSelect.value.y + rectSelect.value.transformY, rectSelect.value.y);
         const boxY2 = boxY1 + rectSelect.value.height;
 
+        // If x1 == x2 && y1 == y2, it was a click so deselect
+        if (boxX1 === boxX2 && boxY1 === boxY2) {
+          store.commit.setSelected(new Set());
+        }
+
         // Find which nodes are in the box
         let nodesInRect: Node[] = [];
         if (network.value !== null) {
