@@ -605,10 +605,10 @@ export default defineComponent({
       }
 
       if (axis === 'x') {
-        positionScale = scaleLinear()
+        positionScale = positionScale
           .range([yAxisPadding, maxPosition]);
       } else {
-        positionScale = scaleBand()
+        positionScale = positionScale
           .range([maxPosition, 10]);
       }
 
