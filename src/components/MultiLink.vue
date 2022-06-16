@@ -594,22 +594,124 @@ export default defineComponent({
 
     const layoutVars = computed(() => store.state.layoutVars);
     function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange, maxPosition: number, yAxisPadding: number) {
-      let positionScale;
+      const varName = layoutVars.value[axis];
+      let clipLow = false;
+      let clipHigh = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let positionScale: any;
 
       if (type === 'number') {
+        let minValue = range.min;
+        let maxValue = range.max;
+
+        // Check IQR for outliers
+        if (network.value !== null && varName !== null) {
+          const values = network.value.nodes.map((node) => node[varName]).sort((a, b) => a - b);
+
+          let q1;
+          let q3;
+          if ((values.length / 4) % 1 === 0) {
+            q1 = 0.5 * (values[(values.length / 4)] + values[(values.length / 4) + 1]);
+            q3 = 0.5 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1]);
+          } else {
+            q1 = values[Math.floor(values.length / 4 + 1)];
+            q3 = values[Math.ceil(values.length * (3 / 4) + 1)];
+          }
+
+          const iqr = q3 - q1;
+          const maxCandidate = q3 + iqr * 1.5;
+          const minCandidate = q1 - iqr * 1.5;
+          if (maxCandidate < maxValue) {
+            maxValue = maxCandidate;
+            clipHigh = true;
+
+            select(`#${axis}-high-clip`).style('visibility', 'visible');
+          }
+
+          if (minCandidate > minValue) {
+            minValue = minCandidate;
+            clipLow = true;
+            select(`#${axis}-low-clip`).style('visibility', 'visible');
+          }
+        }
+
         positionScale = scaleLinear()
-          .domain([range.min, range.max]);
+          .domain([minValue, maxValue]);
       } else {
         positionScale = scaleBand()
           .domain(range.binLabels);
       }
 
       if (axis === 'x') {
+        const minMax = [clipLow ? yAxisPadding + 50 : yAxisPadding, clipHigh ? maxPosition - 50 : maxPosition];
         positionScale = positionScale
-          .range([yAxisPadding, maxPosition]);
+          .range(minMax);
       } else {
+        const minMax = [clipLow ? maxPosition + 50 : maxPosition, clipHigh ? 10 - 50 : 10];
         positionScale = positionScale
-          .range([maxPosition, 10]);
+          .range(minMax);
+      }
+
+      const otherAxis = axis === 'x' ? 'y' : 'x';
+
+      if (varName !== null) {
+      // Set node size smaller
+        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+        // Clear the label variable
+        store.commit.setLabelVariable(undefined);
+
+        store.commit.stopSimulation();
+
+        if (store.state.network !== null && store.state.columnTypes !== null) {
+          const otherAxisPadding = axis === 'x' ? 80 : 60;
+
+          if (type === 'number') {
+            const scaleRange = positionScale.range();
+            store.state.network.nodes.forEach((node) => {
+              let position = positionScale(node[varName]);
+              position = position > scaleRange[1] ? scaleRange[1] + 25 : position;
+              position = position < scaleRange[0] ? scaleRange[0] - 25 : position;
+              // eslint-disable-next-line no-param-reassign
+              node[axis] = position;
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = position;
+
+              if (store.state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
+          } else {
+            let positionOffset: number;
+
+            if (axis === 'x') {
+              positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
+            } else {
+              positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
+            }
+
+            store.state.network.nodes.forEach((node) => {
+            // eslint-disable-next-line no-param-reassign
+              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
+
+              if (store.state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
+          }
+        }
+      } else if (store.state.layoutVars[otherAxis] === null) {
+        store.dispatch.releaseNodes();
       }
 
       return positionScale;
