@@ -716,8 +716,19 @@ export default defineComponent({
 
       return positionScale;
     }
-    watch(layoutVars, () => {
+
+    function resetAxesClipRegions() {
       select('#axes').selectAll('g').remove();
+
+      select('#x-low-clip').style('visibility', 'hidden');
+      select('#x-high-clip').style('visibility', 'hidden');
+      select('#y-low-clip').style('visibility', 'hidden');
+      select('#y-high-clip').style('visibility', 'hidden');
+    }
+
+    watch(layoutVars, () => {
+      resetAxesClipRegions();
+
       const xAxisPadding = 60;
       const yAxisPadding = 80;
 
@@ -866,6 +877,42 @@ export default defineComponent({
       />
 
       <g id="axes" />
+
+      <!-- High and low clip regions -->
+      <g>
+        <rect
+          id="x-low-clip"
+          class="clip-region"
+          x="0"
+          y="0"
+          :height="svgDimensions.height"
+          width="50"
+        />
+        <rect
+          id="x-high-clip"
+          class="clip-region"
+          :x="svgDimensions.width - 50"
+          y="0"
+          :height="svgDimensions.height"
+          width="50"
+        />
+        <rect
+          id="y-low-clip"
+          class="clip-region"
+          x="0"
+          :y="svgDimensions.height - 50"
+          height="50"
+          :width="svgDimensions.width"
+        />
+        <rect
+          id="y-high-clip"
+          class="clip-region"
+          x="0"
+          y="0"
+          height="50"
+          :width="svgDimensions.width"
+        />
+      </g>
 
       <g
         class="edges"
@@ -1024,5 +1071,11 @@ export default defineComponent({
 .node.selected {
   stroke-width: 6px;
   stroke: #F8CF91;
+}
+
+.clip-region {
+  visibility: hidden;
+  fill: #000000;
+  opacity: 0.2;
 }
 </style>
