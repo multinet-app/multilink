@@ -68,6 +68,7 @@ export default defineComponent({
     const controlsWidth = computed(() => store.state.controlsWidth);
     const directionalEdges = computed(() => store.state.directionalEdges);
     const edgeColorScale = computed(() => store.getters.edgeColorScale);
+    const clipRegionSize = 100;
 
     // Update height and width as the window size changes
     // Also update center attraction forces as the size changes
@@ -621,6 +622,7 @@ export default defineComponent({
           const iqr = q3 - q1;
           const maxCandidate = q3 + iqr * 1.5;
           const minCandidate = q1 - iqr * 1.5;
+
           if (maxCandidate < maxValue) {
             maxValue = maxCandidate;
             clipHigh = true;
@@ -643,11 +645,11 @@ export default defineComponent({
       }
 
       if (axis === 'x') {
-        const minMax = [clipLow ? yAxisPadding + 50 : yAxisPadding, clipHigh ? maxPosition - 50 : maxPosition];
+        const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? maxPosition - clipRegionSize : maxPosition];
         positionScale = positionScale
           .range(minMax);
       } else {
-        const minMax = [clipLow ? maxPosition + 50 : maxPosition, clipHigh ? 10 - 50 : 10];
+        const minMax = [clipLow ? maxPosition - clipRegionSize : maxPosition, clipHigh ? 10 + clipRegionSize : 10];
         positionScale = positionScale
           .range(minMax);
       }
@@ -670,8 +672,10 @@ export default defineComponent({
             const scaleRange = positionScale.range();
             store.state.network.nodes.forEach((node) => {
               let position = positionScale(node[varName]);
-              position = position > scaleRange[1] ? scaleRange[1] + 25 : position;
-              position = position < scaleRange[0] ? scaleRange[0] - 25 : position;
+              if (axis === 'x') {
+                position = position > scaleRange[1] ? scaleRange[1] + (clipRegionSize / 2) + 10 : position;
+                position = position < scaleRange[0] ? scaleRange[0] - (clipRegionSize / 2) - 10 : position;
+              }
               // eslint-disable-next-line no-param-reassign
               node[axis] = position;
               // eslint-disable-next-line no-param-reassign
@@ -849,6 +853,7 @@ export default defineComponent({
       nestedPadding,
       nodeBarColorScale,
       glyphFill,
+      clipRegionSize,
     };
   },
 });
@@ -886,22 +891,22 @@ export default defineComponent({
           x="0"
           y="0"
           :height="svgDimensions.height"
-          width="50"
+          :width="clipRegionSize"
         />
         <rect
           id="x-high-clip"
           class="clip-region"
-          :x="svgDimensions.width - 50"
+          :x="svgDimensions.width - clipRegionSize"
           y="0"
           :height="svgDimensions.height"
-          width="50"
+          :width="clipRegionSize"
         />
         <rect
           id="y-low-clip"
           class="clip-region"
           x="0"
-          :y="svgDimensions.height - 50"
-          height="50"
+          :y="svgDimensions.height - clipRegionSize"
+          :height="clipRegionSize"
           :width="svgDimensions.width"
         />
         <rect
@@ -909,7 +914,7 @@ export default defineComponent({
           class="clip-region"
           x="0"
           y="0"
-          height="50"
+          :height="clipRegionSize"
           :width="svgDimensions.width"
         />
       </g>
