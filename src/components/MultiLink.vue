@@ -675,7 +675,12 @@ export default defineComponent({
               if (axis === 'x') {
                 position = position > scaleRange[1] ? scaleRange[1] + (clipRegionSize / 2) + 10 : position;
                 position = position < scaleRange[0] ? scaleRange[0] - (clipRegionSize / 2) - 10 : position;
+              } else {
+                position = position < scaleRange[1] ? scaleRange[1] - (clipRegionSize / 2) - 10 : position;
+                position = position > scaleRange[0] ? scaleRange[0] + (clipRegionSize / 2) + 10 : position;
               }
+              position -= (markerSize.value / 2);
+
               // eslint-disable-next-line no-param-reassign
               node[axis] = position;
               // eslint-disable-next-line no-param-reassign
