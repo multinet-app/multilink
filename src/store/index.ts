@@ -572,6 +572,9 @@ const {
         commit.setMarkerSize({ markerSize: 11, updateProv: false });
 
         dispatch.applyVariableLayout({ varName: state.layoutVars[otherAxis], axis: otherAxis });
+      } else if (varName === null && state.layoutVars[otherAxis] === null) {
+        // If both null, release
+        dispatch.releaseNodes();
       }
     },
   },
