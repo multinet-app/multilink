@@ -10,7 +10,7 @@ import { select } from 'd3-selection';
 
 import store from '@/store';
 import {
-  Node, Edge, SimulationEdge,
+  Node, Edge, SimulationEdge, AttributeRange,
 } from '@/types';
 
 import ContextMenu from '@/components/ContextMenu.vue';
@@ -20,6 +20,7 @@ import {
 } from '@vue/composition-api';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { isInternalField } from '@/lib/typeUtils';
+import { ColumnType } from 'multinet';
 
 export default defineComponent({
   components: {
@@ -67,6 +68,7 @@ export default defineComponent({
     const controlsWidth = computed(() => store.state.controlsWidth);
     const directionalEdges = computed(() => store.state.directionalEdges);
     const edgeColorScale = computed(() => store.getters.edgeColorScale);
+    const clipRegionSize = 100;
 
     // Update height and width as the window size changes
     // Also update center attraction forces as the size changes
@@ -591,29 +593,163 @@ export default defineComponent({
       }
     });
 
+    const xAxisPadding = 60;
+    const yAxisPadding = 80;
     const layoutVars = computed(() => store.state.layoutVars);
-    watch(layoutVars, () => {
+    function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
+      const varName = layoutVars.value[axis];
+      let clipLow = false;
+      let clipHigh = false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let positionScale: any;
+
+      if (type === 'number') {
+        let minValue = range.min;
+        let maxValue = range.max - 1; // subtract 1, because of the + 1 on the legend chart scale
+
+        // Check IQR for outliers
+        if (network.value !== null && varName !== null) {
+          const values = network.value.nodes.map((node) => node[varName]).sort((a, b) => a - b);
+
+          let q1;
+          let q3;
+          if ((values.length / 4) % 1 === 0) {
+            q1 = 0.5 * (values[(values.length / 4)] + values[(values.length / 4) + 1]);
+            q3 = 0.5 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1]);
+          } else {
+            q1 = values[Math.floor(values.length / 4 + 1)];
+            q3 = values[Math.ceil(values.length * (3 / 4) + 1)];
+          }
+
+          const iqr = q3 - q1;
+          const maxCandidate = q3 + iqr * 1.5;
+          const minCandidate = q1 - iqr * 1.5;
+
+          if (maxCandidate < maxValue) {
+            maxValue = maxCandidate;
+            clipHigh = true;
+            select(`#${axis}-high-clip`).style('visibility', 'visible');
+            select(`#${axis}-high-clip > text`).text(`> ${maxCandidate}`);
+          }
+
+          if (minCandidate > minValue) {
+            minValue = minCandidate;
+            clipLow = true;
+            select(`#${axis}-low-clip`).style('visibility', 'visible');
+            select(`#${axis}-low-clip > text`).text(`< ${minCandidate}`);
+          }
+        }
+
+        positionScale = scaleLinear()
+          .domain([minValue, maxValue]);
+      } else {
+        positionScale = scaleBand()
+          .domain(range.binLabels);
+      }
+
+      if (axis === 'x') {
+        const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? store.state.svgDimensions.width - clipRegionSize : store.state.svgDimensions.width];
+        positionScale = positionScale
+          .range(minMax);
+      } else {
+        const minMax = [clipLow ? store.state.svgDimensions.height - xAxisPadding - clipRegionSize : store.state.svgDimensions.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
+        positionScale = positionScale
+          .range(minMax);
+      }
+
+      const otherAxis = axis === 'x' ? 'y' : 'x';
+
+      if (varName !== null) {
+      // Set node size smaller
+        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+        // Clear the label variable
+        store.commit.setLabelVariable(undefined);
+
+        store.commit.stopSimulation();
+
+        if (store.state.network !== null && store.state.columnTypes !== null) {
+          const otherAxisPadding = axis === 'x' ? 80 : 60;
+
+          if (type === 'number') {
+            const scaleDomain = positionScale.domain();
+            const scaleRange = positionScale.range();
+            store.state.network.nodes.forEach((node) => {
+              const nodeVal = node[varName];
+              let position = positionScale(nodeVal);
+
+              if (axis === 'x') {
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] + ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] - ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
+              } else {
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] - ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] + ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
+              }
+              position -= (markerSize.value / 2);
+
+              // eslint-disable-next-line no-param-reassign
+              node[axis] = position;
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = position;
+
+              if (store.state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
+          } else {
+            let positionOffset: number;
+
+            if (axis === 'x') {
+              positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
+            } else {
+              positionOffset = (store.state.svgDimensions.height - xAxisPadding - 10) / ((range.binLabels.length) * 2);
+            }
+
+            store.state.network.nodes.forEach((node) => {
+            // eslint-disable-next-line no-param-reassign
+              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
+              // eslint-disable-next-line no-param-reassign
+              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
+
+              if (store.state.layoutVars[otherAxis] === null) {
+                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
+                // eslint-disable-next-line no-param-reassign
+                node[otherAxis] = otherSvgDimension / 2;
+                // eslint-disable-next-line no-param-reassign
+                node[`f${otherAxis}`] = otherSvgDimension / 2;
+              }
+            });
+          }
+        }
+      } else if (store.state.layoutVars[otherAxis] === null) {
+        store.dispatch.releaseNodes();
+      }
+
+      return positionScale;
+    }
+
+    function resetAxesClipRegions() {
       select('#axes').selectAll('g').remove();
-      const xAxisPadding = 60;
-      const yAxisPadding = 80;
+
+      select('#x-low-clip').style('visibility', 'hidden');
+      select('#x-high-clip').style('visibility', 'hidden');
+      select('#y-low-clip').style('visibility', 'hidden');
+      select('#y-high-clip').style('visibility', 'hidden');
+    }
+
+    watch(layoutVars, () => {
+      resetAxesClipRegions();
 
       // Add x layout
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
         const type = store.state.columnTypes[layoutVars.value.x];
         const range = store.state.attributeRanges[layoutVars.value.x];
-        const maxPosition = store.state.svgDimensions.width - 10;
 
-        let positionScale;
-
-        if (type === 'number') {
-          positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([yAxisPadding, maxPosition]);
-        } else {
-          positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([yAxisPadding, maxPosition]);
-        }
+        const positionScale = makePositionScale('x', type, range);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const xAxis = axisBottom(positionScale as any);
@@ -635,7 +771,7 @@ export default defineComponent({
           .attr('fill', 'currentColor')
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
-          .attr('x', ((maxPosition - yAxisPadding) / 2) + yAxisPadding)
+          .attr('x', ((store.state.svgDimensions.width - yAxisPadding) / 2) + yAxisPadding)
           .attr('y', xAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -652,19 +788,8 @@ export default defineComponent({
       if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
         const type = store.state.columnTypes[layoutVars.value.y];
         const range = store.state.attributeRanges[layoutVars.value.y];
-        const maxPosition = store.state.svgDimensions.height - xAxisPadding;
 
-        let positionScale;
-
-        if (type === 'number') {
-          positionScale = scaleLinear()
-            .domain([range.min, range.max])
-            .range([maxPosition, 10]);
-        } else {
-          positionScale = scaleBand()
-            .domain(range.binLabels)
-            .range([maxPosition, 10]);
-        }
+        const positionScale = makePositionScale('y', type, range);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const yAxis = axisLeft(positionScale as any);
@@ -688,7 +813,7 @@ export default defineComponent({
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
           .attr('text-anchor', 'middle')
-          .attr('x', ((maxPosition - 10) / 2) + 10)
+          .attr('x', ((store.state.svgDimensions.height - xAxisPadding - 10) / 2) + 10)
           .attr('y', yAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -734,6 +859,9 @@ export default defineComponent({
       nestedPadding,
       nodeBarColorScale,
       glyphFill,
+      clipRegionSize,
+      xAxisPadding,
+      yAxisPadding,
     };
   },
 });
@@ -762,6 +890,85 @@ export default defineComponent({
       />
 
       <g id="axes" />
+
+      <!-- High and low clip regions -->
+      <g>
+        <g
+          id="x-low-clip"
+        >
+          <rect
+            class="clip-region"
+            :x="xAxisPadding + 20"
+            y="0"
+            :height="svgDimensions.height"
+            :width="clipRegionSize"
+          />
+          <text
+            :x="xAxisPadding + 20 + (clipRegionSize / 2)"
+            :y="svgDimensions.height - yAxisPadding + 50"
+            dominant-baseline="hanging"
+            text-anchor="middle"
+          >low values
+          </text>
+        </g>
+
+        <g
+          id="x-high-clip"
+        >
+          <rect
+            class="clip-region"
+            :x="svgDimensions.width - clipRegionSize"
+            y="0"
+            :height="svgDimensions.height"
+            :width="clipRegionSize"
+          />
+          <text
+            :x="svgDimensions.width - (clipRegionSize / 2)"
+            :y="svgDimensions.height - yAxisPadding + 50"
+            dominant-baseline="hanging"
+            text-anchor="middle"
+          >high values
+          </text>
+        </g>
+
+        <g
+          id="y-low-clip"
+        >
+          <rect
+            class="clip-region"
+            x="0"
+            :y="svgDimensions.height - yAxisPadding + 20 - clipRegionSize"
+            :height="clipRegionSize"
+            :width="svgDimensions.width"
+          />
+          <text
+            :x="xAxisPadding + 20"
+            :y="svgDimensions.height - yAxisPadding + 20 - (clipRegionSize / 2)"
+            dominant-baseline="middle"
+            text-anchor="end"
+          >low values
+          </text>
+        </g>
+
+        <g
+          id="y-high-clip"
+        >
+          <rect
+            class="clip-region"
+            x="0"
+            y="0"
+            :height="clipRegionSize"
+            :width="svgDimensions.width"
+          />
+          <text
+            :x="xAxisPadding + 20"
+            :y="clipRegionSize / 2"
+            dominant-baseline="middle"
+            text-anchor="end"
+          >high values
+          </text>
+        </g>
+      </g>
 
       <g
         class="edges"
@@ -920,5 +1127,10 @@ export default defineComponent({
 .node.selected {
   stroke-width: 6px;
   stroke: #F8CF91;
+}
+
+.clip-region {
+  fill: #000000;
+  opacity: 0.2;
 }
 </style>

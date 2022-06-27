@@ -11,7 +11,7 @@ import {
 import api from '@/api';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
-  ScaleBand, scaleBand, ScaleLinear, scaleLinear, scaleOrdinal, scaleSequential,
+  scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
@@ -560,84 +560,6 @@ const {
       } = payload;
       const otherAxis = axis === 'x' ? 'y' : 'x';
 
-      if (varName !== null) {
-      // Set node size smaller
-        commit.setMarkerSize({ markerSize: 10, updateProv: true });
-
-        // Clear the label variable
-        commit.setLabelVariable(undefined);
-
-        commit.stopSimulation();
-
-        if (state.network !== null && state.columnTypes !== null) {
-          const type = state.columnTypes[varName];
-          const range = state.attributeRanges[varName];
-          const otherAxisPadding = axis === 'x' ? 80 : 60;
-          const maxPosition = axis === 'x' ? state.svgDimensions.width - 10 : state.svgDimensions.height - otherAxisPadding - state.markerSize;
-
-          if (type === 'number') {
-            let positionScale: ScaleLinear<number, number>;
-
-            if (axis === 'x') {
-              positionScale = scaleLinear()
-                .domain([range.min, range.max])
-                .range([otherAxisPadding, maxPosition]);
-            } else {
-              positionScale = scaleLinear()
-                .domain([range.min, range.max])
-                .range([maxPosition, 10]);
-            }
-
-            state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-              node[axis] = positionScale(node[varName]);
-              // eslint-disable-next-line no-param-reassign
-              node[`f${axis}`] = positionScale(node[varName]);
-
-              if (state.layoutVars[otherAxis] === null) {
-                const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
-                // eslint-disable-next-line no-param-reassign
-                node[otherAxis] = otherSvgDimension / 2;
-                // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = otherSvgDimension / 2;
-              }
-            });
-          } else {
-            let positionScale: ScaleBand<string>;
-            let positionOffset: number;
-
-            if (axis === 'x') {
-              positionScale = scaleBand()
-                .domain(range.binLabels)
-                .range([otherAxisPadding, maxPosition]);
-              positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
-            } else {
-              positionScale = scaleBand()
-                .domain(range.binLabels)
-                .range([maxPosition, 10]);
-              positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
-            }
-
-            state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
-
-              if (state.layoutVars[otherAxis] === null) {
-                const otherSvgDimension = axis === 'x' ? state.svgDimensions.height : state.svgDimensions.width;
-                // eslint-disable-next-line no-param-reassign
-                node[otherAxis] = otherSvgDimension / 2;
-                // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = otherSvgDimension / 2;
-              }
-            });
-          }
-        }
-      } else if (state.layoutVars[otherAxis] === null) {
-        dispatch.releaseNodes();
-      }
-
       const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
         x: string | null;
         y: string | null;
@@ -650,6 +572,9 @@ const {
         commit.setMarkerSize({ markerSize: 11, updateProv: false });
 
         dispatch.applyVariableLayout({ varName: state.layoutVars[otherAxis], axis: otherAxis });
+      } else if (varName === null && state.layoutVars[otherAxis] === null) {
+        // If both null, release
+        dispatch.releaseNodes();
       }
     },
   },
