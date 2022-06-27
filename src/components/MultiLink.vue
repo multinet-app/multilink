@@ -629,12 +629,14 @@ export default defineComponent({
             maxValue = maxCandidate;
             clipHigh = true;
             select(`#${axis}-high-clip`).style('visibility', 'visible');
+            select(`#${axis}-high-clip > text`).text(`nodes > ${maxCandidate}`);
           }
 
           if (minCandidate > minValue) {
             minValue = minCandidate;
             clipLow = true;
             select(`#${axis}-low-clip`).style('visibility', 'visible');
+            select(`#${axis}-low-clip > text`).text(`nodes < ${minCandidate}`);
           }
         }
 
@@ -890,38 +892,81 @@ export default defineComponent({
 
       <!-- High and low clip regions -->
       <g>
-        <rect
+        <g
           id="x-low-clip"
-          class="clip-region"
-          :x="xAxisPadding + 20"
-          y="0"
-          :height="svgDimensions.height"
-          :width="clipRegionSize"
-        />
-        <rect
+        >
+          <rect
+            class="clip-region"
+            :x="xAxisPadding + 20"
+            y="0"
+            :height="svgDimensions.height"
+            :width="clipRegionSize"
+          />
+          <text
+            :x="xAxisPadding + 20 + (clipRegionSize / 2)"
+            :y="svgDimensions.height - yAxisPadding + 50"
+            dominant-baseline="hanging"
+            text-anchor="middle"
+          >low values
+          </text>
+        </g>
+
+        <g
           id="x-high-clip"
-          class="clip-region"
-          :x="svgDimensions.width - clipRegionSize"
-          y="0"
-          :height="svgDimensions.height"
-          :width="clipRegionSize"
-        />
-        <rect
+        >
+          <rect
+            class="clip-region"
+            :x="svgDimensions.width - clipRegionSize"
+            y="0"
+            :height="svgDimensions.height"
+            :width="clipRegionSize"
+          />
+          <text
+            :x="svgDimensions.width - (clipRegionSize / 2)"
+            :y="svgDimensions.height - yAxisPadding + 50"
+            dominant-baseline="hanging"
+            text-anchor="middle"
+          >high values
+          </text>
+        </g>
+
+        <g
           id="y-low-clip"
-          class="clip-region"
-          x="0"
-          :y="svgDimensions.height - yAxisPadding + 20 - clipRegionSize"
-          :height="clipRegionSize"
-          :width="svgDimensions.width"
-        />
-        <rect
+        >
+          <rect
+            class="clip-region"
+            x="0"
+            :y="svgDimensions.height - yAxisPadding + 20 - clipRegionSize"
+            :height="clipRegionSize"
+            :width="svgDimensions.width"
+          />
+          <text
+            :x="xAxisPadding + 20"
+            :y="svgDimensions.height - yAxisPadding + 20 - (clipRegionSize / 2)"
+            dominant-baseline="middle"
+            text-anchor="end"
+          >low values
+          </text>
+        </g>
+
+        <g
           id="y-high-clip"
-          class="clip-region"
-          x="0"
-          y="0"
-          :height="clipRegionSize"
-          :width="svgDimensions.width"
-        />
+        >
+          <rect
+            class="clip-region"
+            x="0"
+            y="0"
+            :height="clipRegionSize"
+            :width="svgDimensions.width"
+          />
+          <text
+            :x="xAxisPadding + 20"
+            :y="clipRegionSize / 2"
+            dominant-baseline="middle"
+            text-anchor="end"
+          >high values
+          </text>
+        </g>
       </g>
 
       <g
@@ -1084,7 +1129,6 @@ export default defineComponent({
 }
 
 .clip-region {
-  visibility: hidden;
   fill: #000000;
   opacity: 0.2;
 }
