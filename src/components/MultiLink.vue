@@ -597,7 +597,7 @@ export default defineComponent({
     function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange, maxPosition: number, yAxisPadding: number) {
       const varName = layoutVars.value[axis];
       let clipLow = false;
-      let clipHigh = true;
+      let clipHigh = false;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let positionScale: any;
 
