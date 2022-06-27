@@ -628,7 +628,6 @@ export default defineComponent({
           if (maxCandidate < maxValue) {
             maxValue = maxCandidate;
             clipHigh = true;
-
             select(`#${axis}-high-clip`).style('visibility', 'visible');
           }
 
