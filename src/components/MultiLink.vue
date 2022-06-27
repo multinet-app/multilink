@@ -677,12 +677,13 @@ export default defineComponent({
             store.state.network.nodes.forEach((node) => {
               const nodeVal = node[varName];
               let position = positionScale(nodeVal);
+
               if (axis === 'x') {
-                position = nodeVal > scaleDomain[1] ? scaleRange[1] + (clipRegionSize / 2) : position;
-                position = nodeVal < scaleDomain[0] ? scaleRange[0] - (clipRegionSize / 2) : position;
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] + ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] - ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
               } else {
-                position = nodeVal > scaleDomain[1] ? scaleRange[1] - (clipRegionSize / 2) : position;
-                position = nodeVal < scaleDomain[0] ? scaleRange[0] + (clipRegionSize / 2) : position;
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] - ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] + ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
               }
               position -= (markerSize.value / 2);
 
