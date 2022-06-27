@@ -605,7 +605,7 @@ export default defineComponent({
 
       if (type === 'number') {
         let minValue = range.min;
-        let maxValue = range.max;
+        let maxValue = range.max - 1; // subtract 1, because of the + 1 on the legend chart scale
 
         // Check IQR for outliers
         if (network.value !== null && varName !== null) {
@@ -671,15 +671,17 @@ export default defineComponent({
           const otherAxisPadding = axis === 'x' ? 80 : 60;
 
           if (type === 'number') {
+            const scaleDomain = positionScale.domain();
             const scaleRange = positionScale.range();
             store.state.network.nodes.forEach((node) => {
-              let position = positionScale(node[varName]);
+              const nodeVal = node[varName];
+              let position = positionScale(nodeVal);
               if (axis === 'x') {
-                position = position > scaleRange[1] ? scaleRange[1] + (clipRegionSize / 2) + 10 : position;
-                position = position < scaleRange[0] ? scaleRange[0] - (clipRegionSize / 2) - 10 : position;
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] + (clipRegionSize / 2) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] - (clipRegionSize / 2) : position;
               } else {
-                position = position < scaleRange[1] ? scaleRange[1] - (clipRegionSize / 2) - 10 : position;
-                position = position > scaleRange[0] ? scaleRange[0] + (clipRegionSize / 2) + 10 : position;
+                position = nodeVal > scaleDomain[1] ? scaleRange[1] - (clipRegionSize / 2) : position;
+                position = nodeVal < scaleDomain[0] ? scaleRange[0] + (clipRegionSize / 2) : position;
               }
               position -= (markerSize.value / 2);
 
