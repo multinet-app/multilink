@@ -593,8 +593,10 @@ export default defineComponent({
       }
     });
 
+    const xAxisPadding = 60;
+    const yAxisPadding = 80;
     const layoutVars = computed(() => store.state.layoutVars);
-    function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange, maxPosition: number, yAxisPadding: number) {
+    function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
       const varName = layoutVars.value[axis];
       let clipLow = false;
       let clipHigh = false;
@@ -645,11 +647,11 @@ export default defineComponent({
       }
 
       if (axis === 'x') {
-        const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? maxPosition - clipRegionSize : maxPosition];
+        const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? store.state.svgDimensions.width - clipRegionSize : store.state.svgDimensions.width];
         positionScale = positionScale
           .range(minMax);
       } else {
-        const minMax = [clipLow ? maxPosition - clipRegionSize : maxPosition, clipHigh ? 10 + clipRegionSize : 10];
+        const minMax = [clipLow ? store.state.svgDimensions.height - xAxisPadding - clipRegionSize : store.state.svgDimensions.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
         positionScale = positionScale
           .range(minMax);
       }
@@ -698,9 +700,9 @@ export default defineComponent({
             let positionOffset: number;
 
             if (axis === 'x') {
-              positionOffset = (maxPosition - otherAxisPadding) / ((range.binLabels.length) * 2);
+              positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
             } else {
-              positionOffset = (maxPosition - 10) / ((range.binLabels.length) * 2);
+              positionOffset = (store.state.svgDimensions.height - xAxisPadding - 10) / ((range.binLabels.length) * 2);
             }
 
             store.state.network.nodes.forEach((node) => {
@@ -738,16 +740,12 @@ export default defineComponent({
     watch(layoutVars, () => {
       resetAxesClipRegions();
 
-      const xAxisPadding = 60;
-      const yAxisPadding = 80;
-
       // Add x layout
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
         const type = store.state.columnTypes[layoutVars.value.x];
         const range = store.state.attributeRanges[layoutVars.value.x];
-        const maxPosition = store.state.svgDimensions.width - 10;
 
-        const positionScale = makePositionScale('x', type, range, maxPosition, yAxisPadding);
+        const positionScale = makePositionScale('x', type, range);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const xAxis = axisBottom(positionScale as any);
@@ -769,7 +767,7 @@ export default defineComponent({
           .attr('fill', 'currentColor')
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
-          .attr('x', ((maxPosition - yAxisPadding) / 2) + yAxisPadding)
+          .attr('x', ((store.state.svgDimensions.width - yAxisPadding) / 2) + yAxisPadding)
           .attr('y', xAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -786,9 +784,8 @@ export default defineComponent({
       if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
         const type = store.state.columnTypes[layoutVars.value.y];
         const range = store.state.attributeRanges[layoutVars.value.y];
-        const maxPosition = store.state.svgDimensions.height - xAxisPadding;
 
-        const positionScale = makePositionScale('y', type, range, maxPosition, yAxisPadding);
+        const positionScale = makePositionScale('y', type, range);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const yAxis = axisLeft(positionScale as any);
@@ -812,7 +809,7 @@ export default defineComponent({
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
           .attr('text-anchor', 'middle')
-          .attr('x', ((maxPosition - 10) / 2) + 10)
+          .attr('x', ((store.state.svgDimensions.height - xAxisPadding - 10) / 2) + 10)
           .attr('y', yAxisPadding - 20);
 
         const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -859,6 +856,8 @@ export default defineComponent({
       nodeBarColorScale,
       glyphFill,
       clipRegionSize,
+      xAxisPadding,
+      yAxisPadding,
     };
   },
 });
@@ -893,7 +892,7 @@ export default defineComponent({
         <rect
           id="x-low-clip"
           class="clip-region"
-          x="0"
+          :x="xAxisPadding + 20"
           y="0"
           :height="svgDimensions.height"
           :width="clipRegionSize"
@@ -910,7 +909,7 @@ export default defineComponent({
           id="y-low-clip"
           class="clip-region"
           x="0"
-          :y="svgDimensions.height - clipRegionSize"
+          :y="svgDimensions.height - yAxisPadding + 20 - clipRegionSize"
           :height="clipRegionSize"
           :width="svgDimensions.width"
         />
