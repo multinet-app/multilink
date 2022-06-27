@@ -629,14 +629,14 @@ export default defineComponent({
             maxValue = maxCandidate;
             clipHigh = true;
             select(`#${axis}-high-clip`).style('visibility', 'visible');
-            select(`#${axis}-high-clip > text`).text(`nodes > ${maxCandidate}`);
+            select(`#${axis}-high-clip > text`).text(`> ${maxCandidate}`);
           }
 
           if (minCandidate > minValue) {
             minValue = minCandidate;
             clipLow = true;
             select(`#${axis}-low-clip`).style('visibility', 'visible');
-            select(`#${axis}-low-clip > text`).text(`nodes < ${minCandidate}`);
+            select(`#${axis}-low-clip > text`).text(`< ${minCandidate}`);
           }
         }
 
