@@ -642,8 +642,6 @@ export default defineComponent({
         // Clear the label variable
         store.commit.setLabelVariable(undefined);
 
-        store.commit.stopSimulation();
-
         if (store.state.network !== null && store.state.columnTypes !== null) {
           const otherAxisPadding = axis === 'x' ? 80 : 60;
 
@@ -685,22 +683,18 @@ export default defineComponent({
               positionOffset = (store.state.svgDimensions.height - xAxisPadding - 10) / ((range.binLabels.length) * 2);
             }
 
-            store.state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
-
-              if (store.state.layoutVars[otherAxis] === null) {
-                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
-
-                const randomJitter = axis === 'x' ? Math.random() * (otherSvgDimension - otherAxisPadding) : Math.random() * (otherSvgDimension - otherAxisPadding) + otherAxisPadding;
-                // eslint-disable-next-line no-param-reassign
-                node[otherAxis] = randomJitter;
-                // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = randomJitter;
-              }
-            });
+            const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
+            applyForceToSimulation(
+              store.state.simulation,
+              axis,
+              force,
+            );
+            applyForceToSimulation(
+              store.state.simulation,
+              'edge',
+              forceLink<Node, SimulationEdge>(),
+            );
+            store.commit.startSimulation();
           }
         }
       } else if (store.state.layoutVars[otherAxis] === null) {
