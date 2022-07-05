@@ -827,6 +827,7 @@ export default defineComponent({
 
         store.commit.setSimulation(simulation);
         store.commit.startSimulation();
+        resetAxesClipRegions();
       }
     });
 
