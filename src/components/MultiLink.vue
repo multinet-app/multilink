@@ -716,6 +716,27 @@ export default defineComponent({
     watch(layoutVars, () => {
       resetAxesClipRegions();
 
+      // Reset forces before applying (if there are layout vars)
+      if (simulationEdges.value !== null) {
+        // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
+        const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
+        applyForceToSimulation(
+          store.state.simulation,
+          'x',
+          forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'y',
+          forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'edge',
+          forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+        );
+      }
+
       // Add x layout
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
         const type = store.state.columnTypes[layoutVars.value.x];
