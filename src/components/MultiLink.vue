@@ -568,30 +568,6 @@ export default defineComponent({
         );
       }
     });
-    onMounted(() => {
-      if (network.value !== null && simulationEdges.value !== null) {
-        // Make the simulation
-        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
-          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1))
-          .force('x', forceX(svgDimensions.value.width / 2))
-          .force('y', forceY(svgDimensions.value.height / 2))
-          .force('charge', forceManyBody<Node>().strength(-500))
-          .force('collision', forceCollide((markerSize.value / 2) * 1.5))
-          .on('tick', () => {
-            if (currentInstance !== null) {
-              currentInstance.proxy.$forceUpdate();
-            }
-          })
-        // The next line handles the start stop button change in the controls.
-        // It's not explicitly necessary for the simulation to work
-          .on('end', () => {
-            store.commit.stopSimulation();
-          });
-
-        store.commit.setSimulation(simulation);
-        store.commit.startSimulation();
-      }
-    });
 
     const xAxisPadding = 60;
     const yAxisPadding = 80;
@@ -826,6 +802,31 @@ export default defineComponent({
           .attr('width', labelRectPos.width)
           .attr('height', labelRectPos.height)
           .attr('fill', 'white');
+      }
+    });
+
+    onMounted(() => {
+      if (network.value !== null && simulationEdges.value !== null) {
+        // Make the simulation
+        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
+          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1))
+          .force('x', forceX(svgDimensions.value.width / 2))
+          .force('y', forceY(svgDimensions.value.height / 2))
+          .force('charge', forceManyBody<Node>().strength(-500))
+          .force('collision', forceCollide((markerSize.value / 2) * 1.5))
+          .on('tick', () => {
+            if (currentInstance !== null) {
+              currentInstance.proxy.$forceUpdate();
+            }
+          })
+        // The next line handles the start stop button change in the controls.
+        // It's not explicitly necessary for the simulation to work
+          .on('end', () => {
+            store.commit.stopSimulation();
+          });
+
+        store.commit.setSimulation(simulation);
+        store.commit.startSimulation();
       }
     });
 
