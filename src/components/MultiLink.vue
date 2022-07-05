@@ -718,7 +718,7 @@ export default defineComponent({
               if (store.state.layoutVars[otherAxis] === null) {
                 const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
 
-                const randomJitter = Math.random() * otherSvgDimension;
+                const randomJitter = axis === 'x' ? Math.random() * (otherSvgDimension - otherAxisPadding) : Math.random() * (otherSvgDimension - otherAxisPadding) + otherAxisPadding;
                 // eslint-disable-next-line no-param-reassign
                 node[otherAxis] = randomJitter;
                 // eslint-disable-next-line no-param-reassign
