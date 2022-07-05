@@ -717,10 +717,12 @@ export default defineComponent({
 
               if (store.state.layoutVars[otherAxis] === null) {
                 const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
+
+                const randomJitter = Math.random() * otherSvgDimension;
                 // eslint-disable-next-line no-param-reassign
-                node[otherAxis] = otherSvgDimension / 2;
+                node[otherAxis] = randomJitter;
                 // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = otherSvgDimension / 2;
+                node[`f${otherAxis}`] = randomJitter;
               }
             });
           }
