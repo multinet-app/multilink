@@ -69,6 +69,7 @@ export default defineComponent({
     const directionalEdges = computed(() => store.state.directionalEdges);
     const edgeColorScale = computed(() => store.getters.edgeColorScale);
     const clipRegionSize = 100;
+    const layoutVars = computed(() => store.state.layoutVars);
 
     // Update height and width as the window size changes
     // Also update center attraction forces as the size changes
@@ -552,7 +553,7 @@ export default defineComponent({
       return null;
     });
     watch(attributeRanges, () => {
-      if (simulationEdges.value !== null) {
+      if (simulationEdges.value !== null && layoutVars.value.x !== null && layoutVars.value.y !== null) {
         const simEdges = simulationEdges.value.filter((edge: Edge) => {
           if (edgeVariables.value.width !== '') {
             const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
@@ -571,7 +572,6 @@ export default defineComponent({
 
     const xAxisPadding = 60;
     const yAxisPadding = 80;
-    const layoutVars = computed(() => store.state.layoutVars);
     function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
       const varName = layoutVars.value[axis];
       let clipLow = false;
