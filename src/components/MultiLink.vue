@@ -553,7 +553,7 @@ export default defineComponent({
       return null;
     });
     watch(attributeRanges, () => {
-      if (simulationEdges.value !== null && layoutVars.value.x !== null && layoutVars.value.y !== null) {
+      if (simulationEdges.value !== null && layoutVars.value.x === null && layoutVars.value.y === null) {
         const simEdges = simulationEdges.value.filter((edge: Edge) => {
           if (edgeVariables.value.width !== '') {
             const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
