@@ -167,8 +167,6 @@ const {
         state.simulation.alpha(0.2);
         state.simulation.restart();
         state.simulationRunning = true;
-
-        state.layoutVars = { x: null, y: null };
       }
     },
 

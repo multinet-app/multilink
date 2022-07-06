@@ -69,6 +69,7 @@ export default defineComponent({
     const directionalEdges = computed(() => store.state.directionalEdges);
     const edgeColorScale = computed(() => store.getters.edgeColorScale);
     const clipRegionSize = 100;
+    const layoutVars = computed(() => store.state.layoutVars);
 
     // Update height and width as the window size changes
     // Also update center attraction forces as the size changes
@@ -552,7 +553,7 @@ export default defineComponent({
       return null;
     });
     watch(attributeRanges, () => {
-      if (simulationEdges.value !== null) {
+      if (simulationEdges.value !== null && layoutVars.value.x === null && layoutVars.value.y === null) {
         const simEdges = simulationEdges.value.filter((edge: Edge) => {
           if (edgeVariables.value.width !== '') {
             const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
@@ -568,34 +569,42 @@ export default defineComponent({
         );
       }
     });
-    onMounted(() => {
-      if (network.value !== null && simulationEdges.value !== null) {
-        // Make the simulation
-        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
-          .force('edge', forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1))
-          .force('x', forceX(svgDimensions.value.width / 2))
-          .force('y', forceY(svgDimensions.value.height / 2))
-          .force('charge', forceManyBody<Node>().strength(-500))
-          .force('collision', forceCollide((markerSize.value / 2) * 1.5))
-          .on('tick', () => {
-            if (currentInstance !== null) {
-              currentInstance.proxy.$forceUpdate();
-            }
-          })
-        // The next line handles the start stop button change in the controls.
-        // It's not explicitly necessary for the simulation to work
-          .on('end', () => {
-            store.commit.stopSimulation();
-          });
 
-        store.commit.setSimulation(simulation);
-        store.commit.startSimulation();
+    function resetSimulationForces() {
+      // Reset forces before applying (if there are layout vars)
+      if (simulationEdges.value !== null) {
+        // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
+        const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
+        applyForceToSimulation(
+          store.state.simulation,
+          'x',
+          forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'y',
+          forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'edge',
+          forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'charge',
+          forceManyBody<Node>().strength(-500),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'collision',
+          forceCollide((markerSize.value / 2) * 1.5),
+        );
       }
-    });
+    }
 
     const xAxisPadding = 60;
     const yAxisPadding = 80;
-    const layoutVars = computed(() => store.state.layoutVars);
     function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
       const varName = layoutVars.value[axis];
       let clipLow = false;
@@ -666,8 +675,6 @@ export default defineComponent({
         // Clear the label variable
         store.commit.setLabelVariable(undefined);
 
-        store.commit.stopSimulation();
-
         if (store.state.network !== null && store.state.columnTypes !== null) {
           const otherAxisPadding = axis === 'x' ? 80 : 60;
 
@@ -706,23 +713,26 @@ export default defineComponent({
             if (axis === 'x') {
               positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
             } else {
-              positionOffset = (store.state.svgDimensions.height - xAxisPadding - 10) / ((range.binLabels.length) * 2);
+              positionOffset = ((store.state.svgDimensions.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
             }
 
-            store.state.network.nodes.forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-              node[axis] = (positionScale(node[varName]) || 0) + positionOffset;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${axis}`] = (positionScale(node[varName]) || 0) + positionOffset;
-
-              if (store.state.layoutVars[otherAxis] === null) {
-                const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
-                // eslint-disable-next-line no-param-reassign
-                node[otherAxis] = otherSvgDimension / 2;
-                // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = otherSvgDimension / 2;
-              }
-            });
+            const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
+            applyForceToSimulation(
+              store.state.simulation,
+              axis,
+              force,
+            );
+            applyForceToSimulation(
+              store.state.simulation,
+              'edge',
+              forceLink<Node, SimulationEdge>(),
+            );
+            applyForceToSimulation(
+              store.state.simulation,
+              'charge',
+              forceManyBody<Node>(),
+            );
+            store.commit.startSimulation();
           }
         }
       } else if (store.state.layoutVars[otherAxis] === null) {
@@ -743,6 +753,7 @@ export default defineComponent({
 
     watch(layoutVars, () => {
       resetAxesClipRegions();
+      resetSimulationForces();
 
       // Add x layout
       if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
@@ -824,6 +835,28 @@ export default defineComponent({
           .attr('width', labelRectPos.width)
           .attr('height', labelRectPos.height)
           .attr('fill', 'white');
+      }
+    });
+
+    onMounted(() => {
+      if (network.value !== null && simulationEdges.value !== null) {
+        // Make the simulation
+        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
+          .on('tick', () => {
+            if (currentInstance !== null) {
+              currentInstance.proxy.$forceUpdate();
+            }
+          })
+        // The next line handles the start stop button change in the controls.
+        // It's not explicitly necessary for the simulation to work
+          .on('end', () => {
+            store.commit.stopSimulation();
+          });
+
+        store.commit.setSimulation(simulation);
+        resetSimulationForces(); // Initialize simulation forces
+        store.commit.startSimulation();
+        resetAxesClipRegions();
       }
     });
 
