@@ -680,7 +680,7 @@ export default defineComponent({
             if (axis === 'x') {
               positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
             } else {
-              positionOffset = (store.state.svgDimensions.height - xAxisPadding - 10) / ((range.binLabels.length) * 2);
+              positionOffset = ((store.state.svgDimensions.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
             }
 
             const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
@@ -693,6 +693,11 @@ export default defineComponent({
               store.state.simulation,
               'edge',
               forceLink<Node, SimulationEdge>(),
+            );
+            applyForceToSimulation(
+              store.state.simulation,
+              'charge',
+              forceManyBody<Node>(),
             );
             store.commit.startSimulation();
           }
@@ -734,6 +739,11 @@ export default defineComponent({
           store.state.simulation,
           'edge',
           forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+        );
+        applyForceToSimulation(
+          store.state.simulation,
+          'charge',
+          forceManyBody<Node>().strength(-500),
         );
       }
 
