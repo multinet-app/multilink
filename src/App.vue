@@ -5,8 +5,8 @@ import {
   ref, computed, Ref,
 } from '@vue/composition-api';
 
-import Alert from '@/components/Alert.vue';
-import Controls from '@/components/Controls.vue';
+import AlertBanner from '@/components/AlertBanner.vue';
+import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
@@ -14,8 +14,8 @@ export default {
   name: 'App',
 
   components: {
-    Alert,
-    Controls,
+    AlertBanner,
+    ControlPanel,
     MultiLink,
     ProvVis,
   },
@@ -64,13 +64,13 @@ export default {
 <template>
   <v-app>
     <v-main>
-      <controls />
+      <control-panel />
 
       <multi-link
         v-if="network !== null && selectedNodes !== null"
       />
 
-      <alert v-if="loadError.message !== ''" />
+      <alert-banner v-if="loadError.message !== ''" />
     </v-main>
 
     <prov-vis v-if="showProvenanceVis" />

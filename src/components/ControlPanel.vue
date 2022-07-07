@@ -1,5 +1,5 @@
 <script lang="ts">
-import Legend from '@/components/Legend.vue';
+import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 import LoginMenu from '@/components/LoginMenu.vue';
 
@@ -11,7 +11,7 @@ import {
 
 export default defineComponent({
   components: {
-    Legend,
+    LegendPanel,
     AboutDialog,
     LoginMenu,
   },
@@ -443,7 +443,7 @@ export default defineComponent({
           </v-list-item>
         </div>
 
-        <Legend v-if="columnTypes !== null" />
+        <legend-panel v-if="columnTypes !== null" />
       </v-list>
     </v-navigation-drawer>
   </div>

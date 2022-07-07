@@ -6,7 +6,7 @@ import {
 import api from '@/api';
 
 export default defineComponent({
-  name: 'Alert',
+  name: 'AlertBanner',
 
   setup() {
     const loadError = computed(() => store.state.loadError);
