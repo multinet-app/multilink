@@ -19,15 +19,15 @@ export interface SimulationEdge extends Edge {
   target: string;
 }
 
-export interface Network {
-  nodes: Node[];
-  edges: Edge[];
-}
-
 export interface Node extends TableRow {
   x?: number;
   y?: number;
   [propName: string]: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
+}
+
+export interface Network {
+  nodes: Node[];
+  edges: Edge[];
 }
 
 export interface Cell {
@@ -71,6 +71,20 @@ export interface AttributeRanges {
   [key: string]: AttributeRange;
 }
 
+export type ProvenanceEventTypes =
+  'Select Node(s)' |
+  'De-select Node' |
+  'Clear Selection' |
+  'Set Display Charts' |
+  'Set Marker Size' |
+  'Set Font Size' |
+  'Set Label Variable' |
+  'Set Node Color Variable' |
+  'Set Node Size Variable' |
+  'Set Select Neighbors'|
+  'Set Directional Edges' |
+  'Set Edge Length';
+
 export interface State {
   workspaceName: string | null;
   networkName: string | null;
@@ -109,20 +123,6 @@ export interface State {
   svgDimensions: Dimensions;
   layoutVars: { x: string | null; y: string | null };
 }
-
-export type ProvenanceEventTypes =
-  'Select Node(s)' |
-  'De-select Node' |
-  'Clear Selection' |
-  'Set Display Charts' |
-  'Set Marker Size' |
-  'Set Font Size' |
-  'Set Label Variable' |
-  'Set Node Color Variable' |
-  'Set Node Size Variable' |
-  'Set Select Neighbors'|
-  'Set Directional Edges' |
-  'Set Edge Length';
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;
 export type InternalField = (typeof internalFieldNames)[number];

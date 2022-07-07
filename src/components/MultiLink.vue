@@ -543,7 +543,7 @@ export default defineComponent({
       if (network.value !== null) {
         return network.value.edges.map((edge: Edge) => {
           const newEdge: SimulationEdge = {
-            ...JSON.parse(JSON.stringify(edge)),
+            ...structuredClone(edge),
             source: edge._from,
             target: edge._to,
           };

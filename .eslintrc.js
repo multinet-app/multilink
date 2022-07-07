@@ -1,3 +1,7 @@
+const a11yOff = Object
+  .keys(require('eslint-plugin-vuejs-accessibility').rules)
+  .reduce((acc, rule) => { acc[`vuejs-accessibility/${rule}`] = 'off'; return acc; }, {});
+
 module.exports = {
   root: true,
 
@@ -23,6 +27,7 @@ module.exports = {
     'max-len': ['off'],
     'import/prefer-default-export': ['off'],
     'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to', '_key'] }],
+    ...a11yOff,
   },
 
   parserOptions: {
