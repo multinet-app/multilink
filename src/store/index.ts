@@ -589,6 +589,7 @@ export {
 // The following lines enable types in the injected store '$store'.
 export type ApplicationStore = typeof store;
 declare module 'vuex' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Store<S> {
     direct: ApplicationStore;
   }
