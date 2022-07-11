@@ -17,7 +17,7 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import {
   computed, defineComponent, getCurrentInstance, onMounted, ref, Ref, watch,
-} from '@vue/composition-api';
+} from 'vue';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { isInternalField } from '@/lib/typeUtils';
 import { ColumnType } from 'multinet';

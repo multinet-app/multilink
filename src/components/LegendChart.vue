@@ -3,7 +3,7 @@ import store from '@/store';
 import { Node, Edge } from '@/types';
 import {
   computed, defineComponent, onMounted, PropType, watchEffect,
-} from '@vue/composition-api';
+} from 'vue';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX, D3BrushEvent } from 'd3-brush';

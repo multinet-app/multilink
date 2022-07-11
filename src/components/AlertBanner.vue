@@ -2,7 +2,7 @@
 import store from '@/store';
 import {
   computed, defineComponent, Ref, ref, watchEffect,
-} from '@vue/composition-api';
+} from 'vue';
 import api from '@/api';
 
 export default defineComponent({

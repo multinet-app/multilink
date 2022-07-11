@@ -3,7 +3,7 @@ import { ProvVisCreator } from '@visdesignlab/trrack-vis';
 import { ProvenanceEventTypes, State } from '@/types';
 import {
   computed, ComputedRef, defineComponent, onMounted,
-} from '@vue/composition-api';
+} from 'vue';
 import store from '@/store';
 import { Provenance } from '@visdesignlab/trrack';
 

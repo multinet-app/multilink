@@ -1,6 +1,6 @@
 <script lang="ts">
 import store from '@/store';
-import { computed, defineComponent, PropType } from '@vue/composition-api';
+import { computed, defineComponent, PropType } from 'vue';
 
 export default defineComponent({
   props: {

@@ -3,7 +3,7 @@ import store from '@/store';
 import { internalFieldNames, Edge, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
-import { computed, defineComponent, ref } from '@vue/composition-api';
+import { computed, defineComponent, ref } from 'vue';
 
 export default defineComponent({
   components: {

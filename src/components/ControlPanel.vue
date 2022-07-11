@@ -7,7 +7,7 @@ import store from '@/store';
 import { Node, internalFieldNames } from '@/types';
 import {
   computed, defineComponent, Ref, ref,
-} from '@vue/composition-api';
+} from 'vue';
 
 export default defineComponent({
   components: {

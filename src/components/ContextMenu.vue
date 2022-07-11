@@ -2,7 +2,7 @@
 import store from '@/store';
 import {
   computed, defineComponent,
-} from '@vue/composition-api';
+} from 'vue';
 
 export default defineComponent({
   setup() {
