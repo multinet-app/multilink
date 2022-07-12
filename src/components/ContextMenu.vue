@@ -1,52 +1,36 @@
-<script lang="ts">
+<script setup lang="ts">
 import store from '@/store';
-import {
-  computed, defineComponent,
-} from 'vue';
+import { computed } from 'vue';
 
-export default defineComponent({
-  setup() {
-    const network = computed(() => store.state.network);
+const network = computed(() => store.state.network);
+const selectedNodes = computed(() => store.state.selectedNodes);
 
-    const selectedNodes = computed(() => store.state.selectedNodes);
-    function clearSelection() {
-      store.commit.setSelected(new Set());
-    }
-    function pinSelectedNodes() {
-      if (network.value !== null) {
-        network.value.nodes
-          .filter((node) => selectedNodes.value.has(node._id))
-          .forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-            node.fx = node.x;
-            // eslint-disable-next-line no-param-reassign
-            node.fy = node.y;
-          });
-      }
-    }
-    function unPinSelectedNodes() {
-      if (network.value !== null) {
-        network.value.nodes
-          .filter((node) => selectedNodes.value.has(node._id))
-          .forEach((node) => {
-            // eslint-disable-next-line no-param-reassign
-            delete node.fx;
-            // eslint-disable-next-line no-param-reassign
-            delete node.fy;
-          });
-      }
-    }
+function pinSelectedNodes() {
+  if (network.value !== null) {
+    network.value.nodes
+      .filter((node) => selectedNodes.value.has(node._id))
+      .forEach((node) => {
+        // eslint-disable-next-line no-param-reassign
+        node.fx = node.x;
+        // eslint-disable-next-line no-param-reassign
+        node.fy = node.y;
+      });
+  }
+}
+function unPinSelectedNodes() {
+  if (network.value !== null) {
+    network.value.nodes
+      .filter((node) => selectedNodes.value.has(node._id))
+      .forEach((node) => {
+        // eslint-disable-next-line no-param-reassign
+        delete node.fx;
+        // eslint-disable-next-line no-param-reassign
+        delete node.fy;
+      });
+  }
+}
 
-    const rightClickMenu = computed(() => store.state.rightClickMenu);
-
-    return {
-      rightClickMenu,
-      clearSelection,
-      pinSelectedNodes,
-      unPinSelectedNodes,
-    };
-  },
-});
+const rightClickMenu = computed(() => store.state.rightClickMenu);
 </script>
 
 <template>
@@ -61,7 +45,7 @@ export default defineComponent({
       <v-list>
         <v-list-item
           dense
-          @click="clearSelection"
+          @click="store.commit.setSelected(new Set())"
         >
           <v-list-item-content>
             <v-list-item-title>Clear Selection</v-list-item-title>
