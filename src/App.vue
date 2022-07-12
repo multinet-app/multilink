@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import store from '@/store';
 import { getUrlVars } from '@/lib/utils';
-import { computed } from 'vue';
 
 import AlertBanner from '@/components/AlertBanner.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
-const urlVars = getUrlVars(); // Takes workspacce and network
+const urlVars = getUrlVars(); // Takes workspace and network
 store.dispatch.fetchNetwork({
   workspaceName: urlVars.workspace,
   networkName: urlVars.network,
@@ -16,14 +15,6 @@ store.dispatch.fetchNetwork({
   store.dispatch.createProvenance();
   store.dispatch.guessLabel();
 });
-
-const network = computed(() => store.state.network);
-const selectedNodes = computed(() => store.state.selectedNodes);
-const loadError = computed(() => store.state.loadError);
-
-// Provenance vis boolean
-const showProvenanceVis = computed(() => store.state.showProvenanceVis);
-
 </script>
 
 <template>
@@ -32,13 +23,13 @@ const showProvenanceVis = computed(() => store.state.showProvenanceVis);
       <control-panel />
 
       <multi-link
-        v-if="network !== null && selectedNodes !== null"
+        v-if="store.state.network !== null && store.state.selectedNodes !== null"
       />
 
-      <alert-banner v-if="loadError.message !== ''" />
+      <alert-banner v-if="store.state.loadError.message !== ''" />
     </v-main>
 
-    <prov-vis v-if="showProvenanceVis" />
+    <prov-vis v-if="store.state.showProvenanceVis" />
   </v-app>
 </template>
 
