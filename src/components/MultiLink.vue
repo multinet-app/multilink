@@ -694,11 +694,8 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           node[`f${axis}`] = position;
 
           if (store.state.layoutVars[otherAxis] === null) {
-            const otherSvgDimension = axis === 'x' ? store.state.svgDimensions.height : store.state.svgDimensions.width;
             // eslint-disable-next-line no-param-reassign
-            node[otherAxis] = otherSvgDimension / 2;
-            // eslint-disable-next-line no-param-reassign
-            node[`f${otherAxis}`] = otherSvgDimension / 2;
+            node[`f${otherAxis}`] = undefined;
           }
         });
       } else {
@@ -726,13 +723,13 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           'charge',
           forceManyBody<Node>(),
         );
-        store.commit.startSimulation();
       }
     }
   } else if (store.state.layoutVars[otherAxis] === null) {
     store.dispatch.releaseNodes();
   }
 
+  store.commit.startSimulation();
   return positionScale;
 }
 
