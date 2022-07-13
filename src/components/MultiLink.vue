@@ -25,7 +25,7 @@ import { ColumnType } from 'multinet';
 // Commonly used variables
 const currentInstance = getCurrentInstance();
 const network = computed(() => store.state.network);
-const svg: Ref<Element | null> = ref(null);
+const multiLinkSvg: Ref<Element | null> = ref(null);
 const selectedNodes = computed(() => store.state.selectedNodes);
 const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
 const nodeTextStyle = computed(() => `font-size: ${store.state.fontSize || 0}pt;`);
@@ -135,8 +135,8 @@ function dragNode(node: Node, event: MouseEvent) {
     return;
   }
 
-  if (!(svg.value instanceof Element)) {
-    throw new Error('SVG is not of type Element');
+  if (!(multiLinkSvg.value instanceof Element)) {
+    throw new Error('multiLinkSvg is not of type Element');
   }
 
   event.stopPropagation();
@@ -190,11 +190,11 @@ function dragNode(node: Node, event: MouseEvent) {
   };
 
   const stopFn = (evt: Event) => {
-    if (!(svg.value instanceof Element)) {
-      throw new Error('SVG is not of type Element');
+    if (!(multiLinkSvg.value instanceof Element)) {
+      throw new Error('multiLinkSvg is not of type Element');
     }
-    svg.value.removeEventListener('mousemove', moveFn);
-    svg.value.removeEventListener('mouseup', stopFn);
+    multiLinkSvg.value.removeEventListener('mousemove', moveFn);
+    multiLinkSvg.value.removeEventListener('mouseup', stopFn);
 
     // Check we have a mouse event
     if (!(evt instanceof MouseEvent)) {
@@ -211,8 +211,8 @@ function dragNode(node: Node, event: MouseEvent) {
     }
   };
 
-  svg.value.addEventListener('mousemove', moveFn);
-  svg.value.addEventListener('mouseup', stopFn);
+  multiLinkSvg.value.addEventListener('mousemove', moveFn);
+  multiLinkSvg.value.addEventListener('mouseup', stopFn);
 }
 
 const tooltipMessage = ref('');
@@ -484,11 +484,11 @@ function rectSelectDrag(event: MouseEvent) {
     store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
 
     // Remove the listeners so that the box stops updating location
-    if (!(svg.value instanceof Element)) {
-      throw new Error('SVG is not of type Element');
+    if (!(multiLinkSvg.value instanceof Element)) {
+      throw new Error('multiLinkSvg is not of type Element');
     }
-    svg.value.removeEventListener('mousemove', moveFn);
-    svg.value.removeEventListener('mouseup', stopFn);
+    multiLinkSvg.value.removeEventListener('mousemove', moveFn);
+    multiLinkSvg.value.removeEventListener('mouseup', stopFn);
 
     // Remove the selection box
     rectSelect.value = {
@@ -501,11 +501,11 @@ function rectSelectDrag(event: MouseEvent) {
     };
   };
 
-  if (!(svg.value instanceof Element)) {
-    throw new Error('SVG is not of type Element');
+  if (!(multiLinkSvg.value instanceof Element)) {
+    throw new Error('multiLinkSvg is not of type Element');
   }
-  svg.value.addEventListener('mousemove', moveFn);
-  svg.value.addEventListener('mouseup', stopFn);
+  multiLinkSvg.value.addEventListener('mousemove', moveFn);
+  multiLinkSvg.value.addEventListener('mouseup', stopFn);
 }
 
 function showContextMenu(event: MouseEvent) {
@@ -858,7 +858,7 @@ onMounted(() => {
 <template>
   <div>
     <svg
-      ref="svg"
+      ref="multiLinkSvg"
       :width="svgDimensions.width"
       :height="svgDimensions.height"
       @mousedown="rectSelectDrag"
