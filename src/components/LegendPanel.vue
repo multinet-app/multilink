@@ -1,97 +1,75 @@
-<script lang="ts">
+<script setup lang="ts">
 import store from '@/store';
 import { internalFieldNames, Edge, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
-import { computed, defineComponent, ref } from '@vue/composition-api';
+import { computed, ref } from 'vue';
 
-export default defineComponent({
-  components: {
-    DragTarget,
-    LegendChart,
-  },
+const tab = ref(undefined);
 
-  setup() {
-    const tab = ref(undefined);
+const network = computed(() => store.state.network);
+const nestedVariables = computed(() => store.state.nestedVariables);
+const edgeVariables = computed(() => store.state.edgeVariables);
+const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
+const nodeColorVariable = computed(() => store.state.nodeColorVariable);
+const columnTypes = computed(() => store.state.columnTypes);
 
-    const network = computed(() => store.state.network);
-    const nestedVariables = computed(() => store.state.nestedVariables);
-    const edgeVariables = computed(() => store.state.edgeVariables);
-    const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
-    const nodeColorVariable = computed(() => store.state.nodeColorVariable);
-    const columnTypes = computed(() => store.state.columnTypes);
+function cleanVariableList(list: Set<string>): Set<string> {
+  const cleanedVariables = new Set<string>();
 
-    function cleanVariableList(list: Set<string>): Set<string> {
-      const cleanedVariables = new Set<string>();
-
-      list.forEach((variable) => {
-        if (columnTypes.value !== null && columnTypes.value[variable] !== 'label') {
-          cleanedVariables.add(variable);
-        }
-      });
-
-      return cleanedVariables;
+  list.forEach((variable) => {
+    if (columnTypes.value !== null && columnTypes.value[variable] !== 'label') {
+      cleanedVariables.add(variable);
     }
+  });
 
-    const cleanedNodeVariables = computed(() => {
-      if (network.value !== null) {
-        // Loop through all nodes, flatten the 2d array, and turn it into a set
-        const allVars: Set<string> = new Set();
-        network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+  return cleanedVariables;
+}
 
-        internalFieldNames.forEach((field) => allVars.delete(field));
-        allVars.delete('vx');
-        allVars.delete('vy');
-        allVars.delete('x');
-        allVars.delete('y');
-        allVars.delete('index');
-        return cleanVariableList(allVars);
-      }
-      return new Set();
-    });
+const cleanedNodeVariables = computed(() => {
+  if (network.value !== null) {
+    // Loop through all nodes, flatten the 2d array, and turn it into a set
+    const allVars: Set<string> = new Set();
+    network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-    const cleanedEdgeVariables = computed(() => {
-      if (network.value !== null) {
-        // Loop through all edges, flatten the 2d array, and turn it into a set
-        const allVars: Set<string> = new Set();
-        network.value.edges.map((edge: Edge) => Object.keys(edge).forEach((key) => allVars.add(key)));
+    internalFieldNames.forEach((field) => allVars.delete(field));
+    allVars.delete('vx');
+    allVars.delete('vy');
+    allVars.delete('x');
+    allVars.delete('y');
+    allVars.delete('index');
+    return cleanVariableList(allVars);
+  }
+  return new Set();
+});
 
-        internalFieldNames.forEach((field) => allVars.delete(field));
-        allVars.delete('source');
-        allVars.delete('target');
-        allVars.delete('index');
+const cleanedEdgeVariables = computed(() => {
+  if (network.value !== null) {
+    // Loop through all edges, flatten the 2d array, and turn it into a set
+    const allVars: Set<string> = new Set();
+    network.value.edges.map((edge: Edge) => Object.keys(edge).forEach((key) => allVars.add(key)));
 
-        return cleanVariableList(allVars);
-      }
-      return new Set();
-    });
+    internalFieldNames.forEach((field) => allVars.delete(field));
+    allVars.delete('source');
+    allVars.delete('target');
+    allVars.delete('index');
 
-    const displayCharts = computed({
-      get() {
-        return store.state.displayCharts;
-      },
-      set(value: boolean) {
-        return store.commit.setDisplayCharts(value);
-      },
-    });
+    return cleanVariableList(allVars);
+  }
+  return new Set();
+});
 
-    const attributeLayout = ref(false);
-    const layoutVars = computed(() => store.state.layoutVars);
-
-    return {
-      tab,
-      nestedVariables,
-      edgeVariables,
-      nodeSizeVariable,
-      nodeColorVariable,
-      displayCharts,
-      cleanedNodeVariables,
-      cleanedEdgeVariables,
-      attributeLayout,
-      layoutVars,
-    };
+const displayCharts = computed({
+  get() {
+    return store.state.displayCharts;
+  },
+  set(value: boolean) {
+    return store.commit.setDisplayCharts(value);
   },
 });
+
+const attributeLayout = ref(false);
+const layoutVars = computed(() => store.state.layoutVars);
 </script>
 
 <template>

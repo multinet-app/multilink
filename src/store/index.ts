@@ -351,7 +351,8 @@ const {
       // Get all table names
       try {
         network = await api.network(workspaceName, networkName);
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
         if (error.status === 404) {
           if (workspaceName === undefined || networkName === undefined) {
             commit.setLoadError({

@@ -53,17 +53,8 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api';
+<script setup lang="ts">
+import { ref } from 'vue';
 
-export default defineComponent({
-  setup() {
-    const dialog = ref(false);
-
-    return {
-      dialog,
-    };
-  },
-});
-
+const dialog = ref(false);
 </script>

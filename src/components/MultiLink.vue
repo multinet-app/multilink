@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import {
   scaleBand,
   scaleLinear, ScaleLinear,
@@ -16,332 +16,326 @@ import {
 import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import {
-  computed, defineComponent, getCurrentInstance, onMounted, ref, Ref, watch,
-} from '@vue/composition-api';
+  computed, getCurrentInstance, onMounted, ref, Ref, watch,
+} from 'vue';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { isInternalField } from '@/lib/typeUtils';
 import { ColumnType } from 'multinet';
 
-export default defineComponent({
-  components: {
-    ContextMenu,
-  },
+// Commonly used variables
+const currentInstance = getCurrentInstance();
+const network = computed(() => store.state.network);
+const multiLinkSvg: Ref<Element | null> = ref(null);
+const selectedNodes = computed(() => store.state.selectedNodes);
+const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
+const nodeTextStyle = computed(() => `font-size: ${store.state.fontSize || 0}pt;`);
+const nestedVariables = computed(() => store.state.nestedVariables);
+const markerSize = computed(() => store.state.markerSize || 0);
+const nestedPadding = ref(5);
+const nestedBarWidth = computed(() => {
+  const hasGlyphs = nestedVariables.value.glyph.length !== 0;
+  const totalColumns = nestedVariables.value.bar.length + (hasGlyphs ? 1 : 0);
 
-  setup() {
-    // Commonly used variables
-    const currentInstance = getCurrentInstance();
-    const network = computed(() => store.state.network);
-    const svg: Ref<Element | null> = ref(null);
-    const selectedNodes = computed(() => store.state.selectedNodes);
-    const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
-    const nodeTextStyle = computed(() => `font-size: ${store.state.fontSize || 0}pt;`);
-    const nestedVariables = computed(() => store.state.nestedVariables);
-    const markerSize = computed(() => store.state.markerSize || 0);
-    const nestedPadding = ref(5);
-    const nestedBarWidth = computed(() => {
-      const hasGlyphs = nestedVariables.value.glyph.length !== 0;
-      const totalColumns = nestedVariables.value.bar.length + (hasGlyphs ? 1 : 0);
+  // Left padding + padding on right for each column
+  const totalPadding = nestedPadding.value + totalColumns * nestedPadding.value;
 
-      // Left padding + padding on right for each column
-      const totalPadding = nestedPadding.value + totalColumns * nestedPadding.value;
+  return (markerSize.value - totalPadding) / (totalColumns);
+});
+const nestedBarHeight = computed(() => markerSize.value - 24);
+const displayCharts = computed(() => store.state.displayCharts);
+const labelVariable = computed(() => store.state.labelVariable);
+const selectNeighbors = computed(() => store.state.selectNeighbors);
+const attributeRanges = computed(() => store.state.attributeRanges);
+const columnTypes = computed(() => store.state.columnTypes);
+const attributeScales = computed(() => {
+  const scales: {[key: string]: ScaleLinear<number, number>} = {};
 
-      return (markerSize.value - totalPadding) / (totalColumns);
+  if (Object.values(attributeRanges.value) !== undefined) {
+    Object.values(attributeRanges.value).forEach((attr) => {
+      scales[attr.attr] = scaleLinear()
+        .domain([attr.min, attr.max])
+        .range([0, nestedBarHeight.value]);
     });
-    const nestedBarHeight = computed(() => markerSize.value - 24);
-    const displayCharts = computed(() => store.state.displayCharts);
-    const labelVariable = computed(() => store.state.labelVariable);
-    const selectNeighbors = computed(() => store.state.selectNeighbors);
-    const attributeRanges = computed(() => store.state.attributeRanges);
-    const columnTypes = computed(() => store.state.columnTypes);
-    const attributeScales = computed(() => {
-      const scales: {[key: string]: ScaleLinear<number, number>} = {};
+  }
+  return scales;
+});
+const controlsWidth = computed(() => store.state.controlsWidth);
+const directionalEdges = computed(() => store.state.directionalEdges);
+const edgeColorScale = computed(() => store.getters.edgeColorScale);
+const clipRegionSize = 100;
+const layoutVars = computed(() => store.state.layoutVars);
 
-      if (Object.values(attributeRanges.value) !== undefined) {
-        Object.values(attributeRanges.value).forEach((attr) => {
-          scales[attr.attr] = scaleLinear()
-            .domain([attr.min, attr.max])
-            .range([0, nestedBarHeight.value]);
-        });
-      }
-      return scales;
-    });
-    const controlsWidth = computed(() => store.state.controlsWidth);
-    const directionalEdges = computed(() => store.state.directionalEdges);
-    const edgeColorScale = computed(() => store.getters.edgeColorScale);
-    const clipRegionSize = 100;
-    const layoutVars = computed(() => store.state.layoutVars);
+// Update height and width as the window size changes
+// Also update center attraction forces as the size changes
+const svgDimensions = computed(() => {
+  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
+  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
 
-    // Update height and width as the window size changes
-    // Also update center attraction forces as the size changes
-    const svgDimensions = computed(() => {
-      const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
-      const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
+  applyForceToSimulation(
+    store.state.simulation,
+    'x',
+    forceX<Node>(width / 2),
+  );
+  applyForceToSimulation(
+    store.state.simulation,
+    'y',
+    forceY<Node>(height / 2),
+  );
 
-      applyForceToSimulation(
-        store.state.simulation,
-        'x',
-        forceX<Node>(width / 2),
-      );
-      applyForceToSimulation(
-        store.state.simulation,
-        'y',
-        forceY<Node>(height / 2),
-      );
+  const dimensions = {
+    height,
+    width,
+  };
+  store.commit.setSvgDimensions(dimensions);
 
-      const dimensions = {
-        height,
-        width,
-      };
-      store.commit.setSvgDimensions(dimensions);
+  return dimensions;
+});
+watch([svgDimensions], () => {
+  // If we're in a static layout, then redraw the layout
+  const xLayout = store.state.layoutVars.x !== null;
+  const yLayout = store.state.layoutVars.y !== null;
+  if (xLayout) {
+    store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
+  }
 
-      return dimensions;
-    });
-    watch([svgDimensions], () => {
-      // If we're in a static layout, then redraw the layout
-      const xLayout = store.state.layoutVars.x !== null;
-      const yLayout = store.state.layoutVars.y !== null;
-      if (xLayout) {
-        store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
-      }
+  if (yLayout) {
+    store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
+  }
 
-      if (yLayout) {
-        store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
-      }
+  if (!xLayout && !yLayout) {
+    store.commit.startSimulation();
+  }
+});
 
-      if (!xLayout && !yLayout) {
-        store.commit.startSimulation();
-      }
-    });
+function selectNode(node: Node) {
+  if (selectedNodes.value.has(node._id)) {
+    store.commit.removeSelectedNode(node._id);
+  } else {
+    store.commit.addSelectedNode([node._id]);
+  }
+}
 
-    function selectNode(node: Node) {
-      if (selectedNodes.value.has(node._id)) {
-        store.commit.removeSelectedNode(node._id);
-      } else {
-        store.commit.addSelectedNode([node._id]);
-      }
+const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
+const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
+function calculateNodeSize(node: Node) {
+  // Don't render dynamic node size if the size variable is empty or
+  // we want to display charts
+  if (nodeSizeVariable.value === '' || displayCharts.value || nodeSizeScale.value === null) {
+    return markerSize.value;
+  }
+
+  const calculatedValue = nodeSizeScale.value(node[nodeSizeVariable.value]);
+
+  return calculatedValue > 40 || calculatedValue < 10 ? 0 : calculatedValue;
+}
+
+function dragNode(node: Node, event: MouseEvent) {
+  // Only drag on left clicks
+  if (event.button !== 0) {
+    return;
+  }
+
+  if (!(multiLinkSvg.value instanceof Element)) {
+    throw new Error('multiLinkSvg is not of type Element');
+  }
+
+  event.stopPropagation();
+
+  const initialX = event.x - controlsWidth.value - (calculateNodeSize(node) / 2);
+  const initialY = event.y - (calculateNodeSize(node) / 2);
+
+  const moveFn = (evt: Event) => {
+    // Check we have a mouse event
+    if (!(evt instanceof MouseEvent)) {
+      throw new Error('event is not MouseEvent');
     }
 
-    const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
-    const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
-    function calculateNodeSize(node: Node) {
-      // Don't render dynamic node size if the size variable is empty or
-      // we want to display charts
-      if (nodeSizeVariable.value === '' || displayCharts.value || nodeSizeScale.value === null) {
-        return markerSize.value;
-      }
+    const eventX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
+    const eventY = evt.y - (calculateNodeSize(node) / 2);
 
-      const calculatedValue = nodeSizeScale.value(node[nodeSizeVariable.value]);
+    if (selectedNodes.value.has(node._id)) {
+      const nodeX = Math.floor(node.x || 0);
+      const nodeY = Math.floor(node.y || 0);
+      const dx = eventX - nodeX;
+      const dy = eventY - nodeY;
 
-      return calculatedValue > 40 || calculatedValue < 10 ? 0 : calculatedValue;
-    }
-
-    function dragNode(node: Node, event: MouseEvent) {
-      // Only drag on left clicks
-      if (event.button !== 0) {
-        return;
-      }
-
-      if (!(svg.value instanceof Element)) {
-        throw new Error('SVG is not of type Element');
-      }
-
-      event.stopPropagation();
-
-      const initialX = event.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-      const initialY = event.y - (calculateNodeSize(node) / 2);
-
-      const moveFn = (evt: Event) => {
-        // Check we have a mouse event
-        if (!(evt instanceof MouseEvent)) {
-          throw new Error('event is not MouseEvent');
-        }
-
-        const eventX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-        const eventY = evt.y - (calculateNodeSize(node) / 2);
-
-        if (selectedNodes.value.has(node._id)) {
-          const nodeX = Math.floor(node.x || 0);
-          const nodeY = Math.floor(node.y || 0);
-          const dx = eventX - nodeX;
-          const dy = eventY - nodeY;
-
-          if (network.value !== null) {
-            network.value.nodes
-              .filter((innerNode) => selectedNodes.value.has(innerNode._id) && innerNode._id !== node._id)
-              .forEach((innerNode) => {
-                // eslint-disable-next-line no-param-reassign
-                innerNode.x = (innerNode.x || 0) + dx;
-                // eslint-disable-next-line no-param-reassign
-                innerNode.y = (innerNode.y || 0) + dy;
-                // eslint-disable-next-line no-param-reassign
-                innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
-                // eslint-disable-next-line no-param-reassign
-                innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
-              });
-          }
-        }
-
-        // eslint-disable-next-line no-param-reassign
-        node.x = eventX;
-        // eslint-disable-next-line no-param-reassign
-        node.y = eventY;
-        // eslint-disable-next-line no-param-reassign
-        node.fx = eventX;
-        // eslint-disable-next-line no-param-reassign
-        node.fy = eventY;
-
-        if (currentInstance !== null) {
-          currentInstance.proxy.$forceUpdate();
-        }
-      };
-
-      const stopFn = (evt: Event) => {
-        if (!(svg.value instanceof Element)) {
-          throw new Error('SVG is not of type Element');
-        }
-        svg.value.removeEventListener('mousemove', moveFn);
-        svg.value.removeEventListener('mouseup', stopFn);
-
-        // Check we have a mouse event
-        if (!(evt instanceof MouseEvent)) {
-          throw new Error('event is not MouseEvent');
-        }
-
-        const finalX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-        const finalY = evt.y - (calculateNodeSize(node) / 2);
-        const totalXMovement = Math.abs(initialX - finalX);
-        const totalYMovement = Math.abs(initialY - finalY);
-
-        if (totalXMovement < 25 && totalYMovement < 25) {
-          selectNode(node);
-        }
-      };
-
-      svg.value.addEventListener('mousemove', moveFn);
-      svg.value.addEventListener('mouseup', stopFn);
-    }
-
-    const tooltipMessage = ref('');
-    const toggleTooltip = ref(false);
-    const tooltipPosition = ref({ x: 0, y: 0 });
-    const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
-    function showTooltip(element: Node | Edge, event: MouseEvent) {
-      tooltipPosition.value = {
-        x: event.clientX - controlsWidth.value,
-        y: event.clientY,
-      };
-
-      tooltipMessage.value = Object.entries(element)
-        .filter(([key]) => !isInternalField(key))
-        .map(([key, value]) => `${key}: ${value}`).reduce((a, b) => `${a}\n${b}`);
-      toggleTooltip.value = true;
-    }
-
-    function hideTooltip() {
-      tooltipMessage.value = '';
-      toggleTooltip.value = false;
-    }
-
-    function nodeTranslate(node: Node): string {
-      let forcedX = node.x || 0;
-      let forcedY = node.y || 0;
-
-      const svgEdgePadding = 5;
-
-      const minimumX = svgEdgePadding;
-      const minimumY = svgEdgePadding;
-      const maximumX = svgDimensions.value.width - calculateNodeSize(node) - svgEdgePadding;
-      const maximumY = svgDimensions.value.height - calculateNodeSize(node) - svgEdgePadding;
-
-      // Ideally we would update node.x and node.y, but those variables are being changed
-      // by the simulation. My solution was to use these forcedX and forcedY variables.
-      if (forcedX < minimumX) { forcedX = minimumX; }
-      if (forcedX > maximumX) { forcedX = maximumX; }
-      if (forcedY < minimumY) { forcedY = minimumY; }
-      if (forcedY > maximumY) { forcedY = maximumY; }
-
-      // Update the node position with this forced position
-      // eslint-disable-next-line no-param-reassign
-      node.x = forcedX;
-      // eslint-disable-next-line no-param-reassign
-      node.y = forcedY;
-
-      // Use the forced position, because the node.x is updated by simulation
-      return `translate(${forcedX}, ${forcedY})`;
-    }
-
-    function arcPath(edge: Edge): string {
       if (network.value !== null) {
-        const fromNode = network.value.nodes.find((node) => node._id === edge._from);
-        const toNode = network.value.nodes.find((node) => node._id === edge._to);
-
-        if (fromNode === undefined || toNode === undefined) {
-          throw new Error('Couldn\'t find the source or target for a edge, didn\'t draw arc.');
-        }
-
-        if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
-          throw new Error('_from or _to node didn\'t have an x or a y position.');
-        }
-
-        const x1 = fromNode.x + calculateNodeSize(fromNode) / 2;
-        const y1 = fromNode.y + calculateNodeSize(fromNode) / 2;
-        const x2 = toNode.x + calculateNodeSize(toNode) / 2;
-        const y2 = toNode.y + calculateNodeSize(toNode) / 2;
-
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const dr = Math.sqrt(dx * dx + dy * dy);
-        const sweep = 1;
-        const xRotation = 0;
-        const largeArc = 0;
-
-        return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+        network.value.nodes
+          .filter((innerNode) => selectedNodes.value.has(innerNode._id) && innerNode._id !== node._id)
+          .forEach((innerNode) => {
+            // eslint-disable-next-line no-param-reassign
+            innerNode.x = (innerNode.x || 0) + dx;
+            // eslint-disable-next-line no-param-reassign
+            innerNode.y = (innerNode.y || 0) + dy;
+            // eslint-disable-next-line no-param-reassign
+            innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
+            // eslint-disable-next-line no-param-reassign
+            innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
+          });
       }
-      return '';
     }
 
-    function isSelected(nodeID: string): boolean {
-      return selectedNodes.value.has(nodeID);
+    // eslint-disable-next-line no-param-reassign
+    node.x = eventX;
+    // eslint-disable-next-line no-param-reassign
+    node.y = eventY;
+    // eslint-disable-next-line no-param-reassign
+    node.fx = eventX;
+    // eslint-disable-next-line no-param-reassign
+    node.fy = eventY;
+
+    if (currentInstance !== null) {
+      currentInstance.proxy.$forceUpdate();
+    }
+  };
+
+  const stopFn = (evt: Event) => {
+    if (!(multiLinkSvg.value instanceof Element)) {
+      throw new Error('multiLinkSvg is not of type Element');
+    }
+    multiLinkSvg.value.removeEventListener('mousemove', moveFn);
+    multiLinkSvg.value.removeEventListener('mouseup', stopFn);
+
+    // Check we have a mouse event
+    if (!(evt instanceof MouseEvent)) {
+      throw new Error('event is not MouseEvent');
     }
 
-    const oneHop = computed(() => {
-      if (network.value !== null) {
-        const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
-        const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
+    const finalX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
+    const finalY = evt.y - (calculateNodeSize(node) / 2);
+    const totalXMovement = Math.abs(initialX - finalX);
+    const totalYMovement = Math.abs(initialY - finalY);
 
-        const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
+    if (totalXMovement < 25 && totalYMovement < 25) {
+      selectNode(node);
+    }
+  };
 
-        // Remove null if it exists
-        if (oneHopNodeIDs.has(null)) {
-          oneHopNodeIDs.delete(null);
-        }
+  multiLinkSvg.value.addEventListener('mousemove', moveFn);
+  multiLinkSvg.value.addEventListener('mouseup', stopFn);
+}
 
-        return oneHopNodeIDs;
-      }
-      return new Set();
-    });
-    function nodeGroupClass(node: Node): string {
-      if (selectedNodes.value.size > 0) {
-        const selected = isSelected(node._id);
-        const inOneHop = selectNeighbors.value ? oneHop.value.has(node._id) : false;
-        const selectedClass = selected || inOneHop || !selectNeighbors.value ? '' : 'muted';
-        return `nodeGroup ${selectedClass}`;
-      }
-      return 'nodeGroup';
+const tooltipMessage = ref('');
+const toggleTooltip = ref(false);
+const tooltipPosition = ref({ x: 0, y: 0 });
+const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
+function showTooltip(element: Node | Edge, event: MouseEvent) {
+  tooltipPosition.value = {
+    x: event.clientX - controlsWidth.value,
+    y: event.clientY,
+  };
+
+  tooltipMessage.value = Object.entries(element)
+    .filter(([key]) => !isInternalField(key))
+    .map(([key, value]) => `${key}: ${value}`).reduce((a, b) => `${a}\n${b}`);
+  toggleTooltip.value = true;
+}
+
+function hideTooltip() {
+  tooltipMessage.value = '';
+  toggleTooltip.value = false;
+}
+
+function nodeTranslate(node: Node): string {
+  let forcedX = node.x || 0;
+  let forcedY = node.y || 0;
+
+  const svgEdgePadding = 5;
+
+  const minimumX = svgEdgePadding;
+  const minimumY = svgEdgePadding;
+  const maximumX = svgDimensions.value.width - calculateNodeSize(node) - svgEdgePadding;
+  const maximumY = svgDimensions.value.height - calculateNodeSize(node) - svgEdgePadding;
+
+  // Ideally we would update node.x and node.y, but those variables are being changed
+  // by the simulation. My solution was to use these forcedX and forcedY variables.
+  if (forcedX < minimumX) { forcedX = minimumX; }
+  if (forcedX > maximumX) { forcedX = maximumX; }
+  if (forcedY < minimumY) { forcedY = minimumY; }
+  if (forcedY > maximumY) { forcedY = maximumY; }
+
+  // Update the node position with this forced position
+  // eslint-disable-next-line no-param-reassign
+  node.x = forcedX;
+  // eslint-disable-next-line no-param-reassign
+  node.y = forcedY;
+
+  // Use the forced position, because the node.x is updated by simulation
+  return `translate(${forcedX}, ${forcedY})`;
+}
+
+function arcPath(edge: Edge): string {
+  if (network.value !== null) {
+    const fromNode = network.value.nodes.find((node) => node._id === edge._from);
+    const toNode = network.value.nodes.find((node) => node._id === edge._to);
+
+    if (fromNode === undefined || toNode === undefined) {
+      throw new Error('Couldn\'t find the source or target for a edge, didn\'t draw arc.');
     }
 
-    function nodeClass(node: Node): string {
-      const selected = isSelected(node._id);
-      const selectedClass = selected ? 'selected' : '';
-
-      return `node nodeBox ${selectedClass}`;
+    if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
+      throw new Error('_from or _to node didn\'t have an x or a y position.');
     }
 
-    const nodeColorVariable = computed(() => store.state.nodeColorVariable);
-    const nodeColorScale = computed(() => store.getters.nodeColorScale);
-    function nodeFill(node: Node) {
-      const calculatedValue = node[nodeColorVariable.value];
-      const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
+    const x1 = fromNode.x + calculateNodeSize(fromNode) / 2;
+    const y1 = fromNode.y + calculateNodeSize(fromNode) / 2;
+    const x2 = toNode.x + calculateNodeSize(toNode) / 2;
+    const y2 = toNode.y + calculateNodeSize(toNode) / 2;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dr = Math.sqrt(dx * dx + dy * dy);
+    const sweep = 1;
+    const xRotation = 0;
+    const largeArc = 0;
+
+    return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+  }
+  return '';
+}
+
+function isSelected(nodeID: string): boolean {
+  return selectedNodes.value.has(nodeID);
+}
+
+const oneHop = computed(() => {
+  if (network.value !== null) {
+    const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
+    const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
+
+    const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
+
+    // Remove null if it exists
+    if (oneHopNodeIDs.has(null)) {
+      oneHopNodeIDs.delete(null);
+    }
+
+    return oneHopNodeIDs;
+  }
+  return new Set();
+});
+function nodeGroupClass(node: Node): string {
+  if (selectedNodes.value.size > 0) {
+    const selected = isSelected(node._id);
+    const inOneHop = selectNeighbors.value ? oneHop.value.has(node._id) : false;
+    const selectedClass = selected || inOneHop || !selectNeighbors.value ? '' : 'muted';
+    return `nodeGroup ${selectedClass}`;
+  }
+  return 'nodeGroup';
+}
+
+function nodeClass(node: Node): string {
+  const selected = isSelected(node._id);
+  const selectedClass = selected ? 'selected' : '';
+
+  return `node nodeBox ${selectedClass}`;
+}
+
+const nodeColorVariable = computed(() => store.state.nodeColorVariable);
+const nodeColorScale = computed(() => store.getters.nodeColorScale);
+function nodeFill(node: Node) {
+  const calculatedValue = node[nodeColorVariable.value];
+  const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
       && (
         // Numeric check
         (
@@ -358,25 +352,25 @@ export default defineComponent({
         )
       );
 
-      return useCalculatedValue ? nodeColorScale.value(calculatedValue) : '#EEEEEE';
-    }
+  return useCalculatedValue ? nodeColorScale.value(calculatedValue) : '#EEEEEE';
+}
 
-    function edgeGroupClass(edge: Edge): string {
-      if (selectedNodes.value.size > 0) {
-        const selected = isSelected(edge._from) || isSelected(edge._to);
-        const selectedClass = selected || !selectNeighbors.value ? '' : 'muted';
-        return `edgeGroup ${selectedClass}`;
-      }
-      return 'edgeGroup';
-    }
+function edgeGroupClass(edge: Edge): string {
+  if (selectedNodes.value.size > 0) {
+    const selected = isSelected(edge._from) || isSelected(edge._to);
+    const selectedClass = selected || !selectNeighbors.value ? '' : 'muted';
+    return `edgeGroup ${selectedClass}`;
+  }
+  return 'edgeGroup';
+}
 
-    const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
-    const edgeVariables = computed(() => store.state.edgeVariables);
-    function edgeStyle(edge: Edge): string {
-      const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
+const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
+const edgeVariables = computed(() => store.state.edgeVariables);
+function edgeStyle(edge: Edge): string {
+  const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 
-      const calculatedColorValue = edge[edgeVariables.value.color];
-      const useCalculatedColorValue = edgeVariables.value.color !== '' && columnTypes.value !== null
+  const calculatedColorValue = edge[edgeVariables.value.color];
+  const useCalculatedColorValue = edgeVariables.value.color !== '' && columnTypes.value !== null
       && (
         // Numeric check
         (
@@ -392,515 +386,476 @@ export default defineComponent({
         )
       );
 
-      return `
+  return `
         stroke: ${useCalculatedColorValue ? edgeColorScale.value(calculatedColorValue) : '#888888'};
         stroke-width: ${(edgeWidth > 20 || edgeWidth < 1) ? 0 : edgeWidth}px;
         opacity: 0.7;
       `;
+}
+
+const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
+function glyphFill(node: Node, glyphVar: string) {
+  // Figure out what values should be mapped to colors
+  const possibleValues = [
+    ...(attributeRanges.value[nestedVariables.value.glyph[0]].currentBinLabels || attributeRanges.value[nestedVariables.value.glyph[0]].binLabels),
+  ];
+  if (nestedVariables.value.glyph[1]) {
+    possibleValues.push(...(attributeRanges.value[nestedVariables.value.glyph[1]].currentBinLabels || attributeRanges.value[nestedVariables.value.glyph[1]].binLabels));
+  }
+  const scaleContainsValue = possibleValues.find((domainElement) => domainElement === node[glyphVar]);
+
+  // If outside the doamin, return black
+  return scaleContainsValue ? nodeGlyphColorScale.value(node[glyphVar]) : '#000000';
+}
+
+const rectSelect = ref({
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+  transformX: 0,
+  transformY: 0,
+});
+function rectSelectDrag(event: MouseEvent) {
+  // Only drag on left clicks
+  if (event.button !== 0) {
+    return;
+  }
+
+  // Set initial location for box (pins one corner)
+  rectSelect.value = {
+    x: event.x - controlsWidth.value,
+    y: event.y,
+    width: 0,
+    height: 0,
+    transformX: 0,
+    transformY: 0,
+  };
+
+  const moveFn = (evt: Event) => {
+    // Check we have a mouse event
+    if (!(evt instanceof MouseEvent)) {
+      throw new Error('event is not MouseEvent');
     }
 
-    const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
-    function glyphFill(node: Node, glyphVar: string) {
-      // Figure out what values should be mapped to colors
-      const possibleValues = [
-        ...(attributeRanges.value[nestedVariables.value.glyph[0]].currentBinLabels || attributeRanges.value[nestedVariables.value.glyph[0]].binLabels),
-      ];
-      if (nestedVariables.value.glyph[1]) {
-        possibleValues.push(...(attributeRanges.value[nestedVariables.value.glyph[1]].currentBinLabels || attributeRanges.value[nestedVariables.value.glyph[1]].binLabels));
-      }
-      const scaleContainsValue = possibleValues.find((domainElement) => domainElement === node[glyphVar]);
+    // Get event location
+    const mouseX = evt.x - controlsWidth.value;
+    const mouseY = evt.y;
 
-      // If outside the doamin, return black
-      return scaleContainsValue ? nodeGlyphColorScale.value(node[glyphVar]) : '#000000';
+    // Check if we need to translate (case when mouse is left/above initial click)
+    const translateX = mouseX < rectSelect.value.x;
+    const translateY = mouseY < rectSelect.value.y;
+
+    // Set the parameters
+    rectSelect.value = {
+      x: rectSelect.value.x,
+      y: rectSelect.value.y,
+      width: Math.abs(rectSelect.value.x - mouseX),
+      height: Math.abs(rectSelect.value.y - mouseY),
+      transformX: translateX ? -Math.abs(rectSelect.value.x - mouseX) : 0,
+      transformY: translateY ? -Math.abs(rectSelect.value.y - mouseY) : 0,
+    };
+  };
+
+  const stopFn = () => {
+    const boxX1 = Math.min(rectSelect.value.x + rectSelect.value.transformX, rectSelect.value.x);
+    const boxX2 = boxX1 + rectSelect.value.width;
+    const boxY1 = Math.min(rectSelect.value.y + rectSelect.value.transformY, rectSelect.value.y);
+    const boxY2 = boxY1 + rectSelect.value.height;
+
+    // If x1 == x2 && y1 == y2, it was a click so deselect
+    if (boxX1 === boxX2 && boxY1 === boxY2) {
+      store.commit.setSelected(new Set());
     }
 
-    const rectSelect = ref({
+    // Find which nodes are in the box
+    let nodesInRect: Node[] = [];
+    if (network.value !== null) {
+      nodesInRect = network.value.nodes.filter((node) => {
+        const nodeSize = calculateNodeSize(node) / 2;
+        return (node.x || 0) + nodeSize > boxX1
+              && (node.x || 0) + nodeSize < boxX2
+              && (node.y || 0) + nodeSize > boxY1
+              && (node.y || 0) + nodeSize < boxY2;
+      });
+    }
+
+    // Select the nodes inside the box if there are any
+    store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
+
+    // Remove the listeners so that the box stops updating location
+    if (!(multiLinkSvg.value instanceof Element)) {
+      throw new Error('multiLinkSvg is not of type Element');
+    }
+    multiLinkSvg.value.removeEventListener('mousemove', moveFn);
+    multiLinkSvg.value.removeEventListener('mouseup', stopFn);
+
+    // Remove the selection box
+    rectSelect.value = {
       x: 0,
       y: 0,
       width: 0,
       height: 0,
       transformX: 0,
       transformY: 0,
+    };
+  };
+
+  if (!(multiLinkSvg.value instanceof Element)) {
+    throw new Error('multiLinkSvg is not of type Element');
+  }
+  multiLinkSvg.value.addEventListener('mousemove', moveFn);
+  multiLinkSvg.value.addEventListener('mouseup', stopFn);
+}
+
+function showContextMenu(event: MouseEvent) {
+  store.commit.updateRightClickMenu({
+    show: true,
+    top: event.y,
+    left: event.x,
+  });
+
+  event.preventDefault();
+}
+
+function generateNodePositions(nodes: Node[]) {
+  nodes.forEach((node) => {
+    // If the position is not defined for x or y, generate it
+    if (node.x === undefined || node.y === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      node.x = Math.random() * svgDimensions.value.width;
+      // eslint-disable-next-line no-param-reassign
+      node.y = Math.random() * svgDimensions.value.height;
+    }
+  });
+}
+if (network.value !== null) {
+  generateNodePositions(network.value.nodes);
+}
+
+const simulationEdges = computed(() => {
+  if (network.value !== null) {
+    return network.value.edges.map((edge: Edge) => {
+      const newEdge: SimulationEdge = {
+        ...structuredClone(edge),
+        source: edge._from,
+        target: edge._to,
+      };
+      return newEdge;
     });
-    function rectSelectDrag(event: MouseEvent) {
-      // Only drag on left clicks
-      if (event.button !== 0) {
-        return;
+  }
+  return null;
+});
+watch(attributeRanges, () => {
+  if (simulationEdges.value !== null && layoutVars.value.x === null && layoutVars.value.y === null) {
+    const simEdges = simulationEdges.value.filter((edge: Edge) => {
+      if (edgeVariables.value.width !== '') {
+        const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
+        return widthValue < 20 && widthValue > 1;
       }
-
-      // Set initial location for box (pins one corner)
-      rectSelect.value = {
-        x: event.x - controlsWidth.value,
-        y: event.y,
-        width: 0,
-        height: 0,
-        transformX: 0,
-        transformY: 0,
-      };
-
-      const moveFn = (evt: Event) => {
-        // Check we have a mouse event
-        if (!(evt instanceof MouseEvent)) {
-          throw new Error('event is not MouseEvent');
-        }
-
-        // Get event location
-        const mouseX = evt.x - controlsWidth.value;
-        const mouseY = evt.y;
-
-        // Check if we need to translate (case when mouse is left/above initial click)
-        const translateX = mouseX < rectSelect.value.x;
-        const translateY = mouseY < rectSelect.value.y;
-
-        // Set the parameters
-        rectSelect.value = {
-          x: rectSelect.value.x,
-          y: rectSelect.value.y,
-          width: Math.abs(rectSelect.value.x - mouseX),
-          height: Math.abs(rectSelect.value.y - mouseY),
-          transformX: translateX ? -Math.abs(rectSelect.value.x - mouseX) : 0,
-          transformY: translateY ? -Math.abs(rectSelect.value.y - mouseY) : 0,
-        };
-      };
-
-      const stopFn = () => {
-        const boxX1 = Math.min(rectSelect.value.x + rectSelect.value.transformX, rectSelect.value.x);
-        const boxX2 = boxX1 + rectSelect.value.width;
-        const boxY1 = Math.min(rectSelect.value.y + rectSelect.value.transformY, rectSelect.value.y);
-        const boxY2 = boxY1 + rectSelect.value.height;
-
-        // If x1 == x2 && y1 == y2, it was a click so deselect
-        if (boxX1 === boxX2 && boxY1 === boxY2) {
-          store.commit.setSelected(new Set());
-        }
-
-        // Find which nodes are in the box
-        let nodesInRect: Node[] = [];
-        if (network.value !== null) {
-          nodesInRect = network.value.nodes.filter((node) => {
-            const nodeSize = calculateNodeSize(node) / 2;
-            return (node.x || 0) + nodeSize > boxX1
-              && (node.x || 0) + nodeSize < boxX2
-              && (node.y || 0) + nodeSize > boxY1
-              && (node.y || 0) + nodeSize < boxY2;
-          });
-        }
-
-        // Select the nodes inside the box if there are any
-        store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
-
-        // Remove the listeners so that the box stops updating location
-        if (!(svg.value instanceof Element)) {
-          throw new Error('SVG is not of type Element');
-        }
-        svg.value.removeEventListener('mousemove', moveFn);
-        svg.value.removeEventListener('mouseup', stopFn);
-
-        // Remove the selection box
-        rectSelect.value = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          transformX: 0,
-          transformY: 0,
-        };
-      };
-
-      if (!(svg.value instanceof Element)) {
-        throw new Error('SVG is not of type Element');
-      }
-      svg.value.addEventListener('mousemove', moveFn);
-      svg.value.addEventListener('mouseup', stopFn);
-    }
-
-    function showContextMenu(event: MouseEvent) {
-      store.commit.updateRightClickMenu({
-        show: true,
-        top: event.y,
-        left: event.x,
-      });
-
-      event.preventDefault();
-    }
-
-    function generateNodePositions(nodes: Node[]) {
-      nodes.forEach((node) => {
-        // If the position is not defined for x or y, generate it
-        if (node.x === undefined || node.y === undefined) {
-          // eslint-disable-next-line no-param-reassign
-          node.x = Math.random() * svgDimensions.value.width;
-          // eslint-disable-next-line no-param-reassign
-          node.y = Math.random() * svgDimensions.value.height;
-        }
-      });
-    }
-    if (network.value !== null) {
-      generateNodePositions(network.value.nodes);
-    }
-
-    const simulationEdges = computed(() => {
-      if (network.value !== null) {
-        return network.value.edges.map((edge: Edge) => {
-          const newEdge: SimulationEdge = {
-            ...structuredClone(edge),
-            source: edge._from,
-            target: edge._to,
-          };
-          return newEdge;
-        });
-      }
-      return null;
+      return true;
     });
-    watch(attributeRanges, () => {
-      if (simulationEdges.value !== null && layoutVars.value.x === null && layoutVars.value.y === null) {
-        const simEdges = simulationEdges.value.filter((edge: Edge) => {
-          if (edgeVariables.value.width !== '') {
-            const widthValue = edgeWidthScale.value(edge[edgeVariables.value.width]);
-            return widthValue < 20 && widthValue > 1;
+
+    applyForceToSimulation(
+      store.state.simulation,
+      'edge',
+      forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
+    );
+  }
+});
+
+function resetSimulationForces() {
+  // Reset forces before applying (if there are layout vars)
+  if (simulationEdges.value !== null) {
+    // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
+    const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
+    applyForceToSimulation(
+      store.state.simulation,
+      'x',
+      forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
+    );
+    applyForceToSimulation(
+      store.state.simulation,
+      'y',
+      forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+    );
+    applyForceToSimulation(
+      store.state.simulation,
+      'edge',
+      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+    );
+    applyForceToSimulation(
+      store.state.simulation,
+      'charge',
+      forceManyBody<Node>().strength(-500),
+    );
+    applyForceToSimulation(
+      store.state.simulation,
+      'collision',
+      forceCollide((markerSize.value / 2) * 1.5),
+    );
+  }
+}
+
+const xAxisPadding = 60;
+const yAxisPadding = 80;
+function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
+  const varName = layoutVars.value[axis];
+  let clipLow = false;
+  let clipHigh = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let positionScale: any;
+
+  if (type === 'number') {
+    let minValue = range.min;
+    let maxValue = range.max - 1; // subtract 1, because of the + 1 on the legend chart scale
+
+    // Check IQR for outliers
+    if (network.value !== null && varName !== null) {
+      const values = network.value.nodes.map((node) => node[varName]).sort((a, b) => a - b);
+
+      let q1;
+      let q3;
+      if ((values.length / 4) % 1 === 0) {
+        q1 = 0.5 * (values[(values.length / 4)] + values[(values.length / 4) + 1]);
+        q3 = 0.5 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1]);
+      } else {
+        q1 = values[Math.floor(values.length / 4 + 1)];
+        q3 = values[Math.ceil(values.length * (3 / 4) + 1)];
+      }
+
+      const iqr = q3 - q1;
+      const maxCandidate = q3 + iqr * 1.5;
+      const minCandidate = q1 - iqr * 1.5;
+
+      if (maxCandidate < maxValue) {
+        maxValue = maxCandidate;
+        clipHigh = true;
+        select(`#${axis}-high-clip`).style('visibility', 'visible');
+        select(`#${axis}-high-clip > text`).text(`> ${maxCandidate}`);
+      }
+
+      if (minCandidate > minValue) {
+        minValue = minCandidate;
+        clipLow = true;
+        select(`#${axis}-low-clip`).style('visibility', 'visible');
+        select(`#${axis}-low-clip > text`).text(`< ${minCandidate}`);
+      }
+    }
+
+    positionScale = scaleLinear()
+      .domain([minValue, maxValue]);
+  } else {
+    positionScale = scaleBand()
+      .domain(range.binLabels);
+  }
+
+  if (axis === 'x') {
+    const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? store.state.svgDimensions.width - clipRegionSize : store.state.svgDimensions.width];
+    positionScale = positionScale
+      .range(minMax);
+  } else {
+    const minMax = [clipLow ? store.state.svgDimensions.height - xAxisPadding - clipRegionSize : store.state.svgDimensions.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
+    positionScale = positionScale
+      .range(minMax);
+  }
+
+  const otherAxis = axis === 'x' ? 'y' : 'x';
+
+  if (varName !== null) {
+    // Set node size smaller
+    store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+
+    // Clear the label variable
+    store.commit.setLabelVariable(undefined);
+
+    if (store.state.network !== null && store.state.columnTypes !== null) {
+      const otherAxisPadding = axis === 'x' ? 80 : 60;
+
+      if (type === 'number') {
+        const scaleDomain = positionScale.domain();
+        const scaleRange = positionScale.range();
+        store.state.network.nodes.forEach((node) => {
+          const nodeVal = node[varName];
+          let position = positionScale(nodeVal);
+
+          if (axis === 'x') {
+            position = nodeVal > scaleDomain[1] ? scaleRange[1] + ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+            position = nodeVal < scaleDomain[0] ? scaleRange[0] - ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
+          } else {
+            position = nodeVal > scaleDomain[1] ? scaleRange[1] - ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
+            position = nodeVal < scaleDomain[0] ? scaleRange[0] + ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
           }
-          return true;
+          position -= (markerSize.value / 2);
+
+          // eslint-disable-next-line no-param-reassign
+          node[axis] = position;
+          // eslint-disable-next-line no-param-reassign
+          node[`f${axis}`] = position;
+
+          if (store.state.layoutVars[otherAxis] === null) {
+            // eslint-disable-next-line no-param-reassign
+            node[`f${otherAxis}`] = undefined;
+          }
         });
+      } else {
+        let positionOffset: number;
 
-        applyForceToSimulation(
-          store.state.simulation,
-          'edge',
-          forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
-        );
-      }
-    });
+        if (axis === 'x') {
+          positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
+        } else {
+          positionOffset = ((store.state.svgDimensions.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
+        }
 
-    function resetSimulationForces() {
-      // Reset forces before applying (if there are layout vars)
-      if (simulationEdges.value !== null) {
-        // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
-        const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
+        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
         applyForceToSimulation(
           store.state.simulation,
-          'x',
-          forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
-        );
-        applyForceToSimulation(
-          store.state.simulation,
-          'y',
-          forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+          axis,
+          force,
         );
         applyForceToSimulation(
           store.state.simulation,
           'edge',
-          forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+          forceLink<Node, SimulationEdge>(),
         );
         applyForceToSimulation(
           store.state.simulation,
           'charge',
-          forceManyBody<Node>().strength(-500),
-        );
-        applyForceToSimulation(
-          store.state.simulation,
-          'collision',
-          forceCollide((markerSize.value / 2) * 1.5),
+          forceManyBody<Node>(),
         );
       }
     }
+  } else if (store.state.layoutVars[otherAxis] === null) {
+    store.dispatch.releaseNodes();
+  }
 
-    const xAxisPadding = 60;
-    const yAxisPadding = 80;
-    function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRange) {
-      const varName = layoutVars.value[axis];
-      let clipLow = false;
-      let clipHigh = false;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let positionScale: any;
+  store.commit.startSimulation();
+  return positionScale;
+}
 
-      if (type === 'number') {
-        let minValue = range.min;
-        let maxValue = range.max - 1; // subtract 1, because of the + 1 on the legend chart scale
+function resetAxesClipRegions() {
+  select('#axes').selectAll('g').remove();
 
-        // Check IQR for outliers
-        if (network.value !== null && varName !== null) {
-          const values = network.value.nodes.map((node) => node[varName]).sort((a, b) => a - b);
+  select('#x-low-clip').style('visibility', 'hidden');
+  select('#x-high-clip').style('visibility', 'hidden');
+  select('#y-low-clip').style('visibility', 'hidden');
+  select('#y-high-clip').style('visibility', 'hidden');
+}
 
-          let q1;
-          let q3;
-          if ((values.length / 4) % 1 === 0) {
-            q1 = 0.5 * (values[(values.length / 4)] + values[(values.length / 4) + 1]);
-            q3 = 0.5 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1]);
-          } else {
-            q1 = values[Math.floor(values.length / 4 + 1)];
-            q3 = values[Math.ceil(values.length * (3 / 4) + 1)];
-          }
+watch(layoutVars, () => {
+  resetAxesClipRegions();
+  resetSimulationForces();
 
-          const iqr = q3 - q1;
-          const maxCandidate = q3 + iqr * 1.5;
-          const minCandidate = q1 - iqr * 1.5;
+  // Add x layout
+  if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
+    const type = store.state.columnTypes[layoutVars.value.x];
+    const range = store.state.attributeRanges[layoutVars.value.x];
 
-          if (maxCandidate < maxValue) {
-            maxValue = maxCandidate;
-            clipHigh = true;
-            select(`#${axis}-high-clip`).style('visibility', 'visible');
-            select(`#${axis}-high-clip > text`).text(`> ${maxCandidate}`);
-          }
+    const positionScale = makePositionScale('x', type, range);
 
-          if (minCandidate > minValue) {
-            minValue = minCandidate;
-            clipLow = true;
-            select(`#${axis}-low-clip`).style('visibility', 'visible');
-            select(`#${axis}-low-clip > text`).text(`< ${minCandidate}`);
-          }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const xAxis = axisBottom(positionScale as any);
+    const axisGroup = select('#axes')
+      .append('g');
+
+    // Add the axis
+    axisGroup
+      .attr('transform', `translate(0, ${svgDimensions.value.height - xAxisPadding})`)
+      .call(xAxis);
+
+    // Add the axis label
+    const labelGroup = axisGroup
+      .append('g');
+
+    const label = labelGroup
+      .append('text')
+      .text(layoutVars.value.x)
+      .attr('fill', 'currentColor')
+      .attr('font-size', '14px')
+      .attr('font-weight', 'bold')
+      .attr('x', ((store.state.svgDimensions.width - yAxisPadding) / 2) + yAxisPadding)
+      .attr('y', xAxisPadding - 20);
+
+    const labelRectPos = (label.node() as SVGTextElement).getBBox();
+    labelGroup
+      .insert('rect', 'text')
+      .attr('x', labelRectPos.x)
+      .attr('y', labelRectPos.y)
+      .attr('width', labelRectPos.width)
+      .attr('height', labelRectPos.height)
+      .attr('fill', 'white');
+  }
+
+  // Add y layout
+  if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
+    const type = store.state.columnTypes[layoutVars.value.y];
+    const range = store.state.attributeRanges[layoutVars.value.y];
+
+    const positionScale = makePositionScale('y', type, range);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const yAxis = axisLeft(positionScale as any);
+    const axisGroup = select('#axes')
+      .append('g');
+
+    // Add the axis
+    axisGroup
+      .attr('transform', `translate(${yAxisPadding}, 0)`)
+      .call(yAxis);
+
+    // Add the axis label
+    const labelGroup = axisGroup
+      .append('g')
+      .attr('transform', 'rotate(90)');
+
+    const label = labelGroup
+      .append('text')
+      .text(layoutVars.value.y)
+      .attr('fill', 'currentColor')
+      .attr('font-size', '14px')
+      .attr('font-weight', 'bold')
+      .attr('text-anchor', 'middle')
+      .attr('x', ((store.state.svgDimensions.height - xAxisPadding - 10) / 2) + 10)
+      .attr('y', yAxisPadding - 20);
+
+    const labelRectPos = (label.node() as SVGTextElement).getBBox();
+    labelGroup
+      .insert('rect', 'text')
+      .attr('x', labelRectPos.x)
+      .attr('y', labelRectPos.y)
+      .attr('width', labelRectPos.width)
+      .attr('height', labelRectPos.height)
+      .attr('fill', 'white');
+  }
+});
+
+onMounted(() => {
+  if (network.value !== null && simulationEdges.value !== null) {
+    // Make the simulation
+    const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
+      .on('tick', () => {
+        if (currentInstance !== null) {
+          currentInstance.proxy.$forceUpdate();
         }
+      })
+    // The next line handles the start stop button change in the controls.
+    // It's not explicitly necessary for the simulation to work
+      .on('end', () => {
+        store.commit.stopSimulation();
+      });
 
-        positionScale = scaleLinear()
-          .domain([minValue, maxValue]);
-      } else {
-        positionScale = scaleBand()
-          .domain(range.binLabels);
-      }
-
-      if (axis === 'x') {
-        const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? store.state.svgDimensions.width - clipRegionSize : store.state.svgDimensions.width];
-        positionScale = positionScale
-          .range(minMax);
-      } else {
-        const minMax = [clipLow ? store.state.svgDimensions.height - xAxisPadding - clipRegionSize : store.state.svgDimensions.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
-        positionScale = positionScale
-          .range(minMax);
-      }
-
-      const otherAxis = axis === 'x' ? 'y' : 'x';
-
-      if (varName !== null) {
-      // Set node size smaller
-        store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
-
-        // Clear the label variable
-        store.commit.setLabelVariable(undefined);
-
-        if (store.state.network !== null && store.state.columnTypes !== null) {
-          const otherAxisPadding = axis === 'x' ? 80 : 60;
-
-          if (type === 'number') {
-            const scaleDomain = positionScale.domain();
-            const scaleRange = positionScale.range();
-            store.state.network.nodes.forEach((node) => {
-              const nodeVal = node[varName];
-              let position = positionScale(nodeVal);
-
-              if (axis === 'x') {
-                position = nodeVal > scaleDomain[1] ? scaleRange[1] + ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
-                position = nodeVal < scaleDomain[0] ? scaleRange[0] - ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
-              } else {
-                position = nodeVal > scaleDomain[1] ? scaleRange[1] - ((clipRegionSize - 10) * ((nodeVal - scaleDomain[1]) / (range.max - 1 - scaleDomain[1]))) : position;
-                position = nodeVal < scaleDomain[0] ? scaleRange[0] + ((clipRegionSize - 10) * ((scaleDomain[0] - nodeVal) / (scaleDomain[0] - range.min))) : position;
-              }
-              position -= (markerSize.value / 2);
-
-              // eslint-disable-next-line no-param-reassign
-              node[axis] = position;
-              // eslint-disable-next-line no-param-reassign
-              node[`f${axis}`] = position;
-
-              if (store.state.layoutVars[otherAxis] === null) {
-                // eslint-disable-next-line no-param-reassign
-                node[`f${otherAxis}`] = undefined;
-              }
-            });
-          } else {
-            let positionOffset: number;
-
-            if (axis === 'x') {
-              positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
-            } else {
-              positionOffset = ((store.state.svgDimensions.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
-            }
-
-            const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
-            applyForceToSimulation(
-              store.state.simulation,
-              axis,
-              force,
-            );
-            applyForceToSimulation(
-              store.state.simulation,
-              'edge',
-              forceLink<Node, SimulationEdge>(),
-            );
-            applyForceToSimulation(
-              store.state.simulation,
-              'charge',
-              forceManyBody<Node>(),
-            );
-          }
-        }
-      } else if (store.state.layoutVars[otherAxis] === null) {
-        store.dispatch.releaseNodes();
-      }
-
-      store.commit.startSimulation();
-      return positionScale;
-    }
-
-    function resetAxesClipRegions() {
-      select('#axes').selectAll('g').remove();
-
-      select('#x-low-clip').style('visibility', 'hidden');
-      select('#x-high-clip').style('visibility', 'hidden');
-      select('#y-low-clip').style('visibility', 'hidden');
-      select('#y-high-clip').style('visibility', 'hidden');
-    }
-
-    watch(layoutVars, () => {
-      resetAxesClipRegions();
-      resetSimulationForces();
-
-      // Add x layout
-      if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
-        const type = store.state.columnTypes[layoutVars.value.x];
-        const range = store.state.attributeRanges[layoutVars.value.x];
-
-        const positionScale = makePositionScale('x', type, range);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const xAxis = axisBottom(positionScale as any);
-        const axisGroup = select('#axes')
-          .append('g');
-
-        // Add the axis
-        axisGroup
-          .attr('transform', `translate(0, ${svgDimensions.value.height - xAxisPadding})`)
-          .call(xAxis);
-
-        // Add the axis label
-        const labelGroup = axisGroup
-          .append('g');
-
-        const label = labelGroup
-          .append('text')
-          .text(layoutVars.value.x)
-          .attr('fill', 'currentColor')
-          .attr('font-size', '14px')
-          .attr('font-weight', 'bold')
-          .attr('x', ((store.state.svgDimensions.width - yAxisPadding) / 2) + yAxisPadding)
-          .attr('y', xAxisPadding - 20);
-
-        const labelRectPos = (label.node() as SVGTextElement).getBBox();
-        labelGroup
-          .insert('rect', 'text')
-          .attr('x', labelRectPos.x)
-          .attr('y', labelRectPos.y)
-          .attr('width', labelRectPos.width)
-          .attr('height', labelRectPos.height)
-          .attr('fill', 'white');
-      }
-
-      // Add y layout
-      if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
-        const type = store.state.columnTypes[layoutVars.value.y];
-        const range = store.state.attributeRanges[layoutVars.value.y];
-
-        const positionScale = makePositionScale('y', type, range);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const yAxis = axisLeft(positionScale as any);
-        const axisGroup = select('#axes')
-          .append('g');
-
-        // Add the axis
-        axisGroup
-          .attr('transform', `translate(${yAxisPadding}, 0)`)
-          .call(yAxis);
-
-        // Add the axis label
-        const labelGroup = axisGroup
-          .append('g')
-          .attr('transform', 'rotate(90)');
-
-        const label = labelGroup
-          .append('text')
-          .text(layoutVars.value.y)
-          .attr('fill', 'currentColor')
-          .attr('font-size', '14px')
-          .attr('font-weight', 'bold')
-          .attr('text-anchor', 'middle')
-          .attr('x', ((store.state.svgDimensions.height - xAxisPadding - 10) / 2) + 10)
-          .attr('y', yAxisPadding - 20);
-
-        const labelRectPos = (label.node() as SVGTextElement).getBBox();
-        labelGroup
-          .insert('rect', 'text')
-          .attr('x', labelRectPos.x)
-          .attr('y', labelRectPos.y)
-          .attr('width', labelRectPos.width)
-          .attr('height', labelRectPos.height)
-          .attr('fill', 'white');
-      }
-    });
-
-    onMounted(() => {
-      if (network.value !== null && simulationEdges.value !== null) {
-        // Make the simulation
-        const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
-          .on('tick', () => {
-            if (currentInstance !== null) {
-              currentInstance.proxy.$forceUpdate();
-            }
-          })
-        // The next line handles the start stop button change in the controls.
-        // It's not explicitly necessary for the simulation to work
-          .on('end', () => {
-            store.commit.stopSimulation();
-          });
-
-        store.commit.setSimulation(simulation);
-        resetSimulationForces(); // Initialize simulation forces
-        store.commit.startSimulation();
-        resetAxesClipRegions();
-      }
-    });
-
-    return {
-      svg,
-      svgDimensions,
-      rectSelect,
-      network,
-      edgeGroupClass,
-      edgeStyle,
-      arcPath,
-      directionalEdges,
-      nodeGroupClass,
-      nodeTranslate,
-      nodeClass,
-      rectSelectDrag,
-      showContextMenu,
-      calculateNodeSize,
-      nodeFill,
-      toggleTooltip,
-      displayCharts,
-      showTooltip,
-      hideTooltip,
-      nodeTextStyle,
-      labelVariable,
-      tooltipStyle,
-      tooltipMessage,
-      dragNode,
-      nestedVariables,
-      attributeScales,
-      nestedBarWidth,
-      nestedBarHeight,
-      nestedPadding,
-      nodeBarColorScale,
-      glyphFill,
-      clipRegionSize,
-      xAxisPadding,
-      yAxisPadding,
-    };
-  },
+    store.commit.setSimulation(simulation);
+    resetSimulationForces(); // Initialize simulation forces
+    store.commit.startSimulation();
+    resetAxesClipRegions();
+  }
 });
 </script>
 
 <template>
   <div>
     <svg
-      ref="svg"
+      ref="multiLinkSvg"
       :width="svgDimensions.width"
       :height="svgDimensions.height"
       @mousedown="rectSelectDrag"

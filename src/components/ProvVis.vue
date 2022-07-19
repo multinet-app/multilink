@@ -1,38 +1,22 @@
-<script lang="ts">
+<script setup lang="ts">
 import { ProvVisCreator } from '@visdesignlab/trrack-vis';
-import { ProvenanceEventTypes, State } from '@/types';
-import {
-  computed, ComputedRef, defineComponent, onMounted,
-} from '@vue/composition-api';
+import { computed, onMounted, ref } from 'vue';
 import store from '@/store';
-import { Provenance } from '@visdesignlab/trrack';
 
-export default defineComponent({
-  setup() {
-    const provenance: ComputedRef<Provenance<State, ProvenanceEventTypes, unknown> | null> = computed(
-      () => store.state.provenance,
+const provenance = computed(() => store.state.provenance);
+const provDiv = ref();
+
+onMounted(() => {
+  if (provenance.value !== null && provDiv.value != null) {
+    ProvVisCreator(
+      provDiv.value,
+      provenance.value,
+      (newNode: string) => store.commit.goToProvenanceNode(newNode),
+      true,
+      true,
+      provenance.value.root.id,
     );
-
-    onMounted(() => {
-      const provDiv = document.getElementById('provDiv');
-      if (provenance.value !== null && provDiv != null) {
-        ProvVisCreator(
-          provDiv,
-          provenance.value,
-          (newNode: string) => store.commit.goToProvenanceNode(newNode),
-          true,
-          true,
-          provenance.value.root.id,
-        );
-      }
-    });
-
-    function toggleProvVis() {
-      store.commit.toggleShowProvenanceVis();
-    }
-
-    return { toggleProvVis };
-  },
+  }
 });
 </script>
 
@@ -46,17 +30,20 @@ export default defineComponent({
     <v-btn
       icon
       class="ma-2"
-      @click="toggleProvVis"
+      @click="store.commit.toggleShowProvenanceVis"
     >
       <v-icon>mdi-close</v-icon>
     </v-btn>
 
-    <div id="provDiv" />
+    <div
+      id="provDiv"
+      ref="provDiv"
+    />
   </v-navigation-drawer>
 </template>
 
 <style scoped>
-#provDiv >>> .secondary {
+#provDiv :deep(.secondary) {
   /* Unset vuetify colors for secondary */
   background-color: unset !important;
   border-color: white !important;

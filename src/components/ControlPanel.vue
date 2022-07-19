@@ -1,217 +1,162 @@
-<script lang="ts">
+<script setup lang="ts">
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 import LoginMenu from '@/components/LoginMenu.vue';
 
 import store from '@/store';
-import { Node, internalFieldNames } from '@/types';
-import {
-  computed, defineComponent, Ref, ref,
-} from '@vue/composition-api';
+import { internalFieldNames } from '@/types';
+import { computed, Ref, ref } from 'vue';
 
-export default defineComponent({
-  components: {
-    LegendPanel,
-    AboutDialog,
-    LoginMenu,
+const searchTerm = ref('');
+const searchErrors: Ref<string[]> = ref([]);
+const showMenu = ref(false);
+const network = computed(() => store.state.network);
+
+const multiVariableList = computed(() => {
+  if (network.value !== null) {
+    // Loop through all nodes, flatten the 2d array, and turn it into a set
+    const allVars: Set<string> = new Set();
+    network.value.nodes.forEach((node) => Object.keys(node).forEach((key) => allVars.add(key)));
+
+    internalFieldNames.forEach((field) => allVars.delete(field));
+    allVars.delete('vx');
+    allVars.delete('vy');
+    allVars.delete('x');
+    allVars.delete('y');
+    allVars.delete('index');
+    return allVars;
+  }
+  return new Set();
+});
+
+const displayCharts = computed({
+  get() {
+    return store.state.displayCharts;
   },
-
-  setup() {
-    const searchTerm = ref('');
-    const searchErrors: Ref<string[]> = ref([]);
-    const showMenu = ref(false);
-    const network = computed(() => store.state.network);
-
-    const multiVariableList = computed(() => {
-      if (network.value !== null) {
-        // Loop through all nodes, flatten the 2d array, and turn it into a set
-        const allVars: Set<string> = new Set();
-        network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
-
-        internalFieldNames.forEach((field) => allVars.delete(field));
-        allVars.delete('vx');
-        allVars.delete('vy');
-        allVars.delete('x');
-        allVars.delete('y');
-        allVars.delete('index');
-        return allVars;
-      }
-      return new Set();
-    });
-
-    const displayCharts = computed({
-      get() {
-        return store.state.displayCharts;
-      },
-      set(value: boolean) {
-        return store.commit.setDisplayCharts(value);
-      },
-    });
-
-    const layoutVars = computed(() => store.state.layoutVars);
-    const markerSize = computed({
-      get() {
-        return store.state.markerSize || 0;
-      },
-      set(value: number) {
-        store.commit.setMarkerSize({ markerSize: value, updateProv: false });
-      },
-    });
-
-    const fontSize = computed({
-      get() {
-        return store.state.fontSize || 0;
-      },
-      set(value: number) {
-        store.commit.setFontSize({ fontSize: value, updateProv: false });
-      },
-    });
-
-    const labelVariable = computed({
-      get() {
-        return store.state.labelVariable;
-      },
-      set(value: string | undefined) {
-        store.commit.setLabelVariable(value);
-      },
-    });
-
-    const selectNeighbors = computed({
-      get() {
-        return store.state.selectNeighbors;
-      },
-      set(value: boolean) {
-        store.commit.setSelectNeighbors(value);
-      },
-    });
-
-    const directionalEdges = computed({
-      get() {
-        return store.state.directionalEdges;
-      },
-      set(value: boolean) {
-        store.commit.setDirectionalEdges(value);
-      },
-    });
-
-    const edgeLength = computed({
-      get() {
-        return store.state.edgeLength;
-      },
-      set(value: number) {
-        store.commit.setEdgeLength({ edgeLength: value, updateProv: false });
-      },
-    });
-
-    const controlsWidth = computed(() => store.state.controlsWidth);
-    const simulationRunning = computed(() => store.state.simulationRunning);
-    const columnTypes = computed(() => store.state.columnTypes);
-    const autocompleteItems = computed(() => {
-      if (network.value !== null && labelVariable.value !== undefined) {
-        return network.value.nodes.map((node) => (node[labelVariable.value || '']));
-      }
-      return [];
-    });
-
-    function startSimulation() {
-      store.commit.startSimulation();
-    }
-
-    function stopSimulation() {
-      store.commit.stopSimulation();
-    }
-
-    function releaseNodes() {
-      store.dispatch.releaseNodes();
-    }
-
-    function exportNetwork() {
-      if (network.value === null) {
-        return;
-      }
-
-      const networkToExport = {
-        nodes: network.value.nodes.map((node) => {
-          const newNode = { ...node };
-          newNode.id = newNode._key;
-          delete newNode._key;
-
-          return newNode;
-        }),
-        edges: network.value.edges.map((edge) => {
-          const newEdge = { ...edge };
-          newEdge.source = `${edge._from.split('/')[1]}`;
-          newEdge.target = `${edge._to.split('/')[1]}`;
-          return newEdge;
-        }),
-      };
-
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(
-        new Blob([JSON.stringify(networkToExport)], {
-          type: 'text/json',
-        }),
-      );
-      a.download = `${store.state.networkName}.json`;
-      a.click();
-    }
-
-    function search() {
-      searchErrors.value = [];
-      if (network.value !== null) {
-        const nodeIDsToSelect = network.value.nodes
-          .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
-          .map((node) => node._id);
-
-        if (nodeIDsToSelect.length > 0) {
-          store.commit.addSelectedNode(nodeIDsToSelect);
-        } else {
-          searchErrors.value.push('Enter a valid node to search');
-        }
-      }
-    }
-
-    function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
-      if (type === 'markerSize') {
-        store.commit.setMarkerSize({ markerSize: value, updateProv: true });
-      } else if (type === 'fontSize') {
-        store.commit.setFontSize({ fontSize: value, updateProv: true });
-      } else if (type === 'edgeLength') {
-        store.commit.setEdgeLength({ edgeLength: value, updateProv: true });
-      }
-    }
-
-    function toggleProvVis() {
-      store.commit.toggleShowProvenanceVis();
-    }
-
-    return {
-      searchTerm,
-      searchErrors,
-      showMenu,
-      displayCharts,
-      columnTypes,
-      search,
-      autocompleteItems,
-      controlsWidth,
-      multiVariableList,
-      markerSize,
-      fontSize,
-      toggleProvVis,
-      updateSliderProv,
-      exportNetwork,
-      startSimulation,
-      stopSimulation,
-      releaseNodes,
-      simulationRunning,
-      labelVariable,
-      selectNeighbors,
-      directionalEdges,
-      edgeLength,
-      layoutVars,
-    };
+  set(value: boolean) {
+    return store.commit.setDisplayCharts(value);
   },
 });
+
+const layoutVars = computed(() => store.state.layoutVars);
+const markerSize = computed({
+  get() {
+    return store.state.markerSize || 0;
+  },
+  set(value: number) {
+    store.commit.setMarkerSize({ markerSize: value, updateProv: false });
+  },
+});
+
+const fontSize = computed({
+  get() {
+    return store.state.fontSize || 0;
+  },
+  set(value: number) {
+    store.commit.setFontSize({ fontSize: value, updateProv: false });
+  },
+});
+
+const labelVariable = computed({
+  get() {
+    return store.state.labelVariable;
+  },
+  set(value: string | undefined) {
+    store.commit.setLabelVariable(value);
+  },
+});
+
+const selectNeighbors = computed({
+  get() {
+    return store.state.selectNeighbors;
+  },
+  set(value: boolean) {
+    store.commit.setSelectNeighbors(value);
+  },
+});
+
+const directionalEdges = computed({
+  get() {
+    return store.state.directionalEdges;
+  },
+  set(value: boolean) {
+    store.commit.setDirectionalEdges(value);
+  },
+});
+
+const edgeLength = computed({
+  get() {
+    return store.state.edgeLength;
+  },
+  set(value: number) {
+    store.commit.setEdgeLength({ edgeLength: value, updateProv: false });
+  },
+});
+
+const controlsWidth = computed(() => store.state.controlsWidth);
+const simulationRunning = computed(() => store.state.simulationRunning);
+const columnTypes = computed(() => store.state.columnTypes);
+const autocompleteItems = computed(() => {
+  if (network.value !== null && labelVariable.value !== undefined) {
+    return network.value.nodes.map((node) => (node[labelVariable.value || '']));
+  }
+  return [];
+});
+
+function exportNetwork() {
+  if (network.value === null) {
+    return;
+  }
+
+  const networkToExport = {
+    nodes: network.value.nodes.map((node) => {
+      const newNode = { ...node };
+      newNode.id = newNode._key;
+
+      return newNode;
+    }),
+    edges: network.value.edges.map((edge) => {
+      const newEdge = { ...edge };
+      newEdge.source = `${edge._from.split('/')[1]}`;
+      newEdge.target = `${edge._to.split('/')[1]}`;
+      return newEdge;
+    }),
+  };
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(
+    new Blob([JSON.stringify(networkToExport)], {
+      type: 'text/json',
+    }),
+  );
+  a.download = `${store.state.networkName}.json`;
+  a.click();
+}
+
+function search() {
+  searchErrors.value = [];
+  if (network.value !== null) {
+    const nodeIDsToSelect = network.value.nodes
+      .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
+      .map((node) => node._id);
+
+    if (nodeIDsToSelect.length > 0) {
+      store.commit.addSelectedNode(nodeIDsToSelect);
+    } else {
+      searchErrors.value.push('Enter a valid node to search');
+    }
+  }
+}
+
+function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
+  if (type === 'markerSize') {
+    store.commit.setMarkerSize({ markerSize: value, updateProv: true });
+  } else if (type === 'fontSize') {
+    store.commit.setFontSize({ fontSize: value, updateProv: true });
+  } else if (type === 'edgeLength') {
+    store.commit.setEdgeLength({ edgeLength: value, updateProv: true });
+  }
+}
 </script>
 
 <template>
@@ -372,7 +317,7 @@ export default defineComponent({
                 color="grey darken-2"
                 depressed
                 small
-                @click="releaseNodes"
+                @click="store.dispatch.releaseNodes()"
               >
                 <v-icon
                   left
@@ -390,7 +335,7 @@ export default defineComponent({
                 depressed
                 small
                 width="75"
-                @click="simulationRunning ? stopSimulation() : startSimulation()"
+                @click="simulationRunning ? store.commit.stopSimulation() : store.commit.startSimulation()"
               >
                 <v-icon
                   left
@@ -408,7 +353,7 @@ export default defineComponent({
               color="primary"
               block
               depressed
-              @click="toggleProvVis"
+              @click="store.commit.toggleShowProvenanceVis()"
             >
               Provenance Vis
             </v-btn>

@@ -1,64 +1,20 @@
-<script lang="ts">
+<script setup lang="ts">
 import store from '@/store';
 import { getUrlVars } from '@/lib/utils';
-import {
-  ref, computed, Ref,
-} from '@vue/composition-api';
 
 import AlertBanner from '@/components/AlertBanner.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
-export default {
-  name: 'App',
-
-  components: {
-    AlertBanner,
-    ControlPanel,
-    MultiLink,
-    ProvVis,
-  },
-
-  setup() {
-    const network = computed(() => store.state.network);
-    const selectedNodes = computed(() => store.state.selectedNodes);
-    const loadError = computed(() => store.state.loadError);
-
-    const multilinkContainer: Ref<Element | null> = ref(null);
-    const multilinkContainerDimensions = computed(() => {
-      if (multilinkContainer.value !== null) {
-        return {
-          width: multilinkContainer.value.clientWidth - 24,
-          height: multilinkContainer.value.clientHeight - 24,
-        };
-      }
-      return null;
-    });
-
-    const urlVars = getUrlVars(); // Takes workspacce and network
-
-    store.dispatch.fetchNetwork({
-      workspaceName: urlVars.workspace,
-      networkName: urlVars.network,
-    }).then(() => {
-      store.dispatch.createProvenance();
-      store.dispatch.guessLabel();
-    });
-
-    // Provenance vis boolean
-    const showProvenanceVis = computed(() => store.state.showProvenanceVis);
-
-    return {
-      network,
-      selectedNodes,
-      loadError,
-      multilinkContainer,
-      multilinkContainerDimensions,
-      showProvenanceVis,
-    };
-  },
-};
+const urlVars = getUrlVars(); // Takes workspace and network
+store.dispatch.fetchNetwork({
+  workspaceName: urlVars.workspace,
+  networkName: urlVars.network,
+}).then(() => {
+  store.dispatch.createProvenance();
+  store.dispatch.guessLabel();
+});
 </script>
 
 <template>
@@ -67,13 +23,13 @@ export default {
       <control-panel />
 
       <multi-link
-        v-if="network !== null && selectedNodes !== null"
+        v-if="store.state.network !== null && store.state.selectedNodes !== null"
       />
 
-      <alert-banner v-if="loadError.message !== ''" />
+      <alert-banner v-if="store.state.loadError.message !== ''" />
     </v-main>
 
-    <prov-vis v-if="showProvenanceVis" />
+    <prov-vis v-if="store.state.showProvenanceVis" />
   </v-app>
 </template>
 
