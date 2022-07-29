@@ -192,7 +192,6 @@ const {
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
-      state.selectedNodes = new Set(state.selectedNodes);
 
       if (state.provenance !== null) {
         updateProvenanceState(state, 'De-select Node');
@@ -342,7 +341,7 @@ const {
   },
   actions: {
     async fetchNetwork(context, { workspaceName, networkName }) {
-      const { commit } = rootActionContext(context);
+      const { commit, dispatch } = rootActionContext(context);
       commit.setWorkspaceName(workspaceName);
       commit.setNetworkName(networkName);
 
@@ -437,9 +436,7 @@ const {
       const allVars: Set<string> = new Set();
       networkElements.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-      const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
-      commit.setLabelVariable(bestLabelVar);
+      dispatch.guessLabel();
     },
 
     async fetchUserInfo(context) {
