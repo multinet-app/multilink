@@ -788,18 +788,17 @@ watch(layoutVars, () => {
   }
 });
 
+const svgEdgePadding = 5;
+
+const minimumX = svgEdgePadding;
+const minimumY = svgEdgePadding;
+const maximumX = svgDimensions.value.width - svgEdgePadding;
+const maximumY = svgDimensions.value.height - svgEdgePadding;
 onMounted(() => {
   if (network.value !== null && simulationEdges.value !== null) {
     // Make the simulation
     const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
       .on('tick', () => {
-        const svgEdgePadding = 5;
-
-        const minimumX = svgEdgePadding;
-        const minimumY = svgEdgePadding;
-        const maximumX = svgDimensions.value.width - svgEdgePadding;
-        const maximumY = svgDimensions.value.height - svgEdgePadding;
-
         network.value?.nodes.forEach((node) => {
           if (node.x !== undefined && node.y !== undefined) {
             const maxX = maximumX - calculateNodeSize(node);
