@@ -10,9 +10,7 @@ function pinSelectedNodes() {
     network.value.nodes
       .filter((node) => selectedNodes.value.has(node._id))
       .forEach((node) => {
-        // eslint-disable-next-line no-param-reassign
         node.fx = node.x;
-        // eslint-disable-next-line no-param-reassign
         node.fy = node.y;
       });
   }
@@ -22,9 +20,7 @@ function unPinSelectedNodes() {
     network.value.nodes
       .filter((node) => selectedNodes.value.has(node._id))
       .forEach((node) => {
-        // eslint-disable-next-line no-param-reassign
         delete node.fx;
-        // eslint-disable-next-line no-param-reassign
         delete node.fy;
       });
   }

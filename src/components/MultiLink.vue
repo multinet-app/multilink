@@ -163,25 +163,17 @@ function dragNode(node: Node, event: MouseEvent) {
         network.value.nodes
           .filter((innerNode) => selectedNodes.value.has(innerNode._id) && innerNode._id !== node._id)
           .forEach((innerNode) => {
-            // eslint-disable-next-line no-param-reassign
             innerNode.x = (innerNode.x || 0) + dx;
-            // eslint-disable-next-line no-param-reassign
             innerNode.y = (innerNode.y || 0) + dy;
-            // eslint-disable-next-line no-param-reassign
             innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
-            // eslint-disable-next-line no-param-reassign
             innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
           });
       }
     }
 
-    // eslint-disable-next-line no-param-reassign
     node.x = eventX;
-    // eslint-disable-next-line no-param-reassign
     node.y = eventY;
-    // eslint-disable-next-line no-param-reassign
     node.fx = eventX;
-    // eslint-disable-next-line no-param-reassign
     node.fy = eventY;
 
     if (currentInstance !== null) {
@@ -234,34 +226,6 @@ function showTooltip(element: Node | Edge, event: MouseEvent) {
 function hideTooltip() {
   tooltipMessage.value = '';
   toggleTooltip.value = false;
-}
-
-function nodeTranslate(node: Node): string {
-  let forcedX = node.x || 0;
-  let forcedY = node.y || 0;
-
-  const svgEdgePadding = 5;
-
-  const minimumX = svgEdgePadding;
-  const minimumY = svgEdgePadding;
-  const maximumX = svgDimensions.value.width - calculateNodeSize(node) - svgEdgePadding;
-  const maximumY = svgDimensions.value.height - calculateNodeSize(node) - svgEdgePadding;
-
-  // Ideally we would update node.x and node.y, but those variables are being changed
-  // by the simulation. My solution was to use these forcedX and forcedY variables.
-  if (forcedX < minimumX) { forcedX = minimumX; }
-  if (forcedX > maximumX) { forcedX = maximumX; }
-  if (forcedY < minimumY) { forcedY = minimumY; }
-  if (forcedY > maximumY) { forcedY = maximumY; }
-
-  // Update the node position with this forced position
-  // eslint-disable-next-line no-param-reassign
-  node.x = forcedX;
-  // eslint-disable-next-line no-param-reassign
-  node.y = forcedY;
-
-  // Use the forced position, because the node.x is updated by simulation
-  return `translate(${forcedX}, ${forcedY})`;
 }
 
 function arcPath(edge: Edge): string {
@@ -522,9 +486,7 @@ function generateNodePositions(nodes: Node[]) {
   nodes.forEach((node) => {
     // If the position is not defined for x or y, generate it
     if (node.x === undefined || node.y === undefined) {
-      // eslint-disable-next-line no-param-reassign
       node.x = Math.random() * svgDimensions.value.width;
-      // eslint-disable-next-line no-param-reassign
       node.y = Math.random() * svgDimensions.value.height;
     }
   });
@@ -688,13 +650,10 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           }
           position -= (markerSize.value / 2);
 
-          // eslint-disable-next-line no-param-reassign
           node[axis] = position;
-          // eslint-disable-next-line no-param-reassign
           node[`f${axis}`] = position;
 
           if (store.state.layoutVars[otherAxis] === null) {
-            // eslint-disable-next-line no-param-reassign
             node[`f${otherAxis}`] = undefined;
           }
         });
@@ -829,11 +788,30 @@ watch(layoutVars, () => {
   }
 });
 
+const svgEdgePadding = 5;
+
+const minimumX = svgEdgePadding;
+const minimumY = svgEdgePadding;
+const maximumX = svgDimensions.value.width - svgEdgePadding;
+const maximumY = svgDimensions.value.height - svgEdgePadding;
 onMounted(() => {
   if (network.value !== null && simulationEdges.value !== null) {
     // Make the simulation
     const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
       .on('tick', () => {
+        network.value?.nodes.forEach((node) => {
+          if (node.x !== undefined && node.y !== undefined) {
+            const maxX = maximumX - calculateNodeSize(node);
+            const maxY = maximumY - calculateNodeSize(node);
+
+            // Update the node position forced to stay on the svg
+            if (node.x < minimumX) { node.x = minimumX; }
+            if (node.x > maxX) { node.x = maxX; }
+            if (node.y < minimumY) { node.y = minimumY; }
+            if (node.y > maxY) { node.y = maxY; }
+          }
+        });
+
         if (currentInstance !== null) {
           currentInstance.proxy.$forceUpdate();
         }
@@ -994,7 +972,7 @@ onMounted(() => {
         <g
           v-for="node of network.nodes"
           :key="node._id"
-          :transform="nodeTranslate(node)"
+          :transform="`translate(${node.x},${node.y})`"
           :class="nodeGroupClass(node)"
         >
           <rect
