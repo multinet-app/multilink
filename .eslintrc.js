@@ -28,6 +28,7 @@ module.exports = {
     'import/prefer-default-export': ['off'],
     'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to', '_key'] }],
     ...a11yOff,
+    'no-param-reassign': ['error', { props: false }],
   },
 
   parserOptions: {

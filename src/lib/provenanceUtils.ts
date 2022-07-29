@@ -2,8 +2,6 @@ import { ProvenanceEventTypes, State } from '@/types';
 import { createAction } from '@visdesignlab/trrack';
 
 export function updateProvenanceState(vuexState: State, label: ProvenanceEventTypes) {
-  /* eslint-disable no-param-reassign */
-
   const stateUpdateActions = createAction<State, State[], ProvenanceEventTypes>((provState, newProvState) => {
     if (label === 'Select Node(s)' || label === 'De-select Node' || label === 'Clear Selection') {
       provState.selectedNodes = newProvState.selectedNodes;
@@ -26,8 +24,6 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
     } else if (label === 'Set Edge Length') {
       provState.edgeLength = newProvState.edgeLength;
     }
-
-    /* eslint-enable no-param-reassign */
   })
     .setLabel(label);
 

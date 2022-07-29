@@ -459,9 +459,7 @@ const {
 
       if (context.state.network !== null) {
         context.state.network.nodes.forEach((n: Node) => {
-          // eslint-disable-next-line no-param-reassign
           n.fx = null;
-          // eslint-disable-next-line no-param-reassign
           n.fy = null;
         });
         commit.startSimulation();

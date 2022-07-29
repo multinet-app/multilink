@@ -163,25 +163,17 @@ function dragNode(node: Node, event: MouseEvent) {
         network.value.nodes
           .filter((innerNode) => selectedNodes.value.has(innerNode._id) && innerNode._id !== node._id)
           .forEach((innerNode) => {
-            // eslint-disable-next-line no-param-reassign
             innerNode.x = (innerNode.x || 0) + dx;
-            // eslint-disable-next-line no-param-reassign
             innerNode.y = (innerNode.y || 0) + dy;
-            // eslint-disable-next-line no-param-reassign
             innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
-            // eslint-disable-next-line no-param-reassign
             innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
           });
       }
     }
 
-    // eslint-disable-next-line no-param-reassign
     node.x = eventX;
-    // eslint-disable-next-line no-param-reassign
     node.y = eventY;
-    // eslint-disable-next-line no-param-reassign
     node.fx = eventX;
-    // eslint-disable-next-line no-param-reassign
     node.fy = eventY;
 
     if (currentInstance !== null) {
@@ -255,9 +247,7 @@ function nodeTranslate(node: Node): string {
   if (forcedY > maximumY) { forcedY = maximumY; }
 
   // Update the node position with this forced position
-  // eslint-disable-next-line no-param-reassign
   node.x = forcedX;
-  // eslint-disable-next-line no-param-reassign
   node.y = forcedY;
 
   // Use the forced position, because the node.x is updated by simulation
@@ -522,9 +512,7 @@ function generateNodePositions(nodes: Node[]) {
   nodes.forEach((node) => {
     // If the position is not defined for x or y, generate it
     if (node.x === undefined || node.y === undefined) {
-      // eslint-disable-next-line no-param-reassign
       node.x = Math.random() * svgDimensions.value.width;
-      // eslint-disable-next-line no-param-reassign
       node.y = Math.random() * svgDimensions.value.height;
     }
   });
@@ -688,13 +676,10 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           }
           position -= (markerSize.value / 2);
 
-          // eslint-disable-next-line no-param-reassign
           node[axis] = position;
-          // eslint-disable-next-line no-param-reassign
           node[`f${axis}`] = position;
 
           if (store.state.layoutVars[otherAxis] === null) {
-            // eslint-disable-next-line no-param-reassign
             node[`f${otherAxis}`] = undefined;
           }
         });
