@@ -228,32 +228,6 @@ function hideTooltip() {
   toggleTooltip.value = false;
 }
 
-function nodeTranslate(node: Node): string {
-  let forcedX = node.x || 0;
-  let forcedY = node.y || 0;
-
-  const svgEdgePadding = 5;
-
-  const minimumX = svgEdgePadding;
-  const minimumY = svgEdgePadding;
-  const maximumX = svgDimensions.value.width - calculateNodeSize(node) - svgEdgePadding;
-  const maximumY = svgDimensions.value.height - calculateNodeSize(node) - svgEdgePadding;
-
-  // Ideally we would update node.x and node.y, but those variables are being changed
-  // by the simulation. My solution was to use these forcedX and forcedY variables.
-  if (forcedX < minimumX) { forcedX = minimumX; }
-  if (forcedX > maximumX) { forcedX = maximumX; }
-  if (forcedY < minimumY) { forcedY = minimumY; }
-  if (forcedY > maximumY) { forcedY = maximumY; }
-
-  // Update the node position with this forced position
-  node.x = forcedX;
-  node.y = forcedY;
-
-  // Use the forced position, because the node.x is updated by simulation
-  return `translate(${forcedX}, ${forcedY})`;
-}
-
 function arcPath(edge: Edge): string {
   if (network.value !== null) {
     const fromNode = network.value.nodes.find((node) => node._id === edge._from);
@@ -819,6 +793,26 @@ onMounted(() => {
     // Make the simulation
     const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
       .on('tick', () => {
+        const svgEdgePadding = 5;
+
+        const minimumX = svgEdgePadding;
+        const minimumY = svgEdgePadding;
+        const maximumX = svgDimensions.value.width - svgEdgePadding;
+        const maximumY = svgDimensions.value.height - svgEdgePadding;
+
+        network.value?.nodes.forEach((node) => {
+          if (node.x !== undefined && node.y !== undefined) {
+            const maxX = maximumX - calculateNodeSize(node);
+            const maxY = maximumY - calculateNodeSize(node);
+
+            // Update the node position forced to stay on the svg
+            if (node.x < minimumX) { node.x = minimumX; }
+            if (node.x > maxX) { node.x = maxX; }
+            if (node.y < minimumY) { node.y = minimumY; }
+            if (node.y > maxY) { node.y = maxY; }
+          }
+        });
+
         if (currentInstance !== null) {
           currentInstance.proxy.$forceUpdate();
         }
@@ -979,7 +973,7 @@ onMounted(() => {
         <g
           v-for="node of network.nodes"
           :key="node._id"
-          :transform="nodeTranslate(node)"
+          :transform="`translate(${node.x},${node.y})`"
           :class="nodeGroupClass(node)"
         >
           <rect
