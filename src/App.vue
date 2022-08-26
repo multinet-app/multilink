@@ -7,6 +7,8 @@ import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
+import 'multinet-components/dist/style.css';
+
 const urlVars = getUrlVars(); // Takes workspace and network
 store.dispatch.fetchNetwork({
   workspaceName: urlVars.workspace,

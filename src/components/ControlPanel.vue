@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
-import LoginMenu from '@/components/LoginMenu.vue';
+import { LoginMenu } from 'multinet-components';
 
 import store from '@/store';
 import { internalFieldNames } from '@/types';
+import oauthClient from '@/oauth';
 import { computed, Ref, ref } from 'vue';
 
 const searchTerm = ref('');
@@ -157,6 +158,8 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
     store.commit.setEdgeLength({ edgeLength: value, updateProv: true });
   }
 }
+
+const userInfo = computed(() => store.state.userInfo);
 </script>
 
 <template>
@@ -195,7 +198,11 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
           </div>
         </v-toolbar-title>
         <v-spacer />
-        <login-menu />
+        <login-menu
+          :store="store"
+          :oauth-client="oauthClient"
+          :user-info="userInfo"
+        />
       </v-toolbar>
 
       <!-- control panel content -->
