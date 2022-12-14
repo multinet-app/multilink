@@ -192,6 +192,7 @@ const {
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
+      state.selectedNodes = new Set([...state.selectedNodes]);
 
       if (state.provenance !== null) {
         updateProvenanceState(state, 'De-select Node');
