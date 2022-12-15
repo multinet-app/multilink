@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import store from '@/store';
-import { getUrlVars } from '@/lib/utils';
+import store from './store/index';
+import { getUrlVars } from './lib/utils';
 
-import AlertBanner from '@/components/AlertBanner.vue';
-import ControlPanel from '@/components/ControlPanel.vue';
-import MultiLink from '@/components/MultiLink.vue';
-import ProvVis from '@/components/ProvVis.vue';
+import AlertBanner from './components/AlertBanner.vue';
+import ControlPanel from './components/ControlPanel.vue';
+import MultiLink from './components/MultiLink.vue';
+import ProvVis from './components/ProvVis.vue';
 
 import 'multinet-components/dist/style.css';
 
