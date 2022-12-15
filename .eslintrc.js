@@ -22,8 +22,8 @@ module.exports = {
   ],
 
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': import.meta.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': import.meta.env.NODE_ENV === 'production' ? 'error' : 'off',
     'max-len': ['off'],
     'import/prefer-default-export': ['off'],
     'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to', '_key'] }],
