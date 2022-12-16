@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import store from '@/store';
+import { useStore } from '@/store/index';
+import { storeToRefs } from 'pinia';
 
-const network = computed(() => store.state.network);
-const selectedNodes = computed(() => store.state.selectedNodes);
+const store = useStore();
+const {
+  network,
+  selectedNodes,
+} = storeToRefs(store);
 
 function pinSelectedNodes() {
   if (network.value !== null) {
     network.value.nodes
-      .filter((node) => selectedNodes.value.has(node._id))
+      .filter((node) => selectedNodes.value.includes(node._id))
       .forEach((node) => {
         node.fx = node.x;
         node.fy = node.y;
@@ -18,7 +22,7 @@ function pinSelectedNodes() {
 function unPinSelectedNodes() {
   if (network.value !== null) {
     network.value.nodes
-      .filter((node) => selectedNodes.value.has(node._id))
+      .filter((node) => selectedNodes.value.includes(node._id))
       .forEach((node) => {
         delete node.fx;
         delete node.fy;
@@ -26,7 +30,7 @@ function unPinSelectedNodes() {
   }
 }
 
-const rightClickMenu = computed(() => store.state.rightClickMenu);
+const rightClickMenu = computed(() => store.rightClickMenu);
 </script>
 
 <template>
@@ -41,7 +45,7 @@ const rightClickMenu = computed(() => store.state.rightClickMenu);
       <v-list>
         <v-list-item
           dense
-          @click="store.commit.setSelected(new Set())"
+          @click="store.selectedNodes = []"
         >
           <v-list-item-content>
             <v-list-item-title>Clear Selection</v-list-item-title>

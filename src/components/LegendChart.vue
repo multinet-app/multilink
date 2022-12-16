@@ -44,10 +44,10 @@ const props = withDefaults(defineProps<{
 const yAxisPadding = 30;
 const svgHeight = props.mappedTo === 'bars' ? 75 : 50;
 
-const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
-const nodeColorScale = computed(() => store.getters.nodeColorScale);
-const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
-const edgeColorScale = computed(() => store.getters.edgeColorScale);
+const nodeSizeScale = computed(() => store.nodeSizeScale);
+const nodeColorScale = computed(() => store.nodeColorScale);
+const edgeWidthScale = computed(() => store.edgeWidthScale);
+const edgeColorScale = computed(() => store.edgeColorScale);
 
 // TODO: https://github.com/multinet-app/multilink/issues/176
 // use table name for var selection

@@ -99,7 +99,7 @@ function search() {
       .map((node) => node._id);
 
     if (nodeIDsToSelect.length > 0) {
-      selectedNodes.value.add(nodeIDsToSelect);
+      selectedNodes.value.push(...nodeIDsToSelect);
     } else {
       searchErrors.value.push('Enter a valid node to search');
     }

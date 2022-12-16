@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import {
-  computed, Ref, ref, watchEffect,
-} from 'vue';
-import store from '@/store';
+import { ref, watchEffect } from 'vue';
+import { useStore } from '@/store/index';
 import api from '@/api';
+import { storeToRefs } from 'pinia';
 
-const loadError = computed(() => store.state.loadError);
+const store = useStore();
+const { loadError } = storeToRefs(store);
 
 // Vars to store the selected choices in
-const workspace: Ref<string | null> = ref(null);
-const network: Ref<string | null> = ref(null);
+const workspace = ref<string | null>(null);
+const network = ref<string | null>(null);
 
 // Compute the workspace/network options
-const workspaceOptions: Ref<string[]> = ref([]);
+const workspaceOptions = ref<string[]>([]);
 watchEffect(async () => {
   workspaceOptions.value = (await api.workspaces()).results.map((workspaceObj) => workspaceObj.name);
 });
 
-const networkOptions: Ref<string[]> = ref([]);
+const networkOptions = ref<string[]>([]);
 watchEffect(async () => {
   if (workspace.value !== null) {
     networkOptions.value = (await api.networks(workspace.value)).results.map((networkObj) => networkObj.name);
