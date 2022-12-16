@@ -1,7 +1,7 @@
 import { createAction } from '@visdesignlab/trrack';
 import { ProvenanceEventTypes, State } from '@/types';
 
-export function updateProvenanceState(vuexState: State, label: ProvenanceEventTypes) {
+export function updateProvenanceState(piniaState: State, label: ProvenanceEventTypes) {
   const stateUpdateActions = createAction<State, State[], ProvenanceEventTypes>((provState, newProvState) => {
     if (label === 'Select Node(s)' || label === 'De-select Node' || label === 'Clear Selection') {
       provState.selectedNodes = newProvState.selectedNodes;
@@ -27,8 +27,8 @@ export function updateProvenanceState(vuexState: State, label: ProvenanceEventTy
   })
     .setLabel(label);
 
-  if (vuexState.provenance !== null) {
-    vuexState.provenance.apply(stateUpdateActions(vuexState));
+  if (piniaState.provenance !== null) {
+    piniaState.provenance.apply(stateUpdateActions(piniaState));
   }
 }
 
