@@ -317,7 +317,7 @@ const userInfo = computed(() => store.userInfo);
               color="primary"
               block
               depressed
-              @click="store.toggleShowProvenanceVis()"
+              @click="store.showProvenanceVis = true"
             >
               Provenance Vis
             </v-btn>
