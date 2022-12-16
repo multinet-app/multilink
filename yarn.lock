@@ -2908,13 +2908,13 @@
     "@typescript-eslint/types" "5.46.1"
     eslint-visitor-keys "^3.3.0"
 
-"@visdesignlab/trrack-vis@^2.0.0-alpha.9":
-  version "2.0.0-alpha.12"
-  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack-vis/-/trrack-vis-2.0.0-alpha.12.tgz#8e2dbb25fbbf500d896728ed244ea9f4f303da47"
-  integrity sha512-+nAottzuvQJAuVBmxB11tCcb5UwCWVZaSdVPtnydmTFdUaAjq0w+Y6JTMvbyPQkkGww6q+6VEsF71e1RC5Yl5Q==
+"@visdesignlab/trrack-vis@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack-vis/-/trrack-vis-2.0.0.tgz#5d9eab6dcb831a3c662e35d934928ea5d95a7e08"
+  integrity sha512-Nekero5/XVkGkrMInpubHDeBBvY1/xixf5RvCJzzZuK+lWNbctRyjI5WI4wIh7d/zIaV2KLTolx2UH/guEsGNw==
   dependencies:
     "@storybook/react" "^6.0.26"
-    "@visdesignlab/trrack" "^2.0.0-alpha.10"
+    "@visdesignlab/trrack" "^2.0.0"
     d3 "^5.15.0"
     mobx "^6.0.1"
     mobx-react "^6.1.7"
@@ -2925,10 +2925,10 @@
     typedoc "^0.19.2"
     typestyle "^2.0.4"
 
-"@visdesignlab/trrack@^2.0.0-alpha.10":
-  version "2.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0-alpha.10.tgz#2a716700cece24d12927411d563d5b60d84622b0"
-  integrity sha512-X0xp7Fco8dsY98ExjSvRl2sJmdv5zswGFJejghsL3LF8Dn+Yt18uvXI0+uIk6LnPUiSU0thSkSnBiAGp9e4xSw==
+"@visdesignlab/trrack@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@visdesignlab/trrack/-/trrack-2.0.0.tgz#d0c8f3c4d8af6ab7f1cbcaa75045ac5b5761773b"
+  integrity sha512-U+d846G7lFBFAOIQ96Ajb6H61f+iL1FjfgZ4iNg8DkAfLnVoGIXIgOVm2An3uXDkkDDt6nz/uHcPEdA5E6hJ1A==
   dependencies:
     "@types/deep-diff" "^1.0.0"
     deep-diff "^1.0.2"

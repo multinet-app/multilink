@@ -13,8 +13,8 @@
   "dependencies": {
     "@girder/oauth-client": "^0.7.7",
     "@types/d3": "^5.7.2",
-    "@visdesignlab/trrack": "^2.0.0-alpha.10",
-    "@visdesignlab/trrack-vis": "^2.0.0-alpha.9",
+    "@visdesignlab/trrack": "^2.0.0",
+    "@visdesignlab/trrack-vis": "^2.0.0",
     "@vitejs/plugin-vue2": "^2.2.0",
     "@vue/eslint-config-airbnb": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
