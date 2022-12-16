@@ -8,11 +8,25 @@ import {
 } from 'd3-scale';
 import { select, selectAll } from 'd3-selection';
 import { Node, Edge } from '@/types';
-import store from '@/store';
+import { useStore } from '@/store/index';
 
 // Required for recursive definition of LegendChart
 // eslint-disable-next-line import/no-self-import
 import LegendChart from '@/components/LegendChart.vue';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+const {
+  network,
+  columnTypes,
+  nestedVariables,
+  nodeBarColorScale,
+  nodeGlyphColorScale,
+  attributeRanges,
+  nodeSizeVariable,
+  nodeColorVariable,
+  edgeVariables,
+} = storeToRefs(store);
 
 const props = withDefaults(defineProps<{
   varName: string
@@ -30,16 +44,10 @@ const props = withDefaults(defineProps<{
 const yAxisPadding = 30;
 const svgHeight = props.mappedTo === 'bars' ? 75 : 50;
 
-const network = computed(() => store.state.network);
-const columnTypes = computed(() => store.state.columnTypes);
-const nestedVariables = computed(() => store.state.nestedVariables);
 const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
 const nodeColorScale = computed(() => store.getters.nodeColorScale);
-const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
-const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
 const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
 const edgeColorScale = computed(() => store.getters.edgeColorScale);
-const attributeRanges = computed(() => store.state.attributeRanges);
 
 // TODO: https://github.com/multinet-app/multilink/issues/176
 // use table name for var selection
@@ -68,15 +76,15 @@ function dragStart(event: DragEvent) {
 function unAssignVar(variable?: string) {
   if (props.type === 'node') {
     if (props.mappedTo === 'size') {
-      store.commit.setNodeSizeVariable('');
+      nodeSizeVariable.value = '';
     } else if (props.mappedTo === 'color') {
-      store.commit.setNodeColorVariable('');
+      nodeColorVariable.value = '';
     } else if (props.mappedTo === 'bars') {
       const newBarVars = nestedVariables.value.bar.filter(
         (barVar) => barVar !== variable,
       );
 
-      store.commit.setNestedVariables({
+      store.setNestedVariables({
         bar: newBarVars,
         glyph: nestedVariables.value.glyph,
       });
@@ -85,26 +93,26 @@ function unAssignVar(variable?: string) {
         (glyphVar) => glyphVar !== props.varName,
       );
 
-      store.commit.setNestedVariables({
+      store.setNestedVariables({
         bar: nestedVariables.value.bar,
         glyph: newGlyphVars,
       });
     } else if (props.mappedTo === 'x' || props.mappedTo === 'y') {
-      store.dispatch.applyVariableLayout({
+      store.applyVariableLayout({
         varName: null, axis: props.mappedTo,
       });
     }
   } else if (props.type === 'edge') {
     if (props.mappedTo === 'width') {
-      store.commit.setEdgeVariables({
+      edgeVariables.value = {
         width: '',
-        color: store.state.edgeVariables.color,
-      });
+        color: store.edgeVariables.color,
+      };
     } else if (props.mappedTo === 'color') {
-      store.commit.setEdgeVariables({
-        width: store.state.edgeVariables.width,
+      edgeVariables.value = {
+        width: store.edgeVariables.width,
         color: '',
-      });
+      };
     }
   }
 }
@@ -357,7 +365,7 @@ onMounted(() => {
 
     const bins = binGenerator(currentData);
 
-    store.commit.addAttributeRange({
+    store.addAttributeRange({
       attr: props.varName,
       min: xScale.domain()[0] || 0,
       max: xScale.domain()[1] || 0,
@@ -396,7 +404,7 @@ onMounted(() => {
     const binLabels: string[] = Array.from(bins.keys());
     const binValues: number[] = Array.from(bins.values());
 
-    store.commit.addAttributeRange({
+    store.addAttributeRange({
       attr: props.varName,
       min: parseFloat(min(binLabels) || '0'),
       max: parseFloat(max(binLabels) || '0'),
@@ -467,7 +475,7 @@ onMounted(() => {
           const firstIndex = Math.floor(((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
           const secondIndex = Math.ceil(((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * attributeRanges.value[props.varName].binLabels.length);
 
-          store.commit.addAttributeRange({
+          store.addAttributeRange({
             ...currentAttributeRange,
             currentBinLabels: currentAttributeRange.binLabels.slice(firstIndex, secondIndex),
             currentBinValues: currentAttributeRange.binValues.slice(firstIndex, secondIndex),
@@ -480,7 +488,7 @@ onMounted(() => {
           const newMin = (((extent[0] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
           const newMax = (((extent[1] - yAxisPadding) / (variableSvgWidth - yAxisPadding)) * (currentAttributeRange.max - currentAttributeRange.min)) + currentAttributeRange.min;
 
-          store.commit.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
+          store.addAttributeRange({ ...currentAttributeRange, currentMax: newMax, currentMin: newMin });
         }
       });
 

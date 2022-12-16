@@ -4,14 +4,30 @@ import { computed, Ref, ref } from 'vue';
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 
-import store from '@/store';
+import { useStore } from '@/store/index';
 import { internalFieldNames } from '@/types';
 import oauthClient from '@/oauth';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+const {
+  displayCharts,
+  layoutVars,
+  fontSize,
+  labelVariable,
+  selectNeighbors,
+  directionalEdges,
+  edgeLength,
+  controlsWidth,
+  simulationRunning,
+  columnTypes,
+  network,
+  selectedNodes,
+} = storeToRefs(store);
 
 const searchTerm = ref('');
 const searchErrors: Ref<string[]> = ref([]);
 const showMenu = ref(false);
-const network = computed(() => store.state.network);
 
 const multiVariableList = computed(() => {
   if (network.value !== null) {
@@ -30,73 +46,14 @@ const multiVariableList = computed(() => {
   return new Set();
 });
 
-const displayCharts = computed({
-  get() {
-    return store.state.displayCharts;
-  },
-  set(value: boolean) {
-    return store.commit.setDisplayCharts(value);
-  },
-});
-
-const layoutVars = computed(() => store.state.layoutVars);
 const markerSize = computed({
   get() {
-    return store.state.markerSize || 0;
+    return store.markerSize || 0;
   },
   set(value: number) {
-    store.commit.setMarkerSize({ markerSize: value, updateProv: false });
+    store.setMarkerSize({ markerSize: value, updateProv: false });
   },
 });
-
-const fontSize = computed({
-  get() {
-    return store.state.fontSize || 0;
-  },
-  set(value: number) {
-    store.commit.setFontSize({ fontSize: value, updateProv: false });
-  },
-});
-
-const labelVariable = computed({
-  get() {
-    return store.state.labelVariable;
-  },
-  set(value: string | undefined) {
-    store.commit.setLabelVariable(value);
-  },
-});
-
-const selectNeighbors = computed({
-  get() {
-    return store.state.selectNeighbors;
-  },
-  set(value: boolean) {
-    store.commit.setSelectNeighbors(value);
-  },
-});
-
-const directionalEdges = computed({
-  get() {
-    return store.state.directionalEdges;
-  },
-  set(value: boolean) {
-    store.commit.setDirectionalEdges(value);
-  },
-});
-
-const edgeLength = computed({
-  get() {
-    return store.state.edgeLength;
-  },
-  set(value: number) {
-    store.commit.setEdgeLength({ edgeLength: value, updateProv: false });
-  },
-});
-
-const controlsWidth = computed(() => store.state.controlsWidth);
-const simulationRunning = computed(() => store.state.simulationRunning);
-const columnTypes = computed(() => store.state.columnTypes);
 const autocompleteItems = computed(() => {
   if (network.value !== null && labelVariable.value !== undefined) {
     return network.value.nodes.map((node) => (node[labelVariable.value || '']));
@@ -130,7 +87,7 @@ function exportNetwork() {
       type: 'text/json',
     }),
   );
-  a.download = `${store.state.networkName}.json`;
+  a.download = `${store.networkName}.json`;
   a.click();
 }
 
@@ -142,7 +99,7 @@ function search() {
       .map((node) => node._id);
 
     if (nodeIDsToSelect.length > 0) {
-      store.commit.addSelectedNode(nodeIDsToSelect);
+      selectedNodes.value.add(nodeIDsToSelect);
     } else {
       searchErrors.value.push('Enter a valid node to search');
     }
@@ -151,15 +108,15 @@ function search() {
 
 function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
   if (type === 'markerSize') {
-    store.commit.setMarkerSize({ markerSize: value, updateProv: true });
+    store.setMarkerSize({ markerSize: value, updateProv: true });
   } else if (type === 'fontSize') {
-    store.commit.setFontSize({ fontSize: value, updateProv: true });
+    fontSize.value = value;
   } else if (type === 'edgeLength') {
-    store.commit.setEdgeLength({ edgeLength: value, updateProv: true });
+    store.setEdgeLength({ edgeLength: value, updateProv: true });
   }
 }
 
-const userInfo = computed(() => store.state.userInfo);
+const userInfo = computed(() => store.userInfo);
 </script>
 
 <template>
@@ -324,7 +281,7 @@ const userInfo = computed(() => store.state.userInfo);
                 color="grey darken-2"
                 depressed
                 small
-                @click="store.dispatch.releaseNodes()"
+                @click="store.releaseNodes()"
               >
                 <v-icon
                   left
@@ -342,7 +299,7 @@ const userInfo = computed(() => store.state.userInfo);
                 depressed
                 small
                 width="75"
-                @click="simulationRunning ? store.commit.stopSimulation() : store.commit.startSimulation()"
+                @click="simulationRunning ? store.stopSimulation() : store.startSimulation()"
               >
                 <v-icon
                   left
@@ -360,7 +317,7 @@ const userInfo = computed(() => store.state.userInfo);
               color="primary"
               block
               depressed
-              @click="store.commit.toggleShowProvenanceVis()"
+              @click="store.toggleShowProvenanceVis()"
             >
               Provenance Vis
             </v-btn>

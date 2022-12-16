@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import store from '@/store';
+import { useStore } from '@/store/index';
 import { internalFieldNames, Edge, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
+import { storeToRefs } from 'pinia';
 
-const tab = ref(undefined);
+const store = useStore();
+const {
+  network,
+  nestedVariables,
+  edgeVariables,
+  nodeSizeVariable,
+  nodeColorVariable,
+  columnTypes,
+  displayCharts,
+  layoutVars,
+} = storeToRefs(store);
 
-const network = computed(() => store.state.network);
-const nestedVariables = computed(() => store.state.nestedVariables);
-const edgeVariables = computed(() => store.state.edgeVariables);
-const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
-const nodeColorVariable = computed(() => store.state.nodeColorVariable);
-const columnTypes = computed(() => store.state.columnTypes);
+const tab = ref(0);
 
 function cleanVariableList(list: Set<string>): Set<string> {
   const cleanedVariables = new Set<string>();
@@ -59,17 +65,7 @@ const cleanedEdgeVariables = computed(() => {
   return new Set();
 });
 
-const displayCharts = computed({
-  get() {
-    return store.state.displayCharts;
-  },
-  set(value: boolean) {
-    return store.commit.setDisplayCharts(value);
-  },
-});
-
 const attributeLayout = ref(false);
-const layoutVars = computed(() => store.state.layoutVars);
 </script>
 
 <template>
