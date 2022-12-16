@@ -34,9 +34,7 @@ store.fetchNetwork(
     <v-main>
       <control-panel />
 
-      <multi-link
-        v-if="network !== null && selectedNodes !== null"
-      />
+      <multi-link v-if="network !== null" />
 
       <alert-banner v-if="loadError.message !== ''" />
     </v-main>
