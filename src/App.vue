@@ -9,12 +9,9 @@ import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
-
-
 const store = useStore();
 const {
   network,
-  selectedNodes,
   loadError,
   showProvenanceVis,
 } = storeToRefs(store);

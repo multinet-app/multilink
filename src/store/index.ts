@@ -327,9 +327,6 @@ export const useStore = defineStore('store', {
 
           const { selectedNodes } = provenanceState;
 
-          // Helper function
-          const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
-
           // If the sets are not equal (happens when provenance is updated through provenance vis),
           // update the store's selectedNodes to match the provenance state
           if (selectedNodes.sort().toString() !== storeState.selectedNodes.sort().toString()) {

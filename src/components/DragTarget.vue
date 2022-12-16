@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useStore } from '@/store/index';
 import { storeToRefs } from 'pinia';
 
@@ -10,7 +9,6 @@ const {
   nodeSizeVariable,
   nodeColorVariable,
 } = storeToRefs(store);
-
 
 const props = withDefaults(defineProps<{
   title: string
