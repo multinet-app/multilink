@@ -156,9 +156,10 @@ const userInfo = computed(() => store.userInfo);
         </v-toolbar-title>
         <v-spacer />
         <login-menu
-          :store="store"
-          :oauth-client="oauthClient"
           :user-info="userInfo"
+          :oauth-client="oauthClient"
+          :logout="store.logout"
+          :fetch-user-info="store.fetchUserInfo"
         />
       </v-toolbar>
 

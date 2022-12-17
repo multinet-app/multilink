@@ -8428,10 +8428,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multinet-components@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.1.tgz#41c2e4c2e716ed37f9b54a6dc0ba03899c16d8e3"
-  integrity sha512-M8FSfeZetigiHbHz6bT0OTKT6aV3gzfNJODZGEBoVNp/axRk3aHTLfSJ86/KMxbl5guUvlj+z3n1lXc7yRSC4g==
+multinet-components@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.2.tgz#172d6e68217c3089add1e2066a9eccfd5b73cf3e"
+  integrity sha512-D7OsIxzIjQEAEEb4asN9/8GD9NX/uck3w4wAJAkJrrmc46pB58dw3LnwPP4F4OyqHfwRfHdaX5iGYWPBukicJg==
 
 multinet@^0.21.4:
   version "0.21.4"
