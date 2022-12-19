@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { LoginMenu } from 'multinet-components';
+import { computed, Ref, ref } from 'vue';
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
-import { LoginMenu } from 'multinet-components';
 
 import store from '@/store';
 import { internalFieldNames } from '@/types';
 import oauthClient from '@/oauth';
-import { computed, Ref, ref } from 'vue';
 
 const searchTerm = ref('');
 const searchErrors: Ref<string[]> = ref([]);

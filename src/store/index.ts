@@ -5,16 +5,16 @@ import {
   forceCollide, Simulation,
 } from 'd3-force';
 
-import {
-  Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
-} from '@/types';
-import api from '@/api';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
 import {
   scaleLinear, scaleOrdinal, scaleSequential,
 } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import { initProvenance, Provenance } from '@visdesignlab/trrack';
+import api from '@/api';
+import {
+  Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
+} from '@/types';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
@@ -192,6 +192,7 @@ const {
 
     removeSelectedNode(state, nodeID: string) {
       state.selectedNodes.delete(nodeID);
+      state.selectedNodes = new Set([...state.selectedNodes]);
 
       if (state.provenance !== null) {
         updateProvenanceState(state, 'De-select Node');

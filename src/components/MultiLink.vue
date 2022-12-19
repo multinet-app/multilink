@@ -8,6 +8,11 @@ import {
 } from 'd3-force';
 import { select } from 'd3-selection';
 
+import {
+  computed, getCurrentInstance, onMounted, ref, Ref, watch,
+} from 'vue';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { ColumnType } from 'multinet';
 import store from '@/store';
 import {
   Node, Edge, SimulationEdge, AttributeRange,
@@ -15,12 +20,7 @@ import {
 
 import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
-import {
-  computed, getCurrentInstance, onMounted, ref, Ref, watch,
-} from 'vue';
-import { axisBottom, axisLeft } from 'd3-axis';
 import { isInternalField } from '@/lib/typeUtils';
-import { ColumnType } from 'multinet';
 
 // Commonly used variables
 const currentInstance = getCurrentInstance();
@@ -991,7 +991,7 @@ onMounted(() => {
             dominant-baseline="middle"
             fill="#3a3a3a"
             text-anchor="middle"
-            :dy="!displayCharts ? calculateNodeSize(node) / 2: 10"
+            :dy="!displayCharts ? calculateNodeSize(node) / 2 : 10"
             :dx="calculateNodeSize(node) / 2"
             :style="nodeTextStyle"
           >{{ node[labelVariable] }}</text>

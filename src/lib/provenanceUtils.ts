@@ -1,5 +1,5 @@
-import { ProvenanceEventTypes, State } from '@/types';
 import { createAction } from '@visdesignlab/trrack';
+import { ProvenanceEventTypes, State } from '@/types';
 
 export function updateProvenanceState(vuexState: State, label: ProvenanceEventTypes) {
   const stateUpdateActions = createAction<State, State[], ProvenanceEventTypes>((provState, newProvState) => {

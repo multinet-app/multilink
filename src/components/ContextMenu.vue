@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import store from '@/store';
 import { computed } from 'vue';
+import store from '@/store';
 
 const network = computed(() => store.state.network);
 const selectedNodes = computed(() => store.state.selectedNodes);

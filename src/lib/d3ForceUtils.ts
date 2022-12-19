@@ -1,7 +1,7 @@
-import { Node, SimulationEdge } from '@/types';
 import {
   ForceManyBody, ForceLink, ForceCollide, Simulation, ForceX, ForceY,
 } from 'd3-force';
+import { Node, SimulationEdge } from '@/types';
 
 export function applyForceToSimulation(
   simulation: Simulation<Node, SimulationEdge> | null,
