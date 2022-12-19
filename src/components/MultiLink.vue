@@ -350,10 +350,10 @@ function edgeStyle(edge: Edge): string {
       );
 
   return `
-        stroke: ${useCalculatedColorValue ? edgeColorScale.value(calculatedColorValue) : '#888888'};
-        stroke-width: ${(edgeWidth > 20 || edgeWidth < 1) ? 0 : edgeWidth}px;
-        opacity: 0.7;
-      `;
+    stroke: ${useCalculatedColorValue ? edgeColorScale.value(calculatedColorValue) : '#888888'};
+    stroke-width: ${(edgeWidth > 20 || edgeWidth < 1) ? 0 : edgeWidth}px;
+    opacity: 0.7;
+  `;
 }
 
 function glyphFill(node: Node, glyphVar: string) {

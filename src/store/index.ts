@@ -85,7 +85,7 @@ export const useStore = defineStore('store', () => {
         .domain([minValue, maxValue]);
     }
 
-    return nodeGlyphColorScale;
+    return scaleSequential(interpolateReds);
   });
 
   const nodeSizeScale = computed(() => {
