@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import store from '@/store';
+import { useStore } from '@/store';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+const {
+  edgeVariables,
+  nestedVariables,
+  nodeSizeVariable,
+  nodeColorVariable,
+} = storeToRefs(store);
 
 const props = withDefaults(defineProps<{
   title: string
@@ -9,9 +17,6 @@ const props = withDefaults(defineProps<{
 }>(), {
   showTitle: true,
 });
-
-const edgeVariables = computed(() => store.state.edgeVariables);
-const nestedVariables = computed(() => store.state.nestedVariables);
 
 function elementDrop(event: DragEvent) {
   if (event.dataTransfer === null) {
@@ -25,23 +30,23 @@ function elementDrop(event: DragEvent) {
       bar: [...nestedVariables.value.bar, droppedVarName],
       glyph: nestedVariables.value.glyph,
     };
-    store.commit.setNestedVariables(updatedNestedVars);
+    store.setNestedVariables(updatedNestedVars);
   } else if (props.type === 'node' && props.title === 'glyphs') {
     const updatedNestedVars = {
       bar: nestedVariables.value.bar,
       glyph: [...nestedVariables.value.glyph, droppedVarName],
     };
-    store.commit.setNestedVariables(updatedNestedVars);
+    store.setNestedVariables(updatedNestedVars);
   } else if (props.type === 'node' && props.title === 'size') {
-    store.commit.setNodeSizeVariable(droppedVarName);
+    nodeSizeVariable.value = droppedVarName;
   } else if (props.type === 'node' && props.title === 'color') {
-    store.commit.setNodeColorVariable(droppedVarName);
+    nodeColorVariable.value = droppedVarName;
   } else if (props.type === 'node' && props.title === 'x variable') {
-    store.dispatch.applyVariableLayout({
+    store.applyVariableLayout({
       varName: droppedVarName, axis: 'x',
     });
   } else if (props.type === 'node' && props.title === 'y variable') {
-    store.dispatch.applyVariableLayout({
+    store.applyVariableLayout({
       varName: droppedVarName, axis: 'y',
     });
   } else if (props.type === 'edge' && props.title === 'width') {
@@ -49,13 +54,13 @@ function elementDrop(event: DragEvent) {
       width: droppedVarName,
       color: edgeVariables.value.color,
     };
-    store.commit.setEdgeVariables(updatedEdgeVars);
+    edgeVariables.value = updatedEdgeVars;
   } else if (props.type === 'edge' && props.title === 'color') {
     const updatedEdgeVars = {
       width: edgeVariables.value.width,
       color: droppedVarName,
     };
-    store.commit.setEdgeVariables(updatedEdgeVars);
+    edgeVariables.value = updatedEdgeVars;
   }
 }
 </script>

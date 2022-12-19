@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ProvVisCreator } from '@visdesignlab/trrack-vis';
-import { computed, onMounted, ref } from 'vue';
-import store from '@/store';
+import { onMounted, ref } from 'vue';
+import { useStore } from '@/store';
+import { storeToRefs } from 'pinia';
 
-const provenance = computed(() => store.state.provenance);
+const store = useStore();
+const { provenance } = storeToRefs(store);
+
 const provDiv = ref();
 
 onMounted(() => {
@@ -11,7 +14,7 @@ onMounted(() => {
     ProvVisCreator(
       provDiv.value,
       provenance.value,
-      (newNode: string) => store.commit.goToProvenanceNode(newNode),
+      (newNode: string) => store.goToProvenanceNode(newNode),
       true,
       true,
       provenance.value.root.id,
@@ -30,7 +33,7 @@ onMounted(() => {
     <v-btn
       icon
       class="ma-2"
-      @click="store.commit.toggleShowProvenanceVis"
+      @click="store.showProvenanceVis = !store.showProvenanceVis"
     >
       <v-icon>mdi-close</v-icon>
     </v-btn>

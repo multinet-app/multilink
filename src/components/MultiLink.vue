@@ -7,30 +7,51 @@ import {
   forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
 } from 'd3-force';
 import { select } from 'd3-selection';
-
 import {
-  computed, getCurrentInstance, onMounted, ref, Ref, watch,
+  computed, getCurrentInstance, onMounted, ref, watch,
 } from 'vue';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { ColumnType } from 'multinet';
-import store from '@/store';
+import { useStore } from '@/store';
 import {
   Node, Edge, SimulationEdge, AttributeRange,
 } from '@/types';
-
 import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import { isInternalField } from '@/lib/typeUtils';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+const {
+  network,
+  selectedNodes,
+  nodeBarColorScale,
+  nestedVariables,
+  markerSize,
+  displayCharts,
+  labelVariable,
+  selectNeighbors,
+  attributeRanges,
+  columnTypes,
+  controlsWidth,
+  directionalEdges,
+  layoutVars,
+  nodeSizeVariable,
+  nodeColorVariable,
+  edgeVariables,
+  nodeGlyphColorScale,
+  simulation,
+  edgeColorScale,
+  nodeSizeScale,
+  nodeColorScale,
+  edgeWidthScale,
+} = storeToRefs(store);
 
 // Commonly used variables
 const currentInstance = getCurrentInstance();
-const network = computed(() => store.state.network);
-const multiLinkSvg: Ref<Element | null> = ref(null);
-const selectedNodes = computed(() => store.state.selectedNodes);
-const nodeBarColorScale = computed(() => store.state.nodeBarColorScale);
-const nodeTextStyle = computed(() => `font-size: ${store.state.fontSize || 0}pt;`);
-const nestedVariables = computed(() => store.state.nestedVariables);
-const markerSize = computed(() => store.state.markerSize || 0);
+const multiLinkSvg = ref<Element | null>(null);
+const nodeTextStyle = computed(() => `font-size: ${store.fontSize || 0}pt;`);
+
 const nestedPadding = ref(5);
 const nestedBarWidth = computed(() => {
   const hasGlyphs = nestedVariables.value.glyph.length !== 0;
@@ -42,11 +63,6 @@ const nestedBarWidth = computed(() => {
   return (markerSize.value - totalPadding) / (totalColumns);
 });
 const nestedBarHeight = computed(() => markerSize.value - 24);
-const displayCharts = computed(() => store.state.displayCharts);
-const labelVariable = computed(() => store.state.labelVariable);
-const selectNeighbors = computed(() => store.state.selectNeighbors);
-const attributeRanges = computed(() => store.state.attributeRanges);
-const columnTypes = computed(() => store.state.columnTypes);
 const attributeScales = computed(() => {
   const scales: {[key: string]: ScaleLinear<number, number>} = {};
 
@@ -59,11 +75,7 @@ const attributeScales = computed(() => {
   }
   return scales;
 });
-const controlsWidth = computed(() => store.state.controlsWidth);
-const directionalEdges = computed(() => store.state.directionalEdges);
-const edgeColorScale = computed(() => store.getters.edgeColorScale);
 const clipRegionSize = 100;
-const layoutVars = computed(() => store.state.layoutVars);
 
 // Update height and width as the window size changes
 // Also update center attraction forces as the size changes
@@ -72,12 +84,12 @@ const svgDimensions = computed(() => {
   const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
 
   applyForceToSimulation(
-    store.state.simulation,
+    store.simulation,
     'x',
     forceX<Node>(width / 2),
   );
   applyForceToSimulation(
-    store.state.simulation,
+    store.simulation,
     'y',
     forceY<Node>(height / 2),
   );
@@ -86,37 +98,36 @@ const svgDimensions = computed(() => {
     height,
     width,
   };
-  store.commit.setSvgDimensions(dimensions);
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+  store.svgDimensions = dimensions;
 
   return dimensions;
 });
 watch([svgDimensions], () => {
   // If we're in a static layout, then redraw the layout
-  const xLayout = store.state.layoutVars.x !== null;
-  const yLayout = store.state.layoutVars.y !== null;
+  const xLayout = layoutVars.value.x !== null;
+  const yLayout = layoutVars.value.y !== null;
   if (xLayout) {
-    store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.x || '', axis: 'x' });
+    store.applyVariableLayout({ varName: layoutVars.value.x || '', axis: 'x' });
   }
 
   if (yLayout) {
-    store.dispatch.applyVariableLayout({ varName: store.state.layoutVars.y || '', axis: 'y' });
+    store.applyVariableLayout({ varName: layoutVars.value.y || '', axis: 'y' });
   }
 
   if (!xLayout && !yLayout) {
-    store.commit.startSimulation();
+    store.startSimulation();
   }
 });
 
 function selectNode(node: Node) {
-  if (selectedNodes.value.has(node._id)) {
-    store.commit.removeSelectedNode(node._id);
+  if (selectedNodes.value.includes(node._id)) {
+    selectedNodes.value = selectedNodes.value.filter((inside) => inside !== node._id);
   } else {
-    store.commit.addSelectedNode([node._id]);
+    selectedNodes.value.push(node._id);
   }
 }
 
-const nodeSizeVariable = computed(() => store.state.nodeSizeVariable);
-const nodeSizeScale = computed(() => store.getters.nodeSizeScale);
 function calculateNodeSize(node: Node) {
   // Don't render dynamic node size if the size variable is empty or
   // we want to display charts
@@ -153,7 +164,7 @@ function dragNode(node: Node, event: MouseEvent) {
     const eventX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
     const eventY = evt.y - (calculateNodeSize(node) / 2);
 
-    if (selectedNodes.value.has(node._id)) {
+    if (selectedNodes.value.includes(node._id)) {
       const nodeX = Math.floor(node.x || 0);
       const nodeY = Math.floor(node.y || 0);
       const dx = eventX - nodeX;
@@ -161,7 +172,7 @@ function dragNode(node: Node, event: MouseEvent) {
 
       if (network.value !== null) {
         network.value.nodes
-          .filter((innerNode) => selectedNodes.value.has(innerNode._id) && innerNode._id !== node._id)
+          .filter((innerNode) => selectedNodes.value.includes(innerNode._id) && innerNode._id !== node._id)
           .forEach((innerNode) => {
             innerNode.x = (innerNode.x || 0) + dx;
             innerNode.y = (innerNode.y || 0) + dy;
@@ -259,13 +270,13 @@ function arcPath(edge: Edge): string {
 }
 
 function isSelected(nodeID: string): boolean {
-  return selectedNodes.value.has(nodeID);
+  return selectedNodes.value.includes(nodeID);
 }
 
 const oneHop = computed(() => {
   if (network.value !== null) {
-    const inNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._to) ? edge._from : null));
-    const outNodes = network.value.edges.map((edge) => (selectedNodes.value.has(edge._from) ? edge._to : null));
+    const inNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._to) ? edge._from : null));
+    const outNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._from) ? edge._to : null));
 
     const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
 
@@ -279,7 +290,7 @@ const oneHop = computed(() => {
   return new Set();
 });
 function nodeGroupClass(node: Node): string {
-  if (selectedNodes.value.size > 0) {
+  if (selectedNodes.value.length > 0) {
     const selected = isSelected(node._id);
     const inOneHop = selectNeighbors.value ? oneHop.value.has(node._id) : false;
     const selectedClass = selected || inOneHop || !selectNeighbors.value ? '' : 'muted';
@@ -295,8 +306,6 @@ function nodeClass(node: Node): string {
   return `node nodeBox ${selectedClass}`;
 }
 
-const nodeColorVariable = computed(() => store.state.nodeColorVariable);
-const nodeColorScale = computed(() => store.getters.nodeColorScale);
 function nodeFill(node: Node) {
   const calculatedValue = node[nodeColorVariable.value];
   const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
@@ -320,7 +329,7 @@ function nodeFill(node: Node) {
 }
 
 function edgeGroupClass(edge: Edge): string {
-  if (selectedNodes.value.size > 0) {
+  if (selectedNodes.value.length > 0) {
     const selected = isSelected(edge._from) || isSelected(edge._to);
     const selectedClass = selected || !selectNeighbors.value ? '' : 'muted';
     return `edgeGroup ${selectedClass}`;
@@ -328,8 +337,6 @@ function edgeGroupClass(edge: Edge): string {
   return 'edgeGroup';
 }
 
-const edgeWidthScale = computed(() => store.getters.edgeWidthScale);
-const edgeVariables = computed(() => store.state.edgeVariables);
 function edgeStyle(edge: Edge): string {
   const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 
@@ -357,7 +364,6 @@ function edgeStyle(edge: Edge): string {
       `;
 }
 
-const nodeGlyphColorScale = computed(() => store.state.nodeGlyphColorScale);
 function glyphFill(node: Node, glyphVar: string) {
   // Figure out what values should be mapped to colors
   const possibleValues = [
@@ -429,7 +435,7 @@ function rectSelectDrag(event: MouseEvent) {
 
     // If x1 == x2 && y1 == y2, it was a click so deselect
     if (boxX1 === boxX2 && boxY1 === boxY2) {
-      store.commit.setSelected(new Set());
+      selectedNodes.value = [];
     }
 
     // Find which nodes are in the box
@@ -445,7 +451,7 @@ function rectSelectDrag(event: MouseEvent) {
     }
 
     // Select the nodes inside the box if there are any
-    store.commit.addSelectedNode(nodesInRect.map((node) => node._id));
+    nodesInRect.forEach((node) => selectedNodes.value.push(node._id));
 
     // Remove the listeners so that the box stops updating location
     if (!(multiLinkSvg.value instanceof Element)) {
@@ -473,11 +479,11 @@ function rectSelectDrag(event: MouseEvent) {
 }
 
 function showContextMenu(event: MouseEvent) {
-  store.commit.updateRightClickMenu({
+  store.rightClickMenu = {
     show: true,
     top: event.y,
     left: event.x,
-  });
+  };
 
   event.preventDefault();
 }
@@ -519,7 +525,7 @@ watch(attributeRanges, () => {
     });
 
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'edge',
       forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
     );
@@ -532,27 +538,27 @@ function resetSimulationForces() {
     // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
     const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'x',
       forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
     );
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'y',
       forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
     );
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'edge',
       forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
     );
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'charge',
       forceManyBody<Node>().strength(-500),
     );
     applyForceToSimulation(
-      store.state.simulation,
+      simulation.value,
       'collision',
       forceCollide((markerSize.value / 2) * 1.5),
     );
@@ -613,11 +619,11 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
   }
 
   if (axis === 'x') {
-    const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? store.state.svgDimensions.width - clipRegionSize : store.state.svgDimensions.width];
+    const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? svgDimensions.value.width - clipRegionSize : svgDimensions.value.width];
     positionScale = positionScale
       .range(minMax);
   } else {
-    const minMax = [clipLow ? store.state.svgDimensions.height - xAxisPadding - clipRegionSize : store.state.svgDimensions.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
+    const minMax = [clipLow ? svgDimensions.value.height - xAxisPadding - clipRegionSize : svgDimensions.value.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
     positionScale = positionScale
       .range(minMax);
   }
@@ -626,18 +632,18 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
 
   if (varName !== null) {
     // Set node size smaller
-    store.commit.setMarkerSize({ markerSize: 10, updateProv: true });
+    store.setMarkerSize({ markerSize: 10, updateProv: true });
 
     // Clear the label variable
-    store.commit.setLabelVariable(undefined);
+    labelVariable.value = undefined;
 
-    if (store.state.network !== null && store.state.columnTypes !== null) {
+    if (network.value !== null && columnTypes.value !== null) {
       const otherAxisPadding = axis === 'x' ? 80 : 60;
 
       if (type === 'number') {
         const scaleDomain = positionScale.domain();
         const scaleRange = positionScale.range();
-        store.state.network.nodes.forEach((node) => {
+        network.value.nodes.forEach((node) => {
           const nodeVal = node[varName];
           let position = positionScale(nodeVal);
 
@@ -653,7 +659,7 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           node[axis] = position;
           node[`f${axis}`] = position;
 
-          if (store.state.layoutVars[otherAxis] === null) {
+          if (layoutVars.value[otherAxis] === null) {
             node[`f${otherAxis}`] = undefined;
           }
         });
@@ -661,34 +667,34 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
         let positionOffset: number;
 
         if (axis === 'x') {
-          positionOffset = (store.state.svgDimensions.width - otherAxisPadding) / ((range.binLabels.length) * 2);
+          positionOffset = (svgDimensions.value.width - otherAxisPadding) / ((range.binLabels.length) * 2);
         } else {
-          positionOffset = ((store.state.svgDimensions.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
+          positionOffset = ((svgDimensions.value.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
         }
 
         const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
         applyForceToSimulation(
-          store.state.simulation,
+          simulation.value,
           axis,
           force,
         );
         applyForceToSimulation(
-          store.state.simulation,
+          simulation.value,
           'edge',
           forceLink<Node, SimulationEdge>(),
         );
         applyForceToSimulation(
-          store.state.simulation,
+          simulation.value,
           'charge',
           forceManyBody<Node>(),
         );
       }
     }
-  } else if (store.state.layoutVars[otherAxis] === null) {
-    store.dispatch.releaseNodes();
+  } else if (layoutVars.value[otherAxis] === null) {
+    store.releaseNodes();
   }
 
-  store.commit.startSimulation();
+  store.startSimulation();
   return positionScale;
 }
 
@@ -706,9 +712,9 @@ watch(layoutVars, () => {
   resetSimulationForces();
 
   // Add x layout
-  if (store.state.columnTypes !== null && layoutVars.value.x !== null) {
-    const type = store.state.columnTypes[layoutVars.value.x];
-    const range = store.state.attributeRanges[layoutVars.value.x];
+  if (columnTypes.value !== null && layoutVars.value.x !== null) {
+    const type = columnTypes.value[layoutVars.value.x];
+    const range = attributeRanges.value[layoutVars.value.x];
 
     const positionScale = makePositionScale('x', type, range);
 
@@ -732,7 +738,7 @@ watch(layoutVars, () => {
       .attr('fill', 'currentColor')
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
-      .attr('x', ((store.state.svgDimensions.width - yAxisPadding) / 2) + yAxisPadding)
+      .attr('x', ((svgDimensions.value.width - yAxisPadding) / 2) + yAxisPadding)
       .attr('y', xAxisPadding - 20);
 
     const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -746,9 +752,9 @@ watch(layoutVars, () => {
   }
 
   // Add y layout
-  if (store.state.columnTypes !== null && layoutVars.value.y !== null) {
-    const type = store.state.columnTypes[layoutVars.value.y];
-    const range = store.state.attributeRanges[layoutVars.value.y];
+  if (columnTypes.value !== null && layoutVars.value.y !== null) {
+    const type = columnTypes.value[layoutVars.value.y];
+    const range = attributeRanges.value[layoutVars.value.y];
 
     const positionScale = makePositionScale('y', type, range);
 
@@ -774,7 +780,7 @@ watch(layoutVars, () => {
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
       .attr('text-anchor', 'middle')
-      .attr('x', ((store.state.svgDimensions.height - xAxisPadding - 10) / 2) + 10)
+      .attr('x', ((svgDimensions.value.height - xAxisPadding - 10) / 2) + 10)
       .attr('y', yAxisPadding - 20);
 
     const labelRectPos = (label.node() as SVGTextElement).getBBox();
@@ -797,7 +803,7 @@ const maximumY = svgDimensions.value.height - svgEdgePadding;
 onMounted(() => {
   if (network.value !== null && simulationEdges.value !== null) {
     // Make the simulation
-    const simulation = forceSimulation<Node, SimulationEdge>(network.value.nodes)
+    simulation.value = forceSimulation<Node, SimulationEdge>(network.value.nodes)
       .on('tick', () => {
         network.value?.nodes.forEach((node) => {
           if (node.x !== undefined && node.y !== undefined) {
@@ -819,12 +825,11 @@ onMounted(() => {
     // The next line handles the start stop button change in the controls.
     // It's not explicitly necessary for the simulation to work
       .on('end', () => {
-        store.commit.stopSimulation();
+        store.stopSimulation();
       });
 
-    store.commit.setSimulation(simulation);
     resetSimulationForces(); // Initialize simulation forces
-    store.commit.startSimulation();
+    store.startSimulation();
     resetAxesClipRegions();
   }
 });

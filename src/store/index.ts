@@ -1,40 +1,25 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { createDirectStore } from 'direct-vuex';
-import {
-  forceCollide, Simulation,
-} from 'd3-force';
-
-import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
-import {
-  scaleLinear, scaleOrdinal, scaleSequential,
-} from 'd3-scale';
+import { defineStore } from 'pinia';
+import { forceCollide } from 'd3-force';
+import { ColumnTypes, NetworkSpec } from 'multinet';
+import { scaleLinear, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
-import { initProvenance, Provenance } from '@visdesignlab/trrack';
+import { initProvenance } from '@visdesignlab/trrack';
 import api from '@/api';
 import {
-  Edge, Node, Network, SimulationEdge, State, EdgeStyleVariables, LoadError, NestedVariables, ProvenanceEventTypes, Dimensions, AttributeRange,
+  Edge, Node, State, NestedVariables, ProvenanceEventTypes, AttributeRange,
 } from '@/types';
 import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import oauthClient from '@/oauth';
 
-Vue.use(Vuex);
-
-const {
-  store,
-  rootActionContext,
-  moduleActionContext,
-  rootGetterContext,
-  moduleGetterContext,
-} = createDirectStore({
-  state: {
+export const useStore = defineStore('store', {
+  state: (): State => ({
     workspaceName: null,
     networkName: null,
     network: null,
     columnTypes: null,
-    selectedNodes: new Set(),
+    selectedNodes: [],
     loadError: {
       message: '',
       href: '',
@@ -56,11 +41,8 @@ const {
     nodeSizeVariable: '',
     nodeColorVariable: '',
     attributeRanges: {},
-    nodeColorScale: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    edgeWidthScale: scaleLinear(),
-    edgeColorScale: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -81,7 +63,7 @@ const {
       x: null,
       y: null,
     },
-  } as State,
+  }),
 
   getters: {
     nodeColorScale(state) {
@@ -109,242 +91,32 @@ const {
     },
 
     nodeSizeScale(state) {
-      const minValue = state.attributeRanges[state.nodeSizeVariable].currentMin || state.attributeRanges[state.nodeSizeVariable].min;
-      const maxValue = state.attributeRanges[state.nodeSizeVariable].currentMax || state.attributeRanges[state.nodeSizeVariable].max;
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.nodeSizeVariable]) {
+        const minValue = state.attributeRanges[state.nodeSizeVariable].currentMin || state.attributeRanges[state.nodeSizeVariable].min;
+        const maxValue = state.attributeRanges[state.nodeSizeVariable].currentMax || state.attributeRanges[state.nodeSizeVariable].max;
 
-      return scaleLinear()
-        .domain([minValue, maxValue])
-        .range([10, 40]);
+        return scaleLinear()
+          .domain([minValue, maxValue])
+          .range([10, 40]);
+      }
+      return scaleLinear();
     },
 
     edgeWidthScale(state) {
-      const minValue = state.attributeRanges[state.edgeVariables.width].currentMin || state.attributeRanges[state.edgeVariables.width].min;
-      const maxValue = state.attributeRanges[state.edgeVariables.width].currentMax || state.attributeRanges[state.edgeVariables.width].max;
+      if (state.columnTypes !== null && Object.keys(state.columnTypes).length > 0 && state.columnTypes[state.edgeVariables.width] === 'number') {
+        const minValue = state.attributeRanges[state.edgeVariables.width].currentMin || state.attributeRanges[state.edgeVariables.width].min;
+        const maxValue = state.attributeRanges[state.edgeVariables.width].currentMax || state.attributeRanges[state.edgeVariables.width].max;
 
-      return state.edgeWidthScale.domain([minValue, maxValue]).range([1, 20]);
+        return scaleLinear().domain([minValue, maxValue]).range([1, 20]);
+      }
+      return scaleLinear();
     },
   },
-  mutations: {
-    setWorkspaceName(state, workspaceName: string) {
-      state.workspaceName = workspaceName;
-    },
 
-    setNetworkName(state, networkName: string) {
-      state.networkName = networkName;
-    },
-
-    setNetwork(state, network: Network) {
-      state.network = network;
-    },
-
-    setColumnTypes(state, columnTypes: ColumnTypes) {
-      state.columnTypes = columnTypes;
-    },
-
-    setSelected(state, selectedNodes: Set<string>) {
-      state.selectedNodes = selectedNodes;
-
-      if (state.provenance !== null) {
-        if (selectedNodes.size === 0) {
-          updateProvenanceState(state, 'Clear Selection');
-        }
-      }
-    },
-
-    setLoadError(state, loadError: LoadError) {
-      state.loadError = {
-        message: loadError.message,
-        href: loadError.href,
-      };
-    },
-
-    setSimulation(state, simulation: Simulation<Node, SimulationEdge>) {
-      state.simulation = simulation;
-    },
-
-    startSimulation(state) {
-      if (state.simulation !== null) {
-        state.simulation.alpha(0.2);
-        state.simulation.restart();
-        state.simulationRunning = true;
-      }
-    },
-
-    stopSimulation(state) {
-      if (state.simulation !== null) {
-        state.simulation.stop();
-        state.simulationRunning = false;
-      }
-    },
-
-    addSelectedNode(state, nodesToAdd: string[]) {
-      // If no nodes, do nothing
-      if (nodesToAdd.length === 0) {
-        return;
-      }
-
-      state.selectedNodes = new Set([...state.selectedNodes, ...nodesToAdd]);
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Select Node(s)');
-      }
-    },
-
-    removeSelectedNode(state, nodeID: string) {
-      state.selectedNodes.delete(nodeID);
-      state.selectedNodes = new Set([...state.selectedNodes]);
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'De-select Node');
-      }
-    },
-
-    setDisplayCharts(state, displayCharts: boolean) {
-      state.displayCharts = displayCharts;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Display Charts');
-      }
-    },
-
-    setMarkerSize(state, payload: { markerSize: number; updateProv: boolean }) {
-      const { markerSize, updateProv } = payload;
-      state.markerSize = markerSize;
-
-      // Apply force to simulation and restart it
-      applyForceToSimulation(
-        state.simulation,
-        'collision',
-        forceCollide((markerSize / 2) * 1.5),
-      );
-
-      if (state.provenance !== null && updateProv) {
-        updateProvenanceState(state, 'Set Marker Size');
-      }
-    },
-
-    setFontSize(state, payload: { fontSize: number; updateProv: boolean }) {
-      state.fontSize = payload.fontSize;
-
-      if (state.provenance !== null && payload.updateProv) {
-        updateProvenanceState(state, 'Set Font Size');
-      }
-    },
-
-    setLabelVariable(state, labelVariable: string | undefined) {
-      state.labelVariable = labelVariable;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Label Variable');
-      }
-    },
-
-    setNodeColorVariable(state, nodeColorVariable: string) {
-      state.nodeColorVariable = nodeColorVariable;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Node Color Variable');
-      }
-    },
-
-    setSelectNeighbors(state, selectNeighbors: boolean) {
-      state.selectNeighbors = selectNeighbors;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Select Neighbors');
-      }
-    },
-
-    setNestedVariables(state, nestedVariables: NestedVariables) {
-      const newNestedVars = {
-        ...nestedVariables,
-        bar: [...new Set(nestedVariables.bar)],
-        glyph: [...new Set(nestedVariables.glyph)],
-      };
-
-      // Allow only 2 variables for the glyphs
-      newNestedVars.glyph.length = Math.min(2, newNestedVars.glyph.length);
-
-      state.nestedVariables = newNestedVars;
-    },
-
-    setEdgeVariables(state, edgeVariables: EdgeStyleVariables) {
-      state.edgeVariables = edgeVariables;
-    },
-
-    setNodeSizeVariable(state, nodeSizeVariable: string) {
-      state.nodeSizeVariable = nodeSizeVariable;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Node Size Variable');
-      }
-    },
-
-    addAttributeRange(state, attributeRange: AttributeRange) {
-      state.attributeRanges = { ...state.attributeRanges, [attributeRange.attr]: attributeRange };
-    },
-
-    setProvenance(state, provenance: Provenance<State, ProvenanceEventTypes, unknown>) {
-      state.provenance = provenance;
-    },
-
-    setDirectionalEdges(state, directionalEdges: boolean) {
-      state.directionalEdges = directionalEdges;
-
-      if (state.provenance !== null) {
-        updateProvenanceState(state, 'Set Directional Edges');
-      }
-    },
-
-    setEdgeLength(state, payload: { edgeLength: number; updateProv: boolean }) {
-      const { edgeLength, updateProv } = payload;
-      state.edgeLength = edgeLength;
-
-      // Apply force to simulation and restart it
-      applyForceToSimulation(
-        state.simulation,
-        'edge',
-        undefined,
-        edgeLength * 10,
-      );
-      store.commit.startSimulation();
-
-      if (state.provenance !== null && updateProv) {
-        updateProvenanceState(state, 'Set Edge Length');
-      }
-    },
-
-    goToProvenanceNode(state, node: string) {
-      if (state.provenance !== null) {
-        state.provenance.goToNode(node);
-      }
-    },
-
-    toggleShowProvenanceVis(state) {
-      state.showProvenanceVis = !state.showProvenanceVis;
-    },
-
-    updateRightClickMenu(state, payload: { show: boolean; top: number; left: number }) {
-      state.rightClickMenu = payload;
-    },
-
-    setUserInfo(state, userInfo: UserSpec | null) {
-      state.userInfo = userInfo;
-    },
-
-    setSvgDimensions(state: State, payload: Dimensions) {
-      state.svgDimensions = payload;
-    },
-
-    setLayoutVars(state, layoutVars: { x: string | null; y: string | null }) {
-      state.layoutVars = layoutVars;
-    },
-  },
   actions: {
-    async fetchNetwork(context, { workspaceName, networkName }) {
-      const { commit, dispatch } = rootActionContext(context);
-      commit.setWorkspaceName(workspaceName);
-      commit.setNetworkName(networkName);
+    async fetchNetwork(workspaceName: string, networkName: string) {
+      this.workspaceName = workspaceName;
+      this.networkName = networkName;
 
       let network: NetworkSpec | undefined;
 
@@ -355,34 +127,34 @@ const {
       } catch (error: any) {
         if (error.status === 404) {
           if (workspaceName === undefined || networkName === undefined) {
-            commit.setLoadError({
+            this.loadError = {
               message: 'Workspace and/or network were not defined in the url',
               href: 'https://multinet.app',
-            });
+            };
           } else {
-            commit.setLoadError({
+            this.loadError = {
               message: error.statusText,
               href: 'https://multinet.app',
-            });
+            };
           }
         } else if (error.status === 401) {
-          commit.setLoadError({
+          this.loadError = {
             message: 'You are not authorized to view this workspace',
             href: 'https://multinet.app',
-          });
+          };
         } else {
-          commit.setLoadError({
+          this.loadError = {
             message: 'An unexpected error ocurred',
             href: 'https://multinet.app',
-          });
+          };
         }
       } finally {
-        if (store.state.loadError.message === '' && typeof network === 'undefined') {
+        if (this.loadError.message === '' && typeof network === 'undefined') {
           // Catches CORS errors, issues when DB/API are down, etc.
-          commit.setLoadError({
+          this.loadError = {
             message: 'There was a network issue when getting data',
             href: `./?workspace=${workspaceName}&network=${networkName}`,
-          });
+          };
         }
       }
 
@@ -392,13 +164,13 @@ const {
 
       // Check network size
       if (network.node_count > 300) {
-        commit.setLoadError({
+        this.loadError = {
           message: 'The network you are loading is too large',
           href: 'https://multinet.app',
-        });
+        };
       }
 
-      if (store.state.loadError.message !== '') {
+      if (this.loadError.message !== '') {
         return;
       }
 
@@ -413,7 +185,7 @@ const {
         nodes: nodes.results as Node[],
         edges: edges.results as Edge[],
       };
-      commit.setNetwork(networkElements);
+      this.network = networkElements;
 
       const networkTables = await api.networkTables(workspaceName, networkName);
       // Get the network metadata promises
@@ -431,69 +203,130 @@ const {
         Object.assign(columnTypes, types);
       });
 
-      commit.setColumnTypes(columnTypes);
+      this.columnTypes = columnTypes;
 
       // Guess the best label variable and set it
       const allVars: Set<string> = new Set();
       networkElements.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-      dispatch.guessLabel();
+      this.guessLabel();
     },
 
-    async fetchUserInfo(context) {
-      const { commit } = rootActionContext(context);
-
+    async fetchUserInfo() {
       const info = await api.userInfo();
-      commit.setUserInfo(info);
+      this.userInfo = info;
     },
 
-    async logout(context) {
-      const { commit } = rootActionContext(context);
-
+    async logout() {
       // Perform the server logout.
       oauthClient.logout();
-      commit.setUserInfo(null);
+      this.userInfo = null;
     },
 
-    releaseNodes(context) {
-      const { commit } = rootActionContext(context);
-
-      if (context.state.network !== null) {
-        context.state.network.nodes.forEach((n: Node) => {
+    releaseNodes() {
+      if (this.network !== null) {
+        this.network.nodes.forEach((n: Node) => {
           n.fx = null;
           n.fy = null;
         });
-        commit.startSimulation();
+        this.startSimulation();
       }
     },
 
-    createProvenance(context) {
-      const { commit } = rootActionContext(context);
+    startSimulation() {
+      if (this.simulation !== null) {
+        this.simulation.alpha(0.2);
+        this.simulation.restart();
+        this.simulationRunning = true;
+      }
+    },
 
-      const storeState = context.state;
+    stopSimulation() {
+      if (this.simulation !== null) {
+        this.simulation.stop();
+        this.simulationRunning = false;
+      }
+    },
 
-      const stateForProv = JSON.parse(JSON.stringify(context.state));
-      stateForProv.selectedNodes = new Set<string>();
+    setMarkerSize(payload: { markerSize: number; updateProv: boolean }) {
+      const { markerSize, updateProv } = payload;
+      this.markerSize = markerSize;
 
-      commit.setProvenance(initProvenance<State, ProvenanceEventTypes, unknown>(
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        this.simulation,
+        'collision',
+        forceCollide((markerSize / 2) * 1.5),
+      );
+
+      if (this.provenance !== null && updateProv) {
+        updateProvenanceState(this.$state, 'Set Marker Size');
+      }
+    },
+
+    setNestedVariables(nestedVariables: NestedVariables) {
+      const newNestedVars = {
+        ...nestedVariables,
+        bar: [...new Set(nestedVariables.bar)],
+        glyph: [...new Set(nestedVariables.glyph)],
+      };
+
+      // Allow only 2 variables for the glyphs
+      newNestedVars.glyph.length = Math.min(2, newNestedVars.glyph.length);
+
+      this.nestedVariables = newNestedVars;
+    },
+
+    addAttributeRange(attributeRange: AttributeRange) {
+      this.attributeRanges = { ...this.attributeRanges, [attributeRange.attr]: attributeRange };
+    },
+
+    setEdgeLength(payload: { edgeLength: number; updateProv: boolean }) {
+      const { edgeLength, updateProv } = payload;
+      this.edgeLength = edgeLength;
+
+      // Apply force to simulation and restart it
+      applyForceToSimulation(
+        this.simulation,
+        'edge',
+        undefined,
+        edgeLength * 10,
+      );
+      this.startSimulation();
+
+      if (this.provenance !== null && updateProv) {
+        updateProvenanceState(this.$state, 'Set Edge Length');
+      }
+    },
+
+    goToProvenanceNode(node: string) {
+      if (this.provenance !== null) {
+        this.provenance.goToNode(node);
+      }
+    },
+
+    createProvenance() {
+      const storeState = this.$state;
+
+      const stateForProv = JSON.parse(JSON.stringify(this));
+      stateForProv.selectedNodes = [];
+
+      this.provenance = initProvenance<State, ProvenanceEventTypes, unknown>(
         stateForProv,
         { loadFromUrl: false },
-      ));
+      );
 
       // Add a global observer to watch the state and update the tracked elements in the store
       // enables undo/redo + navigating around provenance graph
-      storeState.provenance.addGlobalObserver(
+      this.provenance.addGlobalObserver(
         () => {
-          const provenanceState = context.state.provenance.state;
+          const provenanceState = this.provenance.state;
 
           const { selectedNodes } = provenanceState;
 
-          // Helper function
-          const setsAreEqual = (a: Set<unknown>, b: Set<unknown>) => a.size === b.size && [...a].every((value) => b.has(value));
-
           // If the sets are not equal (happens when provenance is updated through provenance vis),
           // update the store's selectedNodes to match the provenance state
-          if (!setsAreEqual(selectedNodes, storeState.selectedNodes)) {
+          if (selectedNodes.sort().toString() !== storeState.selectedNodes.sort().toString()) {
             storeState.selectedNodes = selectedNodes;
           }
 
@@ -515,9 +348,9 @@ const {
             }
 
             if (primitiveVariable === 'markerSize') {
-              commit.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
+              this.setMarkerSize({ markerSize: provenanceState[primitiveVariable], updateProv: false });
             } else if (primitiveVariable === 'edgeLength') {
-              commit.setEdgeLength({ edgeLength: provenanceState[primitiveVariable], updateProv: false });
+              this.setEdgeLength({ edgeLength: provenanceState[primitiveVariable], updateProv: false });
             } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
               storeState[primitiveVariable] = provenanceState[primitiveVariable];
             }
@@ -531,63 +364,44 @@ const {
       document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
     },
 
-    guessLabel(context) {
-      const { commit } = rootActionContext(context);
-
+    guessLabel() {
+      if (this.network !== null && this.columnTypes !== null) {
       // Guess the best label variable and set it
-      const allVars: Set<string> = new Set();
-      context.state.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+        const allVars: Set<string> = new Set();
+        this.network.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-      // Remove _key from the search
-      allVars.delete('_key');
-      const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && context.state.columnTypes[colName] === 'label');
+        // Remove _key from the search
+        allVars.delete('_key');
+        const bestLabelVar = [...allVars]
+          .find((colName) => !isInternalField(colName) && this.columnTypes?.[colName] === 'label');
 
-      // Use the label variable we found or _key if we didn't find one
-      commit.setLabelVariable(bestLabelVar || '_key');
+        // Use the label variable we found or _key if we didn't find one
+        this.labelVariable = bestLabelVar || '_key';
+      }
     },
 
-    applyVariableLayout(context, payload: { varName: string | null; axis: 'x' | 'y'}) {
-      const { commit, dispatch, state } = rootActionContext(context);
-
+    applyVariableLayout(payload: { varName: string | null; axis: 'x' | 'y'}) {
       const {
         varName, axis,
       } = payload;
       const otherAxis = axis === 'x' ? 'y' : 'x';
 
-      const updatedLayoutVars = { [axis]: varName, [otherAxis]: state.layoutVars[otherAxis] } as {
+      const updatedLayoutVars = { [axis]: varName, [otherAxis]: this.layoutVars[otherAxis] } as {
         x: string | null;
         y: string | null;
       };
-      commit.setLayoutVars(updatedLayoutVars);
+      this.layoutVars = updatedLayoutVars;
 
       // Reapply the layout if there is still a variable
-      if (varName === null && state.layoutVars[otherAxis] !== null) {
+      if (varName === null && this.layoutVars[otherAxis] !== null) {
         // Set marker size to 11 to trigger re-render (will get reset to 10 in dispatch again)
-        commit.setMarkerSize({ markerSize: 11, updateProv: false });
+        this.markerSize = 11;
 
-        dispatch.applyVariableLayout({ varName: state.layoutVars[otherAxis], axis: otherAxis });
-      } else if (varName === null && state.layoutVars[otherAxis] === null) {
+        this.applyVariableLayout({ varName: this.layoutVars[otherAxis], axis: otherAxis });
+      } else if (varName === null && this.layoutVars[otherAxis] === null) {
         // If both null, release
-        dispatch.releaseNodes();
+        this.releaseNodes();
       }
     },
   },
 });
-
-export default store;
-export {
-  rootActionContext,
-  moduleActionContext,
-  rootGetterContext,
-  moduleGetterContext,
-};
-
-// The following lines enable types in the injected store '$store'.
-export type ApplicationStore = typeof store;
-declare module 'vuex' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Store<S> {
-    direct: ApplicationStore;
-  }
-}

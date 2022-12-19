@@ -2950,6 +2950,11 @@
     postcss "^8.4.14"
     source-map "^0.6.1"
 
+"@vue/devtools-api@^6.4.5":
+  version "6.4.5"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.4.5.tgz#d54e844c1adbb1e677c81c665ecef1a2b4bb8380"
+  integrity sha512-JD5fcdIuFxU4fQyXUu3w2KpAJHzTVdN+p4iOX2lMWSHMOoQdMAcpFLZzm9Z/2nmsoZ1a96QEhZ26e50xLBsgOQ==
+
 "@vue/eslint-config-airbnb@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@vue/eslint-config-airbnb/-/eslint-config-airbnb-7.0.0.tgz#eb61c44f96ce17b57dd866a4086bdf757c869e40"
@@ -5246,11 +5251,6 @@ dir-glob@^3.0.1:
   integrity sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==
   dependencies:
     path-type "^4.0.0"
-
-direct-vuex@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/direct-vuex/-/direct-vuex-0.12.0.tgz#aba06acc5def3c5cd8e26b6dabb0557e9d074ddf"
-  integrity sha512-yhIlQl9nfKtP55ZEomljcEsxq9rWWc6Fo/DhuU2SIN24qIa4VfTY1dcCAAOQrYdZt4+id5hHjWMdDFa0BDGgSw==
 
 django-s3-file-field@^0.1.2:
   version "0.1.2"
@@ -8442,10 +8442,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multinet-components@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.1.tgz#41c2e4c2e716ed37f9b54a6dc0ba03899c16d8e3"
-  integrity sha512-M8FSfeZetigiHbHz6bT0OTKT6aV3gzfNJODZGEBoVNp/axRk3aHTLfSJ86/KMxbl5guUvlj+z3n1lXc7yRSC4g==
+multinet-components@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.2.tgz#172d6e68217c3089add1e2066a9eccfd5b73cf3e"
+  integrity sha512-D7OsIxzIjQEAEEb4asN9/8GD9NX/uck3w4wAJAkJrrmc46pB58dw3LnwPP4F4OyqHfwRfHdaX5iGYWPBukicJg==
 
 multinet@^0.21.4:
   version "0.21.4"
@@ -9152,6 +9152,14 @@ pify@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/pify/-/pify-4.0.1.tgz#4b2cd25c50d598735c50292224fd8c6df41e3231"
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
+
+pinia@^2.0.28:
+  version "2.0.28"
+  resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.0.28.tgz#887c982d854972042d9bdfd5bc4fad3b9d6ab02a"
+  integrity sha512-YClq9DkqCblq9rlyUual7ezMu/iICWdBtfJrDt4oWU9Zxpijyz7xB2xTwx57DaBQ96UGvvTMORzALr+iO5PVMw==
+  dependencies:
+    "@vue/devtools-api" "^6.4.5"
+    vue-demi "*"
 
 pirates@^4.0.0:
   version "4.0.1"
@@ -11500,6 +11508,11 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
+vue-demi@*:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.13.11.tgz#7d90369bdae8974d87b1973564ad390182410d99"
+  integrity sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==
+
 vue-eslint-parser@^7.10.0:
   version "7.11.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.11.0.tgz#214b5dea961007fcffb2ee65b8912307628d0daf"
@@ -11572,11 +11585,6 @@ vuetify@^2.6.10:
   version "2.6.10"
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.10.tgz#b86cd7a97bf8cd3828a72c349795b5b3c539ebc2"
   integrity sha512-fgUeRDDCwYkwu6WGEEKGe7IdfzOsXJCZGrqkn1pcS2ycuoDL8mR2/dejH5iFNnBY6MnsT365PAGn0J+9otjfQg==
-
-vuex@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.5.1.tgz#f1b8dcea649bc25254cf4f4358081dbf5da18b3d"
-  integrity sha512-w7oJzmHQs0FM9LXodfskhw9wgKBiaB+totOdb8sNzbTB2KDCEEwEs29NzBZFh/lmEK1t5tDmM1vtsO7ubG1DFw==
 
 warning@^4.0.2, warning@^4.0.3:
   version "4.0.3"

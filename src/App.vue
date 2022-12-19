@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import store from '@/store';
+import 'multinet-components/dist/style.css';
+import { storeToRefs } from 'pinia';
+import { useStore } from '@/store';
 import { getUrlVars } from '@/lib/utils';
 
 import AlertBanner from '@/components/AlertBanner.vue';
@@ -7,15 +9,20 @@ import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 
-import 'multinet-components/dist/style.css';
+const store = useStore();
+const {
+  network,
+  loadError,
+  showProvenanceVis,
+} = storeToRefs(store);
 
 const urlVars = getUrlVars(); // Takes workspace and network
-store.dispatch.fetchNetwork({
-  workspaceName: urlVars.workspace,
-  networkName: urlVars.network,
-}).then(() => {
-  store.dispatch.createProvenance();
-  store.dispatch.guessLabel();
+store.fetchNetwork(
+  urlVars.workspace,
+  urlVars.network,
+).then(() => {
+  store.createProvenance();
+  store.guessLabel();
 });
 </script>
 
@@ -24,14 +31,12 @@ store.dispatch.fetchNetwork({
     <v-main>
       <control-panel />
 
-      <multi-link
-        v-if="store.state.network !== null && store.state.selectedNodes !== null"
-      />
+      <multi-link v-if="network !== null" />
 
-      <alert-banner v-if="store.state.loadError.message !== ''" />
+      <alert-banner v-if="loadError.message !== ''" />
     </v-main>
 
-    <prov-vis v-if="store.state.showProvenanceVis" />
+    <prov-vis v-if="showProvenanceVis" />
   </v-app>
 </template>
 

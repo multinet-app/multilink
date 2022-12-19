@@ -1,6 +1,6 @@
 import { Provenance } from '@visdesignlab/trrack';
 import { Simulation } from 'd3-force';
-import { ScaleLinear, ScaleOrdinal, ScaleSequential } from 'd3-scale';
+import { ScaleOrdinal } from 'd3-scale';
 import { TableRow, UserSpec, ColumnTypes } from 'multinet';
 
 export interface Dimensions {
@@ -90,7 +90,7 @@ export interface State {
   networkName: string | null;
   network: Network | null;
   columnTypes: ColumnTypes | null;
-  selectedNodes: Set<string>;
+  selectedNodes: string[];
   loadError: LoadError;
   displayCharts: boolean;
   markerSize: number;
@@ -103,11 +103,8 @@ export interface State {
   nodeColorVariable: string;
   attributeRanges: AttributeRanges;
   simulation: Simulation<Node, SimulationEdge> | null;
-  nodeColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
   nodeBarColorScale: ScaleOrdinal<string, string>;
   nodeGlyphColorScale: ScaleOrdinal<string, string>;
-  edgeWidthScale: ScaleLinear<number, number>;
-  edgeColorScale: ScaleSequential<string> | ScaleOrdinal<string, string>;
   provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
   directionalEdges: boolean;
   controlsWidth: number;
