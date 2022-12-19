@@ -23,6 +23,7 @@ const {
   columnTypes,
   network,
   selectedNodes,
+  userInfo,
 } = storeToRefs(store);
 
 const searchTerm = ref('');
@@ -115,8 +116,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
     store.setEdgeLength({ edgeLength: value, updateProv: true });
   }
 }
-
-const userInfo = computed(() => store.userInfo);
 </script>
 
 <template>
