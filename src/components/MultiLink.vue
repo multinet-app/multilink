@@ -615,7 +615,7 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
 
   if (varName !== null) {
     // Set node size smaller
-    store.setMarkerSize({ markerSize: 10, updateProv: true });
+    store.setMarkerSize(10, true);
 
     // Clear the label variable
     labelVariable.value = undefined;

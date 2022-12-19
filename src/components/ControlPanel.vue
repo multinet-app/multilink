@@ -49,7 +49,7 @@ const markerSize = computed({
     return store.markerSize || 0;
   },
   set(value: number) {
-    store.setMarkerSize({ markerSize: value, updateProv: false });
+    store.setMarkerSize(value, false);
   },
 });
 const autocompleteItems = computed(() => {
@@ -100,7 +100,7 @@ function search() {
 
 function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
   if (type === 'markerSize') {
-    store.setMarkerSize({ markerSize: value, updateProv: true });
+    store.setMarkerSize(value, true);
   } else if (type === 'fontSize') {
     fontSize.value = value;
   } else if (type === 'edgeLength') {
