@@ -104,7 +104,7 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
   } else if (type === 'fontSize') {
     fontSize.value = value;
   } else if (type === 'edgeLength') {
-    store.setEdgeLength({ edgeLength: value, updateProv: true });
+    store.setEdgeLength(value, true);
   }
 }
 </script>
