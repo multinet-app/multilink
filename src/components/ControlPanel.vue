@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LoginMenu } from 'multinet-components';
-import { computed, Ref, ref } from 'vue';
+import { computed, ref } from 'vue';
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 
@@ -26,7 +26,7 @@ const {
 } = storeToRefs(store);
 
 const searchTerm = ref('');
-const searchErrors: Ref<string[]> = ref([]);
+const searchErrors = ref<string[]>([]);
 const showMenu = ref(false);
 
 const multiVariableList = computed(() => {

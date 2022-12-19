@@ -8,7 +8,7 @@ import {
 } from 'd3-force';
 import { select } from 'd3-selection';
 import {
-  computed, getCurrentInstance, onMounted, ref, Ref, watch,
+  computed, getCurrentInstance, onMounted, ref, watch,
 } from 'vue';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { ColumnType } from 'multinet';
@@ -45,7 +45,7 @@ const {
 
 // Commonly used variables
 const currentInstance = getCurrentInstance();
-const multiLinkSvg: Ref<Element | null> = ref(null);
+const multiLinkSvg = ref<Element | null>(null);
 const nodeTextStyle = computed(() => `font-size: ${store.fontSize || 0}pt;`);
 
 const nestedPadding = ref(5);
