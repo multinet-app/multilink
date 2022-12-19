@@ -8,7 +8,7 @@ import {
 } from 'd3-scale';
 import { select, selectAll } from 'd3-selection';
 import { Node, Edge } from '@/types';
-import { useStore } from '@/store/index';
+import { useStore } from '@/store';
 
 // Required for recursive definition of LegendChart
 // eslint-disable-next-line import/no-self-import

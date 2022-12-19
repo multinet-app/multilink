@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ProvVisCreator } from '@visdesignlab/trrack-vis';
 import { onMounted, ref } from 'vue';
-import { useStore } from '@/store/index';
+import { useStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
 const store = useStore();

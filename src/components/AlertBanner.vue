@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useStore } from '@/store/index';
+import { useStore } from '@/store';
 import api from '@/api';
 import { storeToRefs } from 'pinia';
 

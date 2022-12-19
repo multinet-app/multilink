@@ -12,7 +12,7 @@ import {
 } from 'vue';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { ColumnType } from 'multinet';
-import { useStore } from '@/store/index';
+import { useStore } from '@/store';
 import {
   Node, Edge, SimulationEdge, AttributeRange,
 } from '@/types';

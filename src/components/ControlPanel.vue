@@ -4,7 +4,7 @@ import { computed, Ref, ref } from 'vue';
 import LegendPanel from '@/components/LegendPanel.vue';
 import AboutDialog from '@/components/AboutDialog.vue';
 
-import { useStore } from '@/store/index';
+import { useStore } from '@/store';
 import { internalFieldNames } from '@/types';
 import oauthClient from '@/oauth';
 import { storeToRefs } from 'pinia';
