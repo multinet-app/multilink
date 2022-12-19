@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import store from '@/store';
 import { internalFieldNames, Edge, Node } from '@/types';
 import DragTarget from '@/components/DragTarget.vue';
 import LegendChart from '@/components/LegendChart.vue';
-import { computed, ref } from 'vue';
 
 const tab = ref(undefined);
 

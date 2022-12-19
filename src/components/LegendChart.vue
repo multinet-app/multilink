@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import store from '@/store';
-import { Node, Edge } from '@/types';
 import { computed, onMounted, watchEffect } from 'vue';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
@@ -9,6 +7,8 @@ import {
   ScaleBand, scaleBand, ScaleLinear, scaleLinear,
 } from 'd3-scale';
 import { select, selectAll } from 'd3-selection';
+import { Node, Edge } from '@/types';
+import store from '@/store';
 
 // Required for recursive definition of LegendChart
 // eslint-disable-next-line import/no-self-import

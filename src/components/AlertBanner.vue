@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import store from '@/store';
 import {
   computed, Ref, ref, watchEffect,
 } from 'vue';
+import store from '@/store';
 import api from '@/api';
 
 const loadError = computed(() => store.state.loadError);

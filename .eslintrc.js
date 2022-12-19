@@ -6,14 +6,17 @@ module.exports = {
   root: true,
 
   env: {
-    node: true,
+    es2022: true,
   },
 
   extends: [
+    'plugin:vue/base',
+    'plugin:vue/recommended',
+    'plugin:vuetify/base',
+    'plugin:vuetify/recommended',
     'plugin:vue/recommended',
     '@vue/airbnb',
     '@vue/typescript',
-    'plugin:vue/recommended',
     '@vue/typescript/recommended',
   ],
 
@@ -22,20 +25,25 @@ module.exports = {
   ],
 
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'max-len': ['off'],
+    'no-console': ['error'],
+    'no-debugger': ['error'],
+    'vue/max-len': ['off'],
     'import/prefer-default-export': ['off'],
     'no-underscore-dangle': ['error', { allow: ['_id', '_from', '_to', '_key'] }],
     ...a11yOff,
     'no-param-reassign': ['error', { props: false }],
+    'import/extensions': ['error', { ts: 'never', vue: 'always' }],
   },
 
-  parserOptions: {
-    parser: '@typescript-eslint/parser',
-    ecmaVersion: 2020,
-    ecmaFeatures: {
-      modules: true,
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.ts'],
+      },
+      alias: {
+        map: [['@', './src']],
+        extensions: ['.ts', '.vue'],
+      },
     },
   },
 };
