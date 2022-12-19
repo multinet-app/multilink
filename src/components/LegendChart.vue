@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watchEffect } from 'vue';
+import { onMounted, watchEffect } from 'vue';
 import { histogram, max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX, D3BrushEvent } from 'd3-brush';
@@ -26,6 +26,10 @@ const {
   nodeSizeVariable,
   nodeColorVariable,
   edgeVariables,
+  nodeSizeScale,
+  nodeColorScale,
+  edgeWidthScale,
+  edgeColorScale,
 } = storeToRefs(store);
 
 const props = withDefaults(defineProps<{
@@ -43,11 +47,6 @@ const props = withDefaults(defineProps<{
 
 const yAxisPadding = 30;
 const svgHeight = props.mappedTo === 'bars' ? 75 : 50;
-
-const nodeSizeScale = computed(() => store.nodeSizeScale);
-const nodeColorScale = computed(() => store.nodeColorScale);
-const edgeWidthScale = computed(() => store.edgeWidthScale);
-const edgeColorScale = computed(() => store.edgeColorScale);
 
 // TODO: https://github.com/multinet-app/multilink/issues/176
 // use table name for var selection

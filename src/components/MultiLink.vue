@@ -41,6 +41,10 @@ const {
   edgeVariables,
   nodeGlyphColorScale,
   simulation,
+  edgeColorScale,
+  nodeSizeScale,
+  nodeColorScale,
+  edgeWidthScale,
 } = storeToRefs(store);
 
 // Commonly used variables
@@ -71,7 +75,6 @@ const attributeScales = computed(() => {
   }
   return scales;
 });
-const edgeColorScale = computed(() => store.edgeColorScale);
 const clipRegionSize = 100;
 
 // Update height and width as the window size changes
@@ -125,7 +128,6 @@ function selectNode(node: Node) {
   }
 }
 
-const nodeSizeScale = computed(() => store.nodeSizeScale);
 function calculateNodeSize(node: Node) {
   // Don't render dynamic node size if the size variable is empty or
   // we want to display charts
@@ -304,7 +306,6 @@ function nodeClass(node: Node): string {
   return `node nodeBox ${selectedClass}`;
 }
 
-const nodeColorScale = computed(() => store.nodeColorScale);
 function nodeFill(node: Node) {
   const calculatedValue = node[nodeColorVariable.value];
   const useCalculatedValue = !displayCharts.value && columnTypes.value !== null
@@ -336,7 +337,6 @@ function edgeGroupClass(edge: Edge): string {
   return 'edgeGroup';
 }
 
-const edgeWidthScale = computed(() => store.edgeWidthScale);
 function edgeStyle(edge: Edge): string {
   const edgeWidth = edgeVariables.value.width === '' ? 1 : edgeWidthScale.value(edge[edgeVariables.value.width]);
 

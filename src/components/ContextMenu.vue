@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
@@ -7,6 +6,7 @@ const store = useStore();
 const {
   network,
   selectedNodes,
+  rightClickMenu,
 } = storeToRefs(store);
 
 function pinSelectedNodes() {
@@ -29,8 +29,6 @@ function unPinSelectedNodes() {
       });
   }
 }
-
-const rightClickMenu = computed(() => store.rightClickMenu);
 </script>
 
 <template>
