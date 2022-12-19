@@ -2,7 +2,7 @@
 import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
 import { useStore } from '@/store';
-import { getUrlVars } from './lib/utils';
+import { getUrlVars } from '@/lib/utils';
 
 import AlertBanner from '@/components/AlertBanner.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
