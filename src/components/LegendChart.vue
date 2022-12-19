@@ -55,15 +55,9 @@ function isQuantitative(varName: string, type: 'node' | 'edge') {
     return columnTypes.value[varName] === 'number';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let nodesOrEdges: any[];
-
-  if (network.value !== null) {
-    nodesOrEdges = type === 'node' ? network.value.nodes : network.value.edges;
-    const uniqueValues = [...new Set(nodesOrEdges.map((element) => parseFloat(element[varName])))];
-    return uniqueValues.length > 5;
-  }
-  return false;
+  const nodesOrEdges = type === 'node' ? network.value.nodes : network.value.edges;
+  const uniqueValues = [...new Set(nodesOrEdges.map((element) => parseFloat(element[varName])))];
+  return uniqueValues.length > 5;
 }
 
 function dragStart(event: DragEvent) {
@@ -128,10 +122,6 @@ onMounted(() => {
 
   let xScale: ScaleLinear<number, number> | ScaleBand<string>;
   let yScale: ScaleLinear<number, number>;
-
-  if (network.value === null) {
-    return;
-  }
 
   // Process data for bars/histogram
   if (props.mappedTo === 'size' && nodeSizeScale.value !== null) { // node size

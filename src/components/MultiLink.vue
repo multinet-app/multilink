@@ -170,16 +170,14 @@ function dragNode(node: Node, event: MouseEvent) {
       const dx = eventX - nodeX;
       const dy = eventY - nodeY;
 
-      if (network.value !== null) {
-        network.value.nodes
-          .filter((innerNode) => selectedNodes.value.includes(innerNode._id) && innerNode._id !== node._id)
-          .forEach((innerNode) => {
-            innerNode.x = (innerNode.x || 0) + dx;
-            innerNode.y = (innerNode.y || 0) + dy;
-            innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
-            innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
-          });
-      }
+      network.value.nodes
+        .filter((innerNode) => selectedNodes.value.includes(innerNode._id) && innerNode._id !== node._id)
+        .forEach((innerNode) => {
+          innerNode.x = (innerNode.x || 0) + dx;
+          innerNode.y = (innerNode.y || 0) + dy;
+          innerNode.fx = (innerNode.fx || innerNode.x || 0) + dx;
+          innerNode.fy = (innerNode.fy || innerNode.y || 0) + dy;
+        });
     }
 
     node.x = eventX;
@@ -240,33 +238,30 @@ function hideTooltip() {
 }
 
 function arcPath(edge: Edge): string {
-  if (network.value !== null) {
-    const fromNode = network.value.nodes.find((node) => node._id === edge._from);
-    const toNode = network.value.nodes.find((node) => node._id === edge._to);
+  const fromNode = network.value.nodes.find((node) => node._id === edge._from);
+  const toNode = network.value.nodes.find((node) => node._id === edge._to);
 
-    if (fromNode === undefined || toNode === undefined) {
-      throw new Error('Couldn\'t find the source or target for a edge, didn\'t draw arc.');
-    }
-
-    if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
-      throw new Error('_from or _to node didn\'t have an x or a y position.');
-    }
-
-    const x1 = fromNode.x + calculateNodeSize(fromNode) / 2;
-    const y1 = fromNode.y + calculateNodeSize(fromNode) / 2;
-    const x2 = toNode.x + calculateNodeSize(toNode) / 2;
-    const y2 = toNode.y + calculateNodeSize(toNode) / 2;
-
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const dr = Math.sqrt(dx * dx + dy * dy);
-    const sweep = 1;
-    const xRotation = 0;
-    const largeArc = 0;
-
-    return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
+  if (fromNode === undefined || toNode === undefined) {
+    throw new Error('Couldn\'t find the source or target for a edge, didn\'t draw arc.');
   }
-  return '';
+
+  if (fromNode.x === undefined || fromNode.y === undefined || toNode.x === undefined || toNode.y === undefined) {
+    throw new Error('_from or _to node didn\'t have an x or a y position.');
+  }
+
+  const x1 = fromNode.x + calculateNodeSize(fromNode) / 2;
+  const y1 = fromNode.y + calculateNodeSize(fromNode) / 2;
+  const x2 = toNode.x + calculateNodeSize(toNode) / 2;
+  const y2 = toNode.y + calculateNodeSize(toNode) / 2;
+
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const dr = Math.sqrt(dx * dx + dy * dy);
+  const sweep = 1;
+  const xRotation = 0;
+  const largeArc = 0;
+
+  return (`M ${x1}, ${y1} A ${dr}, ${dr} ${xRotation}, ${largeArc}, ${sweep} ${x2},${y2}`);
 }
 
 function isSelected(nodeID: string): boolean {
@@ -274,20 +269,17 @@ function isSelected(nodeID: string): boolean {
 }
 
 const oneHop = computed(() => {
-  if (network.value !== null) {
-    const inNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._to) ? edge._from : null));
-    const outNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._from) ? edge._to : null));
+  const inNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._to) ? edge._from : null));
+  const outNodes = network.value.edges.map((edge) => (selectedNodes.value.includes(edge._from) ? edge._to : null));
 
-    const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
+  const oneHopNodeIDs: Set<string | null> = new Set([...outNodes, ...inNodes]);
 
-    // Remove null if it exists
-    if (oneHopNodeIDs.has(null)) {
-      oneHopNodeIDs.delete(null);
-    }
-
-    return oneHopNodeIDs;
+  // Remove null if it exists
+  if (oneHopNodeIDs.has(null)) {
+    oneHopNodeIDs.delete(null);
   }
-  return new Set();
+
+  return oneHopNodeIDs;
 });
 function nodeGroupClass(node: Node): string {
   if (selectedNodes.value.length > 0) {
@@ -440,15 +432,13 @@ function rectSelectDrag(event: MouseEvent) {
 
     // Find which nodes are in the box
     let nodesInRect: Node[] = [];
-    if (network.value !== null) {
-      nodesInRect = network.value.nodes.filter((node) => {
-        const nodeSize = calculateNodeSize(node) / 2;
-        return (node.x || 0) + nodeSize > boxX1
-              && (node.x || 0) + nodeSize < boxX2
-              && (node.y || 0) + nodeSize > boxY1
-              && (node.y || 0) + nodeSize < boxY2;
-      });
-    }
+    nodesInRect = network.value.nodes.filter((node) => {
+      const nodeSize = calculateNodeSize(node) / 2;
+      return (node.x || 0) + nodeSize > boxX1
+            && (node.x || 0) + nodeSize < boxX2
+            && (node.y || 0) + nodeSize > boxY1
+            && (node.y || 0) + nodeSize < boxY2;
+    });
 
     // Select the nodes inside the box if there are any
     nodesInRect.forEach((node) => selectedNodes.value.push(node._id));
@@ -497,23 +487,16 @@ function generateNodePositions(nodes: Node[]) {
     }
   });
 }
-if (network.value !== null) {
-  generateNodePositions(network.value.nodes);
-}
+generateNodePositions(network.value.nodes);
 
-const simulationEdges = computed(() => {
-  if (network.value !== null) {
-    return network.value.edges.map((edge: Edge) => {
-      const newEdge: SimulationEdge = {
-        ...structuredClone(edge),
-        source: edge._from,
-        target: edge._to,
-      };
-      return newEdge;
-    });
-  }
-  return null;
-});
+const simulationEdges = computed(() => network.value.edges.map((edge: Edge) => {
+  const newEdge: SimulationEdge = {
+    ...structuredClone(edge),
+    source: edge._from,
+    target: edge._to,
+  };
+  return newEdge;
+}));
 watch(attributeRanges, () => {
   if (simulationEdges.value !== null && layoutVars.value.x === null && layoutVars.value.y === null) {
     const simEdges = simulationEdges.value.filter((edge: Edge) => {
@@ -579,7 +562,7 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
     let maxValue = range.max - 1; // subtract 1, because of the + 1 on the legend chart scale
 
     // Check IQR for outliers
-    if (network.value !== null && varName !== null) {
+    if (varName !== null) {
       const values = network.value.nodes.map((node) => node[varName]).sort((a, b) => a - b);
 
       let q1;
@@ -637,7 +620,7 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
     // Clear the label variable
     labelVariable.value = undefined;
 
-    if (network.value !== null && columnTypes.value !== null) {
+    if (columnTypes.value !== null) {
       const otherAxisPadding = axis === 'x' ? 80 : 60;
 
       if (type === 'number') {
@@ -801,7 +784,7 @@ const minimumY = svgEdgePadding;
 const maximumX = svgDimensions.value.width - svgEdgePadding;
 const maximumY = svgDimensions.value.height - svgEdgePadding;
 onMounted(() => {
-  if (network.value !== null && simulationEdges.value !== null) {
+  if (simulationEdges.value !== null) {
     // Make the simulation
     simulation.value = forceSimulation<Node, SimulationEdge>(network.value.nodes)
       .on('tick', () => {
