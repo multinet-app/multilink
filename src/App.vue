@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import store from '@/store/index';
+import store from '@/store';
 import { getUrlVars } from '@/lib/utils';
 
 import AlertBanner from '@/components/AlertBanner.vue';
