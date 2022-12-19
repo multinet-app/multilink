@@ -41,11 +41,8 @@ export const useStore = defineStore('store', {
     nodeSizeVariable: '',
     nodeColorVariable: '',
     attributeRanges: {},
-    nodeColorScaleNoDomain: scaleOrdinal(schemeCategory10),
     nodeBarColorScale: scaleOrdinal(schemeCategory10),
     nodeGlyphColorScale: scaleOrdinal(schemeCategory10),
-    edgeWidthScaleNoDomain: scaleLinear(),
-    edgeColorScaleNoDomain: scaleOrdinal(schemeCategory10),
     provenance: null,
     directionalEdges: false,
     controlsWidth: 256,
@@ -110,9 +107,9 @@ export const useStore = defineStore('store', {
         const minValue = state.attributeRanges[state.edgeVariables.width].currentMin || state.attributeRanges[state.edgeVariables.width].min;
         const maxValue = state.attributeRanges[state.edgeVariables.width].currentMax || state.attributeRanges[state.edgeVariables.width].max;
 
-        return state.edgeWidthScaleNoDomain.domain([minValue, maxValue]).range([1, 20]);
+        return scaleLinear().domain([minValue, maxValue]).range([1, 20]);
       }
-      return state.edgeWidthScaleNoDomain;
+      return scaleLinear();
     },
   },
 
