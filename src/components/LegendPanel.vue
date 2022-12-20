@@ -33,36 +33,30 @@ function cleanVariableList(list: Set<string>): Set<string> {
 }
 
 const cleanedNodeVariables = computed(() => {
-  if (network.value !== null) {
-    // Loop through all nodes, flatten the 2d array, and turn it into a set
-    const allVars: Set<string> = new Set();
-    network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
+  // Loop through all nodes, flatten the 2d array, and turn it into a set
+  const allVars: Set<string> = new Set();
+  network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-    internalFieldNames.forEach((field) => allVars.delete(field));
-    allVars.delete('vx');
-    allVars.delete('vy');
-    allVars.delete('x');
-    allVars.delete('y');
-    allVars.delete('index');
-    return cleanVariableList(allVars);
-  }
-  return new Set();
+  internalFieldNames.forEach((field) => allVars.delete(field));
+  allVars.delete('vx');
+  allVars.delete('vy');
+  allVars.delete('x');
+  allVars.delete('y');
+  allVars.delete('index');
+  return cleanVariableList(allVars);
 });
 
 const cleanedEdgeVariables = computed(() => {
-  if (network.value !== null) {
-    // Loop through all edges, flatten the 2d array, and turn it into a set
-    const allVars: Set<string> = new Set();
-    network.value.edges.map((edge: Edge) => Object.keys(edge).forEach((key) => allVars.add(key)));
+  // Loop through all edges, flatten the 2d array, and turn it into a set
+  const allVars: Set<string> = new Set();
+  network.value.edges.map((edge: Edge) => Object.keys(edge).forEach((key) => allVars.add(key)));
 
-    internalFieldNames.forEach((field) => allVars.delete(field));
-    allVars.delete('source');
-    allVars.delete('target');
-    allVars.delete('index');
+  internalFieldNames.forEach((field) => allVars.delete(field));
+  allVars.delete('source');
+  allVars.delete('target');
+  allVars.delete('index');
 
-    return cleanVariableList(allVars);
-  }
-  return new Set();
+  return cleanVariableList(allVars);
 });
 
 const attributeLayout = ref(false);

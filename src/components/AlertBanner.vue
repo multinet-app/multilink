@@ -27,7 +27,7 @@ watchEffect(async () => {
 const buttonHref = ref(loadError.value.href);
 const buttonText = ref('');
 watchEffect(async () => {
-  if (workspace.value !== null && network.value !== null) {
+  if (workspace.value !== null) {
     buttonHref.value = `./?workspace=${workspace.value}&network=${network.value}`;
     buttonText.value = 'Go To Network';
   } else if (loadError.value.message === 'There was a network issue when getting data') {

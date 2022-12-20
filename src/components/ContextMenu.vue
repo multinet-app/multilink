@@ -10,24 +10,20 @@ const {
 } = storeToRefs(store);
 
 function pinSelectedNodes() {
-  if (network.value !== null) {
-    network.value.nodes
-      .filter((node) => selectedNodes.value.includes(node._id))
-      .forEach((node) => {
-        node.fx = node.x;
-        node.fy = node.y;
-      });
-  }
+  network.value.nodes
+    .filter((node) => selectedNodes.value.includes(node._id))
+    .forEach((node) => {
+      node.fx = node.x;
+      node.fy = node.y;
+    });
 }
 function unPinSelectedNodes() {
-  if (network.value !== null) {
-    network.value.nodes
-      .filter((node) => selectedNodes.value.includes(node._id))
-      .forEach((node) => {
-        delete node.fx;
-        delete node.fy;
-      });
-  }
+  network.value.nodes
+    .filter((node) => selectedNodes.value.includes(node._id))
+    .forEach((node) => {
+      delete node.fx;
+      delete node.fy;
+    });
 }
 </script>
 

@@ -31,20 +31,17 @@ const searchErrors = ref<string[]>([]);
 const showMenu = ref(false);
 
 const multiVariableList = computed(() => {
-  if (network.value !== null) {
-    // Loop through all nodes, flatten the 2d array, and turn it into a set
-    const allVars: Set<string> = new Set();
-    network.value.nodes.forEach((node) => Object.keys(node).forEach((key) => allVars.add(key)));
+  // Loop through all nodes, flatten the 2d array, and turn it into a set
+  const allVars: Set<string> = new Set();
+  network.value.nodes.forEach((node) => Object.keys(node).forEach((key) => allVars.add(key)));
 
-    internalFieldNames.forEach((field) => allVars.delete(field));
-    allVars.delete('vx');
-    allVars.delete('vy');
-    allVars.delete('x');
-    allVars.delete('y');
-    allVars.delete('index');
-    return allVars;
-  }
-  return new Set();
+  internalFieldNames.forEach((field) => allVars.delete(field));
+  allVars.delete('vx');
+  allVars.delete('vy');
+  allVars.delete('x');
+  allVars.delete('y');
+  allVars.delete('index');
+  return allVars;
 });
 
 const markerSize = computed({
@@ -52,21 +49,17 @@ const markerSize = computed({
     return store.markerSize || 0;
   },
   set(value: number) {
-    store.setMarkerSize({ markerSize: value, updateProv: false });
+    store.setMarkerSize(value, false);
   },
 });
 const autocompleteItems = computed(() => {
-  if (network.value !== null && labelVariable.value !== undefined) {
+  if (labelVariable.value !== undefined) {
     return network.value.nodes.map((node) => (node[labelVariable.value || '']));
   }
   return [];
 });
 
 function exportNetwork() {
-  if (network.value === null) {
-    return;
-  }
-
   const networkToExport = {
     nodes: network.value.nodes.map((node) => {
       const newNode = { ...node };
@@ -94,26 +87,24 @@ function exportNetwork() {
 
 function search() {
   searchErrors.value = [];
-  if (network.value !== null) {
-    const nodeIDsToSelect = network.value.nodes
-      .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
-      .map((node) => node._id);
+  const nodeIDsToSelect = network.value.nodes
+    .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
+    .map((node) => node._id);
 
-    if (nodeIDsToSelect.length > 0) {
-      selectedNodes.value.push(...nodeIDsToSelect);
-    } else {
-      searchErrors.value.push('Enter a valid node to search');
-    }
+  if (nodeIDsToSelect.length > 0) {
+    selectedNodes.value.push(...nodeIDsToSelect);
+  } else {
+    searchErrors.value.push('Enter a valid node to search');
   }
 }
 
 function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
   if (type === 'markerSize') {
-    store.setMarkerSize({ markerSize: value, updateProv: true });
+    store.setMarkerSize(value, true);
   } else if (type === 'fontSize') {
     fontSize.value = value;
   } else if (type === 'edgeLength') {
-    store.setEdgeLength({ edgeLength: value, updateProv: true });
+    store.setEdgeLength(value, true);
   }
 }
 </script>
