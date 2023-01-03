@@ -41,7 +41,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
 
       // Update the provenance state if the vue state has diverged
       const piniaSnapshot = getPiniaStateSnapshot();
-      if (Object.entries(findDifferencesInPrimitiveStates(provenance.current.state.val as ProvState, piniaSnapshot)).length !== 0) {
+      if (Object.entries(findDifferencesInPrimitiveStates(provenance.getState(), piniaSnapshot)).length !== 0) {
         provenance.apply('State Changed', updateTrrack(piniaSnapshot));
       }
     },
@@ -50,10 +50,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
 
   // When the trrack state changes (undo/redo), update vue
   provenance.currentChange(() => {
-    const trrackState = provenance.current.state.val;
-    const piniaSnapshot = getPiniaStateSnapshot();
-
-    const updates = findDifferencesInPrimitiveStates(piniaSnapshot, trrackState as ProvState);
+    const updates = findDifferencesInPrimitiveStates(getPiniaStateSnapshot(), provenance.getState());
     Object.entries(updates).forEach(([key, val]) => { currentPiniaState.value[key as keyof ProvState].value = val; });
   });
 
