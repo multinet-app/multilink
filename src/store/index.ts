@@ -19,6 +19,8 @@ export const useStore = defineStore('store', () => {
   const { provenance } = provStore;
   const {
     selectNeighbors,
+    displayCharts,
+    directionalEdges,
   } = storeToRefs(provStore);
 
   const workspaceName = ref('');
@@ -31,7 +33,6 @@ export const useStore = defineStore('store', () => {
     href: '',
   });
   const simulation = ref<Simulation<Node, SimulationEdge> | null>(null);
-  const displayCharts = ref(false);
   const markerSize = ref(50);
   const fontSize = ref(12);
   const labelVariable = ref<string | undefined>(undefined);
@@ -48,7 +49,6 @@ export const useStore = defineStore('store', () => {
   const attributeRanges = ref<AttributeRanges>({});
   const nodeBarColorScale = ref(scaleOrdinal(schemeCategory10));
   const nodeGlyphColorScale = ref(scaleOrdinal(schemeCategory10));
-  const directionalEdges = ref(false);
   const controlsWidth = ref(256);
   const simulationRunning = ref(false);
   const showProvenanceVis = ref(false);

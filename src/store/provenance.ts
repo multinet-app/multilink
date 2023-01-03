@@ -7,10 +7,14 @@ import { computed, ref, watch } from 'vue';
 export const useProvenanceStore = defineStore('provenance', () => {
   // Initial values (only primitives, any more complicated value should be derived from primitives in the main store)
   const selectNeighbors = ref(true);
+  const displayCharts = ref(false);
+  const directionalEdges = ref(false);
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({
     selectNeighbors,
+    displayCharts,
+    directionalEdges,
   }));
 
   // Static snapshot of the initial state for trrack
@@ -57,5 +61,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
   return {
     provenance,
     selectNeighbors,
+    displayCharts,
+    directionalEdges,
   };
 });

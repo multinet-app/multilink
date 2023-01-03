@@ -84,6 +84,8 @@ export type ProvenanceEventTypes =
 
 export interface ProvState {
   selectNeighbors: boolean;
+  displayCharts: boolean;
+  directionalEdges: boolean;
 }
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;
