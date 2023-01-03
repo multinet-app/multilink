@@ -21,12 +21,28 @@ export function undoRedoKeyHandler(event: KeyboardEvent, provenance: any) {
   }
 }
 
+export function isArray(input: unknown): input is Array<string> {
+  return typeof input === 'object' && input !== null && input.constructor === Array;
+}
+
+function arraysAreEqual<T>(a: T[], b: T[]) {
+  return a.length === b.length && a.every((element, index) => element === b[index]);
+}
+
 // Order of the objects matter! The second object is treated as the updated version of the first object
 export function findDifferencesInPrimitiveStates(firstObj: ProvState, secondObj: ProvState) {
   const updates: Partial<ProvState> = {};
 
   Object.entries(secondObj).forEach(([key, value]) => {
-    if (firstObj[key as keyof ProvState] !== secondObj[key as keyof ProvState]) {
+    const firstVal = firstObj[key as keyof ProvState];
+    const secondVal = secondObj[key as keyof ProvState];
+
+    if (isArray(firstVal) && isArray(secondVal)) {
+      if (!arraysAreEqual([...firstVal], [...secondVal])) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updates[key as keyof ProvState] = [...value] as any;
+      }
+    } else if (firstVal !== secondVal) {
       updates[key as keyof ProvState] = value;
     }
   });

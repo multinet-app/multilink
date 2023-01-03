@@ -21,13 +21,13 @@ export const useStore = defineStore('store', () => {
     selectNeighbors,
     displayCharts,
     directionalEdges,
+    selectedNodes,
   } = storeToRefs(provStore);
 
   const workspaceName = ref('');
   const networkName = ref('');
   const network = ref<Network>({ nodes: [], edges: [] });
   const columnTypes = ref<ColumnTypes | null>(null);
-  const selectedNodes = ref<string[]>([]);
   const loadError = ref<LoadError>({
     message: '',
     href: '',

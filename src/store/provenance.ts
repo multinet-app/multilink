@@ -1,4 +1,4 @@
-import { findDifferencesInPrimitiveStates } from '@/lib/provenanceUtils';
+import { findDifferencesInPrimitiveStates, isArray } from '@/lib/provenanceUtils';
 import { ProvState } from '@/types';
 import { initializeTrrack, Registry } from '@trrack/core';
 import { defineStore } from 'pinia';
@@ -9,19 +9,26 @@ export const useProvenanceStore = defineStore('provenance', () => {
   const selectNeighbors = ref(true);
   const displayCharts = ref(false);
   const directionalEdges = ref(false);
+  const selectedNodes = ref<string[]>([]);
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({
     selectNeighbors,
     displayCharts,
     directionalEdges,
+    selectedNodes,
   }));
 
   // Static snapshot of the initial state for trrack
   function getPiniaStateSnapshot() {
     const piniaSnapshot: { [key: string]: unknown } = {};
     Object.entries(currentPiniaState.value).forEach(([key, value]) => {
-      piniaSnapshot[key] = value.value;
+      // Need to unpack array refs, because there is some interaction between vue and trrack proxies
+      if (isArray(value.value)) {
+        piniaSnapshot[key] = [...value.value];
+      } else {
+        piniaSnapshot[key] = value.value;
+      }
     });
     return piniaSnapshot as unknown as ProvState;
   }
@@ -63,5 +70,6 @@ export const useProvenanceStore = defineStore('provenance', () => {
     selectNeighbors,
     displayCharts,
     directionalEdges,
+    selectedNodes,
   };
 });

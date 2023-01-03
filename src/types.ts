@@ -86,6 +86,7 @@ export interface ProvState {
   selectNeighbors: boolean;
   displayCharts: boolean;
   directionalEdges: boolean;
+  selectedNodes: string[];
 }
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;
