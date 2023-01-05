@@ -47,6 +47,10 @@ export function findDifferencesInPrimitiveStates<T extends GenericObject>(firstO
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         updates[key as keyof T] = [...value] as any;
       }
+    } else if (typeof firstVal === 'object' && !isArray(firstVal) && typeof secondVal === 'object') {
+      if (Object.keys(findDifferencesInPrimitiveStates(firstVal, secondVal)).length > 0) {
+        updates[key as keyof T] = { ...firstVal, ...value };
+      }
     } else if (firstVal !== secondVal) {
       updates[key as keyof T] = value;
     }
