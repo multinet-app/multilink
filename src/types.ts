@@ -87,6 +87,7 @@ export interface ProvState {
   displayCharts: boolean;
   directionalEdges: boolean;
   selectedNodes: string[];
+  nestedVariables: NestedVariables;
 }
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;

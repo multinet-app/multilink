@@ -22,6 +22,7 @@ export const useStore = defineStore('store', () => {
     displayCharts,
     directionalEdges,
     selectedNodes,
+    nestedVariables,
   } = storeToRefs(provStore);
 
   const workspaceName = ref('');
@@ -36,10 +37,6 @@ export const useStore = defineStore('store', () => {
   const markerSize = ref(50);
   const fontSize = ref(12);
   const labelVariable = ref<string | undefined>(undefined);
-  const nestedVariables = ref<NestedVariables>({
-    bar: [],
-    glyph: [],
-  });
   const edgeVariables = ref({
     width: '',
     color: '',
