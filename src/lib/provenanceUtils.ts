@@ -29,21 +29,26 @@ function arraysAreEqual<T>(a: T[], b: T[]) {
   return a.length === b.length && a.every((element, index) => element === b[index]);
 }
 
+interface GenericObject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
 // Order of the objects matter! The second object is treated as the updated version of the first object
-export function findDifferencesInPrimitiveStates(firstObj: ProvState, secondObj: ProvState) {
-  const updates: Partial<ProvState> = {};
+export function findDifferencesInPrimitiveStates<T extends GenericObject>(firstObj: T, secondObj: T) {
+  const updates: Partial<T> = {};
 
   Object.entries(secondObj).forEach(([key, value]) => {
-    const firstVal = firstObj[key as keyof ProvState];
-    const secondVal = secondObj[key as keyof ProvState];
+    const firstVal = firstObj[key];
+    const secondVal = secondObj[key];
 
     if (isArray(firstVal) && isArray(secondVal)) {
       if (!arraysAreEqual([...firstVal], [...secondVal])) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        updates[key as keyof ProvState] = [...value] as any;
+        updates[key as keyof T] = [...value] as any;
       }
     } else if (firstVal !== secondVal) {
-      updates[key as keyof ProvState] = value;
+      updates[key as keyof T] = value;
     }
   });
 
