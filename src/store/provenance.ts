@@ -19,6 +19,12 @@ export const useProvenanceStore = defineStore('provenance', () => {
     width: '',
     color: '',
   });
+  const nodeSizeVariable = ref('');
+  const nodeColorVariable = ref('');
+  const layoutVars = ref<{ x: string | null; y: string | null }>({
+    x: null,
+    y: null,
+  });
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({
@@ -29,6 +35,9 @@ export const useProvenanceStore = defineStore('provenance', () => {
     nestedVariables,
     labelVariable,
     edgeVariables,
+    nodeSizeVariable,
+    nodeColorVariable,
+    layoutVars,
   }));
 
   // Static snapshot of the initial state for trrack
@@ -92,5 +101,8 @@ export const useProvenanceStore = defineStore('provenance', () => {
     nestedVariables,
     labelVariable,
     edgeVariables,
+    nodeSizeVariable,
+    nodeColorVariable,
+    layoutVars,
   };
 });
