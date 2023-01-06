@@ -23,12 +23,14 @@ export const useStore = defineStore('store', () => {
     directionalEdges,
     selectedNodes,
     nestedVariables,
+    labelVariable,
+    edgeVariables,
   } = storeToRefs(provStore);
 
   const workspaceName = ref('');
   const networkName = ref('');
   const network = ref<Network>({ nodes: [], edges: [] });
-  const columnTypes = ref<ColumnTypes | null>(null);
+  const columnTypes = ref<ColumnTypes>({});
   const loadError = ref<LoadError>({
     message: '',
     href: '',
@@ -36,11 +38,6 @@ export const useStore = defineStore('store', () => {
   const simulation = ref<Simulation<Node, SimulationEdge> | null>(null);
   const markerSize = ref(50);
   const fontSize = ref(12);
-  const labelVariable = ref<string | undefined>(undefined);
-  const edgeVariables = ref({
-    width: '',
-    color: '',
-  });
   const nodeSizeVariable = ref('');
   const nodeColorVariable = ref('');
   const attributeRanges = ref<AttributeRanges>({});
