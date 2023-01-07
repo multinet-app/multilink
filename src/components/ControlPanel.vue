@@ -97,16 +97,6 @@ function search() {
     searchErrors.value.push('Enter a valid node to search');
   }
 }
-
-function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
-  if (type === 'markerSize') {
-    store.setMarkerSize(value, true);
-  } else if (type === 'fontSize') {
-    fontSize.value = value;
-  } else if (type === 'edgeLength') {
-    store.setEdgeLength(value, true);
-  }
-}
 </script>
 
 <template>
@@ -236,7 +226,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="100"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(value, 'markerSize')"
             />
           </v-list-item>
 
@@ -249,7 +238,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="20"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(value, 'fontSize')"
             />
           </v-list-item>
 
@@ -262,7 +250,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="100"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
             />
           </v-list-item>
 

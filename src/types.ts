@@ -88,6 +88,14 @@ export interface ProvState {
   directionalEdges: boolean;
   selectedNodes: string[];
   nestedVariables: NestedVariables;
+  labelVariable: string | null;
+  edgeVariables: EdgeStyleVariables;
+  nodeSizeVariable: string;
+  nodeColorVariable: string;
+  layoutVars: { x: string | null; y: string | null };
+  markerSize: number;
+  fontSize: number;
+  edgeLength: number;
 }
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;

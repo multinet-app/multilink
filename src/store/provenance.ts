@@ -25,6 +25,9 @@ export const useProvenanceStore = defineStore('provenance', () => {
     x: null,
     y: null,
   });
+  const markerSize = ref(50);
+  const fontSize = ref(12);
+  const edgeLength = ref(10);
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({
@@ -38,6 +41,9 @@ export const useProvenanceStore = defineStore('provenance', () => {
     nodeSizeVariable,
     nodeColorVariable,
     layoutVars,
+    markerSize,
+    fontSize,
+    edgeLength,
   }));
 
   // Static snapshot of the initial state for trrack
@@ -71,20 +77,34 @@ export const useProvenanceStore = defineStore('provenance', () => {
     registry,
   });
 
-  // When the vue state changes, update trrack
-  watch(
-    currentPiniaState,
-    () => {
-      // TODO: Find which element changed to set a user friendly label, current label is 'State Changed'
+  // Debounce function for vue updates, array of keys to debounce (sliders)
+  let timer: NodeJS.Timeout | undefined;
+  function debounce(fun: () => void, delay: number) {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(fun, delay);
+  }
+  const keysToDebounce: Array<keyof ProvState> = ['markerSize', 'fontSize', 'edgeLength'];
 
-      // Update the provenance state if the vue state has diverged
-      const piniaSnapshot = getPiniaStateSnapshot();
-      if (Object.entries(findDifferencesInPrimitiveStates(provenance.getState(), piniaSnapshot)).length !== 0) {
+  // When the vue state changes, update trrack
+  function updateTrrackState() {
+    // TODO: Find which element changed to set a user friendly label, current label is 'State Changed'
+
+    // Update the provenance state if the vue state has diverged
+    const piniaSnapshot = getPiniaStateSnapshot();
+    const updates = findDifferencesInPrimitiveStates(provenance.getState(), piniaSnapshot);
+
+    if (Object.keys(updates).length !== 0) {
+      // Check to see if we need to debounce the update
+      if (keysToDebounce.some((debounceKey) => Object.keys(updates).includes(debounceKey))) {
+        debounce(() => { provenance.apply('State Changed', updateTrrack(piniaSnapshot)); }, 750); // 0.75 second
+      } else {
         provenance.apply('State Changed', updateTrrack(piniaSnapshot));
       }
-    },
-    { deep: true }, // deep: true is required because the computed is an object
-  );
+    }
+  }
+  watch(currentPiniaState, updateTrrackState, { deep: true }); // deep: true is required because the computed is an object
 
   // When the trrack state changes (undo/redo), update vue
   provenance.currentChange(() => {
@@ -104,5 +124,8 @@ export const useProvenanceStore = defineStore('provenance', () => {
     nodeSizeVariable,
     nodeColorVariable,
     layoutVars,
+    markerSize,
+    fontSize,
+    edgeLength,
   };
 });

@@ -28,6 +28,9 @@ export const useStore = defineStore('store', () => {
     nodeSizeVariable,
     nodeColorVariable,
     layoutVars,
+    markerSize,
+    fontSize,
+    edgeLength,
   } = storeToRefs(provStore);
 
   const workspaceName = ref('');
@@ -39,8 +42,6 @@ export const useStore = defineStore('store', () => {
     href: '',
   });
   const simulation = ref<Simulation<Node, SimulationEdge> | null>(null);
-  const markerSize = ref(50);
-  const fontSize = ref(12);
   const attributeRanges = ref<AttributeRanges>({});
   const nodeBarColorScale = ref(scaleOrdinal(schemeCategory10));
   const nodeGlyphColorScale = ref(scaleOrdinal(schemeCategory10));
@@ -53,7 +54,6 @@ export const useStore = defineStore('store', () => {
     left: 0,
   });
   const userInfo = ref<UserSpec | null>(null);
-  const edgeLength = ref(10);
   const svgDimensions = ref({
     height: 0,
     width: 0,
