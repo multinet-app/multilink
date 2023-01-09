@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
+import { ref, watch } from 'vue';
 import { useStore } from '@/store';
 import { getUrlVars } from '@/lib/utils';
 import { undoRedoKeyHandler } from '@/lib/provenanceUtils';
@@ -15,7 +16,12 @@ const {
   network,
   loadError,
   showProvenanceVis,
+  snackBarMessage,
 } = storeToRefs(store);
+
+const showSnackBar = ref(false);
+watch(snackBarMessage, () => { if (snackBarMessage.value !== '') showSnackBar.value = true; });
+watch(showSnackBar, () => { if (showSnackBar.value === false) snackBarMessage.value = ''; });
 
 const urlVars = getUrlVars();
 store.fetchNetwork(
@@ -36,6 +42,13 @@ document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, proven
       <multi-link v-if="network.nodes.length > 0" />
 
       <alert-banner v-if="loadError.message !== ''" />
+
+      <v-snackbar
+        v-model="showSnackBar"
+        :timeout="4000"
+      >
+        {{ snackBarMessage }}
+      </v-snackbar>
     </v-main>
 
     <prov-vis v-if="showProvenanceVis" />
