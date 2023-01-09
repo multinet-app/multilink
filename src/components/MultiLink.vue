@@ -615,10 +615,10 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
 
   if (varName !== null) {
     // Set node size smaller
-    store.setMarkerSize(10, true);
+    store.setMarkerSize(10);
 
     // Clear the label variable
-    labelVariable.value = undefined;
+    labelVariable.value = null;
 
     if (columnTypes.value !== null) {
       const otherAxisPadding = axis === 'x' ? 80 : 60;
@@ -982,7 +982,7 @@ onMounted(() => {
             :dy="!displayCharts ? calculateNodeSize(node) / 2 : 10"
             :dx="calculateNodeSize(node) / 2"
             :style="nodeTextStyle"
-          >{{ node[labelVariable] }}</text>
+          >{{ labelVariable === null ? '' : node[labelVariable] }}</text>
 
           <g
             v-if="displayCharts"

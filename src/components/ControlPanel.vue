@@ -49,7 +49,7 @@ const markerSize = computed({
     return store.markerSize || 0;
   },
   set(value: number) {
-    store.setMarkerSize(value, false);
+    store.setMarkerSize(value);
   },
 });
 const autocompleteItems = computed(() => {
@@ -86,9 +86,14 @@ function exportNetwork() {
 }
 
 function search() {
+  if (labelVariable.value === null) {
+    searchErrors.value.push('Select a label variable to search');
+    return;
+  }
+
   searchErrors.value = [];
   const nodeIDsToSelect = network.value.nodes
-    .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
+    .filter((node) => (labelVariable.value !== null ? node[labelVariable.value] === searchTerm.value : false))
     .map((node) => node._id);
 
   if (nodeIDsToSelect.length > 0) {

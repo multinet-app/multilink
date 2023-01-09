@@ -255,7 +255,7 @@ export const useStore = defineStore('store', () => {
     startSimulation();
   }
 
-  function setMarkerSize(markerSizeInput: number, updateProv: boolean) {
+  function setMarkerSize(markerSizeInput: number) {
     markerSize.value = markerSizeInput;
 
     // Apply force to simulation and restart it
@@ -283,7 +283,7 @@ export const useStore = defineStore('store', () => {
     attributeRanges.value = { ...attributeRanges.value, [attributeRange.attr]: attributeRange };
   }
 
-  function setEdgeLength(edgeLengthInput: number, updateProv: boolean) {
+  function setEdgeLength(edgeLengthInput: number) {
     edgeLength.value = edgeLengthInput;
 
     // Apply force to simulation and restart it
