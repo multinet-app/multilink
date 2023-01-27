@@ -14,9 +14,9 @@ const pinia = createPinia();
 const key = `oauth-token-${oauthClientId}`;
 const sharedLoginCookie = document.cookie.split('; ').find((c) => c.startsWith('sharedLogin='));
 if (prodBuild) {
-  if (localStorage.getItem(key) === null && sharedLoginCookie) {
+  if (sharedLoginCookie) {
     localStorage.setItem(key, sharedLoginCookie.split('=')[1]);
-  } else if (!sharedLoginCookie) {
+  } else {
     localStorage.removeItem(key);
   }
 }
