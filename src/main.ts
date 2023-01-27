@@ -3,7 +3,7 @@ import App from '@/App.vue';
 import vuetify from '@/plugins/vuetify';
 import api from '@/api';
 import oauthClient from '@/oauth';
-import { oauthClientId } from '@/environment';
+import { oauthClientId, prodBuild } from '@/environment';
 import { createPinia, PiniaVuePlugin } from 'pinia';
 
 Vue.config.productionTip = false;
@@ -13,12 +13,10 @@ const pinia = createPinia();
 
 const key = `oauth-token-${oauthClientId}`;
 const sharedLoginCookie = document.cookie.split('; ').find((c) => c.startsWith('sharedLogin='));
-if (localStorage.getItem(key) === null) {
-  if (sharedLoginCookie) {
+if (prodBuild) {
+  if (localStorage.getItem(key) === null && sharedLoginCookie) {
     localStorage.setItem(key, sharedLoginCookie.split('=')[1]);
-  }
-} else {
-  if (!sharedLoginCookie) {
+  } else if (!sharedLoginCookie) {
     localStorage.removeItem(key);
   }
 }
