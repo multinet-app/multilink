@@ -5,6 +5,7 @@ import api from '@/api';
 import oauthClient from '@/oauth';
 import { oauthClientId, prodBuild } from '@/environment';
 import { createPinia, PiniaVuePlugin } from 'pinia';
+import { readSharedLoginCookie } from 'multinet';
 
 Vue.config.productionTip = false;
 
@@ -12,10 +13,10 @@ Vue.use(PiniaVuePlugin);
 const pinia = createPinia();
 
 const key = `oauth-token-${oauthClientId}`;
-const sharedLoginCookie = document.cookie.split('; ').find((c) => c.startsWith('sharedLogin='));
+const sharedLoginCookie = readSharedLoginCookie();
 if (prodBuild) {
   if (sharedLoginCookie) {
-    localStorage.setItem(key, sharedLoginCookie.split('=')[1]);
+    localStorage.setItem(key, sharedLoginCookie);
   } else {
     localStorage.removeItem(key);
   }
