@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ProvVisCreator } from '@visdesignlab/trrack-vis';
+import { ProvVisCreator } from '@trrack/vis-react';
 import { onMounted, ref } from 'vue';
 import { useStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -14,10 +14,6 @@ onMounted(() => {
     ProvVisCreator(
       provDiv.value,
       provenance.value,
-      (newNode: string) => store.goToProvenanceNode(newNode),
-      true,
-      true,
-      provenance.value.root.id,
     );
   }
 });
