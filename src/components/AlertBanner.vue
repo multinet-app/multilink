@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-alert
+      v-if="loadError.message !== 'The network you are loading is too large'"
       type="warning"
       border="left"
       prominent
@@ -56,6 +57,20 @@
         </v-col>
       </v-row>
     </v-alert>
+
+    <network-subsetter
+      v-if="loadError.message === 'The network you are loading is too large' && edgeTableName !== null"
+      :workspace-name="workspaceName"
+      :min-subset-size="10"
+      :max-subset-size="100"
+      :node-table-names="nodeTableNames"
+      :edge-table-name="edgeTableName"
+      :load-error="loadError"
+      :set-load-error="setLoadError"
+      :network-name="networkName"
+      :api="api"
+      @networkUpdated="replaceNetworkWithSubset"
+    />
   </div>
 </template>
 
@@ -64,9 +79,17 @@ import { ref, watchEffect } from 'vue';
 import { useStore } from '@/store';
 import api from '@/api';
 import { storeToRefs } from 'pinia';
+import { LoadError, Network } from '@/types';
+import { NetworkSubsetter } from 'multinet-components';
 
 const store = useStore();
-const { loadError } = storeToRefs(store);
+const {
+  loadError,
+  networkName,
+  nodeTableNames,
+  edgeTableName,
+  workspaceName,
+} = storeToRefs(store);
 
 // Vars to store the selected choices in
 const workspace = ref<string | null>(null);
@@ -99,6 +122,21 @@ watchEffect(async () => {
     buttonText.value = 'Back to MultiNet';
   }
 });
+
+function replaceNetworkWithSubset(newNetwork: Network) {
+  if (newNetwork.nodes.length !== 0) {
+    // Update state with new network
+    store.network = newNetwork;
+    store.loadError = {
+      message: '',
+      href: '',
+    };
+  }
+}
+
+function setLoadError(newError: LoadError) {
+  loadError.value = newError;
+}
 </script>
 
 <style>
