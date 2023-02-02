@@ -1,45 +1,3 @@
-<script setup lang="ts">
-import { ref, watchEffect } from 'vue';
-import { useStore } from '@/store';
-import api from '@/api';
-import { storeToRefs } from 'pinia';
-
-const store = useStore();
-const { loadError } = storeToRefs(store);
-
-// Vars to store the selected choices in
-const workspace = ref<string | null>(null);
-const network = ref<string | null>(null);
-
-// Compute the workspace/network options
-const workspaceOptions = ref<string[]>([]);
-watchEffect(async () => {
-  workspaceOptions.value = (await api.workspaces()).results.map((workspaceObj) => workspaceObj.name);
-});
-
-const networkOptions = ref<string[]>([]);
-watchEffect(async () => {
-  if (workspace.value !== null) {
-    networkOptions.value = (await api.networks(workspace.value)).results.map((networkObj) => networkObj.name);
-  }
-});
-
-const buttonHref = ref(loadError.value.href);
-const buttonText = ref('');
-watchEffect(async () => {
-  if (workspace.value !== null) {
-    buttonHref.value = `./?workspace=${workspace.value}&network=${network.value}`;
-    buttonText.value = 'Go To Network';
-  } else if (loadError.value.message === 'There was a network issue when getting data') {
-    buttonHref.value = loadError.value.href;
-    buttonText.value = 'Refresh the page';
-  } else {
-    buttonHref.value = loadError.value.href;
-    buttonText.value = 'Back to MultiNet';
-  }
-});
-</script>
-
 <template>
   <div>
     <v-alert
@@ -100,6 +58,48 @@ watchEffect(async () => {
     </v-alert>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, watchEffect } from 'vue';
+import { useStore } from '@/store';
+import api from '@/api';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+const { loadError } = storeToRefs(store);
+
+// Vars to store the selected choices in
+const workspace = ref<string | null>(null);
+const network = ref<string | null>(null);
+
+// Compute the workspace/network options
+const workspaceOptions = ref<string[]>([]);
+watchEffect(async () => {
+  workspaceOptions.value = (await api.workspaces()).results.map((workspaceObj) => workspaceObj.name);
+});
+
+const networkOptions = ref<string[]>([]);
+watchEffect(async () => {
+  if (workspace.value !== null) {
+    networkOptions.value = (await api.networks(workspace.value)).results.map((networkObj) => networkObj.name);
+  }
+});
+
+const buttonHref = ref(loadError.value.href);
+const buttonText = ref('');
+watchEffect(async () => {
+  if (workspace.value !== null) {
+    buttonHref.value = `./?workspace=${workspace.value}&network=${network.value}`;
+    buttonText.value = 'Go To Network';
+  } else if (loadError.value.message === 'There was a network issue when getting data') {
+    buttonHref.value = loadError.value.href;
+    buttonText.value = 'Refresh the page';
+  } else {
+    buttonHref.value = loadError.value.href;
+    buttonText.value = 'Back to MultiNet';
+  }
+});
+</script>
 
 <style>
 html {
