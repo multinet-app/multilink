@@ -1,50 +1,50 @@
-import { defineStore } from 'pinia';
-import { forceCollide, Simulation } from 'd3-force';
+import { defineStore, storeToRefs } from 'pinia';
+import {
+  forceCollide, Simulation, scaleLinear, scaleOrdinal, scaleSequential, interpolateBlues, interpolateReds, schemeCategory10,
+} from 'd3';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
-import { scaleLinear, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
-import { initProvenance, Provenance } from '@visdesignlab/trrack';
 import api from '@/api';
 import {
-  Edge, Node, State, NestedVariables, ProvenanceEventTypes, AttributeRanges, LoadError, Network, SimulationEdge, AttributeRange,
+  Edge, Node, NestedVariables, AttributeRanges, LoadError, Network, SimulationEdge, AttributeRange,
 } from '@/types';
-import { undoRedoKeyHandler, updateProvenanceState } from '@/lib/provenanceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import oauthClient from '@/oauth';
 import { computed, ref } from 'vue';
+import { useProvenanceStore } from '@/store/provenance';
 
 export const useStore = defineStore('store', () => {
+  // Provenance
+  const provStore = useProvenanceStore();
+  const { provenance } = provStore;
+  const {
+    selectNeighbors,
+    displayCharts,
+    directionalEdges,
+    selectedNodes,
+    nestedVariables,
+    labelVariable,
+    edgeVariables,
+    nodeSizeVariable,
+    nodeColorVariable,
+    layoutVars,
+    markerSize,
+    fontSize,
+    edgeLength,
+  } = storeToRefs(provStore);
+
   const workspaceName = ref('');
   const networkName = ref('');
   const network = ref<Network>({ nodes: [], edges: [] });
-  const columnTypes = ref<ColumnTypes | null>(null);
-  const selectedNodes = ref<string[]>([]);
+  const columnTypes = ref<ColumnTypes>({});
   const loadError = ref<LoadError>({
     message: '',
     href: '',
   });
   const simulation = ref<Simulation<Node, SimulationEdge> | null>(null);
-  const displayCharts = ref(false);
-  const markerSize = ref(50);
-  const fontSize = ref(12);
-  const labelVariable = ref<string | undefined>(undefined);
-  const selectNeighbors = ref(true);
-  const nestedVariables = ref<NestedVariables>({
-    bar: [],
-    glyph: [],
-  });
-  const edgeVariables = ref({
-    width: '',
-    color: '',
-  });
-  const nodeSizeVariable = ref('');
-  const nodeColorVariable = ref('');
   const attributeRanges = ref<AttributeRanges>({});
   const nodeBarColorScale = ref(scaleOrdinal(schemeCategory10));
   const nodeGlyphColorScale = ref(scaleOrdinal(schemeCategory10));
-  const provenance = ref<Provenance<State, ProvenanceEventTypes, unknown> | null>(null);
-  const directionalEdges = ref(false);
   const controlsWidth = ref(256);
   const simulationRunning = ref(false);
   const showProvenanceVis = ref(false);
@@ -54,14 +54,9 @@ export const useStore = defineStore('store', () => {
     left: 0,
   });
   const userInfo = ref<UserSpec | null>(null);
-  const edgeLength = ref(10);
   const svgDimensions = ref({
     height: 0,
     width: 0,
-  });
-  const layoutVars = ref<{ x: string | null; y: string | null }>({
-    x: null,
-    y: null,
   });
 
   const nodeColorScale = computed(() => {
@@ -260,7 +255,7 @@ export const useStore = defineStore('store', () => {
     startSimulation();
   }
 
-  function setMarkerSize(markerSizeInput: number, updateProv: boolean) {
+  function setMarkerSize(markerSizeInput: number) {
     markerSize.value = markerSizeInput;
 
     // Apply force to simulation and restart it
@@ -269,10 +264,6 @@ export const useStore = defineStore('store', () => {
       'collision',
       forceCollide((markerSize.value / 2) * 1.5),
     );
-
-    if (provenance.value !== null && updateProv) {
-      // updateProvenanceState(this.$state, 'Set Marker Size');
-    }
   }
 
   function setNestedVariables(nestedVariablesInput: NestedVariables) {
@@ -292,7 +283,7 @@ export const useStore = defineStore('store', () => {
     attributeRanges.value = { ...attributeRanges.value, [attributeRange.attr]: attributeRange };
   }
 
-  function setEdgeLength(edgeLengthInput: number, updateProv: boolean) {
+  function setEdgeLength(edgeLengthInput: number) {
     edgeLength.value = edgeLengthInput;
 
     // Apply force to simulation and restart it
@@ -303,75 +294,6 @@ export const useStore = defineStore('store', () => {
       edgeLength.value * 10,
     );
     startSimulation();
-
-    if (provenance.value !== null && updateProv) {
-      // updateProvenanceState(this.$state, 'Set Edge Length');
-    }
-  }
-
-  function goToProvenanceNode(node: string) {
-    if (provenance.value !== null) {
-      provenance.value.goToNode(node);
-    }
-  }
-
-  function createProvenance() {
-    // const storeState = this.$state;
-
-    // const stateForProv = JSON.parse(JSON.stringify(this));
-    // stateForProv.selectedNodes = [];
-
-    // provenance.value = initProvenance<State, ProvenanceEventTypes, unknown>(
-    //   stateForProv,
-    //   { loadFromUrl: false },
-    // );
-
-    // // Add a global observer to watch the state and update the tracked elements in the store
-    // // enables undo/redo + navigating around provenance graph
-    // provenance.value.addGlobalObserver(
-    //   () => {
-    //     const provenanceState = provenance.value.state;
-
-    //     const { selectedNodes } = provenanceState;
-
-    //     // If the sets are not equal (happens when provenance is updated through provenance vis),
-    //     // update the store's selectedNodes to match the provenance state
-    //     if (selectedNodes.sort().toString() !== storeState.selectedNodes.sort().toString()) {
-    //       storeState.selectedNodes = selectedNodes;
-    //     }
-
-    //     // Iterate through vars with primitive data types
-    //     [
-    //       'displayCharts',
-    //       'markerSize',
-    //       'fontSize',
-    //       'labelVariable',
-    //       'nodeSizeVariable',
-    //       'nodeColorVariable',
-    //       'selectNeighbors',
-    //       'directionalEdges',
-    //       'edgeLength',
-    //     ].forEach((primitiveVariable) => {
-    //       // If not modified, don't update
-    //       if (provenanceState[primitiveVariable] === storeState[primitiveVariable]) {
-    //         return;
-    //       }
-
-    //       if (primitiveVariable === 'markerSize') {
-    //         setMarkerSize(provenanceState[primitiveVariable], false);
-    //       } else if (primitiveVariable === 'edgeLength') {
-    //         setEdgeLength({ edgeLength: provenanceState[primitiveVariable], updateProv: false });
-    //       } else if (storeState[primitiveVariable] !== provenanceState[primitiveVariable]) {
-    //         storeState[primitiveVariable] = provenanceState[primitiveVariable];
-    //       }
-    //     });
-    //   },
-    // );
-
-    // storeState.provenance.done();
-
-    // // Add keydown listener for undo/redo
-    // document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, storeState));
   }
 
   function applyVariableLayout(payload: { varName: string | null; axis: 'x' | 'y'}) {
@@ -442,8 +364,6 @@ export const useStore = defineStore('store', () => {
     setNestedVariables,
     addAttributeRange,
     setEdgeLength,
-    goToProvenanceNode,
-    createProvenance,
     guessLabel,
     applyVariableLayout,
   };

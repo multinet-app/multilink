@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ProvVisCreator } from '@visdesignlab/trrack-vis';
+import { ProvVisCreator } from '@trrack/vis-react';
 import { onMounted, ref } from 'vue';
 import { useStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -14,10 +14,6 @@ onMounted(() => {
     ProvVisCreator(
       provDiv.value,
       provenance.value,
-      (newNode: string) => store.goToProvenanceNode(newNode),
-      true,
-      true,
-      provenance.value.root.id,
     );
   }
 });
@@ -28,7 +24,7 @@ onMounted(() => {
     absolute
     permanent
     right
-    :width="450"
+    :width="145 + 190"
   >
     <v-btn
       icon
@@ -38,6 +34,15 @@ onMounted(() => {
       <v-icon>mdi-close</v-icon>
     </v-btn>
 
+    <v-row class="ml-2 mt-1">
+      <v-btn @click="provenance.undo()">
+        undo
+      </v-btn>
+      <v-btn @click="provenance.redo()">
+        redo
+      </v-btn>
+    </v-row>
+
     <div
       id="provDiv"
       ref="provDiv"
@@ -46,9 +51,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#provDiv :deep(.secondary) {
-  /* Unset vuetify colors for secondary */
-  background-color: unset !important;
-  border-color: white !important;
-}
+
 </style>

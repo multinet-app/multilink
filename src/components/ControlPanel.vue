@@ -49,7 +49,7 @@ const markerSize = computed({
     return store.markerSize || 0;
   },
   set(value: number) {
-    store.setMarkerSize(value, false);
+    store.setMarkerSize(value);
   },
 });
 const autocompleteItems = computed(() => {
@@ -86,25 +86,20 @@ function exportNetwork() {
 }
 
 function search() {
+  if (labelVariable.value === null) {
+    searchErrors.value.push('Select a label variable to search');
+    return;
+  }
+
   searchErrors.value = [];
   const nodeIDsToSelect = network.value.nodes
-    .filter((node) => (labelVariable.value !== undefined ? node[labelVariable.value] === searchTerm.value : false))
+    .filter((node) => (labelVariable.value !== null ? node[labelVariable.value] === searchTerm.value : false))
     .map((node) => node._id);
 
   if (nodeIDsToSelect.length > 0) {
     selectedNodes.value.push(...nodeIDsToSelect);
   } else {
     searchErrors.value.push('Enter a valid node to search');
-  }
-}
-
-function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edgeLength') {
-  if (type === 'markerSize') {
-    store.setMarkerSize(value, true);
-  } else if (type === 'fontSize') {
-    fontSize.value = value;
-  } else if (type === 'edgeLength') {
-    store.setEdgeLength(value, true);
   }
 }
 </script>
@@ -236,7 +231,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="100"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(value, 'markerSize')"
             />
           </v-list-item>
 
@@ -249,7 +243,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="20"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(value, 'fontSize')"
             />
           </v-list-item>
 
@@ -262,7 +255,6 @@ function updateSliderProv(value: number, type: 'markerSize' | 'fontSize' | 'edge
               :max="100"
               hide-details
               color="blue darken-1"
-              @change="(value) => updateSliderProv(edgeLength, 'edgeLength')"
             />
           </v-list-item>
 

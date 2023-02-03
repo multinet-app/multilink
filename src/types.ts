@@ -1,7 +1,4 @@
-import { Provenance } from '@visdesignlab/trrack';
-import { Simulation } from 'd3-force';
-import { ScaleOrdinal } from 'd3-scale';
-import { TableRow, UserSpec, ColumnTypes } from 'multinet';
+import { TableRow } from 'multinet';
 
 export interface Dimensions {
   height: number;
@@ -85,40 +82,20 @@ export type ProvenanceEventTypes =
   'Set Directional Edges' |
   'Set Edge Length';
 
-export interface State {
-  workspaceName: string | null;
-  networkName: string | null;
-  network: Network | null;
-  columnTypes: ColumnTypes | null;
-  selectedNodes: string[];
-  loadError: LoadError;
-  displayCharts: boolean;
-  markerSize: number;
-  fontSize: number;
-  labelVariable: string | undefined;
+export interface ProvState {
   selectNeighbors: boolean;
+  displayCharts: boolean;
+  directionalEdges: boolean;
+  selectedNodes: string[];
   nestedVariables: NestedVariables;
+  labelVariable: string | null;
   edgeVariables: EdgeStyleVariables;
   nodeSizeVariable: string;
   nodeColorVariable: string;
-  attributeRanges: AttributeRanges;
-  simulation: Simulation<Node, SimulationEdge> | null;
-  nodeBarColorScale: ScaleOrdinal<string, string>;
-  nodeGlyphColorScale: ScaleOrdinal<string, string>;
-  provenance: Provenance<State, ProvenanceEventTypes, unknown> | null;
-  directionalEdges: boolean;
-  controlsWidth: number;
-  simulationRunning: boolean;
-  showProvenanceVis: boolean;
-  rightClickMenu: {
-    show: boolean;
-    top: number;
-    left: number;
-  };
-  userInfo: UserSpec | null;
-  edgeLength: number;
-  svgDimensions: Dimensions;
   layoutVars: { x: string | null; y: string | null };
+  markerSize: number;
+  fontSize: number;
+  edgeLength: number;
 }
 
 export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;

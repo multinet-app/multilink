@@ -3,6 +3,7 @@ import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
 import { useStore } from '@/store';
 import { getUrlVars } from '@/lib/utils';
+import { undoRedoKeyHandler } from '@/lib/provenanceUtils';
 
 import AlertBanner from '@/components/AlertBanner.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
@@ -16,14 +17,15 @@ const {
   showProvenanceVis,
 } = storeToRefs(store);
 
-const urlVars = getUrlVars(); // Takes workspace and network
+const urlVars = getUrlVars();
 store.fetchNetwork(
   urlVars.workspace,
   urlVars.network,
-).then(() => {
-  store.createProvenance();
-  store.guessLabel();
-});
+);
+
+// Set up provenance undo and redo, provenance is not a ref here
+const { provenance } = store;
+document.addEventListener('keydown', (event) => undoRedoKeyHandler(event, provenance));
 </script>
 
 <template>
