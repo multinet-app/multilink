@@ -61,6 +61,7 @@ export const useStore = defineStore('store', () => {
     width: 0,
   });
   const networkTables = ref<Table[]>([]);
+  const snackBarMessage = ref('');
 
   const nodeTableNames = computed(() => networkTables.value.filter((table) => !table.edge).map((table) => table.name));
   const edgeTableName = computed(() => {
@@ -312,6 +313,17 @@ export const useStore = defineStore('store', () => {
     } = payload;
     const otherAxis = axis === 'x' ? 'y' : 'x';
 
+    // Set node size smaller
+    setMarkerSize(10);
+
+    if (labelVariable.value !== null) {
+      // Clear the label variable
+      labelVariable.value = null;
+
+      // Notify the user that the labels were cleared
+      snackBarMessage.value = 'Labels were cleared by attribute driven layout';
+    }
+
     const updatedLayoutVars = { [axis]: varName, [otherAxis]: layoutVars.value[otherAxis] } as {
       x: string | null;
       y: string | null;
@@ -378,5 +390,6 @@ export const useStore = defineStore('store', () => {
     applyVariableLayout,
     nodeTableNames,
     edgeTableName,
+    snackBarMessage,
   };
 });

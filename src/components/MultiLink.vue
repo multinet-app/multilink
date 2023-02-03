@@ -610,12 +610,6 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
   const otherAxis = axis === 'x' ? 'y' : 'x';
 
   if (varName !== null) {
-    // Set node size smaller
-    store.setMarkerSize(10);
-
-    // Clear the label variable
-    labelVariable.value = null;
-
     if (columnTypes.value !== null) {
       const otherAxisPadding = axis === 'x' ? 80 : 60;
 
