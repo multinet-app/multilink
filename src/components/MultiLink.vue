@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import {
-  scaleBand,
-  scaleLinear, ScaleLinear,
-} from 'd3-scale';
-import {
+  scaleBand, scaleLinear, ScaleLinear,
   forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
-} from 'd3-force';
-import { select } from 'd3-selection';
+  select, axisBottom, axisLeft,
+} from 'd3';
 import {
   computed, getCurrentInstance, onMounted, ref, watch,
 } from 'vue';
-import { axisBottom, axisLeft } from 'd3-axis';
 import { ColumnType } from 'multinet';
 import { useStore } from '@/store';
 import {

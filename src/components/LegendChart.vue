@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { onMounted, watchEffect } from 'vue';
-import { histogram, max, min } from 'd3-array';
-import { axisBottom, axisLeft } from 'd3-axis';
-import { brushX, D3BrushEvent } from 'd3-brush';
 import {
-  ScaleBand, scaleBand, ScaleLinear, scaleLinear,
-} from 'd3-scale';
-import { select, selectAll } from 'd3-selection';
+  histogram, max, min, axisBottom, axisLeft, brushX, D3BrushEvent,
+  ScaleBand, scaleBand, ScaleLinear, scaleLinear, select, selectAll,
+} from 'd3';
 import { Node, Edge } from '@/types';
 import { useStore } from '@/store';
 

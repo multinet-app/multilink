@@ -1,8 +1,8 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { forceCollide, Simulation } from 'd3-force';
+import {
+  forceCollide, Simulation, scaleLinear, scaleOrdinal, scaleSequential, interpolateBlues, interpolateReds, schemeCategory10,
+} from 'd3';
 import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
-import { scaleLinear, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { interpolateBlues, interpolateReds, schemeCategory10 } from 'd3-scale-chromatic';
 import api from '@/api';
 import {
   Edge, Node, NestedVariables, AttributeRanges, LoadError, Network, SimulationEdge, AttributeRange,
