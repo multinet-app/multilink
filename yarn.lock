@@ -3037,15 +3037,15 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multinet-components@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.2.tgz#172d6e68217c3089add1e2066a9eccfd5b73cf3e"
-  integrity sha512-D7OsIxzIjQEAEEb4asN9/8GD9NX/uck3w4wAJAkJrrmc46pB58dw3LnwPP4F4OyqHfwRfHdaX5iGYWPBukicJg==
+multinet-components@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.4.tgz#26c519733ce72145f5ebf81de1333b294903ee4b"
+  integrity sha512-T3r/UsB4r4OLZXFx8uIbgYKls1CQ2q8yerySCWQHEbJ0Jga57g2sIyHEpdecXo4Rf3yH/9ZcvhAqBIrV1hnF6A==
 
-multinet@^0.21.4:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.4.tgz#9b9015fdeebd245800833db21b8f8e6d81aa351d"
-  integrity sha512-lYdj11yi5PJblDMg+T1fTih/2RMgIljYoWhpKElUNOdwPCHmc4Z1wFAd7Yo3nf1qKic2qlx0ac45XTcswnl05g==
+multinet@^0.21.7:
+  version "0.21.8"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.8.tgz#a8f6d08480c64a1c38e4874922e82f5e707f1518"
+  integrity sha512-9rXHDUa0B6XKjcwJnAijNTPyvxmm3ZaMgdRxYmSt9fMOKboVBG85JGX65sCpSNA64mJ/6ocplIJhcqOgdHRv1Q==
   dependencies:
     axios "^0.21.1"
     django-s3-file-field "^0.1.2"

@@ -2,7 +2,9 @@ import { defineStore, storeToRefs } from 'pinia';
 import {
   forceCollide, Simulation, scaleLinear, scaleOrdinal, scaleSequential, interpolateBlues, interpolateReds, schemeCategory10,
 } from 'd3';
-import { ColumnTypes, NetworkSpec, UserSpec } from 'multinet';
+import {
+  ColumnTypes, NetworkSpec, Table, UserSpec,
+} from 'multinet';
 import api from '@/api';
 import {
   Edge, Node, NestedVariables, AttributeRanges, LoadError, Network, SimulationEdge, AttributeRange,
@@ -57,6 +59,14 @@ export const useStore = defineStore('store', () => {
   const svgDimensions = ref({
     height: 0,
     width: 0,
+  });
+  const networkTables = ref<Table[]>([]);
+
+  const nodeTableNames = computed(() => networkTables.value.filter((table) => !table.edge).map((table) => table.name));
+  const edgeTableName = computed(() => {
+    const edgeTable = networkTables.value.find((table) => table.edge);
+
+    return edgeTable !== undefined ? edgeTable.name : undefined;
   });
 
   const nodeColorScale = computed(() => {
@@ -179,6 +189,24 @@ export const useStore = defineStore('store', () => {
       };
     }
 
+    networkTables.value = await api.networkTables(workspaceName.value, networkName.value);
+    // Get the network metadata promises
+    const metadataPromises: Promise<ColumnTypes>[] = [];
+    networkTables.value.forEach((table) => {
+      metadataPromises.push(api.columnTypes(workspaceName.value, table.name));
+    });
+
+    // Resolve network metadata promises
+    const resolvedMetadataPromises = await Promise.all(metadataPromises);
+
+    // Combine all network metadata
+    const columnTypesFromRequests: ColumnTypes = {};
+    resolvedMetadataPromises.forEach((types) => {
+      Object.assign(columnTypesFromRequests, types);
+    });
+
+    columnTypes.value = columnTypesFromRequests;
+
     if (loadError.value.message !== '') {
       return;
     }
@@ -195,24 +223,6 @@ export const useStore = defineStore('store', () => {
       edges: edges.results as Edge[],
     };
     network.value = networkElements;
-
-    const networkTables = await api.networkTables(workspaceName.value, networkName.value);
-    // Get the network metadata promises
-    const metadataPromises: Promise<ColumnTypes>[] = [];
-    networkTables.forEach((table) => {
-      metadataPromises.push(api.columnTypes(workspaceName.value, table.name));
-    });
-
-    // Resolve network metadata promises
-    const resolvedMetadataPromises = await Promise.all(metadataPromises);
-
-    // Combine all network metadata
-    const columnTypesFromRequests: ColumnTypes = {};
-    resolvedMetadataPromises.forEach((types) => {
-      Object.assign(columnTypesFromRequests, types);
-    });
-
-    columnTypes.value = columnTypesFromRequests;
 
     // Guess the best label variable and set it
     const allVars: Set<string> = new Set();
@@ -366,5 +376,7 @@ export const useStore = defineStore('store', () => {
     setEdgeLength,
     guessLabel,
     applyVariableLayout,
+    nodeTableNames,
+    edgeTableName,
   };
 });
