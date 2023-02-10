@@ -416,7 +416,16 @@
     fast-json-patch "^3.1.1"
     uuid "^9.0.0"
 
-"@trrack/vis-react@1.0.0":
+"@trrack/core@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.0.1.tgz#47c292a530b3022cd296389b9504d8f8f91ae2b0"
+  integrity sha512-UAXQqbFtH9P/qwdLjs5dIuf32t6XTStzciKcDULC2Hu7Lctg+sSQNccC3O1IjJ0lQKQeFO7MwmXQci/OdA1RHg==
+  dependencies:
+    "@reduxjs/toolkit" "^1.9.1"
+    fast-json-patch "^3.1.1"
+    uuid "^9.0.0"
+
+"@trrack/vis-react@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.0.0.tgz#d3c27ca537d2ac37a304e4268aff09c3e9ffe582"
   integrity sha512-1shSHgozsrR0BNMrWGfVlXHXkYUkLPj1m3kbTPQWeCcPvo8ct6ypMRLFdsCjsg5XDusxfDwcHfM6cnkgM4CQkQ==
