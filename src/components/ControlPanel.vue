@@ -197,17 +197,6 @@ const markerSize = computed({
             </v-btn>
           </v-col>
         </v-row>
-
-        <v-list-item>
-          <v-btn
-            color="primary"
-            block
-            depressed
-            @click="store.showProvenanceVis = true"
-          >
-            Provenance Vis
-          </v-btn>
-        </v-list-item>
       </v-card>
 
       <legend-panel v-if="columnTypes !== null" />
