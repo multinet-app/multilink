@@ -15,7 +15,6 @@ const {
   selectNeighbors,
   directionalEdges,
   edgeLength,
-  controlsWidth,
   simulationRunning,
   columnTypes,
   network,
@@ -52,8 +51,6 @@ const markerSize = computed({
     <v-navigation-drawer
       id="app-sidebar"
       permanent
-      value="true"
-      :width="controlsWidth"
     >
       <!-- control panel content -->
       <v-list class="pa-0">
