@@ -47,182 +47,182 @@ const markerSize = computed({
 </script>
 
 <template>
-  <div>
-    <v-navigation-drawer
-      id="app-sidebar"
-      permanent
-    >
-      <!-- control panel content -->
-      <v-list class="pa-0">
-        <v-subheader class="grey darken-3 py-0 pr-0 white--text">
-          Visualization Options
+  <v-navigation-drawer
+    id="app-sidebar"
+    permanent
+  >
+    <!-- control panel content -->
+    <v-list class="pa-0">
+      <v-subheader class="grey darken-3 py-0 pr-0 white--text">
+        Visualization Options
 
-          <v-spacer />
+        <v-spacer />
 
-          <v-btn
-            :min-width="40"
-            :height="48"
-            depressed
-            tile
-            class="grey darken-3 pa-0"
-            @click="showMenu = !showMenu"
-          >
-            <v-icon color="white">
-              {{ showMenu ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-            </v-icon>
-          </v-btn>
-        </v-subheader>
-
-        <v-card
-          v-if="showMenu"
-          dark
-          flat
+        <v-btn
+          :min-width="40"
+          :height="48"
+          depressed
           tile
-          color="grey darken-3"
-          class="pb-4 pt-0"
+          class="grey darken-3 pa-0"
+          @click="showMenu = !showMenu"
         >
-          <v-list-item>
-            <v-autocomplete
-              v-model="labelVariable"
-              label="Label Variable"
-              :items="Array.from(multiVariableList)"
-              :hide-details="true"
-              class="mt-3"
-              clearable
-              outlined
-              dense
-            />
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content> Display Charts </v-list-item-content>
-            <v-list-item-action>
-              <v-switch
-                v-model="displayCharts"
-                hide-details
-                color="blue darken-1"
-              />
-            </v-list-item-action>
-          </v-list-item>
+          <v-icon color="white">
+            {{ showMenu ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+          </v-icon>
+        </v-btn>
+      </v-subheader>
 
-          <v-list-item>
-            <v-list-item-content> Directional Edges </v-list-item-content>
-            <v-list-item-action>
-              <v-switch
-                v-model="directionalEdges"
-                hide-details
-                color="blue darken-1"
-              />
-            </v-list-item-action>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-content> Autoselect Neighbors </v-list-item-content>
-            <v-list-item-action>
-              <v-switch
-                v-model="selectNeighbors"
-                hide-details
-                color="blue darken-1"
-              />
-            </v-list-item-action>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-content> Marker Size </v-list-item-content>
-            <v-slider
-              v-model="markerSize"
-              :disabled="layoutVars.x !== null || layoutVars.y !== null"
-              :min="10"
-              :max="100"
+      <v-card
+        v-if="showMenu"
+        dark
+        flat
+        tile
+        color="grey darken-3"
+        class="pb-4 pt-0"
+      >
+        <v-list-item>
+          <v-autocomplete
+            v-model="labelVariable"
+            label="Label Variable"
+            :items="Array.from(multiVariableList)"
+            :hide-details="true"
+            class="mt-3"
+            clearable
+            outlined
+            dense
+          />
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content> Display Charts </v-list-item-content>
+          <v-list-item-action>
+            <v-switch
+              v-model="displayCharts"
               hide-details
               color="blue darken-1"
             />
-          </v-list-item>
+          </v-list-item-action>
+        </v-list-item>
 
-          <v-list-item>
-            <v-list-item-content> Font Size </v-list-item-content>
-            <v-slider
-              v-model="fontSize"
-              :disabled="!labelVariable"
-              :min="6"
-              :max="20"
+        <v-list-item>
+          <v-list-item-content> Directional Edges </v-list-item-content>
+          <v-list-item-action>
+            <v-switch
+              v-model="directionalEdges"
               hide-details
               color="blue darken-1"
             />
-          </v-list-item>
+          </v-list-item-action>
+        </v-list-item>
 
-          <v-list-item>
-            <v-list-item-content> Edge Length </v-list-item-content>
-            <v-slider
-              v-model="edgeLength"
-              :disabled="layoutVars.x !== null || layoutVars.y !== null"
-              :min="0"
-              :max="100"
+        <v-list-item>
+          <v-list-item-content> Autoselect Neighbors </v-list-item-content>
+          <v-list-item-action>
+            <v-switch
+              v-model="selectNeighbors"
               hide-details
               color="blue darken-1"
             />
-          </v-list-item>
+          </v-list-item-action>
+        </v-list-item>
 
-          <v-row class="px-4 pt-4 pb-1">
-            <v-col>
-              <v-btn
-                color="grey darken-2"
-                depressed
+        <v-list-item>
+          <v-list-item-content> Marker Size </v-list-item-content>
+          <v-slider
+            v-model="markerSize"
+            :disabled="layoutVars.x !== null || layoutVars.y !== null"
+            :min="10"
+            :max="100"
+            hide-details
+            color="blue darken-1"
+          />
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-content> Font Size </v-list-item-content>
+          <v-slider
+            v-model="fontSize"
+            :disabled="!labelVariable"
+            :min="6"
+            :max="20"
+            hide-details
+            color="blue darken-1"
+          />
+        </v-list-item>
+
+        <v-list-item>
+          <v-list-item-content> Edge Length </v-list-item-content>
+          <v-slider
+            v-model="edgeLength"
+            :disabled="layoutVars.x !== null || layoutVars.y !== null"
+            :min="0"
+            :max="100"
+            hide-details
+            color="blue darken-1"
+          />
+        </v-list-item>
+
+        <v-row class="px-4 pt-4 pb-1">
+          <v-col>
+            <v-btn
+              color="grey darken-2"
+              depressed
+              small
+              @click="store.releaseNodes()"
+            >
+              <v-icon
+                left
                 small
-                @click="store.releaseNodes()"
               >
-                <v-icon
-                  left
-                  small
-                >
-                  mdi-pin-off
-                </v-icon>
-                Release
-              </v-btn>
-            </v-col>
-            <v-spacer />
-            <v-col>
-              <v-btn
-                color="primary"
-                depressed
-                small
-                width="75"
-                @click="simulationRunning ? store.stopSimulation() : store.startSimulation()"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
-                </v-icon>
-                {{ simulationRunning ? 'Stop' : 'Start' }}
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-list-item>
+                mdi-pin-off
+              </v-icon>
+              Release
+            </v-btn>
+          </v-col>
+          <v-spacer />
+          <v-col>
             <v-btn
               color="primary"
-              block
               depressed
-              @click="store.showProvenanceVis = true"
+              small
+              width="75"
+              @click="simulationRunning ? store.stopSimulation() : store.startSimulation()"
             >
-              Provenance Vis
+              <v-icon
+                left
+                small
+              >
+                {{ simulationRunning ? 'mdi-stop' : 'mdi-play' }}
+              </v-icon>
+              {{ simulationRunning ? 'Stop' : 'Start' }}
             </v-btn>
-          </v-list-item>
-        </v-card>
+          </v-col>
+        </v-row>
 
-        <legend-panel v-if="columnTypes !== null" />
-      </v-list>
-    </v-navigation-drawer>
-  </div>
+        <v-list-item>
+          <v-btn
+            color="primary"
+            block
+            depressed
+            @click="store.showProvenanceVis = true"
+          >
+            Provenance Vis
+          </v-btn>
+        </v-list-item>
+      </v-card>
+
+      <legend-panel v-if="columnTypes !== null" />
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <style scoped>
-.app-logo {
-  width: 36px;
-}
-
 .v-icon {
   padding-top: 2px;
+}
+
+#app-sidebar {
+  position: absolute;
+  top: 48px !important;
+  height: calc(100% - 48px) !important;
 }
 </style>
