@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { LoginMenu } from 'multinet-components';
 import { computed, ref } from 'vue';
 import LegendPanel from '@/components/LegendPanel.vue';
-import AboutDialog from '@/components/AboutDialog.vue';
 
 import { useStore } from '@/store';
 import { internalFieldNames } from '@/types';
-import oauthClient from '@/oauth';
 import { storeToRefs } from 'pinia';
 
 const store = useStore();
@@ -22,12 +19,8 @@ const {
   simulationRunning,
   columnTypes,
   network,
-  selectedNodes,
-  userInfo,
 } = storeToRefs(store);
 
-const searchTerm = ref('');
-const searchErrors = ref<string[]>([]);
 const showMenu = ref(false);
 
 const multiVariableList = computed(() => {
@@ -52,102 +45,16 @@ const markerSize = computed({
     store.setMarkerSize(value);
   },
 });
-const autocompleteItems = computed(() => {
-  if (labelVariable.value !== undefined) {
-    return network.value.nodes.map((node) => (node[labelVariable.value || '']));
-  }
-  return [];
-});
-
-function exportNetwork() {
-  const networkToExport = {
-    nodes: network.value.nodes.map((node) => {
-      const newNode = { ...node };
-      newNode.id = newNode._key;
-
-      return newNode;
-    }),
-    edges: network.value.edges.map((edge) => {
-      const newEdge = { ...edge };
-      newEdge.source = `${edge._from.split('/')[1]}`;
-      newEdge.target = `${edge._to.split('/')[1]}`;
-      return newEdge;
-    }),
-  };
-
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(
-    new Blob([JSON.stringify(networkToExport)], {
-      type: 'text/json',
-    }),
-  );
-  a.download = `${store.networkName}.json`;
-  a.click();
-}
-
-function search() {
-  if (labelVariable.value === null) {
-    searchErrors.value.push('Select a label variable to search');
-    return;
-  }
-
-  searchErrors.value = [];
-  const nodeIDsToSelect = network.value.nodes
-    .filter((node) => (labelVariable.value !== null ? node[labelVariable.value] === searchTerm.value : false))
-    .map((node) => node._id);
-
-  if (nodeIDsToSelect.length > 0) {
-    selectedNodes.value.push(...nodeIDsToSelect);
-  } else {
-    searchErrors.value.push('Enter a valid node to search');
-  }
-}
 </script>
 
 <template>
   <div>
     <v-navigation-drawer
-      app
-      class="app-sidebar"
-      fixed
+      id="app-sidebar"
       permanent
-      stateless
       value="true"
       :width="controlsWidth"
     >
-      <v-toolbar color="grey lighten-2">
-        <v-toolbar-title
-          class="d-flex align-center"
-          flat
-        >
-          <div>
-            <v-row class="mx-0 align-center">
-              <v-col class="pb-0 pt-2 px-0">
-                <img
-                  class="app-logo"
-                  src="../assets/logo/app_logo.svg"
-                  alt="Multinet"
-                  width="100%"
-                >
-              </v-col>
-              <v-col class="text-left">
-                MultiLink
-              </v-col>
-              <v-col class="pa-0">
-                <about-dialog />
-              </v-col>
-            </v-row>
-          </div>
-        </v-toolbar-title>
-        <v-spacer />
-        <login-menu
-          :user-info="userInfo"
-          :oauth-client="oauthClient"
-          :logout="store.logout"
-          :fetch-user-info="store.fetchUserInfo"
-        />
-      </v-toolbar>
-
       <!-- control panel content -->
       <v-list class="pa-0">
         <v-subheader class="grey darken-3 py-0 pr-0 white--text">
@@ -305,35 +212,7 @@ function search() {
               Provenance Vis
             </v-btn>
           </v-list-item>
-
-          <v-list-item>
-            <v-btn
-              block
-              color="grey darken-2 white--text"
-              depressed
-              @click="exportNetwork"
-            >
-              Export Network
-            </v-btn>
-          </v-list-item>
         </v-card>
-
-        <div class="px-4">
-          <v-list-item class="px-0">
-            <v-autocomplete
-              v-model="searchTerm"
-              label="Search for Node"
-              :items="autocompleteItems"
-              :error-messages="searchErrors"
-              no-data-text="Select a label variable"
-              class="pt-4"
-              auto-select-first
-              outlined
-              dense
-              @input="search"
-            />
-          </v-list-item>
-        </div>
 
         <legend-panel v-if="columnTypes !== null" />
       </v-list>
