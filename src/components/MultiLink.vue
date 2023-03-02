@@ -29,7 +29,6 @@ const {
   selectNeighbors,
   attributeRanges,
   columnTypes,
-  controlsWidth,
   directionalEdges,
   layoutVars,
   nodeSizeVariable,
@@ -75,9 +74,10 @@ const clipRegionSize = 100;
 
 // Update height and width as the window size changes
 // Also update center attraction forces as the size changes
+const toolbarHeight = 48;
 const svgDimensions = computed(() => {
-  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
-  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
+  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height - toolbarHeight : 0;
+  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width : 0;
 
   applyForceToSimulation(
     store.simulation,
@@ -148,8 +148,8 @@ function dragNode(node: Node, event: MouseEvent) {
 
   event.stopPropagation();
 
-  const initialX = event.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-  const initialY = event.y - (calculateNodeSize(node) / 2);
+  const initialX = event.x - (calculateNodeSize(node) / 2);
+  const initialY = event.y - toolbarHeight - (calculateNodeSize(node) / 2);
 
   const moveFn = (evt: Event) => {
     // Check we have a mouse event
@@ -157,8 +157,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const eventX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-    const eventY = evt.y - (calculateNodeSize(node) / 2);
+    const eventX = evt.x - (calculateNodeSize(node) / 2);
+    const eventY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
 
     if (selectedNodes.value.includes(node._id)) {
       const nodeX = Math.floor(node.x || 0);
@@ -198,8 +198,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const finalX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-    const finalY = evt.y - (calculateNodeSize(node) / 2);
+    const finalX = evt.x - (calculateNodeSize(node) / 2);
+    const finalY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
     const totalXMovement = Math.abs(initialX - finalX);
     const totalYMovement = Math.abs(initialY - finalY);
 
@@ -218,8 +218,8 @@ const tooltipPosition = ref({ x: 0, y: 0 });
 const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
 function showTooltip(element: Node | Edge, event: MouseEvent) {
   tooltipPosition.value = {
-    x: event.clientX - controlsWidth.value,
-    y: event.clientY,
+    x: event.clientX,
+    y: event.clientY - toolbarHeight,
   };
 
   tooltipMessage.value = Object.entries(element)
@@ -382,8 +382,8 @@ function rectSelectDrag(event: MouseEvent) {
 
   // Set initial location for box (pins one corner)
   rectSelect.value = {
-    x: event.x - controlsWidth.value,
-    y: event.y,
+    x: event.x,
+    y: event.y - toolbarHeight,
     width: 0,
     height: 0,
     transformX: 0,
@@ -397,8 +397,8 @@ function rectSelectDrag(event: MouseEvent) {
     }
 
     // Get event location
-    const mouseX = evt.x - controlsWidth.value;
-    const mouseY = evt.y;
+    const mouseX = evt.x;
+    const mouseY = evt.y - toolbarHeight;
 
     // Check if we need to translate (case when mouse is left/above initial click)
     const translateX = mouseX < rectSelect.value.x;

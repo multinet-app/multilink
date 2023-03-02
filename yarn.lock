@@ -3029,10 +3029,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multinet-components@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.4.tgz#26c519733ce72145f5ebf81de1333b294903ee4b"
-  integrity sha512-T3r/UsB4r4OLZXFx8uIbgYKls1CQ2q8yerySCWQHEbJ0Jga57g2sIyHEpdecXo4Rf3yH/9ZcvhAqBIrV1hnF6A==
+multinet-components@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.6.tgz#7b5b62de7a3504c0fe8b5928aea048506b209802"
+  integrity sha512-PkAEWTtk7/7lwZhYlHfMeYFo8zutvVJ/DxMsuN4wZCddyseBAP70vTnKkLcSK3WsS96XsibWjCDl1AHz2pACIg==
 
 multinet@^0.21.7:
   version "0.21.8"

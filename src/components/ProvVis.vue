@@ -14,6 +14,7 @@ onMounted(() => {
     ProvVisCreator(
       provDiv.value,
       provenance.value,
+      {},
     );
   }
 });
@@ -21,7 +22,7 @@ onMounted(() => {
 
 <template>
   <v-navigation-drawer
-    absolute
+    id="prov-vis"
     permanent
     right
     :width="145 + 190"
@@ -34,15 +35,6 @@ onMounted(() => {
       <v-icon>mdi-close</v-icon>
     </v-btn>
 
-    <v-row class="ml-2 mt-1">
-      <v-btn @click="provenance.undo()">
-        undo
-      </v-btn>
-      <v-btn @click="provenance.redo()">
-        redo
-      </v-btn>
-    </v-row>
-
     <div
       id="provDiv"
       ref="provDiv"
@@ -51,5 +43,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+#prov-vis {
+  position: absolute;
+  top: 48px !important;
+  height: calc(100% - 48px) !important;
+}
 </style>

@@ -47,7 +47,6 @@ export const useStore = defineStore('store', () => {
   const attributeRanges = ref<AttributeRanges>({});
   const nodeBarColorScale = ref(scaleOrdinal(schemeCategory10));
   const nodeGlyphColorScale = ref(scaleOrdinal(schemeCategory10));
-  const controlsWidth = ref(256);
   const simulationRunning = ref(false);
   const showProvenanceVis = ref(false);
   const rightClickMenu = ref({
@@ -364,7 +363,6 @@ export const useStore = defineStore('store', () => {
     nodeGlyphColorScale,
     provenance,
     directionalEdges,
-    controlsWidth,
     simulationRunning,
     showProvenanceVis,
     rightClickMenu,
