@@ -1,6 +1,6 @@
 import { defineStore, storeToRefs } from 'pinia';
 import {
-  forceCollide, Simulation, scaleLinear, scaleOrdinal, scaleSequential, interpolateBlues, interpolateReds, schemeCategory10,
+  Simulation, scaleLinear, scaleOrdinal, scaleSequential, interpolateBlues, interpolateReds, schemeCategory10,
 } from 'd3';
 import {
   ColumnTypes, NetworkSpec, Table, UserSpec,
@@ -12,7 +12,7 @@ import {
 import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import oauthClient from '@/oauth';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useProvenanceStore } from '@/store/provenance';
 
 export const useStore = defineStore('store', () => {
@@ -265,17 +265,6 @@ export const useStore = defineStore('store', () => {
     startSimulation();
   }
 
-  function setMarkerSize(markerSizeInput: number) {
-    markerSize.value = markerSizeInput;
-
-    // Apply force to simulation and restart it
-    applyForceToSimulation(
-      simulation.value,
-      'collision',
-      forceCollide((markerSize.value / 2) * 1.5),
-    );
-  }
-
   function setNestedVariables(nestedVariablesInput: NestedVariables) {
     const newNestedVars = {
       ...nestedVariables.value,
@@ -293,27 +282,22 @@ export const useStore = defineStore('store', () => {
     attributeRanges.value = { ...attributeRanges.value, [attributeRange.attr]: attributeRange };
   }
 
-  function setEdgeLength(edgeLengthInput: number) {
-    edgeLength.value = edgeLengthInput;
-
+  watch(edgeLength, () => {
     // Apply force to simulation and restart it
     applyForceToSimulation(
       simulation.value,
       'edge',
       undefined,
-      edgeLength.value * 10,
+      edgeLength.value,
     );
     startSimulation();
-  }
+  });
 
   function applyVariableLayout(payload: { varName: string | null; axis: 'x' | 'y'}) {
     const {
       varName, axis,
     } = payload;
     const otherAxis = axis === 'x' ? 'y' : 'x';
-
-    // Set node size smaller
-    setMarkerSize(10);
 
     if (labelVariable.value !== null) {
       // Clear the label variable
@@ -380,10 +364,8 @@ export const useStore = defineStore('store', () => {
     startSimulation,
     stopSimulation,
     releaseNodes,
-    setMarkerSize,
     setNestedVariables,
     addAttributeRange,
-    setEdgeLength,
     guessLabel,
     applyVariableLayout,
     nodeTableNames,

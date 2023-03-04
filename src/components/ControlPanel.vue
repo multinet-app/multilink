@@ -18,6 +18,7 @@ const {
   simulationRunning,
   columnTypes,
   network,
+  markerSize,
 } = storeToRefs(store);
 
 const showMenu = ref(false);
@@ -34,15 +35,6 @@ const multiVariableList = computed(() => {
   allVars.delete('y');
   allVars.delete('index');
   return allVars;
-});
-
-const markerSize = computed({
-  get() {
-    return store.markerSize || 0;
-  },
-  set(value: number) {
-    store.setMarkerSize(value);
-  },
 });
 </script>
 
