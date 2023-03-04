@@ -1,4 +1,4 @@
-import { findDifferencesInPrimitiveStates, isArray } from '@/lib/provenanceUtils';
+import { findDifferencesInPrimitiveStates, getTrrackLabel, isArray } from '@/lib/provenanceUtils';
 import { NestedVariables, ProvState } from '@/types';
 import { initializeTrrack, Registry } from '@trrack/core';
 import { defineStore } from 'pinia';
@@ -89,18 +89,19 @@ export const useProvenanceStore = defineStore('provenance', () => {
 
   // When the vue state changes, update trrack
   function updateTrrackState() {
-    // TODO: Find which element changed to set a user friendly label, current label is 'State Changed'
-
     // Update the provenance state if the vue state has diverged
     const piniaSnapshot = getPiniaStateSnapshot();
     const updates = findDifferencesInPrimitiveStates(provenance.getState(), piniaSnapshot);
 
+    // Find which element changed to set a user friendly label
+    const label = getTrrackLabel(updates, provenance.getState());
+
     if (Object.keys(updates).length !== 0) {
       // Check to see if we need to debounce the update
       if (keysToDebounce.some((debounceKey) => Object.keys(updates).includes(debounceKey))) {
-        debounce(() => { provenance.apply('State Changed', updateTrrack(piniaSnapshot)); }, 750); // 0.75 second
+        debounce(() => { provenance.apply(label, updateTrrack(piniaSnapshot)); }, 750); // 0.75 second
       } else {
-        provenance.apply('State Changed', updateTrrack(piniaSnapshot));
+        provenance.apply(label, updateTrrack(piniaSnapshot));
       }
     }
   }
