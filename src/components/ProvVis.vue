@@ -27,13 +27,25 @@ onMounted(() => {
     right
     :width="145 + 190"
   >
-    <v-btn
-      icon
-      class="ma-2"
-      @click="store.showProvenanceVis = !store.showProvenanceVis"
-    >
-      <v-icon>mdi-close</v-icon>
-    </v-btn>
+    <v-subheader id="header" class="grey darken-3 py-0 pr-0 white--text">
+      History
+
+      <v-spacer />
+
+      <v-btn
+        :min-width="40"
+        :height="48"
+        depressed
+        tile
+        class="grey darken-3 pa-0"
+        dark
+        @click="store.showProvenanceVis = false"
+      >
+        <v-icon>
+          mdi-close
+        </v-icon>
+      </v-btn>
+    </v-subheader>
 
     <div
       id="provDiv"
@@ -47,5 +59,12 @@ onMounted(() => {
   position: absolute;
   top: 48px !important;
   height: calc(100% - 48px) !important;
+}
+
+#header {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 </style>
