@@ -25,9 +25,9 @@ export const useProvenanceStore = defineStore('provenance', () => {
     x: null,
     y: null,
   });
-  const markerSize = ref(50);
-  const fontSize = ref(12);
-  const edgeLength = ref(10);
+  const markerSize = ref(10);
+  const fontSize = ref(8);
+  const edgeLength = ref(30);
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({

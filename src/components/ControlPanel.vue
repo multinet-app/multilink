@@ -18,6 +18,7 @@ const {
   simulationRunning,
   columnTypes,
   network,
+  markerSize,
 } = storeToRefs(store);
 
 const showMenu = ref(false);
@@ -34,15 +35,6 @@ const multiVariableList = computed(() => {
   allVars.delete('y');
   allVars.delete('index');
   return allVars;
-});
-
-const markerSize = computed({
-  get() {
-    return store.markerSize || 0;
-  },
-  set(value: number) {
-    store.setMarkerSize(value);
-  },
 });
 </script>
 
@@ -130,8 +122,8 @@ const markerSize = computed({
           <v-slider
             v-model="markerSize"
             :disabled="layoutVars.x !== null || layoutVars.y !== null"
-            :min="10"
-            :max="100"
+            :min="1"
+            :max="50"
             hide-details
             color="blue darken-1"
           />
@@ -143,7 +135,7 @@ const markerSize = computed({
             v-model="fontSize"
             :disabled="!labelVariable"
             :min="6"
-            :max="20"
+            :max="12"
             hide-details
             color="blue darken-1"
           />
