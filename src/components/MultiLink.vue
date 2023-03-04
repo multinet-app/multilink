@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   scaleBand, scaleLinear, ScaleLinear,
-  forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
+  forceLink, forceManyBody, forceSimulation, forceX, forceY,
   select, axisBottom, axisLeft,
 } from 'd3';
 import {
@@ -506,7 +506,7 @@ watch(attributeRanges, () => {
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
+      forceLink<Node, SimulationEdge>(simEdges).id((d) => d._id),
     );
   }
 });
@@ -515,31 +515,25 @@ function resetSimulationForces() {
   // Reset forces before applying (if there are layout vars)
   if (simulationEdges.value !== null) {
     // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
-    const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
     applyForceToSimulation(
       simulation.value,
       'x',
-      forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
+      forceX(svgDimensions.value.width / 2),
     );
     applyForceToSimulation(
       simulation.value,
       'y',
-      forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+      forceY(svgDimensions.value.height / 2),
     );
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => d._id),
     );
     applyForceToSimulation(
       simulation.value,
       'charge',
-      forceManyBody<Node>().strength(-500),
-    );
-    applyForceToSimulation(
-      simulation.value,
-      'collision',
-      forceCollide((markerSize.value / 2) * 1.5),
+      forceManyBody().strength(-120),
     );
   }
 }
@@ -645,21 +639,18 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           positionOffset = ((svgDimensions.value.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
         }
 
-        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
+        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1);
         applyForceToSimulation(
           simulation.value,
           axis,
           force,
         );
+
+        // Disable edge forces
         applyForceToSimulation(
           simulation.value,
           'edge',
-          forceLink<Node, SimulationEdge>(),
-        );
-        applyForceToSimulation(
-          simulation.value,
-          'charge',
-          forceManyBody<Node>(),
+          forceLink<Node, SimulationEdge>().strength(0),
         );
       }
     }
