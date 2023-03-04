@@ -115,22 +115,6 @@ export const useStore = defineStore('store', () => {
     return scaleLinear();
   });
 
-  function guessLabel() {
-    if (columnTypes.value !== null) {
-    // Guess the best label variable and set it
-      const allVars: Set<string> = new Set();
-      network.value.nodes.forEach((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
-
-      // Remove _key from the search
-      allVars.delete('_key');
-      const bestLabelVar = [...allVars]
-        .find((colName) => !isInternalField(colName) && columnTypes.value?.[colName] === 'label');
-
-      // Use the label variable we found or _key if we didn't find one
-      labelVariable.value = bestLabelVar || '_key';
-    }
-  }
-
   async function fetchNetwork(workspaceNameInput: string | undefined, networkNameInput: string | undefined) {
     if (workspaceNameInput === undefined || networkNameInput === undefined) {
       loadError.value = {
@@ -223,12 +207,6 @@ export const useStore = defineStore('store', () => {
       edges: edges.results as Edge[],
     };
     network.value = networkElements;
-
-    // Guess the best label variable and set it
-    const allVars: Set<string> = new Set();
-    networkElements.nodes.map((node: Node) => Object.keys(node).forEach((key) => allVars.add(key)));
-
-    guessLabel();
   }
 
   async function fetchUserInfo() {
@@ -366,7 +344,6 @@ export const useStore = defineStore('store', () => {
     releaseNodes,
     setNestedVariables,
     addAttributeRange,
-    guessLabel,
     applyVariableLayout,
     nodeTableNames,
     edgeTableName,
