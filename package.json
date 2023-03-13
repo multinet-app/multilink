@@ -14,7 +14,7 @@
   "dependencies": {
     "@girder/oauth-client": "^0.7.7",
     "@trrack/core": "^1.0.1",
-    "@trrack/vis-react": "^1.0.0",
+    "@trrack/vis-react": "^1.2.2",
     "@types/d3": "^7.4.0",
     "@vitejs/plugin-vue2": "^2.2.0",
     "@vue/eslint-config-airbnb": "^7.0.0",
