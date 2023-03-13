@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from '@/store';
 import { getUrlVars } from '@/lib/utils';
 import { undoRedoKeyHandler } from '@/lib/provenanceUtils';
@@ -19,15 +19,10 @@ const {
   network,
   loadError,
   showProvenanceVis,
-  snackBarMessage,
   selectedNodes,
   labelVariable,
   userInfo,
 } = storeToRefs(store);
-
-const showSnackBar = ref(false);
-watch(snackBarMessage, () => { if (snackBarMessage.value !== '') showSnackBar.value = true; });
-watch(showSnackBar, () => { if (showSnackBar.value === false) snackBarMessage.value = ''; });
 
 const urlVars = getUrlVars();
 store.fetchNetwork(
@@ -104,18 +99,11 @@ function exportNetwork() {
         :fetch-user-info="store.fetchUserInfo"
       />
 
-      <control-panel v-if="showControlPanel" />
+      <control-panel v-show="showControlPanel" />
 
       <multi-link v-if="network.nodes.length > 0" />
 
       <alert-banner v-if="loadError.message !== ''" />
-
-      <v-snackbar
-        v-model="showSnackBar"
-        :timeout="4000"
-      >
-        {{ snackBarMessage }}
-      </v-snackbar>
     </v-main>
 
     <prov-vis v-if="showProvenanceVis" />
