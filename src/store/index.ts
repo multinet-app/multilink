@@ -60,7 +60,6 @@ export const useStore = defineStore('store', () => {
     width: 0,
   });
   const networkTables = ref<Table[]>([]);
-  const snackBarMessage = ref('');
 
   const nodeTableNames = computed(() => networkTables.value.filter((table) => !table.edge).map((table) => table.name));
   const edgeTableName = computed(() => {
@@ -277,14 +276,6 @@ export const useStore = defineStore('store', () => {
     } = payload;
     const otherAxis = axis === 'x' ? 'y' : 'x';
 
-    if (labelVariable.value !== null) {
-      // Clear the label variable
-      labelVariable.value = null;
-
-      // Notify the user that the labels were cleared
-      snackBarMessage.value = 'Labels were cleared by attribute driven layout';
-    }
-
     const updatedLayoutVars = { [axis]: varName, [otherAxis]: layoutVars.value[otherAxis] } as {
       x: string | null;
       y: string | null;
@@ -293,9 +284,6 @@ export const useStore = defineStore('store', () => {
 
     // Reapply the layout if there is still a variable
     if (varName === null && layoutVars.value[otherAxis] !== null) {
-      // Set marker size to 11 to trigger re-render (will get reset to 10 in dispatch again)
-      markerSize.value = 11;
-
       applyVariableLayout({ varName: layoutVars.value[otherAxis], axis: otherAxis });
     } else if (varName === null && layoutVars.value[otherAxis] === null) {
       // If both null, release
@@ -347,6 +335,5 @@ export const useStore = defineStore('store', () => {
     applyVariableLayout,
     nodeTableNames,
     edgeTableName,
-    snackBarMessage,
   };
 });
