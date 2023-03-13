@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ProvVisCreator } from '@visdesignlab/trrack-vis';
+import { ProvVisCreator } from '@trrack/vis-react';
 import { onMounted, ref } from 'vue';
 import { useStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -14,10 +14,7 @@ onMounted(() => {
     ProvVisCreator(
       provDiv.value,
       provenance.value,
-      (newNode: string) => store.goToProvenanceNode(newNode),
-      true,
-      true,
-      provenance.value.root.id,
+      {},
     );
   }
 });
@@ -25,10 +22,10 @@ onMounted(() => {
 
 <template>
   <v-navigation-drawer
-    absolute
+    id="prov-vis"
     permanent
     right
-    :width="450"
+    :width="145 + 190"
   >
     <v-btn
       icon
@@ -46,9 +43,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#provDiv :deep(.secondary) {
-  /* Unset vuetify colors for secondary */
-  background-color: unset !important;
-  border-color: white !important;
+#prov-vis {
+  position: absolute;
+  top: 48px !important;
+  height: calc(100% - 48px) !important;
 }
 </style>

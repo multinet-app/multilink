@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import {
-  scaleBand,
-  scaleLinear, ScaleLinear,
-} from 'd3-scale';
-import {
-  forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY,
-} from 'd3-force';
-import { select } from 'd3-selection';
+  scaleBand, scaleLinear, ScaleLinear,
+  forceLink, forceManyBody, forceSimulation, forceX, forceY,
+  select, axisBottom, axisLeft,
+} from 'd3';
 import {
   computed, getCurrentInstance, onMounted, ref, watch,
 } from 'vue';
-import { axisBottom, axisLeft } from 'd3-axis';
 import { ColumnType } from 'multinet';
 import { useStore } from '@/store';
 import {
@@ -33,7 +29,6 @@ const {
   selectNeighbors,
   attributeRanges,
   columnTypes,
-  controlsWidth,
   directionalEdges,
   layoutVars,
   nodeSizeVariable,
@@ -79,9 +74,10 @@ const clipRegionSize = 100;
 
 // Update height and width as the window size changes
 // Also update center attraction forces as the size changes
+const toolbarHeight = 48;
 const svgDimensions = computed(() => {
-  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height : 0;
-  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width - controlsWidth.value : 0;
+  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height - toolbarHeight : 0;
+  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width : 0;
 
   applyForceToSimulation(
     store.simulation,
@@ -152,8 +148,8 @@ function dragNode(node: Node, event: MouseEvent) {
 
   event.stopPropagation();
 
-  const initialX = event.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-  const initialY = event.y - (calculateNodeSize(node) / 2);
+  const initialX = event.x - (calculateNodeSize(node) / 2);
+  const initialY = event.y - toolbarHeight - (calculateNodeSize(node) / 2);
 
   const moveFn = (evt: Event) => {
     // Check we have a mouse event
@@ -161,8 +157,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const eventX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-    const eventY = evt.y - (calculateNodeSize(node) / 2);
+    const eventX = evt.x - (calculateNodeSize(node) / 2);
+    const eventY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
 
     if (selectedNodes.value.includes(node._id)) {
       const nodeX = Math.floor(node.x || 0);
@@ -202,8 +198,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const finalX = evt.x - controlsWidth.value - (calculateNodeSize(node) / 2);
-    const finalY = evt.y - (calculateNodeSize(node) / 2);
+    const finalX = evt.x - (calculateNodeSize(node) / 2);
+    const finalY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
     const totalXMovement = Math.abs(initialX - finalX);
     const totalYMovement = Math.abs(initialY - finalY);
 
@@ -222,8 +218,8 @@ const tooltipPosition = ref({ x: 0, y: 0 });
 const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
 function showTooltip(element: Node | Edge, event: MouseEvent) {
   tooltipPosition.value = {
-    x: event.clientX - controlsWidth.value,
-    y: event.clientY,
+    x: event.clientX,
+    y: event.clientY - toolbarHeight,
   };
 
   tooltipMessage.value = Object.entries(element)
@@ -386,8 +382,8 @@ function rectSelectDrag(event: MouseEvent) {
 
   // Set initial location for box (pins one corner)
   rectSelect.value = {
-    x: event.x - controlsWidth.value,
-    y: event.y,
+    x: event.x,
+    y: event.y - toolbarHeight,
     width: 0,
     height: 0,
     transformX: 0,
@@ -401,8 +397,8 @@ function rectSelectDrag(event: MouseEvent) {
     }
 
     // Get event location
-    const mouseX = evt.x - controlsWidth.value;
-    const mouseY = evt.y;
+    const mouseX = evt.x;
+    const mouseY = evt.y - toolbarHeight;
 
     // Check if we need to translate (case when mouse is left/above initial click)
     const translateX = mouseX < rectSelect.value.x;
@@ -510,7 +506,7 @@ watch(attributeRanges, () => {
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simEdges).id((d) => { const datum = (d as Edge); return datum._id; }).strength(0.5),
+      forceLink<Node, SimulationEdge>(simEdges).id((d) => d._id),
     );
   }
 });
@@ -519,31 +515,25 @@ function resetSimulationForces() {
   // Reset forces before applying (if there are layout vars)
   if (simulationEdges.value !== null) {
     // Double force to the middle of each axis if there's a layout var. Causes the nodes to be pulled to the middle.
-    const forceStrength = layoutVars.value.x === null && layoutVars.value.y === null ? 1 : 2;
     applyForceToSimulation(
       simulation.value,
       'x',
-      forceX<Node>(svgDimensions.value.width / 2).strength(forceStrength),
+      forceX(svgDimensions.value.width / 2),
     );
     applyForceToSimulation(
       simulation.value,
       'y',
-      forceY<Node>(svgDimensions.value.height / 2).strength(forceStrength),
+      forceY(svgDimensions.value.height / 2),
     );
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => { const datum = (d as Edge); return datum._id; }).strength(1),
+      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => d._id),
     );
     applyForceToSimulation(
       simulation.value,
       'charge',
-      forceManyBody<Node>().strength(-500),
-    );
-    applyForceToSimulation(
-      simulation.value,
-      'collision',
-      forceCollide((markerSize.value / 2) * 1.5),
+      forceManyBody().strength(-120),
     );
   }
 }
@@ -614,12 +604,6 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
   const otherAxis = axis === 'x' ? 'y' : 'x';
 
   if (varName !== null) {
-    // Set node size smaller
-    store.setMarkerSize(10, true);
-
-    // Clear the label variable
-    labelVariable.value = undefined;
-
     if (columnTypes.value !== null) {
       const otherAxisPadding = axis === 'x' ? 80 : 60;
 
@@ -655,21 +639,18 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           positionOffset = ((svgDimensions.value.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
         }
 
-        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(2);
+        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1);
         applyForceToSimulation(
           simulation.value,
           axis,
           force,
         );
+
+        // Disable edge forces
         applyForceToSimulation(
           simulation.value,
           'edge',
-          forceLink<Node, SimulationEdge>(),
-        );
-        applyForceToSimulation(
-          simulation.value,
-          'charge',
-          forceManyBody<Node>(),
+          forceLink<Node, SimulationEdge>().strength(0),
         );
       }
     }
@@ -982,7 +963,7 @@ onMounted(() => {
             :dy="!displayCharts ? calculateNodeSize(node) / 2 : 10"
             :dx="calculateNodeSize(node) / 2"
             :style="nodeTextStyle"
-          >{{ node[labelVariable] }}</text>
+          >{{ labelVariable === null ? '' : node[labelVariable] }}</text>
 
           <g
             v-if="displayCharts"
