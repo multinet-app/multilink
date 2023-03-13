@@ -99,7 +99,7 @@ function exportNetwork() {
         :fetch-user-info="store.fetchUserInfo"
       />
 
-      <control-panel v-if="showControlPanel" />
+      <control-panel v-show="showControlPanel" />
 
       <multi-link v-if="network.nodes.length > 0" />
 
