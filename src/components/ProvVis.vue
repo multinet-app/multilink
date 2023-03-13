@@ -8,6 +8,9 @@ const store = useStore();
 const { provenance } = storeToRefs(store);
 
 const provDiv = ref();
+const provVisHeight = ref(document.body.clientHeight - 48 - 48);
+const resizeObserver = new ResizeObserver((entries) => { provVisHeight.value = entries[0].target.clientHeight - 48 - 48; });
+resizeObserver.observe(document.body);
 
 onMounted(() => {
   if (provenance.value !== null && provDiv.value != null) {
@@ -46,6 +49,7 @@ onMounted(() => {
     <div
       id="provDiv"
       ref="provDiv"
+      :style="`height: ${provVisHeight}px`"
     />
   </v-navigation-drawer>
 </template>
