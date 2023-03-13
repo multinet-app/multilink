@@ -8442,10 +8442,10 @@ multinet-components@^0.0.2:
   resolved "https://registry.yarnpkg.com/multinet-components/-/multinet-components-0.0.2.tgz#172d6e68217c3089add1e2066a9eccfd5b73cf3e"
   integrity sha512-D7OsIxzIjQEAEEb4asN9/8GD9NX/uck3w4wAJAkJrrmc46pB58dw3LnwPP4F4OyqHfwRfHdaX5iGYWPBukicJg==
 
-multinet@^0.21.4:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.4.tgz#9b9015fdeebd245800833db21b8f8e6d81aa351d"
-  integrity sha512-lYdj11yi5PJblDMg+T1fTih/2RMgIljYoWhpKElUNOdwPCHmc4Z1wFAd7Yo3nf1qKic2qlx0ac45XTcswnl05g==
+multinet@^0.21.10:
+  version "0.21.10"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.10.tgz#5e5e215cab2650ab940c1c7d52dae1e89806faa4"
+  integrity sha512-dMr4ijRS/RtdSEhJ6Drmd4maE96kUvEODfr+1XBxby8p11sAee+MPoSelXMzvxREmwBMVo4ZXHDotvc9TMCGHw==
   dependencies:
     axios "^0.21.1"
     django-s3-file-field "^0.1.2"
