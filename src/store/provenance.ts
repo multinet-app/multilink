@@ -108,9 +108,12 @@ export const useProvenanceStore = defineStore('provenance', () => {
   watch(currentPiniaState, updateTrrackState, { deep: true }); // deep: true is required because the computed is an object
 
   // When the trrack state changes (undo/redo), update vue
-  provenance.currentChange(() => {
-    const updates = findDifferencesInPrimitiveStates(getPiniaStateSnapshot(), provenance.getState());
-    Object.entries(updates).forEach(([key, val]) => { currentPiniaState.value[key as keyof ProvState].value = val; });
+  provenance.currentChange((updateType) => {
+    // Traversal means that the change came from moving between nodes, not a new node
+    if (updateType === 'traversal') {
+      const updates = findDifferencesInPrimitiveStates(getPiniaStateSnapshot(), provenance.getState());
+      Object.entries(updates).forEach(([key, val]) => { currentPiniaState.value[key as keyof ProvState].value = val; });
+    }
   });
 
   return {
