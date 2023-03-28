@@ -76,7 +76,9 @@ function capitalizeFirstLetter(input: any) {
 export function getTrrackLabel(updates: Partial<ProvState>, previousState: ProvState) {
   let label = '';
 
-  if (updates.selectNeighbors !== undefined) {
+  if (Object.keys(updates).length > 1) {
+    label = 'Multiple Properties Changed';
+  } if (updates.selectNeighbors !== undefined) {
     label = `Select Neighbors Set: ${capitalizeFirstLetter(updates.selectNeighbors)}`;
   } else if (updates.displayCharts !== undefined) {
     label = `Display Charts Set: ${capitalizeFirstLetter(updates.displayCharts)}`;
