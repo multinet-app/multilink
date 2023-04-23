@@ -101,7 +101,7 @@ function exportNetwork() {
 
       <control-panel v-show="showControlPanel" />
 
-      <multi-link v-if="network.nodes.length > 0" />
+      <multi-link v-if="network.nodes.length > 0" :show-control-panel="showControlPanel" />
 
       <alert-banner v-if="loadError.message !== ''" />
     </v-main>
@@ -111,16 +111,9 @@ function exportNetwork() {
 </template>
 
 <style>
-html {
-  scrollbar-width: none;
-}
 
-html::-webkit-scrollbar {
-  display: none;
-}
-
-body {
-  overflow: hidden;
+html, body {
+  overflow-y: hidden;
 }
 
 #app {

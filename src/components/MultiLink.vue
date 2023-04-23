@@ -5,7 +5,7 @@ import {
   select, axisBottom, axisLeft,
 } from 'd3';
 import {
-  computed, getCurrentInstance, onMounted, ref, watch,
+  computed, onMounted, ref, watch,
 } from 'vue';
 import { ColumnType } from 'multinet';
 import { useStore } from '@/store';
@@ -16,6 +16,9 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { storeToRefs } from 'pinia';
+import { useMouseInElement, useWindowSize } from '@vueuse/core';
+
+const props = defineProps<{ showControlPanel: boolean }>();
 
 const store = useStore();
 const {
@@ -43,7 +46,6 @@ const {
 } = storeToRefs(store);
 
 // Commonly used variables
-const currentInstance = getCurrentInstance();
 const multiLinkSvg = ref<Element | null>(null);
 const nodeTextStyle = computed(() => `font-size: ${store.fontSize || 0}pt;`);
 
@@ -74,10 +76,11 @@ const clipRegionSize = 100;
 
 // Update height and width as the window size changes
 // Also update center attraction forces as the size changes
+const { height: pageHeight, width: pageWidth } = useWindowSize();
 const toolbarHeight = 48;
 const svgDimensions = computed(() => {
-  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height - toolbarHeight : 0;
-  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width : 0;
+  const height = pageHeight.value - toolbarHeight;
+  const width = pageWidth.value - (props.showControlPanel ? 256 : 0);
 
   applyForceToSimulation(
     store.simulation,
@@ -180,10 +183,6 @@ function dragNode(node: Node, event: MouseEvent) {
     node.y = eventY;
     node.fx = eventX;
     node.fy = eventY;
-
-    if (currentInstance !== null) {
-      currentInstance.proxy.$forceUpdate();
-    }
   };
 
   const stopFn = (evt: Event) => {
@@ -473,17 +472,6 @@ function showContextMenu(event: MouseEvent) {
 
   event.preventDefault();
 }
-
-function generateNodePositions(nodes: Node[]) {
-  nodes.forEach((node) => {
-    // If the position is not defined for x or y, generate it
-    if (node.x === undefined || node.y === undefined) {
-      node.x = Math.random() * svgDimensions.value.width;
-      node.y = Math.random() * svgDimensions.value.height;
-    }
-  });
-}
-generateNodePositions(network.value.nodes);
 
 const simulationEdges = computed(() => network.value.edges.map((edge: Edge) => {
   const newEdge: SimulationEdge = {
@@ -781,10 +769,6 @@ onMounted(() => {
             if (node.y > maxY) { node.y = maxY; }
           }
         });
-
-        if (currentInstance !== null) {
-          currentInstance.proxy.$forceUpdate();
-        }
       })
     // The next line handles the start stop button change in the controls.
     // It's not explicitly necessary for the simulation to work
