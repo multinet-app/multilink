@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watchEffect } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import {
   histogram, max, min, axisBottom, axisLeft, brushX, D3BrushEvent,
   ScaleBand, scaleBand, ScaleLinear, scaleLinear, select, selectAll,
@@ -11,6 +11,7 @@ import { useStore } from '@/store';
 // eslint-disable-next-line import/no-self-import
 import LegendChart from '@/components/LegendChart.vue';
 import { storeToRefs } from 'pinia';
+import { useElementBounding } from '@vueuse/core';
 
 const store = useStore();
 const {
@@ -107,15 +108,17 @@ function unAssignVar(variable?: string) {
   }
 }
 
-onMounted(() => {
+const variableSvgRef = ref<HTMLElement | null>(null);
+const boundingBox = useElementBounding(variableSvgRef);
+
+watch(boundingBox.width, () => {
   const variableSvg = select(`#${props.type}${props.varName}${props.mappedTo}`);
 
-  let variableSvgWidth = (variableSvg
-    .node() as Element)
-    .getBoundingClientRect()
-    .width - yAxisPadding;
+  const variableSvgWidth = boundingBox.width.value - 10;
 
-  variableSvgWidth = variableSvgWidth < 0 ? 256 : variableSvgWidth;
+  if (variableSvgWidth === 0) {
+    return;
+  }
 
   let xScale: ScaleLinear<number, number> | ScaleBand<string>;
   let yScale: ScaleLinear<number, number>;
@@ -592,6 +595,7 @@ onMounted(() => {
 
     <svg
       :id="`${type}${varName}${mappedTo}`"
+      ref="variableSvgRef"
       :height="svgHeight + 20"
       width="100%"
       class="mt-2"
