@@ -66,8 +66,8 @@ function elementDrop(event: DragEvent) {
 </script>
 
 <template>
-  <div class="pa-4">
-    <div v-if="showTitle">
+  <div class="px-4 pb-4 pt-2">
+    <div v-if="showTitle" class="black--text">
       {{ title }}
     </div>
 

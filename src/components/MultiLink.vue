@@ -5,7 +5,7 @@ import {
   select, axisBottom, axisLeft,
 } from 'd3';
 import {
-  computed, getCurrentInstance, onMounted, ref, watch,
+  computed, onMounted, ref, watch,
 } from 'vue';
 import { ColumnType } from 'multinet';
 import { useStore } from '@/store';
@@ -16,6 +16,9 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { storeToRefs } from 'pinia';
+import { useMouseInElement, useWindowSize } from '@vueuse/core';
+
+const props = defineProps<{ showControlPanel: boolean }>();
 
 const store = useStore();
 const {
@@ -43,8 +46,8 @@ const {
 } = storeToRefs(store);
 
 // Commonly used variables
-const currentInstance = getCurrentInstance();
-const multiLinkSvg = ref<Element | null>(null);
+const multiLinkSvg = ref<HTMLElement | null>(null);
+const { elementX: relativeX, elementY: relativeY } = useMouseInElement(multiLinkSvg);
 const nodeTextStyle = computed(() => `font-size: ${store.fontSize || 0}pt;`);
 
 const nestedPadding = ref(5);
@@ -74,10 +77,11 @@ const clipRegionSize = 100;
 
 // Update height and width as the window size changes
 // Also update center attraction forces as the size changes
+const { height: pageHeight, width: pageWidth } = useWindowSize();
 const toolbarHeight = 48;
 const svgDimensions = computed(() => {
-  const height = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.height - toolbarHeight : 0;
-  const width = currentInstance !== null ? currentInstance.proxy.$vuetify.breakpoint.width : 0;
+  const height = pageHeight.value - toolbarHeight;
+  const width = pageWidth.value - (props.showControlPanel ? 256 : 0);
 
   applyForceToSimulation(
     store.simulation,
@@ -148,8 +152,8 @@ function dragNode(node: Node, event: MouseEvent) {
 
   event.stopPropagation();
 
-  const initialX = event.x - (calculateNodeSize(node) / 2);
-  const initialY = event.y - toolbarHeight - (calculateNodeSize(node) / 2);
+  const initialX = relativeX.value;
+  const initialY = relativeY.value;
 
   const moveFn = (evt: Event) => {
     // Check we have a mouse event
@@ -157,8 +161,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const eventX = evt.x - (calculateNodeSize(node) / 2);
-    const eventY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
+    const eventX = relativeX.value;
+    const eventY = relativeY.value;
 
     if (selectedNodes.value.includes(node._id)) {
       const nodeX = Math.floor(node.x || 0);
@@ -180,10 +184,6 @@ function dragNode(node: Node, event: MouseEvent) {
     node.y = eventY;
     node.fx = eventX;
     node.fy = eventY;
-
-    if (currentInstance !== null) {
-      currentInstance.proxy.$forceUpdate();
-    }
   };
 
   const stopFn = (evt: Event) => {
@@ -198,8 +198,8 @@ function dragNode(node: Node, event: MouseEvent) {
       throw new Error('event is not MouseEvent');
     }
 
-    const finalX = evt.x - (calculateNodeSize(node) / 2);
-    const finalY = evt.y - toolbarHeight - (calculateNodeSize(node) / 2);
+    const finalX = relativeX.value;
+    const finalY = relativeY.value;
     const totalXMovement = Math.abs(initialX - finalX);
     const totalYMovement = Math.abs(initialY - finalY);
 
@@ -216,10 +216,10 @@ const tooltipMessage = ref('');
 const toggleTooltip = ref(false);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
-function showTooltip(element: Node | Edge, event: MouseEvent) {
+function showTooltip(element: Node | Edge) {
   tooltipPosition.value = {
-    x: event.clientX,
-    y: event.clientY - toolbarHeight,
+    x: relativeX.value + 10,
+    y: relativeY.value + toolbarHeight + 10,
   };
 
   tooltipMessage.value = Object.entries(element)
@@ -382,8 +382,8 @@ function rectSelectDrag(event: MouseEvent) {
 
   // Set initial location for box (pins one corner)
   rectSelect.value = {
-    x: event.x,
-    y: event.y - toolbarHeight,
+    x: relativeX.value,
+    y: relativeY.value,
     width: 0,
     height: 0,
     transformX: 0,
@@ -397,8 +397,8 @@ function rectSelectDrag(event: MouseEvent) {
     }
 
     // Get event location
-    const mouseX = evt.x;
-    const mouseY = evt.y - toolbarHeight;
+    const mouseX = relativeX.value;
+    const mouseY = relativeY.value;
 
     // Check if we need to translate (case when mouse is left/above initial click)
     const translateX = mouseX < rectSelect.value.x;
@@ -473,17 +473,6 @@ function showContextMenu(event: MouseEvent) {
 
   event.preventDefault();
 }
-
-function generateNodePositions(nodes: Node[]) {
-  nodes.forEach((node) => {
-    // If the position is not defined for x or y, generate it
-    if (node.x === undefined || node.y === undefined) {
-      node.x = Math.random() * svgDimensions.value.width;
-      node.y = Math.random() * svgDimensions.value.height;
-    }
-  });
-}
-generateNodePositions(network.value.nodes);
 
 const simulationEdges = computed(() => network.value.edges.map((edge: Edge) => {
   const newEdge: SimulationEdge = {
@@ -762,7 +751,7 @@ const svgEdgePadding = 5;
 
 const minimumX = svgEdgePadding;
 const minimumY = svgEdgePadding;
-const maximumX = svgDimensions.value.width - svgEdgePadding;
+const maximumX = computed(() => svgDimensions.value.width - svgEdgePadding);
 const maximumY = svgDimensions.value.height - svgEdgePadding;
 onMounted(() => {
   if (simulationEdges.value !== null) {
@@ -771,20 +760,17 @@ onMounted(() => {
       .on('tick', () => {
         network.value?.nodes.forEach((node) => {
           if (node.x !== undefined && node.y !== undefined) {
-            const maxX = maximumX - calculateNodeSize(node);
+            const maxX = maximumX.value - calculateNodeSize(node);
             const maxY = maximumY - calculateNodeSize(node);
 
             // Update the node position forced to stay on the svg
             if (node.x < minimumX) { node.x = minimumX; }
             if (node.x > maxX) { node.x = maxX; }
+            if (node.fx > maxX) { node.fx = maxX; }
             if (node.y < minimumY) { node.y = minimumY; }
             if (node.y > maxY) { node.y = maxY; }
           }
         });
-
-        if (currentInstance !== null) {
-          currentInstance.proxy.$forceUpdate();
-        }
       })
     // The next line handles the start stop button change in the controls.
     // It's not explicitly necessary for the simulation to work
@@ -805,6 +791,7 @@ onMounted(() => {
       ref="multiLinkSvg"
       :width="svgDimensions.width"
       :height="svgDimensions.height"
+      :style="`margin-left: ${props.showControlPanel ? 256 : 0}px`"
       @mousedown="rectSelectDrag"
       @contextmenu="showContextMenu"
     >
@@ -911,7 +898,7 @@ onMounted(() => {
           v-for="edge of network.edges"
           :key="edge._id"
           :class="edgeGroupClass(edge)"
-          @mouseover="showTooltip(edge, $event)"
+          @mouseover="showTooltip(edge)"
           @mouseout="hideTooltip"
         >
           <path
@@ -951,7 +938,7 @@ onMounted(() => {
             :fill="nodeFill(node)"
             :rx="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
             :ry="!displayCharts ? (calculateNodeSize(node) / 2) : 0"
-            @mouseover="showTooltip(node, $event)"
+            @mouseover="showTooltip(node)"
             @mouseout="hideTooltip"
             @mousedown="dragNode(node, $event)"
           />

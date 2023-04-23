@@ -9,11 +9,11 @@ import api from '@/api';
 import {
   Edge, Node, NestedVariables, AttributeRanges, LoadError, Network, SimulationEdge, AttributeRange,
 } from '@/types';
-import { isInternalField } from '@/lib/typeUtils';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import oauthClient from '@/oauth';
 import { computed, ref, watch } from 'vue';
 import { useProvenanceStore } from '@/store/provenance';
+import { useWindowSize } from '@vueuse/core';
 
 export const useStore = defineStore('store', () => {
   // Provenance
@@ -114,6 +114,18 @@ export const useStore = defineStore('store', () => {
     return scaleLinear();
   });
 
+  const { height, width } = useWindowSize();
+  function generateNodePositions(nodes: Node[]) {
+    nodes.forEach((node) => {
+      // If the position is not defined for x or y, generate it
+      if (node.x === undefined || node.y === undefined) {
+        node.x = Math.random() * width.value;
+        node.y = Math.random() * height.value;
+      }
+    });
+    return nodes;
+  }
+
   async function fetchNetwork(workspaceNameInput: string | undefined, networkNameInput: string | undefined) {
     if (workspaceNameInput === undefined || networkNameInput === undefined) {
       loadError.value = {
@@ -202,7 +214,7 @@ export const useStore = defineStore('store', () => {
 
     // Build the network object and set it as the network in the store
     const networkElements = {
-      nodes: nodes.results as Node[],
+      nodes: generateNodePositions(nodes.results as Node[]),
       edges: edges.results as Edge[],
     };
     network.value = networkElements;
