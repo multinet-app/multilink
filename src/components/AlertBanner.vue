@@ -140,25 +140,6 @@ function setLoadError(newError: LoadError) {
 </script>
 
 <style>
-html {
-  scrollbar-width: none;
-}
-
-html::-webkit-scrollbar {
-  display: none;
-}
-
-body {
-  overflow: hidden;
-}
-
-#app {
-  font-family: "Blinker", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow: none;
-}
-
 .v-btn__content {
   padding-bottom: 2px;
 }
