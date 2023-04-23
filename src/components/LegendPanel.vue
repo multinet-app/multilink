@@ -63,258 +63,258 @@ const attributeLayout = ref(false);
 </script>
 
 <template>
-  <div id="legend">
-    <v-subheader class="grey darken-3 py-0 white--text">
-      Legend
+  <v-expansion-panel>
+    <v-expansion-panel-header color="grey darken-3">
+      Attribute Options
+    </v-expansion-panel-header>
 
-      <v-spacer />
+    <v-expansion-panel-content color="grey darken-3">
+      <v-list-item>
+        <v-list-item-content> Display Charts </v-list-item-content>
+        <v-list-item-action>
+          <v-switch
+            v-model="displayCharts"
+            hide-details
+            color="blue darken-1"
+          />
+        </v-list-item-action>
+      </v-list-item>
 
-      <v-switch
-        v-model="attributeLayout"
-        append-icon="mdi-chart-scatter-plot"
-        class="mr-0"
-        dense
-        dark
-        color="blue darken-1"
-      />
+      <v-list-item>
+        <v-list-item-content> Attribute Layout </v-list-item-content>
+        <v-list-item-action>
+          <v-switch
+            v-model="attributeLayout"
+            hide-details
+            color="blue darken-1"
+          />
+        </v-list-item-action>
+      </v-list-item>
 
-      <v-spacer />
-
-      <v-switch
-        v-model="displayCharts"
-        append-icon="mdi-chart-bar"
-        class="mr-0"
-        dense
-        dark
-        color="blue darken-1"
-      />
-    </v-subheader>
-
-    <v-tabs
-      v-model="tab"
-      background-color="grey darken-2"
-      dark
-      grow
-      slider-color="blue darken-1"
-    >
-      <v-tab>
-        Node Attrs.
-      </v-tab>
-      <v-tab>
-        Edge Attrs.
-      </v-tab>
-    </v-tabs>
-
-    <v-tabs-items
-      v-model="tab"
-    >
-      <v-tab-item
-        class="pb-4"
+      <v-tabs
+        v-model="tab"
+        grow
+        background-color="grey darken-3"
       >
-        <div class="sticky">
-          <div v-if="displayCharts">
-            <drag-target
-              v-if="nestedVariables.bar[0] === undefined"
-              :title="'bars'"
-              :type="'node'"
-            />
+        <v-tab>
+          Node
+        </v-tab>
+        <v-tab>
+          Edge
+        </v-tab>
+      </v-tabs>
 
-            <legend-chart
-              v-else
-              :var-name="nestedVariables.bar[0]"
-              :type="'node'"
-              :selected="true"
-              :mapped-to="'bars'"
-            />
+      <v-tabs-items
+        v-model="tab"
+      >
+        <v-tab-item
+          class="pb-4"
+        >
+          <div class="sticky">
+            <div v-if="displayCharts">
+              <drag-target
+                v-if="nestedVariables.bar[0] === undefined"
+                title="bars"
+                type="node"
+              />
 
-            <drag-target
-              v-if="nestedVariables.bar.length < 4 && nestedVariables.bar[0] !== undefined"
-              :title="'bars'"
-              :type="'node'"
-              :show-title="false"
-            />
+              <legend-chart
+                v-else
+                :var-name="nestedVariables.bar[0]"
+                type="node"
+                :selected="true"
+                mapped-to="bars"
+              />
+
+              <drag-target
+                v-if="nestedVariables.bar.length < 4 && nestedVariables.bar[0] !== undefined"
+                title="bars"
+                type="node"
+                :show-title="false"
+              />
+            </div>
+
+            <div v-else>
+              <drag-target
+                v-if="nodeSizeVariable === ''"
+                title="size"
+                type="node"
+              />
+
+              <legend-chart
+                v-else
+                :var-name="nodeSizeVariable"
+                type="node"
+                :selected="true"
+                mapped-to="size"
+              />
+            </div>
+
+            <v-divider />
+
+            <div v-if="displayCharts">
+              <drag-target
+                v-if="nestedVariables.glyph[0] === undefined"
+                title="glyphs"
+                type="node"
+              />
+
+              <legend-chart
+                v-else
+                :var-name="nestedVariables.glyph[0]"
+                type="node"
+                :selected="true"
+                mapped-to="glyphs"
+              />
+
+              <drag-target
+                v-if="nestedVariables.glyph[0] !== undefined && nestedVariables.glyph[1] === undefined"
+                title="glyphs"
+                type="node"
+                :show-title="false"
+              />
+
+              <legend-chart
+                v-else-if="nestedVariables.glyph[0] !== undefined"
+                :var-name="nestedVariables.glyph[1]"
+                type="node"
+                :selected="true"
+                mapped-to="glyphs"
+              />
+            </div>
+
+            <div v-else>
+              <drag-target
+                v-if="nodeColorVariable === ''"
+                title="color"
+                type="node"
+              />
+
+              <legend-chart
+                v-else
+                :var-name="nodeColorVariable"
+                type="node"
+                :selected="true"
+                mapped-to="color"
+              />
+            </div>
+
+            <v-divider />
+
+            <div v-if="attributeLayout">
+              <drag-target
+                v-if="layoutVars.x === null"
+                title="x variable"
+                type="node"
+              />
+
+              <legend-chart
+                v-else
+                :var-name="layoutVars.x"
+                type="node"
+                :selected="true"
+                mapped-to="x"
+              />
+              <v-divider />
+
+              <drag-target
+                v-if="layoutVars.y === null"
+                title="y variable"
+                type="node"
+              />
+
+              <legend-chart
+                v-else
+                :var-name="layoutVars.y"
+                type="node"
+                :selected="true"
+                mapped-to="y"
+              />
+              <v-divider />
+            </div>
           </div>
 
-          <div v-else>
-            <drag-target
-              v-if="nodeSizeVariable === ''"
-              :title="'size'"
-              :type="'node'"
-            />
+          <v-subheader class="white--text" style="background-color: #424242">
+            Attributes
+          </v-subheader>
 
-            <legend-chart
-              v-else
-              :var-name="nodeSizeVariable"
-              :type="'node'"
-              :selected="true"
-              :mapped-to="'size'"
-            />
+          <div v-if="cleanedNodeVariables.size === 0">
+            No node attributes to visualize
           </div>
 
-          <v-divider />
-
-          <div v-if="displayCharts">
-            <drag-target
-              v-if="nestedVariables.glyph[0] === undefined"
-              :title="'glyphs'"
-              :type="'node'"
-            />
-
+          <div
+            v-else
+          >
             <legend-chart
-              v-else
-              :var-name="nestedVariables.glyph[0]"
-              :type="'node'"
-              :selected="true"
-              :mapped-to="'glyphs'"
-            />
-
-            <drag-target
-              v-if="nestedVariables.glyph[0] !== undefined && nestedVariables.glyph[1] === undefined"
-              :title="'glyphs'"
-              :type="'node'"
-              :show-title="false"
-            />
-
-            <legend-chart
-              v-else-if="nestedVariables.glyph[0] !== undefined"
-              :var-name="nestedVariables.glyph[1]"
-              :type="'node'"
-              :selected="true"
-              :mapped-to="'glyphs'"
+              v-for="nodeAttr of cleanedNodeVariables"
+              :key="`node${nodeAttr}`"
+              :var-name="nodeAttr"
+              type="node"
+              :selected="false"
             />
           </div>
+        </v-tab-item>
 
-          <div v-else>
+        <v-tab-item
+          class="pb-4"
+        >
+          <div class="sticky">
             <drag-target
-              v-if="nodeColorVariable === ''"
-              :title="'color'"
-              :type="'node'"
+              v-if="edgeVariables.width === ''"
+              title="width"
+              type="edge"
             />
 
             <legend-chart
               v-else
-              :var-name="nodeColorVariable"
-              :type="'node'"
+              :var-name="edgeVariables.width"
+              type="edge"
               :selected="true"
-              :mapped-to="'color'"
-            />
-          </div>
-
-          <v-divider />
-
-          <div v-if="attributeLayout">
-            <drag-target
-              v-if="layoutVars.x === null"
-              :title="'x variable'"
-              :type="'node'"
+              mapped-to="width"
             />
 
-            <legend-chart
-              v-else
-              :var-name="layoutVars.x"
-              :type="'node'"
-              :selected="true"
-              :mapped-to="'x'"
-            />
             <v-divider />
 
             <drag-target
-              v-if="layoutVars.y === null"
-              :title="'y variable'"
-              :type="'node'"
+              v-if="edgeVariables.color === ''"
+              title="color"
+              :type="'edge'"
             />
 
             <legend-chart
               v-else
-              :var-name="layoutVars.y"
-              :type="'node'"
+              :var-name="edgeVariables.color"
+              type="edge"
               :selected="true"
-              :mapped-to="'y'"
+              mapped-to="color"
             />
+
             <v-divider />
           </div>
-        </div>
 
-        <v-subheader class="grey py-0 white--text">
-          Attributes
-        </v-subheader>
+          <v-subheader class="white--text" style="background-color: #1E1E1E">
+            Attributes
+          </v-subheader>
 
-        <div v-if="cleanedNodeVariables.size === 0">
-          No node attributes to visualize
-        </div>
+          <div v-if="cleanedEdgeVariables.size === 0">
+            No edge attributes to visualize
+          </div>
 
-        <div
-          v-for="nodeAttr of cleanedNodeVariables"
-          v-else
-          :key="`node${nodeAttr}`"
-        >
-          <legend-chart
-            :var-name="nodeAttr"
-            :type="'node'"
-            :selected="false"
-          />
-        </div>
-      </v-tab-item>
-
-      <v-tab-item
-        class="pb-4"
-      >
-        <div class="sticky">
-          <drag-target
-            v-if="edgeVariables.width === ''"
-            :title="'width'"
-            :type="'edge'"
-          />
-
-          <legend-chart
+          <div
             v-else
-            :var-name="edgeVariables.width"
-            :type="'edge'"
-            :selected="true"
-            :mapped-to="'width'"
-          />
-
-          <v-divider />
-
-          <drag-target
-            v-if="edgeVariables.color === ''"
-            :title="'color'"
-            :type="'edge'"
-          />
-
-          <legend-chart
-            v-else
-            :var-name="edgeVariables.color"
-            :type="'edge'"
-            :selected="true"
-            :mapped-to="'color'"
-          />
-
-          <v-divider />
-        </div>
-
-        <v-subheader class="grey py-0 white--text">
-          Attributes
-        </v-subheader>
-
-        <div v-if="cleanedEdgeVariables.size === 0">
-          No edge attributes to visualize
-        </div>
-
-        <div
-          v-for="edgeAttr of cleanedEdgeVariables"
-          v-else
-          :key="`edge${edgeAttr}`"
-        >
-          <legend-chart
-            :var-name="edgeAttr"
-            :type="'edge'"
-            :selected="false"
-          />
-        </div>
-      </v-tab-item>
-    </v-tabs-items>
-  </div>
+          >
+            <legend-chart
+              v-for="edgeAttr of cleanedEdgeVariables"
+              :key="`edge${edgeAttr}`"
+              :var-name="edgeAttr"
+              type="edge"
+              :selected="false"
+            />
+          </div>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-expansion-panel-content>
+  </v-expansion-panel>
 </template>
 
 <style scoped>

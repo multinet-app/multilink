@@ -489,7 +489,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="pa-4 pb-0"
+    class="pa-4 pb-0 black--text"
   >
     <div
       v-if="brushable"
@@ -583,6 +583,7 @@ onMounted(() => {
         <v-icon
           small
           class="icon"
+          style="top: -2px"
         >
           mdi-drag-vertical
         </v-icon>
