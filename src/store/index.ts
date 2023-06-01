@@ -60,6 +60,7 @@ export const useStore = defineStore('store', () => {
     width: 0,
   });
   const networkTables = ref<Table[]>([]);
+  const snackBarMessage = ref('');
 
   const nodeTableNames = computed(() => networkTables.value.filter((table) => !table.edge).map((table) => table.name));
   const edgeTableName = computed(() => {
@@ -73,11 +74,10 @@ export const useStore = defineStore('store', () => {
       const minValue = attributeRanges.value[nodeColorVariable.value].currentMin || attributeRanges.value[nodeColorVariable.value].min;
       const maxValue = attributeRanges.value[nodeColorVariable.value].currentMax || attributeRanges.value[nodeColorVariable.value].max;
 
-      return scaleSequential(interpolateBlues)
-        .domain([minValue, maxValue]);
+      return scaleSequential(interpolateBlues).domain([minValue, maxValue]);
     }
 
-    return nodeGlyphColorScale;
+    return nodeGlyphColorScale.value;
   });
 
   const edgeColorScale = computed(() => {
@@ -89,7 +89,7 @@ export const useStore = defineStore('store', () => {
         .domain([minValue, maxValue]);
     }
 
-    return scaleSequential(interpolateReds);
+    return nodeGlyphColorScale.value;
   });
 
   const nodeSizeScale = computed(() => {
@@ -347,5 +347,6 @@ export const useStore = defineStore('store', () => {
     applyVariableLayout,
     nodeTableNames,
     edgeTableName,
+    snackBarMessage,
   };
 });
