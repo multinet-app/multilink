@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from '@/store';
 import { getUrlVars } from '@/lib/utils';
 import { undoRedoKeyHandler } from '@/lib/provenanceUtils';
@@ -13,6 +13,7 @@ import AlertBanner from '@/components/AlertBanner.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
+import { useDebounceFn } from '@vueuse/core';
 
 const store = useStore();
 const {
@@ -22,6 +23,7 @@ const {
   selectedNodes,
   labelVariable,
   userInfo,
+  snackBarMessage,
 } = storeToRefs(store);
 
 const urlVars = getUrlVars();
@@ -78,6 +80,16 @@ function exportNetwork() {
   a.download = `${store.networkName}.json`;
   a.click();
 }
+
+const snackBarTimeout = 3000;
+const showSnackBar = ref(false);
+const clearMessage = useDebounceFn(() => {
+  snackBarMessage.value = '';
+}, snackBarTimeout);
+watch(snackBarMessage, () => {
+  showSnackBar.value = snackBarMessage.value !== '';
+  clearMessage();
+});
 </script>
 
 <template>
@@ -104,6 +116,25 @@ function exportNetwork() {
       <multi-link v-if="network.nodes.length > 0" :show-control-panel="showControlPanel" />
 
       <alert-banner v-if="loadError.message !== ''" />
+
+      <v-snackbar
+        v-model="showSnackBar"
+        color="primary"
+        text
+        elevation="6"
+      >
+        {{ snackBarMessage }}
+
+        <template #actions>
+          <v-btn
+            color="blue"
+            variant="text"
+            @click="showSnackBar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-main>
 
     <prov-vis v-if="showProvenanceVis" />
