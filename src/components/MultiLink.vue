@@ -339,9 +339,7 @@ function edgeStyle(edge: Edge): string {
         // Categorical check
         || (
           columnTypes.value[edgeVariables.value.color] !== 'number'
-          && attributeRanges.value[edgeVariables.value.color]
-          && (attributeRanges.value[edgeVariables.value.color].currentBinLabels || attributeRanges.value[edgeVariables.value.color].binLabels)
-            .find((label) => label.toString() === calculatedColorValue.toString())
+          && true
         )
       );
 
