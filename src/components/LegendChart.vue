@@ -1,31 +1,26 @@
 <script setup lang="ts">
 import {
-  onMounted, onRenderTracked, ref, watch,
+  ref, watch,
 } from 'vue';
 import { useStore } from '@/store';
-import vegaEmbed from 'vega-embed';
+import vegaEmbed, { VisualizationSpec } from 'vega-embed';
 
 // Required for recursive definition of LegendChart
 // eslint-disable-next-line import/no-self-import
 import LegendChart from '@/components/LegendChart.vue';
 import { storeToRefs } from 'pinia';
 import { useElementBounding } from '@vueuse/core';
-import { TopLevelSpec } from 'vega-lite';
+import { ScaleOrdinal, range } from 'd3';
 
 const store = useStore();
 const {
   network,
   columnTypes,
   nestedVariables,
-  nodeBarColorScale,
-  nodeGlyphColorScale,
-  attributeRanges,
   nodeSizeVariable,
   nodeColorVariable,
   edgeVariables,
-  nodeSizeScale,
   nodeColorScale,
-  edgeWidthScale,
   edgeColorScale,
 } = storeToRefs(store);
 
@@ -41,9 +36,6 @@ const props = withDefaults(defineProps<{
   mappedTo: '',
   filter: '',
 });
-
-const yAxisPadding = 30;
-const svgHeight = props.mappedTo === 'bars' ? 75 : 50;
 
 // TODO: https://github.com/multinet-app/multilink/issues/176
 // use table name for var selection
@@ -116,66 +108,184 @@ function render() {
     return;
   }
 
-  let spec: TopLevelSpec | undefined;
+  let spec: VisualizationSpec | undefined;
 
   // node size
-  if (props.mappedTo === 'size' && nodeSizeScale.value !== null) { // node size
-    // Do something for the chart when mapped to node size
-  // edge width
-  } else if (props.mappedTo === 'width') {
-    // Do something for the chart when mapped to edge width
-  // node color and edge color
-  } else if (props.mappedTo === 'color') {
-    // Do something for the chart when mapped to node/edge color
-  // glyphs
-  } else if (props.mappedTo === 'glyphs') {
-    // Do something for the chart when mapped to glyphs
-  // nested bars
-  } else if (props.mappedTo === 'bars') {
-    // Do something for the chart when mapped to nested bars
-  // numeric legend charts
-  } else if (isQuantitative(props.varName, props.type)) {
+  if (props.mappedTo === 'size') {
+    const intermediateData = [...new Set(network.value[`${props.type}s`].map((row) => parseFloat(row[props.varName])))];
+    const min = Math.min(...intermediateData);
+    const max = Math.max(...intermediateData);
+    const mid = (min + max) / 2;
+    const data = [min, mid, max].map((x, idx) => ({ index: idx, [props.varName]: x }));
     spec = {
       data: {
-        values: network.value[`${props.type}s`].map((row) => ({
-          ...row,
-          [props.varName]: parseFloat(row[props.varName]),
-        })),
+        values: data,
+      },
+      mark: {
+        type: 'circle',
+        size: { expr: '(datum.index + .1) * 300' },
+      },
+      encoding: {
+        x: { field: props.varName, axis: { format: '.2~s' } },
+      },
+    };
+  // edge width
+  } else if (props.mappedTo === 'width') {
+    const intermediateData = [...new Set(network.value[`${props.type}s`].map((row) => parseFloat(row[props.varName])))];
+    const min = Math.min(...intermediateData);
+    const max = Math.max(...intermediateData);
+    const mid = (min + max) / 2;
+    const data = [min, mid, max].map((x, idx) => ({ index: idx, [props.varName]: x }));
+    spec = {
+      data: {
+        values: data,
+      },
+      mark: {
+        type: 'bar',
+        width: { expr: '(datum.index + .1) * 8' },
+        height: 20,
+        orient: 'horizontal',
+      },
+      encoding: {
+        x: { field: props.varName, axis: { format: '.2~s' } },
+      },
+    };
+  // node color and edge color and glyphs
+  } else if (props.mappedTo === 'color' || props.mappedTo === 'glyphs') {
+    if (columnTypes.value[props.varName] === 'number') {
+      const intermediateData = [...new Set(network.value[`${props.type}s`].map((row) => parseFloat(row[props.varName])))];
+      const min = Math.min(...intermediateData);
+      const max = Math.max(...intermediateData);
+      const data = [min, max].map((x, idx) => ({ index: idx, [props.varName]: x }));
+      const scaleToUse = props.type === 'node' ? nodeColorScale.value : edgeColorScale.value;
+      const valueForMidScale = (scaleToUse.domain()[0] + scaleToUse.domain()[1]) / 2;
+      spec = {
+        data: {
+          values: data,
+        },
+        mark: 'rect',
+        encoding: {
+          x: { field: props.varName, aggregate: 'min' },
+          x2: { field: props.varName, aggregate: 'max' },
+          y: { value: 10 },
+          y2: { value: 40 },
+          fill: {
+            value: {
+              gradient: 'linear',
+              stops: [
+                { offset: 0.0, color: scaleToUse(scaleToUse.domain()[0]) },
+                { offset: 0.5, color: scaleToUse(valueForMidScale) },
+                { offset: 1.0, color: scaleToUse(scaleToUse.domain()[1]) },
+              ],
+            },
+          },
+        },
+      };
+    } else {
+      const data = [...new Set(network.value[`${props.type}s`].map((row) => row[props.varName]))].map((x) => ({ [props.varName]: x }));
+      spec = {
+        data: {
+          values: data,
+        },
+        mark: 'square',
+        encoding: {
+          x: { field: props.varName },
+          size: { value: 300 },
+          color: {
+            field: props.varName,
+            scale: {
+              domain: nodeColorScale.value.domain(),
+              range: (nodeColorScale.value as ScaleOrdinal<string, string, never>).range(),
+            },
+            legend: null,
+          },
+        },
+      };
+    }
+  // nested bars
+  } else if (props.mappedTo === 'bars') {
+    // TODO: bars
+  // numeric legend charts
+  } else if (isQuantitative(props.varName, props.type)) {
+    // Find the right pieces of data
+    const specData = network.value[`${props.type}s`].map((row) => ({
+      ...row,
+      [props.varName]: parseFloat(row[props.varName]),
+    }));
+    const attrRangeData: number[] = specData.map((row) => row[props.varName]);
+
+    // If this is the first time seeing the variable, add its attribute range
+    if (props.mappedTo === '') {
+      store.addAttributeRange({
+        attr: props.varName,
+        min: Math.min(...attrRangeData),
+        max: Math.max(...attrRangeData),
+        binLabels: [],
+      });
+    }
+
+    spec = {
+      data: {
+        values: specData,
       },
       mark: 'bar',
       encoding: {
-        x: { bin: true, field: props.varName },
-        y: { aggregate: 'count' },
+        x: { bin: true, field: props.varName, axis: { format: '.2~s', title: null } },
+        y: { aggregate: 'count', axis: { title: 'Count' } },
       },
     };
   // categorical legend charts
   } else {
-    // Do something for the chart when mapped to categorical legend charts
+    // Find the right pieces of data
+    const specData = network.value[`${props.type}s`];
+    const attrRangeData: string[] = specData.map((row) => row[props.varName]);
+
+    // If this is the first time seeing the variable, add its attribute range
+    if (props.mappedTo === '') {
+      store.addAttributeRange({
+        attr: props.varName,
+        min: 0,
+        max: 0,
+        binLabels: attrRangeData,
+      });
+    }
+
     spec = {
       data: {
-        values: network.value[`${props.type}s`],
+        values: specData,
       },
       mark: 'bar',
       encoding: {
-        x: { field: props.varName },
-        y: { aggregate: 'count' },
+        x: { field: props.varName, axis: { title: null, tickBand: 'center' } },
+        y: { aggregate: 'count', axis: { title: 'Count' } },
       },
     };
   }
 
-  if (spec === undefined) {
-    return;
-  }
-
+  // add some default values
   spec = {
     ...spec,
     width: boundingBox.width.value,
-    height: 80,
+    height: 50,
     autosize: {
       type: 'fit-x',
       contains: 'padding',
     },
+    config: {
+      axis: {
+        grid: false,
+        domain: false,
+        ticks: false,
+      },
+      view: {
+        stroke: null,
+      },
+    },
   };
+
+  if (spec === undefined) {
+    return;
+  }
 
   vegaEmbed(
     variableSvgRef.value,
@@ -252,6 +362,7 @@ watch(boundingBox.width, () => {
                 </v-icon>
               </v-btn>
             </template>
+
             <v-card :width="300">
               <legend-chart
                 :var-name="varName"
@@ -259,7 +370,7 @@ watch(boundingBox.width, () => {
                 :brushable="true"
                 :filter="mappedTo"
                 :type="type"
-                class="pb-4"
+                class="pb-4 mt-4"
               />
             </v-card>
           </v-menu>
@@ -292,7 +403,7 @@ watch(boundingBox.width, () => {
       </div>
     </div>
 
-    <div ref="variableSvgRef" style="width: 100%;" />
+    <div id="findMe" ref="variableSvgRef" style="width: 100%;" :class="mappedTo !== '' ? 'mt-4' : ''" />
 
     <div v-if="mappedTo === 'bars'">
       <v-icon
