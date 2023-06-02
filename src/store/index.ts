@@ -70,7 +70,12 @@ export const useStore = defineStore('store', () => {
   });
 
   const nodeColorScale = computed(() => {
-    if (columnTypes.value !== null && Object.keys(columnTypes.value).length > 0 && columnTypes.value[nodeColorVariable.value] === 'number') {
+    if (
+      attributeRanges.value !== null
+      && Object.keys(attributeRanges.value).length > 0
+      && Object.keys(attributeRanges.value).includes(nodeColorVariable.value)
+      && columnTypes.value[nodeColorVariable.value] === 'number'
+    ) {
       const minValue = attributeRanges.value[nodeColorVariable.value].currentMin || attributeRanges.value[nodeColorVariable.value].min;
       const maxValue = attributeRanges.value[nodeColorVariable.value].currentMax || attributeRanges.value[nodeColorVariable.value].max;
 
@@ -81,7 +86,12 @@ export const useStore = defineStore('store', () => {
   });
 
   const edgeColorScale = computed(() => {
-    if (columnTypes.value !== null && Object.keys(columnTypes.value).length > 0 && columnTypes.value[edgeVariables.value.color] === 'number') {
+    if (
+      attributeRanges.value !== null
+      && Object.keys(attributeRanges.value).length > 0
+      && Object.keys(attributeRanges.value).includes(edgeVariables.value.color)
+      && columnTypes.value[edgeVariables.value.color] === 'number'
+    ) {
       const minValue = attributeRanges.value[edgeVariables.value.color].currentMin || attributeRanges.value[edgeVariables.value.color].min;
       const maxValue = attributeRanges.value[edgeVariables.value.color].currentMax || attributeRanges.value[edgeVariables.value.color].max;
 
@@ -93,7 +103,12 @@ export const useStore = defineStore('store', () => {
   });
 
   const nodeSizeScale = computed(() => {
-    if (columnTypes.value !== null && Object.keys(columnTypes.value).length > 0 && columnTypes.value[nodeSizeVariable.value]) {
+    if (
+      attributeRanges.value !== null
+      && Object.keys(attributeRanges.value).length > 0
+      && Object.keys(attributeRanges.value).includes(nodeSizeVariable.value)
+      && columnTypes.value[nodeSizeVariable.value]
+    ) {
       const minValue = attributeRanges.value[nodeSizeVariable.value].currentMin || attributeRanges.value[nodeSizeVariable.value].min;
       const maxValue = attributeRanges.value[nodeSizeVariable.value].currentMax || attributeRanges.value[nodeSizeVariable.value].max;
 
@@ -105,7 +120,12 @@ export const useStore = defineStore('store', () => {
   });
 
   const edgeWidthScale = computed(() => {
-    if (columnTypes.value !== null && Object.keys(columnTypes.value).length > 0 && columnTypes.value[edgeVariables.value.width] === 'number') {
+    if (
+      attributeRanges.value !== null
+      && Object.keys(attributeRanges.value).length > 0
+      && Object.keys(attributeRanges.value).includes(edgeVariables.value.width)
+      && columnTypes.value[edgeVariables.value.width] === 'number'
+    ) {
       const minValue = attributeRanges.value[edgeVariables.value.width].currentMin || attributeRanges.value[edgeVariables.value.width].min;
       const maxValue = attributeRanges.value[edgeVariables.value.width].currentMax || attributeRanges.value[edgeVariables.value.width].max;
 
