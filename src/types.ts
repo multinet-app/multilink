@@ -57,11 +57,9 @@ export interface AttributeRange {
   min: number;
   max: number;
   binLabels: string[];
-  binValues: number[];
   currentMax?: number;
   currentMin?: number;
   currentBinLabels?: string[];
-  currentBinValues?: number[];
 }
 
 export interface AttributeRanges {

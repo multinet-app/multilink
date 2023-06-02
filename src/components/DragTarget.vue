@@ -8,6 +8,8 @@ const {
   nestedVariables,
   nodeSizeVariable,
   nodeColorVariable,
+  columnTypes,
+  snackBarMessage,
 } = storeToRefs(store);
 
 const props = withDefaults(defineProps<{
@@ -26,36 +28,76 @@ function elementDrop(event: DragEvent) {
   const droppedVarName = event.dataTransfer.getData('attr_id').substring(5);
 
   if (props.type === 'node' && props.title === 'bars') {
+    if (columnTypes.value[droppedVarName] !== 'number') {
+      snackBarMessage.value = 'You must use a numeric variable for bars';
+      return;
+    }
+
     const updatedNestedVars = {
       bar: [...nestedVariables.value.bar, droppedVarName],
       glyph: nestedVariables.value.glyph,
     };
     store.setNestedVariables(updatedNestedVars);
   } else if (props.type === 'node' && props.title === 'glyphs') {
+    if (!['category', 'boolean'].includes(columnTypes.value[droppedVarName])) {
+      snackBarMessage.value = 'You must use a categorical or boolean variable for glyphs';
+      return;
+    }
+
     const updatedNestedVars = {
       bar: nestedVariables.value.bar,
       glyph: [...nestedVariables.value.glyph, droppedVarName],
     };
     store.setNestedVariables(updatedNestedVars);
   } else if (props.type === 'node' && props.title === 'size') {
+    if (columnTypes.value[droppedVarName] !== 'number') {
+      snackBarMessage.value = 'You must use a numeric variable for size';
+      return;
+    }
+
     nodeSizeVariable.value = droppedVarName;
   } else if (props.type === 'node' && props.title === 'color') {
+    if (!['number', 'category', 'boolean'].includes(columnTypes.value[droppedVarName])) {
+      snackBarMessage.value = 'You must use a numeric, categorical, or boolean variable for color';
+      return;
+    }
+
     nodeColorVariable.value = droppedVarName;
   } else if (props.type === 'node' && props.title === 'x variable') {
+    if (!['number', 'category', 'boolean'].includes(columnTypes.value[droppedVarName])) {
+      snackBarMessage.value = 'You must use a numeric, categorical, or boolean variable for x variable';
+      return;
+    }
+
     store.applyVariableLayout({
       varName: droppedVarName, axis: 'x',
     });
   } else if (props.type === 'node' && props.title === 'y variable') {
+    if (!['number', 'category', 'boolean'].includes(columnTypes.value[droppedVarName])) {
+      snackBarMessage.value = 'You must use a numeric, categorical, or boolean variable for y variable';
+      return;
+    }
+
     store.applyVariableLayout({
       varName: droppedVarName, axis: 'y',
     });
   } else if (props.type === 'edge' && props.title === 'width') {
+    if (columnTypes.value[droppedVarName] !== 'number') {
+      snackBarMessage.value = 'You must use a numeric variable for width';
+      return;
+    }
+
     const updatedEdgeVars = {
       width: droppedVarName,
       color: edgeVariables.value.color,
     };
     edgeVariables.value = updatedEdgeVars;
   } else if (props.type === 'edge' && props.title === 'color') {
+    if (!['number', 'category', 'boolean'].includes(columnTypes.value[droppedVarName])) {
+      snackBarMessage.value = 'You must use a numeric, categorical, or boolean variable for color';
+      return;
+    }
+
     const updatedEdgeVars = {
       width: edgeVariables.value.width,
       color: droppedVarName,
