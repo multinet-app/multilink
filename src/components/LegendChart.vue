@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import {
-  ref, watch,
-} from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from '@/store';
 import vegaEmbed, { VisualizationSpec } from 'vega-embed';
 
 // Required for recursive definition of LegendChart
 // eslint-disable-next-line import/no-self-import
-import LegendChart from '@/components/LegendChart.vue';
 import { storeToRefs } from 'pinia';
 import { useElementBounding } from '@vueuse/core';
-import { ScaleOrdinal, range } from 'd3';
+import { ScaleOrdinal } from 'd3';
 
 const store = useStore();
 const {
@@ -98,6 +95,12 @@ function unAssignVar(variable?: string) {
     }
   }
 }
+
+const barData = computed(() => nestedVariables.value.bar.map((barVar, index) => ({
+  group: barVar,
+  value: 50,
+  index,
+})));
 
 const variableSvgRef = ref<HTMLElement | null>(null);
 const boundingBox = useElementBounding(variableSvgRef);
@@ -209,7 +212,31 @@ function render() {
     }
   // nested bars
   } else if (props.mappedTo === 'bars') {
-    // TODO: bars
+    // Make sure the bars colors are ready in the color scale
+    barData.value.forEach((bar) => {
+      nodeColorScale.value(bar.group);
+    });
+
+    spec = {
+      data: {
+        values: barData.value,
+      },
+      mark: 'bar',
+      encoding: {
+        x: { field: 'group', sort: { field: 'index' } },
+        y: { field: 'value' },
+        key: { field: 'group' },
+        fill: {
+          field: 'group',
+          scale: {
+            domain: nodeColorScale.value.domain(),
+            range: (nodeColorScale.value as ScaleOrdinal<string, string, never>).range(),
+          },
+          legend: null,
+        },
+      },
+      usermeta: { embedOptions: { renderer: 'svg' } },
+    };
   // numeric legend charts
   } else if (isQuantitative(props.varName, props.type)) {
     // Find the right pieces of data
@@ -297,10 +324,16 @@ function render() {
     variableSvgRef.value,
     spec,
     { actions: false },
-  );
+  ).then(({ view }) => {
+    // If this is the bar chart, add a click listener to unassign variables on click
+    if (props.mappedTo === 'bars') {
+      // eslint-disable-next-line no-underscore-dangle
+      view.addEventListener('click', (event) => unAssignVar((event.target as any).__data__?.datum?.group));
+    }
+  });
 }
 
-watch(boundingBox.width, () => {
+watch([boundingBox.width, barData], () => {
   render();
 });
 </script>
@@ -310,19 +343,7 @@ watch(boundingBox.width, () => {
     class="pa-4 pb-0 black--text"
   >
     <div
-      v-if="brushable"
-    >
-      <v-row class="px-4">
-        <strong>Filter Values</strong>
-        <v-spacer />
-        <v-icon small>
-          mdi-information
-        </v-icon>
-      </v-row>
-    </div>
-
-    <div
-      v-else-if="selected && mappedTo !== 'bars'"
+      v-if="selected && mappedTo !== 'bars'"
     >
       <div>
         {{ mappedTo }}:
@@ -367,18 +388,6 @@ watch(boundingBox.width, () => {
     </div>
 
     <div ref="variableSvgRef" style="width: 100%;" />
-
-    <div v-if="mappedTo === 'bars'">
-      <v-icon
-        v-for="(barVar, index) of nestedVariables.bar"
-        :key="barVar"
-        x-small
-        :style="`position: absolute; left: ${50 * (index) + 63}px; top: 110px;`"
-        @click="unAssignVar(barVar)"
-      >
-        mdi-close
-      </v-icon>
-    </div>
   </div>
 </template>
 
