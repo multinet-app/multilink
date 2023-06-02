@@ -339,7 +339,6 @@ function edgeStyle(edge: Edge): string {
         // Categorical check
         || (
           columnTypes.value[edgeVariables.value.color] !== 'number'
-          && true
         )
       );
 
