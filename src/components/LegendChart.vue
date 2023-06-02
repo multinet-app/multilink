@@ -165,9 +165,14 @@ function render() {
         },
         mark: 'rect',
         encoding: {
-          x: { field: props.varName, aggregate: 'min' },
+          x: {
+            field: props.varName,
+            aggregate: 'min',
+            axis: { tickCount: 4 },
+            scale: { domain: [min, max] },
+          },
           x2: { field: props.varName, aggregate: 'max' },
-          y: { value: 10 },
+          y: { value: 5 },
           y2: { value: 40 },
           fill: {
             value: {
@@ -230,7 +235,7 @@ function render() {
       },
       mark: 'bar',
       encoding: {
-        x: { bin: true, field: props.varName, axis: { format: '.2~s', title: null } },
+        x: { bin: true, field: props.varName, axis: { format: '.2~s' } },
         y: { aggregate: 'count', axis: { title: 'Count' } },
       },
     };
@@ -256,7 +261,7 @@ function render() {
       },
       mark: 'bar',
       encoding: {
-        x: { field: props.varName, axis: { title: null, tickBand: 'center' } },
+        x: { field: props.varName },
         y: { aggregate: 'count', axis: { title: 'Count' } },
       },
     };
@@ -276,6 +281,7 @@ function render() {
         grid: false,
         domain: false,
         ticks: false,
+        title: null,
       },
       view: {
         stroke: null,
@@ -319,62 +325,19 @@ watch(boundingBox.width, () => {
       v-else-if="selected && mappedTo !== 'bars'"
     >
       <div>
-        <v-row style="margin-right: 0; margin-left: 0;">
-          {{ mappedTo }}:
-          <strong
-            class="pl-1 label"
-            :title="varName"
-          >{{ varName }}</strong>
-          <v-icon
-            small
-            class="icon pt-0"
-            :height="20"
-            @click="unAssignVar"
-          >
-            mdi-close-circle
-          </v-icon>
-
-          <v-spacer />
-
-          <v-menu
-            absolute
-            :position-x="256"
-            eager
-          >
-            <template #activator="{ on, attrs }">
-              <v-btn
-                x-small
-                depressed
-                text
-                tile
-                max-width="20"
-                class="pa-0 pl-1"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon
-                  :size="24"
-                  class="icon pt-0"
-                  color="primary"
-                  dark
-                >
-                  mdi-chart-box
-                </v-icon>
-              </v-btn>
-            </template>
-
-            <v-card :width="300">
-              <legend-chart
-                :var-name="varName"
-                :selected="false"
-                :brushable="true"
-                :filter="mappedTo"
-                :type="type"
-                class="pb-4 mt-4"
-              />
-            </v-card>
-          </v-menu>
-        </v-row>
+        {{ mappedTo }}:
+        <strong
+          class="pl-1 label"
+          :title="varName"
+        >{{ varName }}</strong>
+        <v-icon
+          small
+          class="icon pt-0"
+          :height="20"
+          @click="unAssignVar"
+        >
+          mdi-close-circle
+        </v-icon>
       </div>
     </div>
 
@@ -403,7 +366,7 @@ watch(boundingBox.width, () => {
       </div>
     </div>
 
-    <div id="findMe" ref="variableSvgRef" style="width: 100%;" :class="mappedTo !== '' ? 'mt-4' : ''" />
+    <div ref="variableSvgRef" style="width: 100%;" />
 
     <div v-if="mappedTo === 'bars'">
       <v-icon
