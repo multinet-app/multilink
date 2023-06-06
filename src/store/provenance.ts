@@ -1,4 +1,6 @@
+import api from '@/api';
 import { findDifferencesInPrimitiveStates, getTrrackLabel, isArray } from '@/lib/provenanceUtils';
+import { getUrlVars } from '@/lib/utils';
 import { NestedVariables, ProvState } from '@/types';
 import { initializeTrrack, Registry } from '@trrack/core';
 import { defineStore } from 'pinia';
@@ -28,6 +30,8 @@ export const useProvenanceStore = defineStore('provenance', () => {
   const markerSize = ref(10);
   const fontSize = ref(8);
   const edgeLength = ref(30);
+
+  const { sessionId } = getUrlVars();
 
   // A live computed state so that we can edit the values when trrack does undo/redo
   const currentPiniaState = computed(() => ({
@@ -114,7 +118,23 @@ export const useProvenanceStore = defineStore('provenance', () => {
       const updates = findDifferencesInPrimitiveStates(getPiniaStateSnapshot(), provenance.getState());
       Object.entries(updates).forEach(([key, val]) => { currentPiniaState.value[key as keyof ProvState].value = val; });
     }
+
+    api.updateSession(sessionId || '', 'network', provenance.export());
   });
+
+  // Attempt to restore session
+  async function restoreSession() {
+    if (sessionId) {
+      const session = await api.getSession(sessionId, 'network');
+
+      // If the session is empty, the API will be an empty object
+      // Only attempt to import if we have a string
+      if (typeof session.state === 'string') {
+        provenance.import(session.state);
+      }
+    }
+  }
+  restoreSession();
 
   return {
     provenance,
