@@ -26,11 +26,7 @@ const {
   snackBarMessage,
 } = storeToRefs(store);
 
-const urlVars = getUrlVars();
-store.fetchNetwork(
-  urlVars.workspace,
-  urlVars.network,
-);
+store.fetchNetwork();
 
 // Set up provenance undo and redo, provenance is not a ref here
 const { provenance } = store;
