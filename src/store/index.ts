@@ -33,10 +33,10 @@ export const useStore = defineStore('store', () => {
     markerSize,
     fontSize,
     edgeLength,
+    workspaceName,
+    networkName,
   } = storeToRefs(provStore);
 
-  const workspaceName = ref('');
-  const networkName = ref('');
   const network = ref<Network>({ nodes: [], edges: [] });
   const columnTypes = ref<ColumnTypes>({});
   const loadError = ref<LoadError>({
@@ -146,18 +146,14 @@ export const useStore = defineStore('store', () => {
     return nodes;
   }
 
-  async function fetchNetwork(workspaceNameInput: string | undefined, networkNameInput: string | undefined) {
-    if (workspaceNameInput === undefined || networkNameInput === undefined) {
+  async function fetchNetwork() {
+    if (workspaceName.value === '' || networkName.value === '') {
       loadError.value = {
         message: 'Workspace and/or network were not defined in the url',
         href: 'https://multinet.app',
       };
       return;
     }
-
-    workspaceName.value = workspaceNameInput;
-    networkName.value = networkNameInput;
-
     let networkRequest: NetworkSpec | undefined;
 
     // Get all table names

@@ -1,4 +1,6 @@
+import api from '@/api';
 import { findDifferencesInPrimitiveStates, getTrrackLabel, isArray } from '@/lib/provenanceUtils';
+import { getUrlVars } from '@/lib/utils';
 import { NestedVariables, ProvState } from '@/types';
 import { initializeTrrack, Registry } from '@trrack/core';
 import { defineStore } from 'pinia';
@@ -116,6 +118,30 @@ export const useProvenanceStore = defineStore('provenance', () => {
     }
   });
 
+  // Variables to help with session management (this is not tracked in trrack)
+  const { sessionId, workspace, network } = getUrlVars();
+  const workspaceName = ref(workspace || '');
+  const networkName = ref(network || '');
+
+  // Update the session when the provenance changes
+  provenance.currentChange(() => {
+    api.updateSession(workspaceName.value, sessionId || '', 'network', provenance.export());
+  });
+
+  // Attempt to restore session on first load
+  async function restoreSession() {
+    if (sessionId) {
+      const session = await api.getSession(workspaceName.value, sessionId, 'network');
+
+      // If the session is empty, the API will be an empty object
+      // Only attempt to import if we have a string
+      if (typeof session.state === 'string') {
+        provenance.import(session.state);
+      }
+    }
+  }
+  restoreSession();
+
   return {
     provenance,
     selectNeighbors,
@@ -131,5 +157,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
     markerSize,
     fontSize,
     edgeLength,
+    workspaceName,
+    networkName,
   };
 });
