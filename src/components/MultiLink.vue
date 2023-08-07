@@ -16,7 +16,7 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import { applyForceToSimulation } from '@/lib/d3ForceUtils';
 import { isInternalField } from '@/lib/typeUtils';
 import { storeToRefs } from 'pinia';
-import { useMouseInElement, useWindowSize } from '@vueuse/core';
+import { useElementBounding, useMouseInElement, useWindowSize } from '@vueuse/core';
 
 const props = defineProps<{ showControlPanel: boolean }>();
 
@@ -212,19 +212,21 @@ function dragNode(node: Node, event: MouseEvent) {
   multiLinkSvg.value.addEventListener('mouseup', stopFn);
 }
 
+const tooltip = ref(null);
+const { width: tooltipWidth, height: tooltipHeight } = useElementBounding(tooltip);
 const tooltipMessage = ref('');
 const toggleTooltip = ref(false);
-const tooltipPosition = ref({ x: 0, y: 0 });
+const tooltipPosition = computed(() => ({
+  x: (relativeX.value + 10 < svgDimensions.value.width - tooltipWidth.value ? relativeX.value + 10 : relativeX.value - tooltipWidth.value) + (props.showControlPanel ? 256 : 0),
+  y: (relativeY.value + toolbarHeight + tooltipHeight.value + 10 < svgDimensions.value.height - toolbarHeight ? relativeY.value + toolbarHeight + 10 : relativeY.value + toolbarHeight - tooltipHeight.value - 10) + (props.showControlPanel ? 256 : 0),
+}));
 const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
-function showTooltip(element: Node | Edge) {
-  tooltipPosition.value = {
-    x: relativeX.value + 10,
-    y: relativeY.value + toolbarHeight + 10,
-  };
 
+function showTooltip(element: Node | Edge) {
   tooltipMessage.value = Object.entries(element)
     .filter(([key]) => !isInternalField(key))
-    .map(([key, value]) => `${key}: ${value}`).reduce((a, b) => `${a}\n${b}`);
+    .map(([key, value]) => `${key}: ${value}`)
+    .reduce((a, b) => `${a}\n${b}`);
   toggleTooltip.value = true;
 }
 
@@ -996,7 +998,8 @@ onMounted(() => {
 
     <div
       v-if="toggleTooltip"
-      class="tooltip"
+      id="tooltip"
+      ref="tooltip"
       :style="tooltipStyle"
     >
       {{ tooltipMessage }}
@@ -1007,7 +1010,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.tooltip {
+#tooltip {
   position: absolute;
   background-color: white;
 
@@ -1018,7 +1021,7 @@ onMounted(() => {
   pointer-events: none;
   -webkit-box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
-  max-width: 400px
+  max-width: 400px;
 }
 
 .label,
