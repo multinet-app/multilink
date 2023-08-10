@@ -547,7 +547,7 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@trrack/core@^1.0.0", "@trrack/core@^1.0.1":
+"@trrack/core@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.1.0.tgz#44a75de7ac5d1c4451f7a01873a90b21d69dd8c1"
   integrity sha512-OvWMDsVWhFr8cS4g972Uea1L9RE63TG5VgrWIvToL8eC30+tOpw08Ks/GzHs21IrdrMARafsp3YC/HoXPr+HNg==
@@ -556,10 +556,19 @@
     fast-json-patch "^3.1.1"
     uuid "^9.0.0"
 
-"@trrack/vis-react@^1.2.2":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.2.3.tgz#5179cbba2ea1eaf81c300ae4a632c0ad7919d394"
-  integrity sha512-Yj7w7KOmFpt6qH98nU/pBPfNdjWW8jW9Ze3qWnTNrPdRa+Zy2ehrDfmIvbQjcUe1U+PSHHBysi3t3MZ70WD5Ww==
+"@trrack/core@^1.3.0-beta.1":
+  version "1.3.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.3.0-beta.1.tgz#9088c2f589a7f6966ba9afd17699123b2a597b42"
+  integrity sha512-HURGadgeBZMOgvWgBLiX/5ywojrUBnnp0RbK80FNeNSpVP42a2QL6mUQLGeU9or1gUdxlGHjd/wdmBTvKTCwzg==
+  dependencies:
+    "@reduxjs/toolkit" "^1.9.1"
+    fast-json-patch "^3.1.1"
+    uuid "^9.0.0"
+
+"@trrack/vis-react@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.3.0.tgz#3c859b4b678954a9afa3cfece6703cde89999a6c"
+  integrity sha512-key0OTDybA5kvb2DlBS4sIJGDXj/muphTAwalau19xllZqARbsThwIVWKJACcJDz8gbBDMWabtLG9G0WPHnMoQ==
   dependencies:
     "@fortawesome/free-solid-svg-icons" "^6.2.1"
     "@fortawesome/react-fontawesome" "^0.2.0"
