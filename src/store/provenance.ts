@@ -122,21 +122,22 @@ export const useProvenanceStore = defineStore('provenance', () => {
   const { sessionId, workspace, network } = getUrlVars();
   const workspaceName = ref(workspace || '');
   const networkName = ref(network || '');
+  const sessionIdNum = sessionId ? parseInt(sessionId, 10) : null;
 
   // Update the session when the provenance changes
   provenance.currentChange(() => {
-    api.updateSession(workspaceName.value, sessionId || '', 'network', provenance.export());
+    if (sessionIdNum === null) return;
+    api.updateSession(workspaceName.value, sessionIdNum, 'network', provenance.exportObject());
   });
 
   // Attempt to restore session on first load
   async function restoreSession() {
-    if (sessionId) {
-      const session = await api.getSession(workspaceName.value, sessionId, 'network');
+    if (sessionIdNum !== null) {
+      const session = await api.getSession(workspaceName.value, sessionIdNum, 'network');
 
-      // If the session is empty, the API will be an empty object
-      // Only attempt to import if we have a string
-      if (typeof session.state === 'string') {
-        provenance.import(session.state);
+      // Load the session if the object is not empty
+      if (typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
+        provenance.importObject(session.state);
       }
     }
   }
