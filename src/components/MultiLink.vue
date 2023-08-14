@@ -218,7 +218,7 @@ const tooltipMessage = ref('');
 const toggleTooltip = ref(false);
 const tooltipPosition = computed(() => ({
   x: (relativeX.value + 10 < svgDimensions.value.width - tooltipWidth.value ? relativeX.value + 10 : relativeX.value - tooltipWidth.value) + (props.showControlPanel ? 256 : 0),
-  y: (relativeY.value + toolbarHeight + tooltipHeight.value + 10 < svgDimensions.value.height - toolbarHeight ? relativeY.value + toolbarHeight + 10 : relativeY.value + toolbarHeight - tooltipHeight.value - 10) + (props.showControlPanel ? 256 : 0),
+  y: (relativeY.value + toolbarHeight + tooltipHeight.value + 10 < svgDimensions.value.height - toolbarHeight ? relativeY.value + toolbarHeight + 10 : relativeY.value + toolbarHeight - tooltipHeight.value - 10),
 }));
 const tooltipStyle = computed(() => `left: ${tooltipPosition.value.x}px; top: ${tooltipPosition.value.y}px; white-space: pre-line;`);
 
