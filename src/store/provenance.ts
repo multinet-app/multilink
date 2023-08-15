@@ -10,6 +10,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
   // Initial values (only primitives, any more complicated value should be derived from primitives in the main store)
   const selectNeighbors = ref(true);
   const displayCharts = ref(false);
+  const displayEdges = ref(false);
   const directionalEdges = ref(false);
   const selectedNodes = ref<string[]>([]);
   const nestedVariables = ref<NestedVariables>({
@@ -35,6 +36,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
   const currentPiniaState = computed(() => ({
     selectNeighbors,
     displayCharts,
+    displayEdges,
     directionalEdges,
     selectedNodes,
     nestedVariables,
@@ -146,6 +148,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
     provenance,
     selectNeighbors,
     displayCharts,
+    displayEdges,
     directionalEdges,
     selectedNodes,
     nestedVariables,

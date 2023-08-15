@@ -22,6 +22,7 @@ export const useStore = defineStore('store', () => {
   const {
     selectNeighbors,
     displayCharts,
+    displayEdges,
     directionalEdges,
     selectedNodes,
     nestedVariables,
@@ -328,6 +329,7 @@ export const useStore = defineStore('store', () => {
     loadError,
     simulation,
     displayCharts,
+    displayEdges,
     markerSize,
     fontSize,
     labelVariable,
