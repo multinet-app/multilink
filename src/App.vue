@@ -3,7 +3,6 @@ import 'multinet-components/dist/style.css';
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useStore } from '@/store';
-import { getUrlVars } from '@/lib/utils';
 import { undoRedoKeyHandler } from '@/lib/provenanceUtils';
 import oauthClient from '@/oauth';
 

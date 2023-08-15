@@ -327,7 +327,7 @@ function render() {
   ).then(({ view }) => {
     // If this is the bar chart, add a click listener to unassign variables on click
     if (props.mappedTo === 'bars') {
-      // eslint-disable-next-line no-underscore-dangle
+      // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-explicit-any
       view.addEventListener('click', (event) => unAssignVar((event.target as any).__data__?.datum?.group));
     }
   });
