@@ -28,6 +28,7 @@ const {
   nestedVariables,
   markerSize,
   displayCharts,
+  displayEdges,
   labelVariable,
   selectNeighbors,
   attributeRanges,
@@ -321,10 +322,12 @@ function nodeFill(node: Node) {
 function edgeGroupClass(edge: Edge): string {
   if (selectedNodes.value.length > 0) {
     const selected = isSelected(edge._from) || isSelected(edge._to);
-    const selectedClass = selected || !selectNeighbors.value ? '' : 'muted';
+    const edgeDisplay = displayEdges.value ? 'muted' : 'hide';
+    const selectedClass = selected || !selectNeighbors.value ? '' : edgeDisplay;
     return `edgeGroup ${selectedClass}`;
   }
-  return 'edgeGroup';
+  const selectedClass = displayEdges.value ? '' : 'hide';
+  return `edgeGroup ${selectedClass}`;
 }
 
 function edgeStyle(edge: Edge): string {
@@ -1032,6 +1035,10 @@ onMounted(() => {
 
 .muted {
   opacity: 0.2;
+}
+
+.hide {
+  opacity: 0.0;
 }
 
 .nodeGroup {

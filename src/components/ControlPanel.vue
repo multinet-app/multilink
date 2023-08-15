@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia';
 const store = useStore();
 const {
   displayCharts,
+  displayEdges,
   layoutVars,
   fontSize,
   labelVariable,
@@ -66,6 +67,17 @@ const multiVariableList = computed(() => {
               <v-list-item-action>
                 <v-switch
                   v-model="displayCharts"
+                  hide-details
+                  color="blue darken-1"
+                />
+              </v-list-item-action>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-content> Display All Edges  </v-list-item-content>
+              <v-list-item-action>
+                <v-switch
+                  v-model="displayEdges"
                   hide-details
                   color="blue darken-1"
                 />
