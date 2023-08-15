@@ -322,10 +322,11 @@ function nodeFill(node: Node) {
 function edgeGroupClass(edge: Edge): string {
   if (selectedNodes.value.length > 0) {
     const selected = isSelected(edge._from) || isSelected(edge._to);
-    const selectedClass = displayEdges.value && (selected || !selectNeighbors.value) ? '' : 'muted';
+    const edgeDisplay = displayEdges.value ? 'muted' : 'hide';
+    const selectedClass = selected || !selectNeighbors.value ? '' : edgeDisplay;
     return `edgeGroup ${selectedClass}`;
   }
-  const selectedClass = displayEdges.value ? '' : 'muted';
+  const selectedClass = displayEdges.value ? '' : 'hide';
   return `edgeGroup ${selectedClass}`;
 }
 
@@ -1034,6 +1035,10 @@ onMounted(() => {
 
 .muted {
   opacity: 0.2;
+}
+
+.hide {
+  opacity: 0.0;
 }
 
 .nodeGroup {

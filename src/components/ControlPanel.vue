@@ -74,7 +74,7 @@ const multiVariableList = computed(() => {
             </v-list-item>
 
             <v-list-item>
-              <v-list-item-content> Display Edges </v-list-item-content>
+              <v-list-item-content> Display All Edges </v-list-item-content>
               <v-list-item-action>
                 <v-switch
                   v-model="displayEdges"

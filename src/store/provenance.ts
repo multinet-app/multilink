@@ -10,7 +10,7 @@ export const useProvenanceStore = defineStore('provenance', () => {
   // Initial values (only primitives, any more complicated value should be derived from primitives in the main store)
   const selectNeighbors = ref(true);
   const displayCharts = ref(false);
-  const displayEdges = ref(false);
+  const displayEdges = ref(true);
   const directionalEdges = ref(false);
   const selectedNodes = ref<string[]>([]);
   const nestedVariables = ref<NestedVariables>({
