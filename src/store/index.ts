@@ -224,10 +224,10 @@ export const useStore = defineStore('store', () => {
     }
 
     // Generate all node table promises
-    const nodes = await api.nodes(workspaceName.value, networkName.value, { offset: 0, limit: 300 });
+    const nodes = await api.nodes(workspaceName.value, networkName.value, { offset: 0, limit: 1000 });
 
     // Generate and resolve edge table promise and extract rows
-    const edges = await api.edges(workspaceName.value, networkName.value, { offset: 0, limit: 1000 });
+    const edges = await api.edges(workspaceName.value, networkName.value, { offset: 0, limit: Number.MAX_SAFE_INTEGER });
 
     // Build the network object and set it as the network in the store
     const networkElements = {
