@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import {
+  computed, onMounted, ref, watch,
+} from 'vue';
 import { useStore } from '@/store';
 import vegaEmbed, { VisualizationSpec } from 'vega-embed';
 
@@ -336,6 +338,7 @@ function render() {
 watch([boundingBox.width, barData], () => {
   render();
 });
+onMounted(render);
 </script>
 
 <template>
