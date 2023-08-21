@@ -68,7 +68,7 @@ const attributeLayout = ref(false);
       Attribute Options
     </v-expansion-panel-header>
 
-    <v-expansion-panel-content color="grey darken-3">
+    <v-expansion-panel-content color="grey darken-3" eager>
       <v-list-item>
         <v-list-item-content> Display Charts </v-list-item-content>
         <v-list-item-action>
@@ -109,6 +109,7 @@ const attributeLayout = ref(false);
       >
         <v-tab-item
           class="pb-4"
+          eager
         >
           <div class="sticky">
             <div v-if="displayCharts">
@@ -257,6 +258,7 @@ const attributeLayout = ref(false);
 
         <v-tab-item
           class="pb-4"
+          eager
         >
           <div class="sticky">
             <drag-target
