@@ -13,6 +13,7 @@ import ControlPanel from '@/components/ControlPanel.vue';
 import MultiLink from '@/components/MultiLink.vue';
 import ProvVis from '@/components/ProvVis.vue';
 import { useDebounceFn } from '@vueuse/core';
+import { isInternalField } from './lib/typeUtils';
 
 const store = useStore();
 const {
@@ -35,14 +36,15 @@ const showControlPanel = ref(false);
 
 const searchItems = computed(() => {
   if (labelVariable.value !== undefined) {
-    return network.value.nodes.map((node) => (node[labelVariable.value || '']));
+    const allCombinations = network.value.nodes.map((node) => Object.entries(node).map(([key, value]) => (isInternalField(key) ? null : ({ text: `${key}: ${value}`, value: { [key]: value } })))).flat();
+    return [...new Map(allCombinations.filter((combo) => combo !== null).map((combo) => [combo?.text, combo])).values()];
   }
   return [];
 });
 
-function search(searchTerm: string) {
+function search(searchTerm: Record<string, unknown>) {
   const nodeIDsToSelect = network.value.nodes
-    .filter((node) => (labelVariable.value !== null && node[labelVariable.value] === searchTerm))
+    .filter((node) => Object.entries(searchTerm).every(([key, value]) => node[key] === value))
     .map((node) => node._id);
 
   if (nodeIDsToSelect.length > 0) {
