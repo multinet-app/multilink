@@ -96,5 +96,5 @@ export interface ProvState {
   edgeLength: number;
 }
 
-export const internalFieldNames = ['_from', '_to', '_id', '_rev', 'fx', 'fy'] as const;
+export const internalFieldNames = ['_key', '_from', '_to', '_id', '_rev', 'fx', 'fy', 'x', 'y', 'vx', 'vy', 'index'] as const;
 export type InternalField = (typeof internalFieldNames)[number];
