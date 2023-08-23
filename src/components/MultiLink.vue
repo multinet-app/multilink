@@ -1025,6 +1025,9 @@ onMounted(() => {
   -webkit-box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   box-shadow: 0 4px 8px 0 rgba(0,0,0,.2);
   max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .label,
