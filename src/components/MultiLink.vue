@@ -44,6 +44,7 @@ const {
   nodeSizeScale,
   nodeColorScale,
   edgeWidthScale,
+  edgeLength,
 } = storeToRefs(store);
 
 // Commonly used variables
@@ -497,7 +498,7 @@ watch(attributeRanges, () => {
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simEdges).id((d) => d._id),
+      forceLink<Node, SimulationEdge>(simEdges).id((d) => d._id).distance(edgeLength.value),
     );
   }
 });
@@ -519,7 +520,7 @@ function resetSimulationForces() {
     applyForceToSimulation(
       simulation.value,
       'edge',
-      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => d._id),
+      forceLink<Node, SimulationEdge>(simulationEdges.value).id((d) => d._id).distance(edgeLength.value),
     );
     applyForceToSimulation(
       simulation.value,
