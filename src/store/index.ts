@@ -194,7 +194,7 @@ export const useStore = defineStore('store', () => {
     }
 
     // Check network size
-    if (networkRequest.node_count > 300) {
+    if (networkRequest.node_count > 1000) {
       loadError.value = {
         message: 'The network you are loading is too large',
         href: 'https://multinet.app',
