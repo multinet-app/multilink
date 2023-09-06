@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
-  scaleBand, scaleLinear, ScaleLinear,
+  scalePoint, scaleLinear, ScaleLinear,
   forceLink, forceManyBody, forceSimulation, forceX, forceY,
-  select, axisBottom, axisLeft,
+  select, axisBottom, axisLeft, forceCollide,
 } from 'd3';
 import {
   computed, onMounted, ref, watch,
@@ -525,10 +525,17 @@ function resetSimulationForces() {
     applyForceToSimulation(
       simulation.value,
       'charge',
-      forceManyBody().strength(-120),
+      forceManyBody().strength(-100),
+    );
+    applyForceToSimulation(
+      simulation.value,
+      'collision',
+      forceCollide<Node>((d) => calculateNodeSize(d) / 2),
     );
   }
 }
+
+watch([markerSize, nodeSizeVariable], resetSimulationForces);
 
 const xAxisPadding = 60;
 const yAxisPadding = 80;
@@ -579,16 +586,16 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
     positionScale = scaleLinear()
       .domain([minValue, maxValue]);
   } else {
-    positionScale = scaleBand()
+    positionScale = scalePoint()
       .domain(range.binLabels);
   }
 
   if (axis === 'x') {
-    const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, clipHigh ? svgDimensions.value.width - clipRegionSize : svgDimensions.value.width];
+    const minMax = [clipLow ? yAxisPadding + clipRegionSize : yAxisPadding, (clipHigh ? svgDimensions.value.width - clipRegionSize : svgDimensions.value.width) - 10];
     positionScale = positionScale
       .range(minMax);
   } else {
-    const minMax = [clipLow ? svgDimensions.value.height - xAxisPadding - clipRegionSize : svgDimensions.value.height - xAxisPadding, clipHigh ? clipRegionSize : 0];
+    const minMax = [clipLow ? svgDimensions.value.height - xAxisPadding - clipRegionSize : svgDimensions.value.height - xAxisPadding, (clipHigh ? clipRegionSize : 0) - 10];
     positionScale = positionScale
       .range(minMax);
   }
@@ -597,8 +604,6 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
 
   if (varName !== null) {
     if (columnTypes.value !== null) {
-      const otherAxisPadding = axis === 'x' ? 80 : 60;
-
       if (type === 'number') {
         const scaleDomain = positionScale.domain();
         const scaleRange = positionScale.range();
@@ -623,15 +628,7 @@ function makePositionScale(axis: 'x' | 'y', type: ColumnType, range: AttributeRa
           }
         });
       } else {
-        let positionOffset: number;
-
-        if (axis === 'x') {
-          positionOffset = (svgDimensions.value.width - otherAxisPadding) / ((range.binLabels.length) * 2);
-        } else {
-          positionOffset = ((svgDimensions.value.height - xAxisPadding) / ((range.binLabels.length) * 2)) - 10;
-        }
-
-        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1) : forceY<Node>((d) => positionScale(d[varName]) + positionOffset).strength(1);
+        const force = axis === 'x' ? forceX<Node>((d) => positionScale(d[varName]) - (calculateNodeSize(d) / 2)).strength(2) : forceY<Node>((d) => positionScale(d[varName]) - (calculateNodeSize(d) / 2)).strength(2);
         applyForceToSimulation(
           simulation.value,
           axis,
@@ -810,8 +807,6 @@ onMounted(() => {
         stroke-width="2px"
         stroke-dasharray="5,5"
       />
-
-      <g id="axes" />
 
       <!-- High and low clip regions -->
       <g>
@@ -998,6 +993,8 @@ onMounted(() => {
           </g>
         </g>
       </g>
+
+      <g id="axes" />
     </svg>
 
     <div
