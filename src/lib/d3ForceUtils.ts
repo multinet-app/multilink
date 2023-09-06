@@ -1,12 +1,12 @@
 import {
-  ForceManyBody, ForceLink, Simulation, ForceX, ForceY,
+  ForceManyBody, ForceLink, Simulation, ForceX, ForceY, ForceCollide,
 } from 'd3';
 import { Node, SimulationEdge } from '@/types';
 
 export function applyForceToSimulation(
   simulation: Simulation<Node, SimulationEdge> | null,
-  forceType: 'x' | 'y' | 'charge' | 'edge',
-  forceValue: ForceX<Node> | ForceY<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationEdge> | undefined,
+  forceType: 'x' | 'y' | 'charge' | 'edge' | 'collision',
+  forceValue: ForceX<Node> | ForceY<Node> | ForceManyBody<Node> | ForceLink<Node, SimulationEdge> | ForceCollide<Node> | undefined,
   edgeDistance?: number,
 ) {
   if (simulation === null) {

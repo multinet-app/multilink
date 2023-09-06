@@ -2,7 +2,7 @@
 import {
   scalePoint, scaleLinear, ScaleLinear,
   forceLink, forceManyBody, forceSimulation, forceX, forceY,
-  select, axisBottom, axisLeft,
+  select, axisBottom, axisLeft, forceCollide,
 } from 'd3';
 import {
   computed, onMounted, ref, watch,
@@ -525,10 +525,17 @@ function resetSimulationForces() {
     applyForceToSimulation(
       simulation.value,
       'charge',
-      forceManyBody().strength(-120),
+      forceManyBody().strength(-100),
+    );
+    applyForceToSimulation(
+      simulation.value,
+      'collision',
+      forceCollide<Node>((d) => calculateNodeSize(d) / 2),
     );
   }
 }
+
+watch([markerSize, nodeSizeVariable], resetSimulationForces);
 
 const xAxisPadding = 60;
 const yAxisPadding = 80;
